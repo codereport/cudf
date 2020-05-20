@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <cudf/fixed_point/fixed_point.hpp>
 #include <cudf/lists/list_view.cuh>
 #include <cudf/strings/string_view.cuh>
 #include <cudf/types.hpp>
@@ -211,6 +212,39 @@ constexpr inline bool is_timestamp(data_type type)
 }
 
 /**
+ * @brief Indicates whether the type `T` is a fixed-point type.
+ *
+ * @tparam T  The type to verify
+ * @return true `T` is a fixed-point type
+ * @return false  `T` is not a fixed-point type
+ **/
+template <typename T>
+constexpr inline bool is_fixed_point()
+{
+  return std::is_same<decimal32, T>::value;  // || std::is_same<decimal64, T>::value;
+}
+
+struct is_fixed_point_impl {
+  template <typename T>
+  bool operator()()
+  {
+    return is_fixed_point<T>();
+  }
+};
+
+/**
+ * @brief Indicates whether `type` is a fixed point `data_type`.
+ *
+ * @param type The `data_type` to verify
+ * @return true `type` is a fixed point type
+ * @return false `type` is not a fixed point type
+ **/
+constexpr inline bool is_fixed_point(data_type type)
+{
+  return cudf::experimental::type_dispatcher(type, is_fixed_point_impl{});
+}
+
+/**
  * @brief Indicates whether elements of type `T` are fixed-width.
  *
  * Elements of a fixed-width type all have the same size in bytes.
@@ -224,7 +258,7 @@ constexpr inline bool is_fixed_width()
 {
   // TODO Add fixed width wrapper types
   // Is a category fixed width?
-  return cudf::is_numeric<T>() || cudf::is_timestamp<T>();
+  return cudf::is_numeric<T>() || cudf::is_timestamp<T>() || cudf::is_fixed_point<T>();
 }
 
 struct is_fixed_width_impl {

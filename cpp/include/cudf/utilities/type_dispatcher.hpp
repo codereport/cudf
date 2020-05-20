@@ -123,6 +123,8 @@ CUDF_TYPE_MAPPING(cudf::timestamp_us, type_id::TIMESTAMP_MICROSECONDS);
 CUDF_TYPE_MAPPING(cudf::timestamp_ns, type_id::TIMESTAMP_NANOSECONDS);
 CUDF_TYPE_MAPPING(dictionary32, type_id::DICTIONARY32);
 CUDF_TYPE_MAPPING(cudf::list_view, type_id::LIST);
+CUDF_TYPE_MAPPING(decimal32, type_id::DECIMAL32);
+// CUDF_TYPE_MAPPING(decimal64, type_id::DECIMAL64);
 
 template <typename T>
 struct type_to_scalar_type_impl {
@@ -336,6 +338,8 @@ CUDA_HOST_DEVICE_CALLABLE constexpr decltype(auto) type_dispatcher(cudf::data_ty
         std::forward<Ts>(args)...);
     case LIST:
       return f.template operator()<typename IdTypeMap<LIST>::type>(std::forward<Ts>(args)...);
+    case DECIMAL32:
+      return f.template operator()<typename IdTypeMap<DECIMAL32>::type>(std::forward<Ts>(args)...);
     default: {
 #ifndef __CUDA_ARCH__
       CUDF_FAIL("Unsupported type_id.");
