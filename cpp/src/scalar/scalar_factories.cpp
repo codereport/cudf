@@ -87,6 +87,13 @@ std::unique_ptr<cudf::scalar> default_scalar_functor::operator()<dictionary32>()
 }
 
 template <>
+std::unique_ptr<cudf::scalar> default_scalar_functor::operator()<numeric::decimal32>()
+{
+  CUDF_FAIL("decimal32 type not supported");
+  return nullptr;
+}
+
+template <>
 std::unique_ptr<cudf::scalar> default_scalar_functor::operator()<list_view>()
 {
   CUDF_FAIL("list_view type not supported");

@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include <cudf/fixed_point/fixed_point.hpp>
 #include <cudf/lists/list_view.cuh>
 #include <cudf/strings/string_view.cuh>
 #include <cudf/types.hpp>
@@ -221,7 +220,7 @@ constexpr inline bool is_timestamp(data_type type)
 template <typename T>
 constexpr inline bool is_fixed_point()
 {
-  return std::is_same<decimal32, T>::value;  // || std::is_same<decimal64, T>::value;
+  return std::is_same<numeric::decimal32, T>::value;  // || std::is_same<decimal64, T>::value;
 }
 
 struct is_fixed_point_impl {

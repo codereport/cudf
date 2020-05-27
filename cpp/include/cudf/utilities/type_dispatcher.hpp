@@ -23,6 +23,8 @@
 #include <cudf/wrappers/timestamps.hpp>
 #include <string>
 
+#include <cudf/fixed_point/fixed_point.hpp>
+
 /**
  * @file type_dispatcher.hpp
  * @brief Defines the mapping between `cudf::type_id` runtime type information
@@ -123,7 +125,7 @@ CUDF_TYPE_MAPPING(cudf::timestamp_us, type_id::TIMESTAMP_MICROSECONDS);
 CUDF_TYPE_MAPPING(cudf::timestamp_ns, type_id::TIMESTAMP_NANOSECONDS);
 CUDF_TYPE_MAPPING(dictionary32, type_id::DICTIONARY32);
 CUDF_TYPE_MAPPING(cudf::list_view, type_id::LIST);
-CUDF_TYPE_MAPPING(decimal32, type_id::DECIMAL32);
+CUDF_TYPE_MAPPING(numeric::decimal32, type_id::DECIMAL32);
 // CUDF_TYPE_MAPPING(decimal64, type_id::DECIMAL64);
 
 template <typename T>
@@ -162,6 +164,12 @@ struct type_to_scalar_type_impl<cudf::string_view> {
 
 template <>  // TODO: this is a temporary solution for make_pair_iterator
 struct type_to_scalar_type_impl<cudf::dictionary32> {
+  using ScalarType       = cudf::numeric_scalar<int32_t>;
+  using ScalarDeviceType = cudf::numeric_scalar_device_view<int32_t>;
+};
+
+template <>  // TODO: this is a temporary solution for make_pair_iterator
+struct type_to_scalar_type_impl<numeric::decimal32> {
   using ScalarType       = cudf::numeric_scalar<int32_t>;
   using ScalarDeviceType = cudf::numeric_scalar_device_view<int32_t>;
 };

@@ -720,6 +720,14 @@ __device__ inline dictionary32 const column_device_view::element<dictionary32>(
   return dictionary32{d_children[0].element<int32_t>(index)};
 }
 
+template <>
+__device__ inline numeric::decimal32 const column_device_view::element<numeric::decimal32>(
+  size_type element_index) const noexcept
+{
+  size_type index = element_index + offset();  // account for this view's _offset
+  return numeric::decimal32{1.2, numeric::scale_type{-1}};
+}
+
 namespace detail {
 /**
  * @brief value accessor of column without null bitmask

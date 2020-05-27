@@ -82,9 +82,9 @@ class table;
 class table_view;
 class mutable_table_view;
 
-namespace numeric {
-class fixed_point;
-}
+// namespace numeric {
+// class fixed_point;
+// }
 
 /**
  * @addtogroup utility_types
