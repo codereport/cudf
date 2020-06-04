@@ -21,6 +21,7 @@
 #include <limits>
 #include <numeric>
 #include <tests/utilities/base_fixture.hpp>
+#include <tests/utilities/column_wrapper.hpp>
 #include <tests/utilities/type_lists.hpp>
 #include <type_traits>
 #include <vector>
@@ -388,8 +389,6 @@ void integer_vector_test(ValueType const initial_value,
                          int32_t const scale,
                          Binop binop)
 {
-  using decimal32 = fixed_point<int32_t, Radix::BASE_10>;
-
   std::vector<decimal32> vec1(size);
   std::vector<ValueType> vec2(size);
 
@@ -427,8 +426,6 @@ void float_vector_test(ValueType const initial_value,
                        int32_t const scale,
                        Binop binop)
 {
-  using decimal32 = fixed_point<int32_t, Radix::BASE_10>;
-
   std::vector<decimal32> vec1(size);
   std::vector<ValueType> vec2(size);
 
@@ -459,8 +456,6 @@ struct cast_to_int32_fn {
 
 TEST_F(FixedPointTest, DecimalXXThrustOnDevice)
 {
-  using decimal32 = fixed_point<int32_t, Radix::BASE_10>;
-
   thrust::device_vector<decimal32> vec1(1000, decimal32{1, scale_type{-2}});
 
   auto const sum = thrust::reduce(
@@ -498,5 +493,61 @@ TEST_F(FixedPointTest, DecimalXXThrustOnDevice)
 
   EXPECT_EQ(vec2, vec3);
 }
+
+TEST_F(FixedPointTest, FixedPointUnaryOpSimple)
+{
+  decimal32 ZERO{0, scale_type{0}};
+  decimal32 NEG_ONE{1, scale_type{0}};
+  decimal32 NEG_TWO{2, scale_type{0}};
+  decimal32 NEG_THREE{3, scale_type{0}};
+  decimal32 NEG_FOUR{4, scale_type{0}};
+
+  std::vector<decimal32> host_input_vector{NEG_ONE, NEG_TWO, NEG_THREE, NEG_FOUR};
+  std::vector<decimal32> host_expect_vector = host_input_vector;
+
+  // TODO: PR coming that will make this work
+  // std::transform(std::cbegin(host_input_vector),
+  //                std::cend(host_input_vector),
+  //                std::begin(host_expect_vector),
+  //                [&](auto e) { return e < ZERO ? NEG_ONE * e : e; });
+
+  cudf::test::fixed_width_column_wrapper<decimal32> const input(std::cbegin(host_input_vector),
+                                                                std::cend(host_input_vector));
+  cudf::test::fixed_width_column_wrapper<decimal32> const expected(std::cbegin(host_expect_vector),
+                                                                   std::cend(host_expect_vector));
+
+  // auto const output = cudf::experimental::unary_operation(input,
+  // cudf::experimental::unary_op::ABS);
+
+  // cudf::test::expect_columns_equal(expected, output->view());
+}
+
+// TEST_F(FixedPointTest, FixedPointUnaryOp)
+// {
+//   using decimal32 = fixed_point<int32_t, Radix::BASE_10>;
+
+//   cudf::size_type const colSize = 1000;
+//   std::vector<decimal32> host_input_vector(colSize);
+//   std::vector<int32_t> host_expect_vector(colSize);
+
+//   std::iota(std::begin(host_input_vector),
+//             std::end(host_input_vector),
+//             decimal32{-1 * colSize, scale_type{0}});
+
+//   std::transform(std::cbegin(host_expect_vector),
+//                  std::cend(host_expect_vector),
+//                  std::begin(host_expect_vector),
+//                  [](auto e) { return std::abs(e); });
+
+//   cudf::test::fixed_width_column_wrapper<T> const input(std::cbegin(host_input_v),
+//                                                         std::cend(host_input_v));
+//   cudf::test::fixed_width_column_wrapper<T> const expected(std::cbegin(host_expect_vector),
+//                                                            std::cend(host_expect_vector));
+
+//   auto const output = cudf::experimental::unary_operation(input,
+//   cudf::experimental::unary_op::ABS);
+
+//   cudf::test::expect_columns_equal(expected, output->view());
+// }
 
 CUDF_TEST_PROGRAM_MAIN()

@@ -43,7 +43,10 @@
 - PR #5347 Fix APPLY_BOOLEAN_MASK_BENCH segfault
 - PR #5368 Fix loc indexing issue with `datetime` type index 
 - PR #5367 Fix API for `cudf::repeat` in `cudf::cross_join`
+- PR #5377 Handle array of cupy scalars in to_column
 - PR #5326 Fix `DataFrame.__init__` for list of scalar inputs and related dask issue
+- PR #5383 Fix cython `type_id` enum mismatch
+- PR #5382 Fix CategoricalDtype equality comparisons
 
 
 # cuDF 0.14.0 (Date TBD)

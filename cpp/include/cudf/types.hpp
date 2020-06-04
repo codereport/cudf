@@ -79,6 +79,10 @@ class table;
 class table_view;
 class mutable_table_view;
 
+// namespace numeric {
+// class fixed_point;
+// }
+
 /**
  * @addtogroup utility_types
  * @{
@@ -198,6 +202,8 @@ enum type_id {
   DICTIONARY32,            ///< Dictionary type using int32 indices
   STRING,                  ///< String elements
   LIST,                    ///< List elements
+  DECIMAL32,               ///< Fixed point type with int32_t >
+  // DECIMAL64,            ///< Fixed point type with int64_t >
   // `NUM_TYPE_IDS` must be last!
   NUM_TYPE_IDS  ///< Total number of type ids
 };
@@ -233,6 +239,8 @@ class data_type {
   type_id _id{EMPTY};
   // Store additional type specific metadata, timezone, decimal precision and
   // scale, etc.
+
+  // scale_type scale;
 };
 
 /**

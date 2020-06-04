@@ -73,6 +73,7 @@ build/
 cpp/build/
 cpp/include/cudf/ipc_generated/*.h
 cpp/thirdparty/googletest/
+cpp/debug
 
 ## Eclipse IDE
 .project
