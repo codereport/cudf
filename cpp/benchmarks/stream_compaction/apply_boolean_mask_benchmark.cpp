@@ -103,7 +103,7 @@ void BM_apply_boolean_mask(benchmark::State& state, cudf::size_type num_columns)
     columns.emplace_back(data.cbegin(), data.cend(), validity.cbegin());
   }
 
-  std::vector<bool> mask_data(num_columns);
+  std::vector<bool> mask_data(column_size);
   std::generate_n(
     mask_data.begin(), column_size, [&]() { return random_int(0, 100) < percent_true; });
   mask_wrapper mask(mask_data.begin(), mask_data.end());
@@ -117,7 +117,7 @@ void BM_apply_boolean_mask(benchmark::State& state, cudf::size_type num_columns)
 
   for (auto _ : state) {
     cuda_event_timer raii(state, true);
-    auto result = cudf::experimental::apply_boolean_mask(source_table, mask);
+    auto result = cudf::apply_boolean_mask(source_table, mask);
   }
 
   calculate_bandwidth<T>(state, num_columns);

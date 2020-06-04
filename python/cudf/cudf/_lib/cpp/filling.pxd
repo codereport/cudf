@@ -15,7 +15,7 @@ from cudf._lib.cpp.types cimport size_type
 from cudf._lib.cpp.types cimport size_type
 
 
-cdef extern from "cudf/filling.hpp" namespace "cudf::experimental" nogil:
+cdef extern from "cudf/filling.hpp" namespace "cudf" nogil:
     cdef unique_ptr[column] fill(
         const column_view & input,
         size_type begin,
@@ -38,5 +38,5 @@ cdef extern from "cudf/filling.hpp" namespace "cudf::experimental" nogil:
 
     cdef unique_ptr[table] repeat(
         const table_view & input,
-        const scalar & count
+        size_type count
     ) except +

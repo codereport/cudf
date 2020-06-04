@@ -89,8 +89,8 @@ namespace detail {
  * @param target_begin The starting index of the target range (inclusive)
  * @param target_end The index of the last element in the target range
  * (exclusive)
- * @param mr Memory resource to allocate the result target column.
- * @param stream CUDA stream to run this function
+ * @param mr Device memory resource used to allocate the returned column's device memory.
+ * @param stream CUDA stream used for device memory operations and kernel launches.
  * @return std::unique_ptr<column> The result target column
  */
 template <typename SourceValueIterator, typename SourceValidityIterator>
@@ -117,7 +117,7 @@ std::unique_ptr<column> copy_range(
 
     std::pair<rmm::device_buffer, size_type> valid_mask{};
     if (target.has_nulls()) {  // check validities for both source & target
-      valid_mask = cudf::experimental::detail::valid_if(
+      valid_mask = cudf::detail::valid_if(
         thrust::make_counting_iterator<size_type>(0),
         thrust::make_counting_iterator<size_type>(target.size()),
         [source_validity_begin, d_target, target_begin, target_end] __device__(size_type idx) {
@@ -128,7 +128,7 @@ std::unique_ptr<column> copy_range(
         stream,
         mr);
     } else {  // check validities for source only
-      valid_mask = cudf::experimental::detail::valid_if(
+      valid_mask = cudf::detail::valid_if(
         thrust::make_counting_iterator<size_type>(0),
         thrust::make_counting_iterator<size_type>(target.size()),
         [source_validity_begin, d_target, target_begin, target_end] __device__(size_type idx) {

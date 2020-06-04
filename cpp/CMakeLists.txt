@@ -15,7 +15,7 @@
 #=============================================================================
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(CUDA_DATAFRAME VERSION 0.14.0 LANGUAGES C CXX CUDA)
+project(CUDA_DATAFRAME VERSION 0.15.0 LANGUAGES C CXX CUDA)
 
 if(NOT CMAKE_CUDA_COMPILER)
   message(SEND_ERROR "CMake cannot locate a CUDA compiler")
@@ -296,14 +296,12 @@ if(BUILD_TESTS)
         message(STATUS "Google C++ Testing Framework (Google Test) found in ${GTEST_ROOT}")
         include_directories(${GTEST_INCLUDE_DIR})
         add_subdirectory(${CMAKE_SOURCE_DIR}/tests)
-        add_subdirectory(${CMAKE_SOURCE_DIR}/custrings/tests)
     else()
         message(AUTHOR_WARNING "Google C++ Testing Framework (Google Test) not found: automated tests are disabled.")
     endif(GTEST_FOUND)
 endif(BUILD_TESTS)
 
 message(STATUS "CUDF_TEST_LIST set to: ${CUDF_TEST_LIST}")
-message(STATUS "NVSTRINGS_TEST_LIST set to: ${NVSTRINGS_TEST_LIST}")
 
 ###################################################################################################
 # - add google benchmark --------------------------------------------------------------------------
@@ -366,126 +364,35 @@ endif(CONDA_LINK_DIRS)
 ###################################################################################################
 # - library targets -------------------------------------------------------------------------------
 
-add_library(libNVStrings
-            custrings/strings/NVStrings.cu
-            custrings/strings/NVStringsImpl.cu
-            custrings/strings/array.cu
-            custrings/strings/attrs.cu
-            custrings/strings/case.cu
-            custrings/strings/combine.cu
-            custrings/strings/convert.cu
-            custrings/strings/count.cu
-            custrings/strings/datetime.cu
-            custrings/strings/extract.cu
-            custrings/strings/extract_record.cu
-            custrings/strings/find.cu
-            custrings/strings/findall.cu
-            custrings/strings/findall_record.cu
-            custrings/strings/modify.cu
-            custrings/strings/pad.cu
-            custrings/strings/replace.cu
-            custrings/strings/replace_backref.cu
-            custrings/strings/replace_multi.cu
-            custrings/strings/split.cu
-            custrings/strings/strip.cu
-            custrings/strings/substr.cu
-            custrings/strings/urlencode.cu
-            custrings/util.cu
-            custrings/regex/regexec.cpp
-            custrings/regex/regcomp.cpp)
-
-add_library(libNVCategory
-            custrings/category/NVCategory.cu
-            custrings/category/numeric_category.cu
-            custrings/category/numeric_category_int.cu
-            custrings/category/numeric_category_long.cu
-            custrings/category/numeric_category_float.cu
-            custrings/category/numeric_category_double.cu)
-
-add_library(libNVText
-            custrings/text/NVText.cu
-            custrings/text/edit_distance.cu
-            custrings/text/ngram.cu
-            custrings/text/stemmer.cu
-            custrings/text/tokens.cu
-            custrings/util.cu)
-
 add_library(cudf
             src/comms/ipc/ipc.cpp
-            src/column/legacy/column.cpp
-            src/column/legacy/context.cpp
-            src/table/legacy/table.cpp
             src/merge/merge.cu
             src/partitioning/round_robin.cu
-            src/strings/nvcategory_util.cpp
-            src/join/legacy/joining.cu
             src/join/join.cu
+            src/join/cross_join.cu
             src/join/semi_join.cu
-            src/orderby/legacy/orderby.cu
-            src/predicates/legacy/is_sorted.cu
             src/sort/is_sorted.cu
-            src/sort/legacy/digitize.cu
-            src/groupby/hash/legacy/groupby.cu
-            src/groupby/sort/legacy/sort_helper.cu
-            src/groupby/sort/legacy/groupby.cu
-            src/groupby/legacy/groupby_without_aggregation.cu
-            src/groupby/common/legacy/aggregation_requests.cpp
-            src/rolling/legacy/rolling.cu
-            src/rolling/legacy/jit/code/kernel.cpp
-            src/rolling/legacy/jit/code/operation.cpp
-            src/rolling/legacy/jit/util/type.cpp
-            src/binaryop/legacy/binaryop.cpp
-            src/binaryop/legacy/compiled/binary_ops.cu
-            src/binaryop/legacy/jit/code/kernel.cpp
-            src/binaryop/legacy/jit/code/operation.cpp
-            src/binaryop/legacy/jit/code/traits.cpp
-            src/binaryop/legacy/jit/util/operator.cpp
-            src/binaryop/legacy/jit/util/type.cpp
             src/binaryop/binaryop.cpp
             src/binaryop/compiled/binary_ops.cu
             src/binaryop/jit/code/kernel.cpp
             src/binaryop/jit/code/operation.cpp
             src/binaryop/jit/code/traits.cpp
-            src/jit/legacy/type.cpp
             src/jit/type.cpp
             src/jit/parser.cpp
             src/jit/cache.cpp
             src/jit/launcher.cpp
-            src/transform/legacy/transform.cpp
             src/transform/jit/code/kernel.cpp
-            src/transform/legacy/nans_to_nulls.cu
             src/transform/transform.cpp
             src/transform/nans_to_nulls.cu
             src/transform/bools_to_mask.cu
-            src/bitmask/legacy/bitmask_ops.cu
             src/stream_compaction/apply_boolean_mask.cu
             src/stream_compaction/drop_nulls.cu
             src/stream_compaction/drop_duplicates.cu
-            src/stream_compaction/legacy/apply_boolean_mask.cu
-            src/stream_compaction/legacy/drop_nulls.cu
-            src/stream_compaction/legacy/drop_duplicates.cu
-            src/datetime/legacy/datetime_ops.cu
             src/datetime/datetime_ops.cu
-            src/datetime/datetime_util.cpp
             src/hash/hashing.cu
             src/partitioning/partitioning.cu
-            src/hash/legacy/hashing.cu
             src/quantiles/quantile.cu
             src/quantiles/quantiles.cu
-            src/quantiles/legacy/group_quantiles.cu
-            src/reductions/legacy/reductions.cu
-            src/reductions/legacy/min.cu
-            src/reductions/legacy/max.cu
-            src/reductions/legacy/any.cu
-            src/reductions/legacy/all.cu
-            src/reductions/legacy/sum.cu
-            src/reductions/legacy/product.cu
-            src/reductions/legacy/sum_of_squares.cu
-            src/reductions/legacy/mean.cu
-            src/reductions/legacy/var.cu
-            src/reductions/legacy/std.cu
-            src/reductions/legacy/group_std.cu
-            src/reductions/legacy/scan.cu
             src/reductions/reductions.cpp
             src/reductions/min.cu
             src/reductions/max.cu
@@ -498,42 +405,24 @@ add_library(cudf
             src/reductions/var.cu
             src/reductions/std.cu
             src/reductions/scan.cu
-            src/replace/legacy/replace.cu
             src/replace/replace.cu
             src/replace/clamp.cu
-            src/reshape/legacy/stack.cu
             src/reshape/interleave_columns.cu
             src/transpose/transpose.cu
-            src/transpose/legacy/transpose.cu
-            src/merge/legacy/merge.cu
             src/unary/cast_ops.cu
             src/unary/null_ops.cu
             src/unary/nan_ops.cu
-            src/unary/legacy/math_ops.cu
-            src/unary/legacy/cast_ops.cu
-            src/unary/legacy/null_ops.cu
             src/unary/math_ops.cu
             src/unary/unary_ops.cuh
-            src/io/legacy/cuio_common.cpp
-            src/io/legacy/io_functions.cpp
-            src/io/convert/csr/legacy/cudf_to_csr.cu
             src/dlpack/dlpack.cpp
-            src/io/convert/dlpack/legacy/cudf_dlpack.cpp
-            src/io/avro/legacy/avro_reader_impl.cu
             src/io/avro/avro_gpu.cu
             src/io/avro/avro.cpp
             src/io/avro/reader_impl.cu
-            src/io/csv/legacy/csv_reader_impl.cu
-            src/io/csv/legacy/csv_writer.cu
-            src/io/csv/legacy/csv_gpu.cu
             src/io/csv/csv_gpu.cu
             src/io/csv/reader_impl.cu
             src/io/csv/writer_impl.cu
-            src/io/json/legacy/json_reader_impl.cu
             src/io/json/reader_impl.cu
             src/io/json/json_gpu.cu
-            src/io/orc/legacy/orc_reader_impl.cu
-            src/io/orc/legacy/orc_writer_impl.cu
             src/io/orc/orc.cpp
             src/io/orc/timezone.cpp
             src/io/orc/stripe_data.cu
@@ -547,7 +436,6 @@ add_library(cudf
             src/io/parquet/page_hdr.cu
             src/io/parquet/page_enc.cu
             src/io/parquet/page_dict.cu
-            src/io/parquet/legacy/parquet_reader_impl.cu
             src/io/parquet/parquet.cpp
             src/io/parquet/reader_impl.cu
             src/io/parquet/writer_impl.cu
@@ -564,13 +452,8 @@ add_library(cudf
             src/io/utilities/parsing_utils.cu
             src/io/utilities/type_conversion.cu
             src/io/utilities/data_sink.cpp
-            src/io/utilities/legacy/parsing_utils.cu
-            src/utilities/legacy/cuda_utils.cu
             src/copying/gather.cu
-            src/utilities/legacy/column_utils.cpp
-            src/utilities/legacy/error_utils.cpp
             src/utilities/nvtx/nvtx_utils.cpp
-            src/utilities/nvtx/legacy/nvtx_utils.cpp
             src/copying/copy.cpp
             src/copying/scatter.cu
             src/copying/shift.cu
@@ -579,23 +462,12 @@ add_library(cudf
             src/copying/slice.cpp
             src/copying/split.cpp
             src/copying/contiguous_split.cu
-            src/copying/legacy/copy.cpp
-            src/copying/legacy/gather.cu
-            src/copying/legacy/scatter.cu
-            src/copying/legacy/slice.cu
-            src/copying/legacy/split.cu
-            src/bitmask/legacy/legacy_bitmask.cpp
-            src/copying/legacy/copy_range.cu
             src/copying/copy_range.cu
             src/copying/get_element.cu
-            src/filling/legacy/fill.cu
             src/filling/fill.cu
-            src/filling/legacy/repeat.cu
             src/filling/repeat.cu
-            src/filling/legacy/tile.cu
             src/filling/sequence.cu
             src/reshape/tile.cu
-            src/search/legacy/search.cu
             src/search/search.cu
             src/column/column.cu
             src/column/column_view.cpp
@@ -611,7 +483,6 @@ add_library(cudf
             src/sort/sort.cu
             src/sort/stable_sort.cu
             src/sort/rank.cu
-            src/column/legacy/interop.cpp
             src/strings/attributes.cu
             src/strings/case.cu
             src/strings/wrap.cu
@@ -687,18 +558,8 @@ add_library(cudf
             src/aggregation/result_cache.cpp
 )
 
-# Rename installation to proper names for later finding
-set_target_properties(libNVStrings PROPERTIES OUTPUT_NAME "NVStrings")
-set_target_properties(libNVCategory PROPERTIES OUTPUT_NAME "NVCategory")
-set_target_properties(libNVText PROPERTIES OUTPUT_NAME "NVText")
-
 # Override RPATH for cudf
 set_target_properties(cudf PROPERTIES BUILD_RPATH "\$ORIGIN")
-
-# Override RPATH for nvstrings
-set_target_properties(libNVStrings PROPERTIES BUILD_RPATH "\$ORIGIN")
-set_target_properties(libNVCategory PROPERTIES BUILD_RPATH "\$ORIGIN")
-set_target_properties(libNVText PROPERTIES BUILD_RPATH "\$ORIGIN")
 
 ###################################################################################################
 # - jitify ----------------------------------------------------------------------------------------
@@ -829,36 +690,11 @@ endif(HT_DEFAULT_ALLOCATOR)
 # Get all the symbols from the Arrow CUDA Library for Cython
 set(ARROW_CUDA_LIB_LINK -Wl,--whole-archive ${ARROW_CUDA_LIB} -Wl,--no-whole-archive)
 
-# link targets for NVStrings
-target_link_libraries(libNVStrings rmm ${CUDART_LIBRARY} cuda)
-target_link_libraries(libNVCategory libNVStrings rmm ${CUDART_LIBRARY} cuda)
-target_link_libraries(libNVText libNVStrings rmm ${CUDART_LIBRARY} cuda)
-
 # link targets for cuDF
-target_link_libraries(cudf NVCategory NVStrings rmm ${ARROW_CUDA_LIB_LINK} ${ARROW_LIB} nvrtc ${CUDART_LIBRARY} cuda ${ZLIB_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(cudf rmm ${ARROW_CUDA_LIB_LINK} ${ARROW_LIB} nvrtc ${CUDART_LIBRARY} cuda ${ZLIB_LIBRARIES} ${Boost_LIBRARIES})
 
 ###################################################################################################
 # - install targets -------------------------------------------------------------------------------
-
-# install targets for NVStrings
-install(TARGETS libNVStrings
-        DESTINATION lib
-        COMPONENT nvstrings)
-
-install(TARGETS libNVCategory
-        DESTINATION lib
-        COMPONENT nvstrings)
-
-install(TARGETS libNVText
-        DESTINATION lib
-        COMPONENT nvstrings)
-
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/nvstrings
-        DESTINATION include
-        COMPONENT nvstrings)
-
-add_custom_target(nvstrings
-                  DEPENDS libNVStrings libNVCategory libNVText)
 
 # install targets for cuDF
 install(TARGETS cudf
@@ -884,37 +720,18 @@ if(BUILD_TESTS)
     add_dependencies(install_cudf cudftestutil)
 endif(BUILD_TESTS)
 
-add_custom_target(install_nvstrings
-                  COMMAND "${CMAKE_COMMAND}" -DCOMPONENT=nvstrings -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
-                  DEPENDS nvstrings)
-
 add_custom_target(build_tests_cudf
                   DEPENDS ${CUDF_TEST_LIST})
 
-add_custom_target(build_tests_nvstrings
-                  DEPENDS ${NVSTRINGS_TEST_LIST})
-
 add_custom_target(test_cudf
-                  COMMAND ctest -E "NVSTRINGS"
+                  COMMAND ctest
                   DEPENDS build_tests_cudf)
-
-add_custom_target(test_nvstrings
-                  COMMAND ctest -R "NVSTRINGS"
-                  DEPENDS build_tests_nvstrings)
 
 add_custom_target(build_benchmarks_cudf
                   DEPENDS ${BENCHMARK_LIST})
 
 ###################################################################################################
 # - make documentation ----------------------------------------------------------------------------
-
-# doc targets for nvstrings
-add_custom_command(OUTPUT NVSTRINGS_DOXYGEN
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/custrings/doxygen
-                   COMMAND doxygen Doxyfile
-                   VERBATIM
-)
-add_custom_target(docs_nvstrings DEPENDS NVSTRINGS_DOXYGEN)
 
 # doc targets for cuDF
 add_custom_command(OUTPUT CUDF_DOXYGEN

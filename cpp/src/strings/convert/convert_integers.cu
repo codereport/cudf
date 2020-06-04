@@ -17,6 +17,7 @@
 #include <cudf/column/column_device_view.cuh>
 #include <cudf/column/column_factories.hpp>
 #include <cudf/detail/nvtx/ranges.hpp>
+#include <cudf/detail/utilities/integer_utils.hpp>
 #include <cudf/strings/convert/convert_integers.hpp>
 #include <cudf/strings/detail/converters.hpp>
 #include <cudf/strings/detail/utilities.hpp>
@@ -135,8 +136,7 @@ std::unique_ptr<column> to_integers(strings_column_view const& strings,
                                      mr);
   auto results_view = results->mutable_view();
   // fill output column with integers
-  experimental::type_dispatcher(
-    output_type, dispatch_to_integers_fn{}, d_strings, results_view, stream);
+  type_dispatcher(output_type, dispatch_to_integers_fn{}, d_strings, results_view, stream);
   results->set_null_count(strings.null_count());
   return results;
 }
@@ -167,12 +167,12 @@ struct integer_to_string_size_fn {
     if (d_column.is_null(idx)) return 0;
     IntegerType value = d_column.element<IntegerType>(idx);
     if (value == 0) return 1;
-    bool is_negative = value < 0;
+    bool is_negative = std::is_signed<IntegerType>::value ? (value < 0) : false;
     // abs(std::numeric_limits<IntegerType>::min()) is negative;
     // for all integer types, the max() and min() values have the same number of digits
     value = (value == std::numeric_limits<IntegerType>::min())
               ? std::numeric_limits<IntegerType>::max()
-              : abs(value);
+              : cudf::util::absolute_value(value);
     // largest 8-byte unsigned value is 18446744073709551615 (20 digits)
     size_type digits =
       (value < 10
@@ -245,15 +245,17 @@ struct integer_to_string_fn {
       *d_buffer = '0';
       return;
     }
-    bool is_negative           = value < 0;
+    bool is_negative = std::is_signed<IntegerType>::value ? (value < 0) : false;
+    //
     constexpr IntegerType base = 10;
     constexpr int MAX_DIGITS   = 20;  // largest 64-bit integer is 20 digits
     char digits[MAX_DIGITS];          // place-holder for digit chars
     int digits_idx = 0;
     while (value != 0) {
       assert(digits_idx < MAX_DIGITS);
-      digits[digits_idx++] = '0' + abs(value % base);
-      value                = value / base;
+      digits[digits_idx++] = '0' + cudf::util::absolute_value(value % base);
+      // next digit
+      value = value / base;
     }
     char* ptr = d_buffer;
     if (is_negative) *ptr++ = '-';
@@ -333,8 +335,7 @@ std::unique_ptr<column> from_integers(column_view const& integers,
   size_type strings_count = integers.size();
   if (strings_count == 0) return detail::make_empty_strings_column(mr, stream);
 
-  return experimental::type_dispatcher(
-    integers.type(), dispatch_from_integers_fn{}, integers, mr, stream);
+  return type_dispatcher(integers.type(), dispatch_from_integers_fn{}, integers, mr, stream);
 }
 
 }  // namespace detail

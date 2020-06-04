@@ -223,7 +223,10 @@ template <typename T>
 class DLPackNumericTests : public BaseFixture {
 };
 
-TYPED_TEST_CASE(DLPackNumericTests, NumericTypes);
+// The list of supported types comes from DLDataType_to_data_type() in cpp/src/dlpack/dlpack.cpp
+// TODO: Replace with `NumericTypes` when unsigned support is added. Issue #5353
+using SupportedTypes = cudf::test::Types<int8_t, int16_t, int32_t, int64_t, bool, float, double>;
+TYPED_TEST_CASE(DLPackNumericTests, SupportedTypes);
 
 TYPED_TEST(DLPackNumericTests, ToDlpack1D)
 {
@@ -247,7 +250,7 @@ TYPED_TEST(DLPackNumericTests, ToDlpack1D)
   EXPECT_NE(nullptr, tensor.shape);
 
   // Verify that data matches input column
-  constexpr cudf::data_type type{cudf::experimental::type_to_id<TypeParam>()};
+  constexpr cudf::data_type type{cudf::type_to_id<TypeParam>()};
   cudf::column_view const result_view(type, tensor.shape[0], tensor.data, col_view.null_mask());
   expect_columns_equal(col_view, result_view);
 }
@@ -285,7 +288,7 @@ TYPED_TEST(DLPackNumericTests, ToDlpack2D)
   // Verify that data matches input columns
   cudf::size_type offset{0};
   for (auto const& col : input) {
-    constexpr cudf::data_type type{cudf::experimental::type_to_id<TypeParam>()};
+    constexpr cudf::data_type type{cudf::type_to_id<TypeParam>()};
     cudf::column_view const result_view(type, tensor.shape[0], tensor.data, nullptr, 0, offset);
     expect_columns_equal(col, result_view);
     offset += tensor.strides[1];

@@ -23,6 +23,16 @@ def check_serialization(df):
     sortvaldf = df.sort_values("vals")
     assert isinstance(sortvaldf.index, GenericIndex)
     assert_frame_picklable(sortvaldf)
+    # out-of-band
+    if pickle.HIGHEST_PROTOCOL >= 5:
+        buffers = []
+        serialbytes = pickle.dumps(
+            df, protocol=5, buffer_callback=buffers.append
+        )
+        for b in buffers:
+            assert isinstance(b, pickle.PickleBuffer)
+        loaded = pickle.loads(serialbytes, buffers=buffers)
+        pd.util.testing.assert_frame_equal(loaded.to_pandas(), df.to_pandas())
 
 
 def assert_frame_picklable(df):
@@ -63,8 +73,9 @@ def test_sizeof_dataframe():
     assert sizeof >= nbytes
 
     serialized_nbytes = len(pickle.dumps(df, protocol=pickle.HIGHEST_PROTOCOL))
-    # Serialized size should be close to what __sizeof__ is giving
-    np.testing.assert_approx_equal(sizeof, serialized_nbytes, significant=2)
+
+    # assert at least sizeof bytes were serialized
+    assert serialized_nbytes >= sizeof
 
 
 def test_pickle_index():

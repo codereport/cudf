@@ -19,12 +19,11 @@
 #include <cudf/transform.hpp>
 
 namespace cudf {
-namespace experimental {
 namespace detail {
 /**
- * @copydoc cudf::experimental::transform
+ * @copydoc cudf::transform
  *
- * @param stream        CUDA stream on which to execute kernels
+ * @param stream CUDA stream used for device memory operations and kernel launches.
  **/
 std::unique_ptr<column> transform(
   column_view const& input,
@@ -35,9 +34,9 @@ std::unique_ptr<column> transform(
   cudaStream_t stream                 = 0);
 
 /**
- * @copydoc cudf::experimental::nans_to_nulls
+ * @copydoc cudf::nans_to_nulls
  *
- * @param stream        CUDA stream on which to execute kernels
+ * @param stream CUDA stream used for device memory operations and kernel launches.
  **/
 std::pair<std::unique_ptr<rmm::device_buffer>, size_type> nans_to_nulls(
   column_view const& input,
@@ -45,14 +44,13 @@ std::pair<std::unique_ptr<rmm::device_buffer>, size_type> nans_to_nulls(
   cudaStream_t stream                 = 0);
 
 /**
- * @copydoc cudf::experimental::bools_to_mask
+ * @copydoc cudf::bools_to_mask
  *
- * @param stream        CUDA stream on which to execute kernels
+ * @param stream CUDA stream used for device memory operations and kernel launches.
  **/
 std::pair<std::unique_ptr<rmm::device_buffer>, cudf::size_type> bools_to_mask(
   column_view const& input,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_default_resource(),
   cudaStream_t stream                 = 0);
 }  // namespace detail
-}  // namespace experimental
 }  // namespace cudf

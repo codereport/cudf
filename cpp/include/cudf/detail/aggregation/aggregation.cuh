@@ -24,7 +24,6 @@
 #include <cudf/table/table_device_view.cuh>
 
 namespace cudf {
-namespace experimental {
 namespace detail {
 /**
  * @brief Maps an `aggregation::Kind` value to it's corresponding binary
@@ -384,9 +383,9 @@ struct identity_initializer {
   T get_identity()
   {
     if (k == aggregation::ARGMAX)
-      return ARGMAX_SENTINEL;
+      return static_cast<T>(ARGMAX_SENTINEL);
     else if (k == aggregation::ARGMIN)
-      return ARGMIN_SENTINEL;
+      return static_cast<T>(ARGMIN_SENTINEL);
     else
       // In C++17, we can use compile time if and not make this function SFINAE
       return identity_from_operator<T, k>();
@@ -428,5 +427,4 @@ void initialize_with_identity(mutable_table_view& table,
                               cudaStream_t stream = 0);
 
 }  // namespace detail
-}  // namespace experimental
 }  // namespace cudf

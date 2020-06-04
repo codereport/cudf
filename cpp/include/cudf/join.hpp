@@ -22,7 +22,6 @@
 #include <vector>
 
 namespace cudf {
-namespace experimental {
 /**
  * @addtogroup column_join
  * @{
@@ -77,13 +76,13 @@ namespace experimental {
  * from `left_on` columns. Else, for every column in `left_on` and `right_on`,
  * an output column will be produced.  For each of these pairs (L, R), L
  * should exist in `left_on` and R should exist in `right_on`.
- * @param mr Memory resource used to allocate the returned table and columns
+ * @param mr Device memory resource used to allocate the returned table and columns' device memory
  *
  * @returns Result of joining `left` and `right` tables on the columns
  * specified by `left_on` and `right_on`. The resulting table will be joined columns of
  * `left(including common columns)+right(excluding common columns)`.
  */
-std::unique_ptr<cudf::experimental::table> inner_join(
+std::unique_ptr<cudf::table> inner_join(
   cudf::table_view const& left,
   cudf::table_view const& right,
   std::vector<cudf::size_type> const& left_on,
@@ -142,13 +141,13 @@ std::unique_ptr<cudf::experimental::table> inner_join(
  * from `left_on` columns. Else, for every column in `left_on` and `right_on`,
  * an output column will be produced.  For each of these pairs (L, R), L
  * should exist in `left_on` and R should exist in `right_on`.
- * @param mr Memory resource used to allocate the returned table and columns
+ * @param mr Device memory resource used to allocate the returned table and columns' device memory
  *
  * @returns Result of joining `left` and `right` tables on the columns
  * specified by `left_on` and `right_on`. The resulting table will be joined columns of
  * `left(including common columns)+right(excluding common columns)`.
  */
-std::unique_ptr<cudf::experimental::table> left_join(
+std::unique_ptr<cudf::table> left_join(
   cudf::table_view const& left,
   cudf::table_view const& right,
   std::vector<cudf::size_type> const& left_on,
@@ -207,13 +206,13 @@ std::unique_ptr<cudf::experimental::table> left_join(
  * from `left_on` columns. Else, for every column in `left_on` and `right_on`,
  * an output column will be produced.  For each of these pairs (L, R), L
  * should exist in `left_on` and R should exist in `right_on`.
- * @param mr Memory resource used to allocate the returned table and columns
+ * @param mr Device memory resource used to allocate the returned table and columns' device memory
  *
  * @returns Result of joining `left` and `right` tables on the columns
  * specified by `left_on` and `right_on`. The resulting table will be joined columns of
  * `left(including common columns)+right(excluding common columns)`.
  */
-std::unique_ptr<cudf::experimental::table> full_join(
+std::unique_ptr<cudf::table> full_join(
   cudf::table_view const& left,
   cudf::table_view const& right,
   std::vector<cudf::size_type> const& left_on,
@@ -259,13 +258,14 @@ std::unique_ptr<cudf::experimental::table> full_join(
  *                             indicated by `left_on[i]`.
  * @param[in] return_columns   A vector of column indices from `left` to
  *                             include in the returned table.
- * @param[in] mr               Device memory resource to use for device memory allocation
+ * @param[in] mr               Device memory resource used to allocate the returned table's device
+ *                             memory
  *
  * @returns                    Result of joining `left` and `right` tables on the columns
  *                             specified by `left_on` and `right_on`. The resulting table
  *                             will contain `return_columns` from `left` that match in right.
  */
-std::unique_ptr<cudf::experimental::table> left_semi_join(
+std::unique_ptr<cudf::table> left_semi_join(
   cudf::table_view const& left,
   cudf::table_view const& right,
   std::vector<cudf::size_type> const& left_on,
@@ -312,13 +312,14 @@ std::unique_ptr<cudf::experimental::table> left_semi_join(
  *                             indicated by `left_on[i]`.
  * @param[in] return_columns   A vector of column indices from `left` to
  *                             include in the returned table.
- * @param[in] mr               Device memory resource to use for device memory allocation
+ * @param[in] mr               Device memory resource used to allocate the returned table's device
+ *                             memory
  *
  * @returns                    Result of joining `left` and `right` tables on the columns
  *                             specified by `left_on` and `right_on`. The resulting table
  *                             will contain `return_columns` from `left` that match in right.
  */
-std::unique_ptr<cudf::experimental::table> left_anti_join(
+std::unique_ptr<cudf::table> left_anti_join(
   cudf::table_view const& left,
   cudf::table_view const& right,
   std::vector<cudf::size_type> const& left_on,
@@ -326,6 +327,32 @@ std::unique_ptr<cudf::experimental::table> left_anti_join(
   std::vector<cudf::size_type> const& return_columns,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_default_resource());
 
+/**
+ * @brief Performs a cross join on two tables (`left`, `right`)
+ *
+ * The cross join returns the cartesian product of rows from each table.
+ *
+ * @note Warning: This function can easily cause out-of-memory errors. The size of the output is
+ * equal to `left.num_rows() * right.num_rows()`. Use with caution.
+ *
+ * @code{.pseudo}
+ *          Left a: {0, 1, 2}
+ *          Right b: {3, 4, 5}
+ * Result: { a: {0, 0, 0, 1, 1, 1, 2, 2, 2}, b: {3, 4, 5, 3, 4, 5, 3, 4, 5} }
+ * @endcode
+
+ * @throw cudf::logic_error if number of columns in either `left` or `right` table is 0
+ *
+ * @param left  The left table
+ * @param right The right table
+ * @param mr    Device memory resource used to allocate the returned table's device memory
+ *
+ * @returns     Result of cross joining `left` and `right` tables
+ */
+std::unique_ptr<cudf::table> cross_join(
+  cudf::table_view const& left,
+  cudf::table_view const& right,
+  rmm::mr::device_memory_resource* mr = rmm::mr::get_default_resource());
+
 /** @} */  // end of group
-}  // namespace experimental
 }  // namespace cudf

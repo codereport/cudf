@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-#include <cudf/cudf.h>
 #include <cudf/column/column_factories.hpp>
 #include <cudf/sorting.hpp>
 #include <cudf/table/table_view.hpp>
@@ -39,29 +38,42 @@ namespace testdata {
 template <typename T>
 auto ascending()
 {
-  return fixed_width_column_wrapper<T>({std::numeric_limits<T>::lowest(),
-                                        T(-100),
-                                        T(-10),
-                                        T(-1),
-                                        T(0),
-                                        T(1),
-                                        T(10),
-                                        T(100),
-                                        std::numeric_limits<T>::max()});
+  return std::is_signed<T>::value ? fixed_width_column_wrapper<T>({std::numeric_limits<T>::lowest(),
+                                                                   T(-100),
+                                                                   T(-10),
+                                                                   T(-1),
+                                                                   T(0),
+                                                                   T(1),
+                                                                   T(10),
+                                                                   T(100),
+                                                                   std::numeric_limits<T>::max()})
+                                  : fixed_width_column_wrapper<T>({std::numeric_limits<T>::lowest(),
+                                                                   T(0),
+                                                                   T(1),
+                                                                   T(10),
+                                                                   T(100),
+                                                                   std::numeric_limits<T>::max()});
 }
 
 template <typename T>
 auto descending()
 {
-  return fixed_width_column_wrapper<T>({std::numeric_limits<T>::max(),
-                                        T(100),
-                                        T(10),
-                                        T(1),
-                                        T(0),
-                                        T(-1),
-                                        T(-10),
-                                        T(-100),
-                                        std::numeric_limits<T>::lowest()});
+  return std::is_signed<T>::value
+           ? fixed_width_column_wrapper<T>({std::numeric_limits<T>::max(),
+                                            T(100),
+                                            T(10),
+                                            T(1),
+                                            T(0),
+                                            T(-1),
+                                            T(-10),
+                                            T(-100),
+                                            std::numeric_limits<T>::lowest()})
+           : fixed_width_column_wrapper<T>({std::numeric_limits<T>::max(),
+                                            T(100),
+                                            T(10),
+                                            T(1),
+                                            T(0),
+                                            std::numeric_limits<T>::lowest()});
 }
 
 template <typename T>
@@ -216,7 +228,7 @@ TYPED_TEST(IsSortedTest, NoColumns)
   std::vector<cudf::order> order{};
   std::vector<cudf::null_order> null_precedence{};
 
-  auto actual = cudf::experimental::is_sorted(in, order, null_precedence);
+  auto actual = cudf::is_sorted(in, order, null_precedence);
 
   EXPECT_EQ(true, actual);
 }
@@ -236,7 +248,7 @@ TYPED_TEST(IsSortedTest, NoRows)
     std::vector<cudf::order> order{cudf::order::ASCENDING, cudf::order::DESCENDING};
     std::vector<cudf::null_order> null_precedence{};
 
-    auto actual = cudf::experimental::is_sorted(in, order, null_precedence);
+    auto actual = cudf::is_sorted(in, order, null_precedence);
 
     EXPECT_EQ(true, actual);
   }
@@ -251,7 +263,7 @@ TYPED_TEST(IsSortedTest, Ascending)
   std::vector<cudf::order> order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
-  auto actual = cudf::experimental::is_sorted(in, order, null_precedence);
+  auto actual = cudf::is_sorted(in, order, null_precedence);
 
   EXPECT_EQ(true, actual);
 }
@@ -265,7 +277,7 @@ TYPED_TEST(IsSortedTest, AscendingFalse)
   std::vector<cudf::order> order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
-  auto actual = cudf::experimental::is_sorted(in, order, {});
+  auto actual = cudf::is_sorted(in, order, {});
 
   EXPECT_EQ(false, actual);
 }
@@ -280,7 +292,7 @@ TYPED_TEST(IsSortedTest, Descending)
   std::vector<cudf::order> order{cudf::order::DESCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
-  auto actual = cudf::experimental::is_sorted(in, order, null_precedence);
+  auto actual = cudf::is_sorted(in, order, null_precedence);
 
   EXPECT_EQ(true, actual);
 }
@@ -295,7 +307,7 @@ TYPED_TEST(IsSortedTest, DescendingFalse)
   std::vector<cudf::order> order{cudf::order::DESCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
-  auto actual = cudf::experimental::is_sorted(in, order, null_precedence);
+  auto actual = cudf::is_sorted(in, order, null_precedence);
 
   EXPECT_EQ(false, actual);
 }
@@ -310,7 +322,7 @@ TYPED_TEST(IsSortedTest, NullsAfter)
   std::vector<cudf::order> order{};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::AFTER};
 
-  auto actual = cudf::experimental::is_sorted(in, order, null_precedence);
+  auto actual = cudf::is_sorted(in, order, null_precedence);
 
   EXPECT_EQ(true, actual);
 }
@@ -325,7 +337,7 @@ TYPED_TEST(IsSortedTest, NullsAfterFalse)
   std::vector<cudf::order> order{};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::AFTER};
 
-  auto actual = cudf::experimental::is_sorted(in, order, null_precedence);
+  auto actual = cudf::is_sorted(in, order, null_precedence);
 
   EXPECT_EQ(false, actual);
 }
@@ -340,7 +352,7 @@ TYPED_TEST(IsSortedTest, NullsBefore)
   std::vector<cudf::order> order{};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::BEFORE};
 
-  auto actual = cudf::experimental::is_sorted(in, order, null_precedence);
+  auto actual = cudf::is_sorted(in, order, null_precedence);
 
   EXPECT_EQ(true, actual);
 }
@@ -355,7 +367,7 @@ TYPED_TEST(IsSortedTest, NullsBeforeFalse)
   std::vector<cudf::order> order{};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::BEFORE};
 
-  auto actual = cudf::experimental::is_sorted(in, order, null_precedence);
+  auto actual = cudf::is_sorted(in, order, null_precedence);
 
   EXPECT_EQ(false, actual);
 }
@@ -371,7 +383,7 @@ TYPED_TEST(IsSortedTest, OrderArgsTooFew)
   std::vector<cudf::order> order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
-  EXPECT_THROW(cudf::experimental::is_sorted(in, order, null_precedence), cudf::logic_error);
+  EXPECT_THROW(cudf::is_sorted(in, order, null_precedence), cudf::logic_error);
 }
 
 TYPED_TEST(IsSortedTest, OrderArgsTooMany)
@@ -384,7 +396,7 @@ TYPED_TEST(IsSortedTest, OrderArgsTooMany)
   std::vector<cudf::order> order{cudf::order::ASCENDING, cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
-  EXPECT_THROW(cudf::experimental::is_sorted(in, order, null_precedence), cudf::logic_error);
+  EXPECT_THROW(cudf::is_sorted(in, order, null_precedence), cudf::logic_error);
 }
 
 TYPED_TEST(IsSortedTest, NullOrderArgsTooFew)
@@ -398,7 +410,7 @@ TYPED_TEST(IsSortedTest, NullOrderArgsTooFew)
   std::vector<cudf::order> order{};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::BEFORE};
 
-  EXPECT_THROW(cudf::experimental::is_sorted(in, order, null_precedence), cudf::logic_error);
+  EXPECT_THROW(cudf::is_sorted(in, order, null_precedence), cudf::logic_error);
 }
 
 TYPED_TEST(IsSortedTest, NullOrderArgsTooMany)
@@ -411,7 +423,7 @@ TYPED_TEST(IsSortedTest, NullOrderArgsTooMany)
   std::vector<cudf::order> order{};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::BEFORE, cudf::null_order::BEFORE};
 
-  EXPECT_THROW(cudf::experimental::is_sorted(in, order, null_precedence), cudf::logic_error);
+  EXPECT_THROW(cudf::is_sorted(in, order, null_precedence), cudf::logic_error);
 }
 
 template <typename T>

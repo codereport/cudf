@@ -5,17 +5,19 @@ import pickle
 import numpy as np
 
 import rmm
-from rmm import DeviceBuffer, _DevicePointer
+from rmm import DeviceBuffer
+
+from cudf.core.abc import Serializable
 
 
-class Buffer:
+class Buffer(Serializable):
     def __init__(self, data=None, size=None, owner=None):
         """
         A Buffer represents a device memory allocation.
 
         Parameters
         ----------
-        data : Buffer, rmm._DevicePointer, array_like, int
+        data : Buffer, array_like, int
             An array-like object or integer representing a
             device or host pointer to pre-allocated memory.
         size : int, optional
@@ -29,11 +31,7 @@ class Buffer:
         if isinstance(data, Buffer):
             self.ptr = data.ptr
             self.size = data.size
-            self._owner = owner or data
-        elif isinstance(data, _DevicePointer):
-            self.ptr = data.ptr
-            self.size = size
-            self._owner = owner or data
+            self._owner = owner or data._owner
         elif hasattr(data, "__array_interface__") or hasattr(
             data, "__cuda_array_interface__"
         ):
@@ -58,12 +56,6 @@ class Buffer:
                 raise TypeError("data must be Buffer, array-like or integer")
             self._init_from_array_like(np.asarray(data), owner)
 
-    def __reduce_ex__(self, protocol):
-        data = self.to_host_array()
-        if protocol >= 5:
-            data = pickle.PickleBuffer(data)
-        return self.__class__, (data,)
-
     def __len__(self):
         return self.size
 
@@ -77,7 +69,7 @@ class Buffer:
             "data": (self.ptr, False),
             "shape": (self.size,),
             "strides": (1,),
-            "typestr": "|i1",
+            "typestr": "|u1",
             "version": 0,
         }
         return intf

@@ -22,7 +22,6 @@
 #include <cudf/utilities/traits.hpp>
 
 namespace cudf {
-namespace experimental {
 namespace detail {
 /**
  * @brief Constructs a zero-copy `column_view`/`mutable_column_view` of the
@@ -66,18 +65,18 @@ ColumnView slice(ColumnView const& input, cudf::size_type begin, cudf::size_type
 }
 
 /**
- * @copydoc cudf::experimental::slice(column_view const&,std::vector<size_type> const&)
+ * @copydoc cudf::slice(column_view const&,std::vector<size_type> const&)
  *
- * @param stream Optional CUDA stream on which to execute kernels
+ * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::vector<column_view> slice(column_view const& input,
                                std::vector<size_type> const& indices,
                                cudaStream_t stream = 0);
 
 /**
- * @copydoc cudf::experimental::contiguous_split
+ * @copydoc cudf::contiguous_split
  *
- * @param stream Optional CUDA stream on which to execute kernels
+ * @param stream CUDA stream used for device memory operations and kernel launches.
  **/
 std::vector<contiguous_split_result> contiguous_split(
   cudf::table_view const& input,
@@ -86,10 +85,10 @@ std::vector<contiguous_split_result> contiguous_split(
   cudaStream_t stream                 = 0);
 
 /**
- * @copydoc cudf::experimental::allocate_like(column_view const&, size_type, mask_allocation_policy,
+ * @copydoc cudf::allocate_like(column_view const&, size_type, mask_allocation_policy,
  * rmm::mr::device_memory_resource*)
  *
- * @param[in] stream Optional CUDA stream on which to execute kernels
+ * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> allocate_like(
   column_view const& input,
@@ -99,10 +98,10 @@ std::unique_ptr<column> allocate_like(
   cudaStream_t stream                 = 0);
 
 /**
- * @copydoc cudf::experimental::copy_if_else( column_view const&, column_view const&,
+ * @copydoc cudf::copy_if_else( column_view const&, column_view const&,
  * column_view const&, rmm::mr::device_memory_resource*)
  *
- * @param[in] stream Optional CUDA stream on which to execute kernels
+ * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> copy_if_else(
   column_view const& lhs,
@@ -112,10 +111,10 @@ std::unique_ptr<column> copy_if_else(
   cudaStream_t stream                 = 0);
 
 /**
- * @copydoc cudf::experimental::copy_if_else( scalar const&, column_view const&,
+ * @copydoc cudf::copy_if_else( scalar const&, column_view const&,
  * column_view const&, rmm::mr::device_memory_resource*)
  *
- * @param[in] stream Optional CUDA stream on which to execute kernels
+ * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> copy_if_else(
   scalar const& lhs,
@@ -125,10 +124,10 @@ std::unique_ptr<column> copy_if_else(
   cudaStream_t stream                 = 0);
 
 /**
- * @copydoc cudf::experimental::copy_if_else( column_view const&, scalar const&,
+ * @copydoc cudf::copy_if_else( column_view const&, scalar const&,
  * column_view const&, rmm::mr::device_memory_resource*)
  *
- * @param[in] stream Optional CUDA stream on which to execute kernels
+ * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> copy_if_else(
   column_view const& lhs,
@@ -138,10 +137,10 @@ std::unique_ptr<column> copy_if_else(
   cudaStream_t stream                 = 0);
 
 /**
- * @copydoc cudf::experimental::copy_if_else( scalar const&, scalar const&,
+ * @copydoc cudf::copy_if_else( scalar const&, scalar const&,
  * column_view const&, rmm::mr::device_memory_resource*)
  *
- * @param[in] stream Optional CUDA stream on which to execute kernels
+ * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> copy_if_else(
   scalar const& lhs,
@@ -151,5 +150,4 @@ std::unique_ptr<column> copy_if_else(
   cudaStream_t stream                 = 0);
 
 }  // namespace detail
-}  // namespace experimental
 }  // namespace cudf

@@ -24,12 +24,11 @@
 #include <vector>
 
 namespace cudf {
-namespace experimental {
 namespace detail {
 /**
- * @copydoc cudf::experimental::lower_bound
+ * @copydoc cudf::lower_bound
  *
- * @param stream Stream to use for any kernel launches.
+ * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> lower_bound(
   table_view const& t,
@@ -40,9 +39,9 @@ std::unique_ptr<column> lower_bound(
   cudaStream_t steam                  = 0);
 
 /**
- * @copydoc cudf::experimental::upper_bound
+ * @copydoc cudf::upper_bound
  *
- * @param stream Stream to use for any kernel launches.
+ * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> upper_bound(
   table_view const& t,
@@ -53,10 +52,10 @@ std::unique_ptr<column> upper_bound(
   cudaStream_t stream                 = 0);
 
 /**
- * @copydoc cudf::experimental::contains(column_view const&, scalar const&,
+ * @copydoc cudf::contains(column_view const&, scalar const&,
  *                                       rmm::mr::device_memory_resource*)
  *
- * @param stream Stream to use for any kernel launches.
+ * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 bool contains(column_view const& col,
               scalar const& value,
@@ -64,10 +63,10 @@ bool contains(column_view const& col,
               cudaStream_t stream                 = 0);
 
 /**
- * @copydoc cudf::experimental::contains(column_view const&, column_view const&,
+ * @copydoc cudf::contains(column_view const&, column_view const&,
  *                                       rmm::mr::device_memory_resource*)
  *
- * @param stream Stream to use for any kernel launches.
+ * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> contains(
   column_view const& haystack,
@@ -76,5 +75,4 @@ std::unique_ptr<column> contains(
   cudaStream_t stream                 = 0);
 
 }  // namespace detail
-}  // namespace experimental
 }  // namespace cudf
