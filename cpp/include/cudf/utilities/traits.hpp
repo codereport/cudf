@@ -240,7 +240,7 @@ struct is_fixed_point_impl {
  **/
 constexpr inline bool is_fixed_point(data_type type)
 {
-  return cudf::experimental::type_dispatcher(type, is_fixed_point_impl{});
+  return cudf::type_dispatcher(type, is_fixed_point_impl{});
 }
 
 /**
