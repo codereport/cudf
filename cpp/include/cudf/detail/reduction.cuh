@@ -142,6 +142,21 @@ std::unique_ptr<scalar> reduce(InputIterator d_in,
   CUDF_FAIL("dictionary type not supported");
 }
 
+// NOTE: list_view did something entirely different reductions/simple.cuh by
+// modifying is_supported_v
+template <typename Op,
+          typename InputIterator,
+          typename OutputType = typename thrust::iterator_value<InputIterator>::type,
+          typename std::enable_if_t<std::is_same<OutputType, numeric::decimal32>::value>* = nullptr>
+std::unique_ptr<scalar> reduce(InputIterator d_in,
+                               cudf::size_type num_items,
+                               op::simple_op<Op> sop,
+                               rmm::mr::device_memory_resource* mr,
+                               cudaStream_t stream)
+{
+  CUDF_FAIL("dictionary type not supported");
+}
+
 /** --------------------------------------------------------------------------*
  * @brief compute reduction by the compound operator (reduce and transform)
  *

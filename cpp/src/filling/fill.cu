@@ -34,6 +34,7 @@
 #include <cuda_runtime.h>
 
 #include <memory>
+#include "cudf/fixed_point/fixed_point.hpp"
 
 namespace {
 template <typename T>
@@ -112,6 +113,16 @@ std::unique_ptr<cudf::column> out_of_place_fill_range_dispatch::operator()<cudf:
   cudaStream_t stream)
 {
   CUDF_FAIL("list_view not supported yet");
+}
+
+template <>
+std::unique_ptr<cudf::column> out_of_place_fill_range_dispatch::operator()<numeric::decimal32>(
+  cudf::size_type begin,
+  cudf::size_type end,
+  rmm::mr::device_memory_resource* mr,
+  cudaStream_t stream)
+{
+  CUDF_FAIL("decimal32 not supported yet");
 }
 
 template <>

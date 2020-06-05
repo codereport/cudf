@@ -226,6 +226,14 @@ struct create_column_from_view {
     CUDF_FAIL("list_view not supported yet");
     return nullptr;
   }
+
+  template <typename ColumnType,
+            std::enable_if_t<std::is_same<ColumnType, numeric::decimal32>::value> * = nullptr>
+  std::unique_ptr<column> operator()()
+  {
+    CUDF_FAIL("decimal32 not supported yet");
+    return nullptr;
+  }
 };
 }  // anonymous namespace
 

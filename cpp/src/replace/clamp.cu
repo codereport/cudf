@@ -239,6 +239,19 @@ std::enable_if_t<std::is_same<T, list_view>::value, std::unique_ptr<cudf::column
   CUDF_FAIL("list_view type not supported");
 }
 
+template <typename T, typename ScalarIterator>
+std::enable_if_t<std::is_same<T, numeric::decimal32>::value, std::unique_ptr<cudf::column>> clamper(
+  column_view const& input,
+  ScalarIterator const& lo_itr,
+  ScalarIterator const& lo_replace_itr,
+  ScalarIterator const& hi_itr,
+  ScalarIterator const& hi_replace_itr,
+  rmm::mr::device_memory_resource* mr,
+  cudaStream_t stream)
+{
+  CUDF_FAIL("decimal32 type not supported");
+}
+
 }  // namespace
 
 template <typename T, typename ScalarIterator>
@@ -284,6 +297,19 @@ std::unique_ptr<column> dispatch_clamp::operator()<cudf::list_view>(
   cudaStream_t stream)
 {
   CUDF_FAIL("clamp for list_view not supported");
+}
+
+template <>
+std::unique_ptr<column> dispatch_clamp::operator()<numeric::decimal32>(
+  column_view const& input,
+  scalar const& lo,
+  scalar const& lo_replace,
+  scalar const& hi,
+  scalar const& hi_replace,
+  rmm::mr::device_memory_resource* mr,
+  cudaStream_t stream)
+{
+  CUDF_FAIL("clamp for decimal32 not supported");
 }
 
 /**

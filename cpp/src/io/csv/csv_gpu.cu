@@ -372,6 +372,15 @@ __inline__ __device__ cudf::dictionary32 decode_value(const char *data,
   return cudf::dictionary32{};
 }
 
+template <>
+__inline__ __device__ numeric::decimal32 decode_value(const char *data,
+                                                      long start,
+                                                      long end,
+                                                      ParseOptions const &opts)
+{
+  return numeric::decimal32{};
+}
+
 // The purpose of this is merely to allow compilation ONLY
 // TODO : make this work for csv
 template <>
