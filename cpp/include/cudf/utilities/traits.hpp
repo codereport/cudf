@@ -297,8 +297,10 @@ constexpr inline bool is_fixed_width(data_type type)
 template <typename T>
 constexpr inline bool is_compound()
 {
-  return std::is_same<T, cudf::string_view>::value or std::is_same<T, cudf::dictionary32>::value or
-         std::is_same<T, cudf::list_view>::value or std::is_same<T, numeric::decimal32>::value;
+  return std::is_same<T, cudf::string_view>::value or   //
+         std::is_same<T, cudf::dictionary32>::value or  //
+         std::is_same<T, cudf::list_view>::value or     //
+         std::is_same<T, numeric::decimal32>::value;
 }
 
 struct is_compound_impl {
