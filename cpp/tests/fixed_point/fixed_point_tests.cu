@@ -526,10 +526,11 @@ TEST_F(FixedPointTest, FixedPointUnaryOpSimple)
   //                std::begin(host_expect_vector),
   //                [&](auto e) { return e < ZERO ? NEG_ONE * e : e; });
 
-  cudf::test::fixed_width_column_wrapper<decimal32> const input(std::cbegin(host_input_vector),
-                                                                std::cend(host_input_vector));
-  cudf::test::fixed_width_column_wrapper<decimal32> const expected(std::cbegin(host_expect_vector),
-                                                                   std::cend(host_expect_vector));
+  // cudf::test::fixed_width_column_wrapper<decimal32> const input(std::cbegin(host_input_vector),
+  //                                                               std::cend(host_input_vector));
+  // cudf::test::fixed_width_column_wrapper<decimal32> const
+  // expected(std::cbegin(host_expect_vector),
+  //                                                                  std::cend(host_expect_vector));
 
   // auto const output = cudf::experimental::unary_operation(input,
   // cudf::experimental::unary_op::ABS);
