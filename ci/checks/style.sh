@@ -14,8 +14,10 @@ LANG=C.UTF-8
 source activate gdf
 
 # Run isort and get results/return code
-ISORT=`isort --check-only python`
+cd python
+ISORT=`isort --check-only **/*.py`
 ISORT_RETVAL=$?
+cd ..
 
 # Run black and get results/return code
 BLACK=`black --check python`
