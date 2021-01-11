@@ -116,7 +116,7 @@ struct DeviceMin {
   template <typename T, typename std::enable_if_t<cudf::is_fixed_point<T>()>* = nullptr>
   static constexpr T identity()
   {
-    CUDF_FAIL("fixed_point does not yet support DeviceMin identity");
+    CUDF_FAIL("fixed_point does not yet support DeviceMin identity");  // clean up
     return std::numeric_limits<T>::max();
   }
 

@@ -530,14 +530,13 @@ AGG_KIND_MAPPING(aggregation::STD, std_aggregation);
 AGG_KIND_MAPPING(aggregation::VARIANCE, var_aggregation);
 
 /**
- * @brief Dispatches `k` as a non-type template parameter to a callable,  `f`.
+ * @brief Dispatches `k` as a non-type template parameter to a callable, `f`.
  *
- * @tparam F Type of callable
- * @param k The `aggregation::Kind` value to dispatch
- * aram f The callable that accepts an `aggregation::Kind` non-type template
- * argument.
- * @param args Parameter pack forwarded to the `operator()` invocation
- * @return Forwards the return value of the callable.
+ * @tparam F    Type of callable
+ * @param k     The `aggregation::Kind` value to dispatch
+ * @param f     The callable that accepts an `aggregation::Kind` non-type template argument.
+ * @param args  Parameter pack forwarded to the `operator()` invocation
+ * @return      Forwards the return value of the callable.
  */
 #pragma nv_exec_check_disable
 template <typename F, typename... Ts>
@@ -627,18 +626,18 @@ struct dispatch_source {
                                                       F&& f,
                                                       Ts&&... args) const noexcept
   {
+    using Type = device_storage_type_t<Element>;
     return aggregation_dispatcher(
-      k, dispatch_aggregation<Element>{}, std::forward<F>(f), std::forward<Ts>(args)...);
+      k, dispatch_aggregation<Type>{}, std::forward<F>(f), std::forward<Ts>(args)...);
   }
 };
 
 /**
- * @brief Dispatches both a type and `aggregation::Kind` template parameters to
- * a callable.
+ * @brief Dispatches both a type and `aggregation::Kind` template parameters to a callable.
  *
- * This function expects a callable `f` with an `operator()` template accepting
- * two template parameters. The first is a type dispatched from `type`. The
- * second is an `aggregation::Kind` dispatched from `k`.
+ * This function expects a callable `f` with an `operator()` template accepting two template
+ * parameters. The first is a type dispatched from `type`. The second is an `aggregation::Kind`
+ * dispatched from `k`.
  *
  * @param type The `data_type` used to dispatch a type for the first template
  * parameter of the callable `F`
@@ -658,16 +657,15 @@ CUDA_HOST_DEVICE_CALLABLE constexpr decltype(auto) dispatch_type_and_aggregation
  * @brief Returns the target `data_type` for the specified aggregation  k
  * performed on elements of type  source_type.
  *
- * aram source_type The element type to be aggregated
- * aram k The aggregation
+ * @param source_type The element type to be aggregated
+ * @param k The aggregation
  * @return data_type The target_type of  k performed on  source_type
  * elements
  */
 data_type target_type(data_type source_type, aggregation::Kind k);
 
 /**
- * @brief Indicates whether the specified aggregation `k` is valid to perform on
- * the type `Source`.
+ * @brief Indicates whether the specified aggregation `k` is valid to perform on the type `Source`.
  *
  * @tparam Source Type on which the aggregation is performed
  * @tparam k The aggregation to perform
@@ -675,12 +673,13 @@ data_type target_type(data_type source_type, aggregation::Kind k);
 template <typename Source, aggregation::Kind k>
 constexpr inline bool is_valid_aggregation()
 {
-  return (not std::is_void<target_type_t<Source, k>>::value);
+  using Type = device_storage_type_t<Source>;
+  return not std::is_void<target_type_t<Type, k>>::value;
 }
 
 /**
- * @brief Indicates whether the specified aggregation `k` is valid to perform on
- * the `data_type` `source`.
+ * @brief Indicates whether the specified aggregation `k` is valid to perform on the `data_type`
+ * `source`.
  *
  * @param source Source `data_type` on which the aggregation is performed
  * @param k The aggregation to perform

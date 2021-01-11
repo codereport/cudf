@@ -419,9 +419,8 @@ std::pair<std::unique_ptr<table>, std::vector<aggregation_result>> groupby::sort
   rmm::cuda_stream_view stream,
   rmm::mr::device_memory_resource* mr)
 {
-  // We're going to start by creating a cache of results so that aggs that
-  // depend on other aggs will not have to be recalculated. e.g. mean depends on
-  // sum and count. std depends on mean and count
+  // We're going to start by creating a cache of results so that aggs that depend on other aggs will
+  // not have to be recalculated. e.g. mean depends on sum and count. std depends on mean and count
   cudf::detail::result_cache cache(requests.size());
 
   for (size_t i = 0; i < requests.size(); i++) {

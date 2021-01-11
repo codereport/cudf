@@ -183,7 +183,15 @@ data_type target_type(data_type source, aggregation::Kind k)
 // Verifies the aggregation `k` is valid on the type `source`
 bool is_valid_aggregation(data_type source, aggregation::Kind k)
 {
-  return dispatch_type_and_aggregation(source, k, is_valid_aggregation_impl{});
+  auto const underlying_source = [&] {
+    if (is_fixed_point(source)) {
+      return source.id() == type_id::DECIMAL32 ? data_type{type_id::INT32}
+                                               : data_type{type_id::INT64};
+    }
+    return source;
+  }();
+
+  return dispatch_type_and_aggregation(underlying_source, k, is_valid_aggregation_impl{});
 }
 }  // namespace detail
 }  // namespace cudf

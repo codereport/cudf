@@ -24,11 +24,16 @@ void initialize_with_identity(mutable_table_view& table,
                               std::vector<aggregation::Kind> const& aggs,
                               rmm::cuda_stream_view stream)
 {
-  // TODO: Initialize all the columns in a single kernel instead of invoking one
-  // kernel per column
+  // TODO: Initialize all the columns in a single kernel instead of invoking one kernel per column
   for (size_type i = 0; i < table.num_columns(); ++i) {
-    auto col = table.column(i);
-    dispatch_type_and_aggregation(col.type(), aggs[i], identity_initializer{}, col, stream);
+    auto col        = table.column(i);
+    auto const type = [&] {
+      if (not is_fixed_point(col.type())) return col.type();
+      return col.type().id() == type_id::DECIMAL32  //
+               ? data_type{type_id::INT32}
+               : data_type{type_id::INT64};
+    }();
+    dispatch_type_and_aggregation(type, aggs[i], identity_initializer{}, col, stream);
   }
 }
 

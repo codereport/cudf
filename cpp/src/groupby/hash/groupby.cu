@@ -590,8 +590,14 @@ std::pair<std::unique_ptr<table>, std::vector<aggregation_result>> groupby(
       groupby_null_templated<false>(keys, requests, &cache, include_null_keys, stream, mr);
   }
 
+  // auto unique_keys =
+  //   has_nulls(keys)
+  //     ? groupby_null_templated<true>(keys, requests, &cache, include_null_keys, stream, mr)
+  //     : groupby_null_templated<false>(keys, requests, &cache, include_null_keys, stream, mr);
+
   return std::make_pair(std::move(unique_keys), extract_results(requests, cache));
 }
+
 }  // namespace hash
 }  // namespace detail
 }  // namespace groupby
