@@ -242,8 +242,8 @@ TEST_F(FixedPointTestBothReps, GroupByMin)
   using fp_wrapper = cudf::test::fixed_point_column_wrapper<RepType>;
 
   using K = int32_t;
-  using V = decimalXX;
-  using R = cudf::detail::target_type_t<V, aggregation::MIN>;
+  // using V = decimalXX;
+  // using R = cudf::detail::target_type_t<V, aggregation::MIN>;
 
   auto const scale = scale_type{-1};
   auto const keys  = fixed_width_column_wrapper<K>{1, 2, 3, 1, 2, 2, 1, 3, 3, 2};
