@@ -67,10 +67,10 @@ enum class strip_type {
  * @return New strings column.
  */
 std::unique_ptr<column> strip(
-  strings_column_view const& strings,
-  strip_type stype                    = strip_type::BOTH,
-  string_scalar const& to_strip       = string_scalar(""),
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  strings_column_view const&       strings,
+  strip_type                       stype    = strip_type::BOTH,
+  string_scalar const&             to_strip = string_scalar(""),
+  rmm::mr::device_memory_resource* mr       = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group
 }  // namespace strings

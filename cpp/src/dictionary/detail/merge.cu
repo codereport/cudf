@@ -29,11 +29,11 @@ namespace cudf {
 namespace dictionary {
 namespace detail {
 
-std::unique_ptr<column> merge(dictionary_column_view const& lcol,
-                              dictionary_column_view const& rcol,
+std::unique_ptr<column> merge(dictionary_column_view const&     lcol,
+                              dictionary_column_view const&     rcol,
                               cudf::detail::index_vector const& row_order,
-                              rmm::cuda_stream_view stream,
-                              rmm::mr::device_memory_resource* mr)
+                              rmm::cuda_stream_view             stream,
+                              rmm::mr::device_memory_resource*  mr)
 {
   auto const lcol_iter = cudf::detail::indexalator_factory::make_input_iterator(lcol.indices());
   auto const rcol_iter = cudf::detail::indexalator_factory::make_input_iterator(rcol.indices());
@@ -41,7 +41,7 @@ std::unique_ptr<column> merge(dictionary_column_view const& lcol,
   // create output indices column
   auto const merged_size  = lcol.size() + rcol.size();
   auto const indices_type = get_indices_type_for_size(merged_size);
-  auto indices_column =
+  auto       indices_column =
     make_fixed_width_column(indices_type, merged_size, cudf::mask_state::UNALLOCATED, stream, mr);
   auto output_iter =
     cudf::detail::indexalator_factory::make_output_iterator(indices_column->mutable_view());

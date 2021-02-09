@@ -51,7 +51,7 @@ TEST_F(StringsReplaceTests, ReplaceRegexTest)
                                       nullptr};
 
   std::string pattern = "(\\bthe\\b)";
-  auto results        = cudf::strings::replace_re(strings_view, pattern, cudf::string_scalar("="));
+  auto        results = cudf::strings::replace_re(strings_view, pattern, cudf::string_scalar("="));
   cudf::test::strings_column_wrapper expected(
     h_expected.begin(),
     h_expected.end(),
@@ -83,11 +83,11 @@ TEST_F(StringsReplaceTests, ReplaceMultiRegexTest)
                                       "",
                                       nullptr};
 
-  std::vector<std::string> patterns{"\\bthe\\b", "\\bin\\b", "\\ba\\b"};
-  std::vector<std::string> h_repls{"", "N", "**"};
+  std::vector<std::string>           patterns{"\\bthe\\b", "\\bin\\b", "\\ba\\b"};
+  std::vector<std::string>           h_repls{"", "N", "**"};
   cudf::test::strings_column_wrapper repls(h_repls.begin(), h_repls.end());
-  auto repls_view = cudf::strings_column_view(repls);
-  auto results    = cudf::strings::replace_re(strings_view, patterns, repls_view);
+  auto                               repls_view = cudf::strings_column_view(repls);
+  auto results = cudf::strings::replace_re(strings_view, patterns, repls_view);
   cudf::test::strings_column_wrapper expected(
     h_expected.begin(),
     h_expected.end(),
@@ -118,16 +118,16 @@ TEST_F(StringsReplaceTests, InvalidRegex)
 
 TEST_F(StringsReplaceTests, WithEmptyPattern)
 {
-  std::vector<const char*> h_strings{"asd", "xcv"};
+  std::vector<const char*>           h_strings{"asd", "xcv"};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; }));
-  auto strings_view = cudf::strings_column_view(strings);
-  std::vector<std::string> patterns({""});
+  auto                               strings_view = cudf::strings_column_view(strings);
+  std::vector<std::string>           patterns({""});
   cudf::test::strings_column_wrapper repls({"bbb"});
-  auto repls_view = cudf::strings_column_view(repls);
-  auto results    = cudf::strings::replace_re(strings_view, patterns, repls_view);
+  auto                               repls_view = cudf::strings_column_view(repls);
+  auto results = cudf::strings::replace_re(strings_view, patterns, repls_view);
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, strings);
   results = cudf::strings::replace_re(strings_view, "", cudf::string_scalar("bbb"));
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, strings);
@@ -159,7 +159,7 @@ TEST_F(StringsReplaceTests, ReplaceBackrefsRegexTest)
 
   std::string pattern       = "(\\w) (\\w)";
   std::string repl_template = "\\1-\\2";
-  auto results = cudf::strings::replace_with_backrefs(strings_view, pattern, repl_template);
+  auto        results = cudf::strings::replace_with_backrefs(strings_view, pattern, repl_template);
   cudf::test::strings_column_wrapper expected(
     h_expected.begin(),
     h_expected.end(),
@@ -171,10 +171,10 @@ TEST_F(StringsReplaceTests, ReplaceBackrefsRegexTest2)
 {
   cudf::test::strings_column_wrapper strings(
     {"A543", "Z756", "", "tést-string", "two-thréé four-fivé", "abcd-éfgh", "tést-string-again"});
-  auto strings_view         = cudf::strings_column_view(strings);
+  auto        strings_view  = cudf::strings_column_view(strings);
   std::string pattern       = "([a-z])-([a-zé])";
   std::string repl_template = "X\\1+\\2Z";
-  auto results = cudf::strings::replace_with_backrefs(strings_view, pattern, repl_template);
+  auto        results = cudf::strings::replace_with_backrefs(strings_view, pattern, repl_template);
 
   cudf::test::strings_column_wrapper expected({"A543",
                                                "Z756",
@@ -203,8 +203,8 @@ TEST_F(StringsReplaceTests, MediumReplaceRegex)
     h_strings.end(),
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; }));
 
-  auto strings_view = cudf::strings_column_view(strings);
-  auto results      = cudf::strings::replace_re(strings_view, medium_regex);
+  auto                     strings_view = cudf::strings_column_view(strings);
+  auto                     results      = cudf::strings::replace_re(strings_view, medium_regex);
   std::vector<const char*> h_expected{
     " thats all", "12345678901234567890", "abcdefghijklmnopqrstuvwxyz"};
   cudf::test::strings_column_wrapper expected(
@@ -231,8 +231,8 @@ TEST_F(StringsReplaceTests, LargeReplaceRegex)
     h_strings.end(),
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; }));
 
-  auto strings_view = cudf::strings_column_view(strings);
-  auto results      = cudf::strings::replace_re(strings_view, large_regex);
+  auto                     strings_view = cudf::strings_column_view(strings);
+  auto                     results      = cudf::strings::replace_re(strings_view, large_regex);
   std::vector<const char*> h_expected{
     "zzzz ", "12345678901234567890", "abcdefghijklmnopqrstuvwxyz"};
   cudf::test::strings_column_wrapper expected(

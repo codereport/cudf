@@ -103,29 +103,29 @@ bool constexpr is_hash_aggregation(aggregation::Kind t)
 
 template <typename Map>
 class hash_compound_agg_finalizer final : public cudf::detail::aggregation_finalizer {
-  size_t col_idx;
-  column_view col;
-  data_type result_type;
-  cudf::detail::result_cache* sparse_results;
-  cudf::detail::result_cache* dense_results;
+  size_t                               col_idx;
+  column_view                          col;
+  data_type                            result_type;
+  cudf::detail::result_cache*          sparse_results;
+  cudf::detail::result_cache*          dense_results;
   rmm::device_vector<size_type> const& gather_map;
-  size_type const map_size;
-  Map const& map;
+  size_type const                      map_size;
+  Map const&                           map;
   bitmask_type const* __restrict__ row_bitmask;
   rmm::mr::device_memory_resource* mr;
-  rmm::cuda_stream_view stream;
+  rmm::cuda_stream_view            stream;
 
  public:
-  hash_compound_agg_finalizer(size_t col_idx,
-                              column_view col,
-                              cudf::detail::result_cache* sparse_results,
-                              cudf::detail::result_cache* dense_results,
+  hash_compound_agg_finalizer(size_t                               col_idx,
+                              column_view                          col,
+                              cudf::detail::result_cache*          sparse_results,
+                              cudf::detail::result_cache*          dense_results,
                               rmm::device_vector<size_type> const& gather_map,
-                              size_type map_size,
-                              Map const& map,
-                              bitmask_type const* row_bitmask,
-                              rmm::cuda_stream_view stream,
-                              rmm::mr::device_memory_resource* mr)
+                              size_type                            map_size,
+                              Map const&                           map,
+                              bitmask_type const*                  row_bitmask,
+                              rmm::cuda_stream_view                stream,
+                              rmm::mr::device_memory_resource*     mr)
     : col_idx(col_idx),
       col(col),
       sparse_results(sparse_results),
@@ -272,9 +272,9 @@ class hash_compound_agg_finalizer final : public cudf::detail::aggregation_final
 std::tuple<table_view, std::vector<aggregation::Kind>, std::vector<size_t>>
 flatten_single_pass_aggs(std::vector<aggregation_request> const& requests)
 {
-  std::vector<column_view> columns;
+  std::vector<column_view>       columns;
   std::vector<aggregation::Kind> agg_kinds;
-  std::vector<size_t> col_ids;
+  std::vector<size_t>            col_ids;
 
   for (size_t i = 0; i < requests.size(); i++) {
     auto const& request = requests[i];
@@ -308,17 +308,17 @@ flatten_single_pass_aggs(std::vector<aggregation_request> const& requests)
  * @see groupby_null_templated()
  */
 template <typename Map>
-void sparse_to_dense_results(table_view const& keys,
+void sparse_to_dense_results(table_view const&                       keys,
                              std::vector<aggregation_request> const& requests,
-                             cudf::detail::result_cache* sparse_results,
-                             cudf::detail::result_cache* dense_results,
-                             rmm::device_vector<size_type> const& gather_map,
-                             size_type map_size,
-                             Map const& map,
-                             bool keys_have_nulls,
-                             null_policy include_null_keys,
-                             rmm::cuda_stream_view stream,
-                             rmm::mr::device_memory_resource* mr)
+                             cudf::detail::result_cache*             sparse_results,
+                             cudf::detail::result_cache*             dense_results,
+                             rmm::device_vector<size_type> const&    gather_map,
+                             size_type                               map_size,
+                             Map const&                              map,
+                             bool                                    keys_have_nulls,
+                             null_policy                             include_null_keys,
+                             rmm::cuda_stream_view                   stream,
+                             rmm::mr::device_memory_resource*        mr)
 {
   auto row_bitmask{bitmask_and(keys, stream, rmm::mr::get_current_device_resource())};
   bool skip_key_rows_with_nulls = keys_have_nulls and include_null_keys == null_policy::EXCLUDE;
@@ -351,8 +351,8 @@ void sparse_to_dense_results(table_view const& keys,
  */
 template <bool keys_have_nulls>
 auto create_hash_map(table_device_view const& d_keys,
-                     null_policy include_null_keys,
-                     rmm::cuda_stream_view stream)
+                     null_policy              include_null_keys,
+                     rmm::cuda_stream_view    stream)
 {
   size_type constexpr unused_key{std::numeric_limits<size_type>::max()};
   size_type constexpr unused_value{std::numeric_limits<size_type>::max()};
@@ -367,7 +367,7 @@ auto create_hash_map(table_device_view const& d_keys,
   bool const null_keys_are_equal{include_null_keys == null_policy::INCLUDE};
 
   row_hasher<default_hash, keys_have_nulls> hasher{d_keys};
-  row_equality_comparator<keys_have_nulls> rows_equal{d_keys, d_keys, null_keys_are_equal};
+  row_equality_comparator<keys_have_nulls>  rows_equal{d_keys, d_keys, null_keys_are_equal};
 
   return map_type::create(compute_hash_table_size(d_keys.num_rows()),
                           stream,
@@ -379,9 +379,9 @@ auto create_hash_map(table_device_view const& d_keys,
 }
 
 // make table that will hold sparse results
-auto create_sparse_results_table(table_view const& flattened_values,
+auto create_sparse_results_table(table_view const&              flattened_values,
                                  std::vector<aggregation::Kind> aggs,
-                                 rmm::cuda_stream_view stream)
+                                 rmm::cuda_stream_view          stream)
 {
   // TODO single allocation - room for performance improvement
   std::vector<std::unique_ptr<column>> sparse_columns;
@@ -405,7 +405,7 @@ auto create_sparse_results_table(table_view const& flattened_values,
         cudf::detail::target_type(col_type, agg), col.size(), mask_flag, stream);
     });
 
-  table sparse_table(std::move(sparse_columns));
+  table              sparse_table(std::move(sparse_columns));
   mutable_table_view table_view = sparse_table.mutable_view();
   cudf::detail::initialize_with_identity(table_view, aggs, stream);
   return sparse_table;
@@ -418,17 +418,17 @@ auto create_sparse_results_table(table_view const& flattened_values,
  * @see groupby_null_templated()
  */
 template <bool keys_have_nulls, typename Map>
-void compute_single_pass_aggs(table_view const& keys,
+void compute_single_pass_aggs(table_view const&                       keys,
                               std::vector<aggregation_request> const& requests,
-                              cudf::detail::result_cache* sparse_results,
-                              Map& map,
-                              null_policy include_null_keys,
-                              rmm::cuda_stream_view stream)
+                              cudf::detail::result_cache*             sparse_results,
+                              Map&                                    map,
+                              null_policy                             include_null_keys,
+                              rmm::cuda_stream_view                   stream)
 {
   // flatten the aggs to a table that can be operated on by aggregate_row
-  table_view flattened_values;
+  table_view                     flattened_values;
   std::vector<aggregation::Kind> aggs;
-  std::vector<size_t> col_ids;
+  std::vector<size_t>            col_ids;
   std::tie(flattened_values, aggs, col_ids) = flatten_single_pass_aggs(requests);
 
   // make table that will hold sparse results
@@ -517,11 +517,11 @@ std::pair<rmm::device_vector<size_type>, size_type> extract_populated_keys(
  * the in/out parameter `cache`.
  */
 template <bool keys_have_nulls>
-std::unique_ptr<table> groupby_null_templated(table_view const& keys,
+std::unique_ptr<table> groupby_null_templated(table_view const&                       keys,
                                               std::vector<aggregation_request> const& requests,
-                                              cudf::detail::result_cache* cache,
-                                              null_policy include_null_keys,
-                                              rmm::cuda_stream_view stream,
+                                              cudf::detail::result_cache*             cache,
+                                              null_policy                      include_null_keys,
+                                              rmm::cuda_stream_view            stream,
                                               rmm::mr::device_memory_resource* mr)
 {
   auto d_keys = table_device_view::create(keys, stream);
@@ -538,7 +538,7 @@ std::unique_ptr<table> groupby_null_templated(table_view const& keys,
   // Extract the populated indices from the hash map and create a gather map.
   // Gathering using this map from sparse results will give dense results.
   rmm::device_vector<size_type> gather_map;
-  size_type map_size;
+  size_type                     map_size;
   std::tie(gather_map, map_size) = extract_populated_keys(*map, keys.num_rows(), stream);
 
   // Compact all results from sparse_results and insert into cache
@@ -585,11 +585,11 @@ bool can_use_hash_groupby(table_view const& keys, std::vector<aggregation_reques
 
 // Hash-based groupby
 std::pair<std::unique_ptr<table>, std::vector<aggregation_result>> groupby(
-  table_view const& keys,
+  table_view const&                       keys,
   std::vector<aggregation_request> const& requests,
-  null_policy include_null_keys,
-  rmm::cuda_stream_view stream,
-  rmm::mr::device_memory_resource* mr)
+  null_policy                             include_null_keys,
+  rmm::cuda_stream_view                   stream,
+  rmm::mr::device_memory_resource*        mr)
 {
   cudf::detail::result_cache cache(requests.size());
 

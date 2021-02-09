@@ -26,9 +26,9 @@
 
 #include <thrust/binary_search.h>
 
-std::unique_ptr<cudf::scalar> cudf::reduction::nth_element(column_view const& col,
-                                                           size_type n,
-                                                           null_policy null_handling,
+std::unique_ptr<cudf::scalar> cudf::reduction::nth_element(column_view const&    col,
+                                                           size_type             n,
+                                                           null_policy           null_handling,
                                                            rmm::cuda_stream_view stream,
                                                            rmm::mr::device_memory_resource* mr)
 {

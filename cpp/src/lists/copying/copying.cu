@@ -29,10 +29,10 @@ namespace lists {
 namespace detail {
 
 // New lists column from a subset of a lists_column_view
-std::unique_ptr<cudf::column> copy_slice(lists_column_view const& lists,
-                                         size_type start,
-                                         size_type end,
-                                         rmm::cuda_stream_view stream,
+std::unique_ptr<cudf::column> copy_slice(lists_column_view const&         lists,
+                                         size_type                        start,
+                                         size_type                        end,
+                                         rmm::cuda_stream_view            stream,
                                          rmm::mr::device_memory_resource* mr)
 {
   if (lists.is_empty()) { return cudf::empty_like(lists.parent()); }

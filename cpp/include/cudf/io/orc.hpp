@@ -382,7 +382,7 @@ class orc_reader_options_builder {
  * @return The set of columns.
  */
 table_with_metadata read_orc(
-  orc_reader_options const& options,
+  orc_reader_options const&        options,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group
@@ -597,7 +597,7 @@ class orc_writer_options_builder {
  * @param options Settings for controlling reading behavior.
  * @param mr Device memory resource to use for device memory allocation.
  */
-void write_orc(orc_writer_options const& options,
+void write_orc(orc_writer_options const&        options,
                rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -791,7 +791,7 @@ class orc_chunked_writer {
    * @param[in] mr Device memory resource to use for device memory allocation
    */
   orc_chunked_writer(chunked_orc_writer_options const& op,
-                     rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+                     rmm::mr::device_memory_resource*  mr = rmm::mr::get_current_device_resource());
 
   /**
    * @brief Writes table to output.

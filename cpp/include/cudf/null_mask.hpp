@@ -52,7 +52,7 @@ size_type state_null_count(mask_state state, size_type size);
  * of this value
  * @return std::size_t The necessary number of bytes
  */
-std::size_t bitmask_allocation_size_bytes(size_type number_of_bits,
+std::size_t bitmask_allocation_size_bytes(size_type   number_of_bits,
                                           std::size_t padding_boundary = 64);
 
 /**
@@ -81,8 +81,8 @@ size_type num_bitmask_words(size_type number_of_bits);
  * satisfying the desired size and state
  */
 rmm::device_buffer create_null_mask(
-  size_type size,
-  mask_state state,
+  size_type                        size,
+  mask_state                       state,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -147,7 +147,7 @@ cudf::size_type count_unset_bits(bitmask_type const* bitmask, size_type start, s
  * @return std::vector<size_type> A vector storing the number of non-zero bits
  * in the specified ranges
  */
-std::vector<size_type> segmented_count_set_bits(bitmask_type const* bitmask,
+std::vector<size_type> segmented_count_set_bits(bitmask_type const*                 bitmask,
                                                 std::vector<cudf::size_type> const& indices);
 
 /**
@@ -166,7 +166,7 @@ std::vector<size_type> segmented_count_set_bits(bitmask_type const* bitmask,
  * @return std::vector<size_type> A vector storing the number of zero bits in
  * the specified ranges
  */
-std::vector<size_type> segmented_count_unset_bits(bitmask_type const* bitmask,
+std::vector<size_type> segmented_count_unset_bits(bitmask_type const*                 bitmask,
                                                   std::vector<cudf::size_type> const& indices);
 
 /**
@@ -186,9 +186,9 @@ std::vector<size_type> segmented_count_unset_bits(bitmask_type const* bitmask,
  * `[begin_bit, end_bit)` from `mask`.
  */
 rmm::device_buffer copy_bitmask(
-  bitmask_type const* mask,
-  size_type begin_bit,
-  size_type end_bit,
+  bitmask_type const*              mask,
+  size_type                        begin_bit,
+  size_type                        end_bit,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -203,7 +203,7 @@ rmm::device_buffer copy_bitmask(
  * `[view.offset(), view.offset() + view.size())` from `view`'s bitmask.
  */
 rmm::device_buffer copy_bitmask(
-  column_view const& view,
+  column_view const&               view,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -217,7 +217,7 @@ rmm::device_buffer copy_bitmask(
  * @return rmm::device_buffer Output bitmask
  */
 rmm::device_buffer bitmask_and(
-  table_view const& view,
+  table_view const&                view,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

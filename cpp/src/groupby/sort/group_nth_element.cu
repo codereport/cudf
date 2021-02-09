@@ -29,15 +29,15 @@
 namespace cudf {
 namespace groupby {
 namespace detail {
-std::unique_ptr<column> group_nth_element(column_view const &values,
-                                          column_view const &group_sizes,
+std::unique_ptr<column> group_nth_element(column_view const &                  values,
+                                          column_view const &                  group_sizes,
                                           rmm::device_vector<size_type> const &group_labels,
                                           rmm::device_vector<size_type> const &group_offsets,
-                                          size_type num_groups,
-                                          size_type n,
-                                          null_policy null_handling,
-                                          rmm::cuda_stream_view stream,
-                                          rmm::mr::device_memory_resource *mr)
+                                          size_type                            num_groups,
+                                          size_type                            n,
+                                          null_policy                          null_handling,
+                                          rmm::cuda_stream_view                stream,
+                                          rmm::mr::device_memory_resource *    mr)
 {
   CUDF_EXPECTS(static_cast<size_t>(values.size()) == group_labels.size(),
                "Size of values column should be same as that of group labels");

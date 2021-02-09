@@ -100,7 +100,7 @@ struct half_up_positive {
   template <typename U = T, typename std::enable_if_t<cudf::is_floating_point<U>()>* = nullptr>
   __device__ U operator()(U e)
   {
-    T integer_part;
+    T       integer_part;
     T const fractional_part = generic_modf(e, &integer_part);
     return integer_part + generic_round(fractional_part * n) / n;
   }
@@ -153,7 +153,7 @@ struct half_even_positive {
   template <typename U = T, typename std::enable_if_t<cudf::is_floating_point<U>()>* = nullptr>
   __device__ U operator()(U e)
   {
-    T integer_part;
+    T       integer_part;
     T const fractional_part = generic_modf(e, &integer_part);
     return integer_part + generic_round_half_even(fractional_part * n) / n;
   }
@@ -189,13 +189,13 @@ struct half_even_negative {
 
 template <typename T>
 struct half_up_fixed_point {
-  T n;
+  T          n;
   __device__ T operator()(T e) { return half_up_negative<T>{n}(e) / n; }
 };
 
 template <typename T>
 struct half_even_fixed_point {
-  T n;
+  T          n;
   __device__ T operator()(T e) { return half_even_negative<T>{n}(e) / n; }
 };
 
@@ -203,9 +203,9 @@ template <typename T,
           template <typename>
           typename RoundFunctor,
           typename std::enable_if_t<not cudf::is_fixed_point<T>()>* = nullptr>
-std::unique_ptr<column> round_with(column_view const& input,
-                                   int32_t decimal_places,
-                                   rmm::cuda_stream_view stream,
+std::unique_ptr<column> round_with(column_view const&               input,
+                                   int32_t                          decimal_places,
+                                   rmm::cuda_stream_view            stream,
                                    rmm::mr::device_memory_resource* mr)
 {
   using Functor = RoundFunctor<T>;
@@ -216,8 +216,8 @@ std::unique_ptr<column> round_with(column_view const& input,
   auto result = cudf::make_fixed_width_column(
     input.type(), input.size(), copy_bitmask(input, stream, mr), input.null_count(), stream, mr);
 
-  auto out_view = result->mutable_view();
-  T const n     = std::pow(10, std::abs(decimal_places));
+  auto    out_view = result->mutable_view();
+  T const n        = std::pow(10, std::abs(decimal_places));
 
   thrust::transform(
     rmm::exec_policy(stream), input.begin<T>(), input.end<T>(), out_view.begin<T>(), Functor{n});
@@ -229,9 +229,9 @@ template <typename T,
           template <typename>
           typename RoundFunctor,
           typename std::enable_if_t<cudf::is_fixed_point<T>()>* = nullptr>
-std::unique_ptr<column> round_with(column_view const& input,
-                                   int32_t decimal_places,
-                                   rmm::cuda_stream_view stream,
+std::unique_ptr<column> round_with(column_view const&               input,
+                                   int32_t                          decimal_places,
+                                   rmm::cuda_stream_view            stream,
                                    rmm::mr::device_memory_resource* mr)
 {
   using namespace numeric;
@@ -250,8 +250,8 @@ std::unique_ptr<column> round_with(column_view const& input,
   auto result = cudf::make_fixed_width_column(
     result_type, input.size(), copy_bitmask(input, stream, mr), input.null_count(), stream, mr);
 
-  auto out_view = result->mutable_view();
-  Type const n  = std::pow(10, std::abs(decimal_places + input.type().scale()));
+  auto       out_view = result->mutable_view();
+  Type const n        = std::pow(10, std::abs(decimal_places + input.type().scale()));
 
   thrust::transform(rmm::exec_policy(stream),
                     input.begin<Type>(),
@@ -272,10 +272,10 @@ struct round_type_dispatcher {
 
   template <typename T>
   std::enable_if_t<is_supported_round_type<T>(), std::unique_ptr<column>> operator()(
-    column_view const& input,
-    int32_t decimal_places,
-    cudf::rounding_method method,
-    rmm::cuda_stream_view stream,
+    column_view const&               input,
+    int32_t                          decimal_places,
+    cudf::rounding_method            method,
+    rmm::cuda_stream_view            stream,
     rmm::mr::device_memory_resource* mr)
   {
     // clang-format off
@@ -298,10 +298,10 @@ struct round_type_dispatcher {
 
 }  // anonymous namespace
 
-std::unique_ptr<column> round(column_view const& input,
-                              int32_t decimal_places,
-                              cudf::rounding_method method,
-                              rmm::cuda_stream_view stream,
+std::unique_ptr<column> round(column_view const&               input,
+                              int32_t                          decimal_places,
+                              cudf::rounding_method            method,
+                              rmm::cuda_stream_view            stream,
                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(cudf::is_numeric(input.type()) || cudf::is_fixed_point(input.type()),
@@ -321,9 +321,9 @@ std::unique_ptr<column> round(column_view const& input,
 
 }  // namespace detail
 
-std::unique_ptr<column> round(column_view const& input,
-                              int32_t decimal_places,
-                              rounding_method method,
+std::unique_ptr<column> round(column_view const&               input,
+                              int32_t                          decimal_places,
+                              rounding_method                  method,
                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

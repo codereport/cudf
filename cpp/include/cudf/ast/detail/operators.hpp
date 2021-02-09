@@ -50,7 +50,7 @@ constexpr bool is_valid_unary_op = cuda::std::is_invocable<Op, T>::value;
  */
 template <typename F, typename... Ts>
 CUDA_HOST_DEVICE_CALLABLE constexpr void ast_operator_dispatcher(ast_operator op,
-                                                                 F&& f,
+                                                                 F&&          f,
                                                                  Ts&&... args)
 {
   switch (op) {
@@ -853,7 +853,7 @@ struct type_dispatch_binary_op {
   template <ast_operator op, typename F, typename... Ts>
   CUDA_HOST_DEVICE_CALLABLE void operator()(cudf::data_type lhs_type,
                                             cudf::data_type rhs_type,
-                                            F&& f,
+                                            F&&             f,
                                             Ts&&... args)
   {
 #if 0
@@ -953,9 +953,9 @@ struct type_dispatch_unary_op {
  * @param args Forwarded arguments to `operator()` of `f`.
  */
 template <typename F, typename... Ts>
-CUDA_HOST_DEVICE_CALLABLE constexpr void unary_operator_dispatcher(ast_operator op,
+CUDA_HOST_DEVICE_CALLABLE constexpr void unary_operator_dispatcher(ast_operator    op,
                                                                    cudf::data_type input_type,
-                                                                   F&& f,
+                                                                   F&&             f,
                                                                    Ts&&... args)
 {
   ast_operator_dispatcher(op,
@@ -1036,7 +1036,7 @@ struct return_type_functor {
  * @param operand_types Vector of input types to the operator.
  * @return cudf::data_type Return type of the operator.
  */
-inline cudf::data_type ast_operator_return_type(ast_operator op,
+inline cudf::data_type ast_operator_return_type(ast_operator                        op,
                                                 std::vector<cudf::data_type> const& operand_types)
 {
   auto result = cudf::data_type(cudf::type_id::EMPTY);

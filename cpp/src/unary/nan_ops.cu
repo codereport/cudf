@@ -29,9 +29,9 @@ namespace detail {
 struct nan_dispatcher {
   template <typename T, typename Predicate>
   std::enable_if_t<std::is_floating_point<T>::value, std::unique_ptr<column>> operator()(
-    cudf::column_view const& input,
-    Predicate predicate,
-    rmm::cuda_stream_view stream,
+    cudf::column_view const&         input,
+    Predicate                        predicate,
+    rmm::cuda_stream_view            stream,
     rmm::mr::device_memory_resource* mr)
   {
     auto input_device_view = column_device_view::create(input);
@@ -57,17 +57,17 @@ struct nan_dispatcher {
 
   template <typename T, typename Predicate>
   std::enable_if_t<!std::is_floating_point<T>::value, std::unique_ptr<column>> operator()(
-    cudf::column_view const& input,
-    Predicate predicate,
-    rmm::cuda_stream_view stream,
+    cudf::column_view const&         input,
+    Predicate                        predicate,
+    rmm::cuda_stream_view            stream,
     rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("NAN is not supported in a Non-floating point type column");
   }
 };
 
-std::unique_ptr<column> is_nan(cudf::column_view const& input,
-                               rmm::cuda_stream_view stream,
+std::unique_ptr<column> is_nan(cudf::column_view const&         input,
+                               rmm::cuda_stream_view            stream,
                                rmm::mr::device_memory_resource* mr)
 {
   auto predicate = [] __device__(auto element_validity_pair) {
@@ -77,8 +77,8 @@ std::unique_ptr<column> is_nan(cudf::column_view const& input,
   return cudf::type_dispatcher(input.type(), nan_dispatcher{}, input, predicate, stream, mr);
 }
 
-std::unique_ptr<column> is_not_nan(cudf::column_view const& input,
-                                   rmm::cuda_stream_view stream,
+std::unique_ptr<column> is_not_nan(cudf::column_view const&         input,
+                                   rmm::cuda_stream_view            stream,
                                    rmm::mr::device_memory_resource* mr)
 {
   auto predicate = [] __device__(auto element_validity_pair) {
@@ -96,7 +96,7 @@ std::unique_ptr<column> is_nan(cudf::column_view const& input, rmm::mr::device_m
   return detail::is_nan(input, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> is_not_nan(cudf::column_view const& input,
+std::unique_ptr<column> is_not_nan(cudf::column_view const&         input,
                                    rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

@@ -52,7 +52,7 @@ TYPED_TEST(QuantilesTest, TestMultiColumnZeroRows)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T> input_a({});
-  auto input = table_view({input_a});
+  auto                          input = table_view({input_a});
 
   EXPECT_THROW(quantiles(input, {0.0f}), logic_error);
 }
@@ -62,7 +62,7 @@ TYPED_TEST(QuantilesTest, TestZeroRequestedQuantiles)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T, int32_t> input_a({1}, {1});
-  auto input = table_view(std::vector<column_view>{input_a});
+  auto                                   input = table_view(std::vector<column_view>{input_a});
 
   auto actual   = quantiles(input, {});
   auto expected = empty_like(input);
@@ -76,7 +76,7 @@ TYPED_TEST(QuantilesTest, TestMultiColumnOrderCountMismatch)
 
   fixed_width_column_wrapper<T> input_a({});
   fixed_width_column_wrapper<T> input_b({});
-  auto input = table_view({input_a});
+  auto                          input = table_view({input_a});
 
   EXPECT_THROW(quantiles(input,
                          {0.0f},
@@ -93,7 +93,7 @@ TYPED_TEST(QuantilesTest, TestMultiColumnNullOrderCountMismatch)
 
   fixed_width_column_wrapper<T> input_a({});
   fixed_width_column_wrapper<T> input_b({});
-  auto input = table_view({input_a});
+  auto                          input = table_view({input_a});
 
   EXPECT_THROW(quantiles(input,
                          {0.0f},
@@ -110,7 +110,7 @@ TYPED_TEST(QuantilesTest, TestMultiColumnArithmeticInterpolation)
 
   fixed_width_column_wrapper<T> input_a({});
   fixed_width_column_wrapper<T> input_b({});
-  auto input = table_view({input_a});
+  auto                          input = table_view({input_a});
 
   EXPECT_THROW(quantiles(input, {0.0f}, interpolation::LINEAR), logic_error);
 

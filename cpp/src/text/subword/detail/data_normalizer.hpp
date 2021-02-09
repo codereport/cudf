@@ -81,13 +81,13 @@ class data_normalizer {
    *         to the code points array and the second is a pointer to the offsets
    *         used to locate the code points for each string.
    */
-  uvector_pair normalize(char const* d_strings,
-                         uint32_t const* d_offsets,
-                         uint32_t num_strings,
+  uvector_pair normalize(char const*           d_strings,
+                         uint32_t const*       d_offsets,
+                         uint32_t              num_strings,
                          rmm::cuda_stream_view stream);
 
  private:
-  bool const do_lower_case;
+  bool const                     do_lower_case;
   codepoint_metadata_type const* d_cp_metadata;
   aux_codepoint_data_type const* d_aux_table;
 };

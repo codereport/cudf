@@ -31,14 +31,14 @@ namespace io {
 namespace orc {
 namespace gpu {
 constexpr uint32_t max_dict_entries = default_row_index_stride;
-constexpr int init_hash_bits        = 12;
+constexpr int      init_hash_bits   = 12;
 
 struct dictinit_state_s {
-  uint32_t nnz;
-  uint32_t total_dupes;
-  DictionaryChunk chunk;
+  uint32_t          nnz;
+  uint32_t          total_dupes;
+  DictionaryChunk   chunk;
   volatile uint32_t scratch_red[32];
-  uint32_t dict[max_dict_entries];
+  uint32_t          dict[max_dict_entries];
   union {
     uint16_t u16[1 << (init_hash_bits)];
     uint32_t u32[1 << (init_hash_bits - 1)];
@@ -68,7 +68,7 @@ static __device__ void LoadNonNullIndices(volatile dictinit_state_s *s, int t)
   if (t == 0) { s->nnz = 0; }
   for (uint32_t i = 0; i < s->chunk.num_rows; i += 512) {
     const uint32_t *valid_map = s->chunk.valid_map_base;
-    uint32_t is_valid, nz_map, nz_pos;
+    uint32_t        is_valid, nz_map, nz_pos;
     if (t < 16) {
       if (!valid_map) {
         s->scratch_red[t] = 0xffffffffu;
@@ -119,17 +119,17 @@ __global__ void __launch_bounds__(block_size, 2)
   using warp_reduce      = cub::WarpReduce<uint32_t>;
   using half_warp_reduce = cub::WarpReduce<uint32_t, 16>;
   __shared__ union {
-    typename warp_reduce::TempStorage full[block_size / 32];
+    typename warp_reduce::TempStorage      full[block_size / 32];
     typename half_warp_reduce::TempStorage half[block_size / 32];
   } temp_storage;
 
-  dictinit_state_s *const s = &state_g;
-  uint32_t col_id           = blockIdx.x;
-  uint32_t group_id         = blockIdx.y;
-  const nvstrdesc_s *ck_data;
-  uint32_t *dict_data;
-  uint32_t nnz, start_row, dict_char_count;
-  int t = threadIdx.x;
+  dictinit_state_s *const s        = &state_g;
+  uint32_t                col_id   = blockIdx.x;
+  uint32_t                group_id = blockIdx.y;
+  const nvstrdesc_s *     ck_data;
+  uint32_t *              dict_data;
+  uint32_t                nnz, start_row, dict_char_count;
+  int                     t = threadIdx.x;
 
   if (t == 0) s->chunk = chunks[group_id * num_columns + col_id];
   for (uint32_t i = 0; i < sizeof(s->map) / sizeof(uint32_t); i += block_size) {
@@ -206,7 +206,7 @@ __global__ void __launch_bounds__(block_size, 2)
   // Put the indices back in hash order
   for (uint32_t i = 0; i < nnz; i += block_size) {
     uint32_t ck_row = 0, pos = 0, hash = 0, pos_old, pos_new, sh, colliding_row;
-    bool collision;
+    bool     collision;
     if (i + t < nnz) {
       ck_row  = dict_data[i + t] - start_row;
       hash    = nvstr_init_hash(ck_data[ck_row].ptr, static_cast<uint32_t>(ck_data[ck_row].count));
@@ -242,7 +242,7 @@ __global__ void __launch_bounds__(block_size, 2)
     uint32_t ck_row = 0, ck_row_ref = 0, is_dupe = 0, dupe_mask, dupes_before;
     if (i + t < nnz) {
       const char *str1, *str2;
-      uint32_t len1, len2, hash;
+      uint32_t    len1, len2, hash;
       ck_row     = s->dict[i + t];
       str1       = ck_data[ck_row].ptr;
       len1       = static_cast<uint32_t>(ck_data[ck_row].count);
@@ -299,21 +299,21 @@ __global__ void __launch_bounds__(block_size, 2)
  */
 // blockDim {1024,1,1}
 extern "C" __global__ void __launch_bounds__(1024)
-  gpuCompactChunkDictionaries(StripeDictionary *stripes,
+  gpuCompactChunkDictionaries(StripeDictionary *     stripes,
                               DictionaryChunk const *chunks,
-                              uint32_t num_columns)
+                              uint32_t               num_columns)
 {
   __shared__ __align__(16) StripeDictionary stripe_g;
   __shared__ __align__(16) DictionaryChunk chunk_g;
-  __shared__ const uint32_t *volatile ck_curptr_g;
-  __shared__ uint32_t volatile ck_curlen_g;
+  __shared__ const                         uint32_t *volatile ck_curptr_g;
+  __shared__                               uint32_t volatile ck_curlen_g;
 
-  uint32_t col_id    = blockIdx.x;
-  uint32_t stripe_id = blockIdx.y;
-  uint32_t chunk_len;
-  int t = threadIdx.x;
+  uint32_t        col_id    = blockIdx.x;
+  uint32_t        stripe_id = blockIdx.y;
+  uint32_t        chunk_len;
+  int             t = threadIdx.x;
   const uint32_t *src;
-  uint32_t *dst;
+  uint32_t *      dst;
 
   if (t == 0) stripe_g = stripes[stripe_id * num_columns + col_id];
   __syncthreads();
@@ -344,8 +344,8 @@ extern "C" __global__ void __launch_bounds__(1024)
 }
 
 struct build_state_s {
-  uint32_t total_dupes;
-  StripeDictionary stripe;
+  uint32_t          total_dupes;
+  StripeDictionary  stripe;
   volatile uint32_t scratch_red[32];
 };
 
@@ -365,14 +365,14 @@ __global__ void __launch_bounds__(block_size)
   using warp_reduce = cub::WarpReduce<uint32_t>;
   __shared__ typename warp_reduce::TempStorage temp_storage[block_size / 32];
 
-  build_state_s *const s = &state_g;
-  uint32_t col_id        = blockIdx.x;
-  uint32_t stripe_id     = blockIdx.y;
-  uint32_t num_strings;
-  uint32_t *dict_data, *dict_index;
-  uint32_t dict_char_count;
-  const nvstrdesc_s *str_data;
-  int t = threadIdx.x;
+  build_state_s *const s         = &state_g;
+  uint32_t             col_id    = blockIdx.x;
+  uint32_t             stripe_id = blockIdx.y;
+  uint32_t             num_strings;
+  uint32_t *           dict_data, *dict_index;
+  uint32_t             dict_char_count;
+  const nvstrdesc_s *  str_data;
+  int                  t = threadIdx.x;
 
   if (t == 0) s->stripe = stripes[stripe_id * num_columns + col_id];
   if (t == 31 * 32) { s->total_dupes = 0; }
@@ -384,10 +384,10 @@ __global__ void __launch_bounds__(block_size)
   str_data        = static_cast<const nvstrdesc_s *>(s->stripe.column_data_base);
   dict_char_count = 0;
   for (uint32_t i = 0; i < num_strings; i += block_size) {
-    uint32_t cur = (i + t < num_strings) ? dict_data[i + t] : 0;
-    uint32_t dupe_mask, dupes_before, cur_len = 0;
+    uint32_t    cur = (i + t < num_strings) ? dict_data[i + t] : 0;
+    uint32_t    dupe_mask, dupes_before, cur_len = 0;
     const char *cur_ptr;
-    bool is_dupe = false;
+    bool        is_dupe = false;
     if (i + t < num_strings) {
       cur_ptr = str_data[cur].ptr;
       cur_len = str_data[cur].count;
@@ -433,9 +433,9 @@ __global__ void __launch_bounds__(block_size)
  * @param[in] num_rowgroups Number of row groups
  * @param[in] stream CUDA stream to use, default 0
  */
-void InitDictionaryIndices(DictionaryChunk *chunks,
-                           uint32_t num_columns,
-                           uint32_t num_rowgroups,
+void InitDictionaryIndices(DictionaryChunk *     chunks,
+                           uint32_t              num_columns,
+                           uint32_t              num_rowgroups,
                            rmm::cuda_stream_view stream)
 {
   dim3 dim_block(512, 1);  // 512 threads per chunk
@@ -454,13 +454,13 @@ void InitDictionaryIndices(DictionaryChunk *chunks,
  * @param[in] num_columns Number of columns
  * @param[in] stream CUDA stream to use, default 0
  */
-void BuildStripeDictionaries(StripeDictionary *stripes,
-                             StripeDictionary *stripes_host,
+void BuildStripeDictionaries(StripeDictionary *     stripes,
+                             StripeDictionary *     stripes_host,
                              DictionaryChunk const *chunks,
-                             uint32_t num_stripes,
-                             uint32_t num_rowgroups,
-                             uint32_t num_columns,
-                             rmm::cuda_stream_view stream)
+                             uint32_t               num_stripes,
+                             uint32_t               num_rowgroups,
+                             uint32_t               num_columns,
+                             rmm::cuda_stream_view  stream)
 {
   dim3 dim_block(1024, 1);  // 1024 threads per chunk
   dim3 dim_grid_build(num_columns, num_stripes);
@@ -469,7 +469,7 @@ void BuildStripeDictionaries(StripeDictionary *stripes,
   for (uint32_t i = 0; i < num_stripes * num_columns; i++) {
     if (stripes_host[i].dict_data != nullptr) {
       thrust::device_ptr<uint32_t> p = thrust::device_pointer_cast(stripes_host[i].dict_data);
-      const nvstrdesc_s *str_data =
+      const nvstrdesc_s *          str_data =
         static_cast<const nvstrdesc_s *>(stripes_host[i].column_data_base);
       // NOTE: Requires the --expt-extended-lambda nvcc flag
       thrust::sort(rmm::exec_policy(stream),

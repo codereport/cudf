@@ -65,10 +65,10 @@ namespace strings {
  * @return New column with concatenated results.
  */
 std::unique_ptr<column> concatenate(
-  table_view const& strings_columns,
-  string_scalar const& separator      = string_scalar(""),
-  string_scalar const& narep          = string_scalar("", false),
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  table_view const&                strings_columns,
+  string_scalar const&             separator = string_scalar(""),
+  string_scalar const&             narep     = string_scalar("", false),
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Concatenates all strings in the column into one new string delimited
@@ -95,10 +95,10 @@ std::unique_ptr<column> concatenate(
  * @return New column containing one string.
  */
 std::unique_ptr<column> join_strings(
-  strings_column_view const& strings,
-  string_scalar const& separator      = string_scalar(""),
-  string_scalar const& narep          = string_scalar("", false),
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  strings_column_view const&       strings,
+  string_scalar const&             separator = string_scalar(""),
+  string_scalar const&             narep     = string_scalar("", false),
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Concatenates a list of strings columns using separators for each row
@@ -152,11 +152,11 @@ std::unique_ptr<column> join_strings(
  * @return New column with concatenated results.
  */
 std::unique_ptr<column> concatenate(
-  table_view const& strings_columns,
-  strings_column_view const& separators,
-  string_scalar const& separator_narep = string_scalar("", false),
-  string_scalar const& col_narep       = string_scalar("", false),
-  rmm::mr::device_memory_resource* mr  = rmm::mr::get_current_device_resource());
+  table_view const&                strings_columns,
+  strings_column_view const&       separators,
+  string_scalar const&             separator_narep = string_scalar("", false),
+  string_scalar const&             col_narep       = string_scalar("", false),
+  rmm::mr::device_memory_resource* mr              = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group
 }  // namespace strings

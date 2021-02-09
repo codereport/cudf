@@ -57,7 +57,7 @@ TEST_F(StringsExtractTests, ExtractTest)
                                        nullptr};
 
   std::string pattern = "(\\w+) (\\w+)";
-  auto results        = cudf::strings::extract(strings_view, pattern);
+  auto        results = cudf::strings::extract(strings_view, pattern);
 
   cudf::test::strings_column_wrapper expected1(
     h_expecteds.data(),
@@ -91,10 +91,10 @@ TEST_F(StringsExtractTests, ExtractDomainTest)
                                               "https://a.news.co.uk",
                                               "107-193-100-2.lightspeed.cicril.sbcglobal.net",
                                               "a23-44-13-2.deploy.static.akamaitechnologies.com"});
-  auto strings_view = cudf::strings_column_view(strings);
+  auto                               strings_view = cudf::strings_column_view(strings);
 
   std::string pattern = "([\\w]+[\\.].*[^/]|[\\-\\w]+[\\.].*[^/])";
-  auto results        = cudf::strings::extract(strings_view, pattern);
+  auto        results = cudf::strings::extract(strings_view, pattern);
 
   cudf::test::strings_column_wrapper expected1({
     "www.google.com",
@@ -112,7 +112,7 @@ TEST_F(StringsExtractTests, ExtractDomainTest)
     "107-193-100-2.lightspeed.cicril.sbcglobal.net",
     "a23-44-13-2.deploy.static.akamaitechnologies.com",
   });
-  cudf::table_view expected{{expected1}};
+  cudf::table_view                   expected{{expected1}};
   CUDF_TEST_EXPECT_TABLES_EQUAL(*results, expected);
 }
 
@@ -149,7 +149,7 @@ TEST_F(StringsExtractTests, ExtractEventTest)
 
 TEST_F(StringsExtractTests, EmptyExtractTest)
 {
-  std::vector<const char*> h_strings{nullptr, "AAA", "AAA_A", "AAA_AAA_", "A__", ""};
+  std::vector<const char*>           h_strings{nullptr, "AAA", "AAA_A", "AAA_AAA_", "A__", ""};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),
@@ -158,7 +158,7 @@ TEST_F(StringsExtractTests, EmptyExtractTest)
 
   auto results = cudf::strings::extract(strings_view, "([^_]*)\\Z");
 
-  std::vector<const char*> h_expected{nullptr, "AAA", "A", "", "", ""};
+  std::vector<const char*>           h_expected{nullptr, "AAA", "A", "", "", ""};
   cudf::test::strings_column_wrapper expected(
     h_expected.data(),
     h_expected.data() + h_strings.size(),
@@ -188,9 +188,9 @@ TEST_F(StringsExtractTests, MediumRegex)
     h_strings.end(),
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; }));
 
-  auto strings_view = cudf::strings_column_view(strings);
-  auto results      = cudf::strings::extract(strings_view, medium_regex);
-  std::vector<const char*> h_expected{"world", nullptr, nullptr};
+  auto                               strings_view = cudf::strings_column_view(strings);
+  auto                               results = cudf::strings::extract(strings_view, medium_regex);
+  std::vector<const char*>           h_expected{"world", nullptr, nullptr};
   cudf::test::strings_column_wrapper expected(
     h_expected.begin(),
     h_expected.end(),
@@ -217,9 +217,9 @@ TEST_F(StringsExtractTests, LargeRegex)
     h_strings.end(),
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; }));
 
-  auto strings_view = cudf::strings_column_view(strings);
-  auto results      = cudf::strings::extract(strings_view, large_regex);
-  std::vector<const char*> h_expected{"quick", nullptr, nullptr};
+  auto                               strings_view = cudf::strings_column_view(strings);
+  auto                               results = cudf::strings::extract(strings_view, large_regex);
+  std::vector<const char*>           h_expected{"quick", nullptr, nullptr};
   cudf::test::strings_column_wrapper expected(
     h_expected.begin(),
     h_expected.end(),

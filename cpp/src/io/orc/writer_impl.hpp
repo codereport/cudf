@@ -67,11 +67,11 @@ class writer::impl {
    * @param mr Device memory resource to use for device memory allocation
    * @param stream CUDA stream used for device memory operations and kernel launches
    */
-  explicit impl(std::unique_ptr<data_sink> sink,
-                orc_writer_options const& options,
-                SingleWriteMode mode,
+  explicit impl(std::unique_ptr<data_sink>       sink,
+                orc_writer_options const&        options,
+                SingleWriteMode                  mode,
                 rmm::mr::device_memory_resource* mr,
-                rmm::cuda_stream_view stream);
+                rmm::cuda_stream_view            stream);
 
   /**
    * @brief Constructor with chunked writer options.
@@ -82,11 +82,11 @@ class writer::impl {
    * @param mr Device memory resource to use for device memory allocation
    * @param stream CUDA stream used for device memory operations and kernel launches
    */
-  explicit impl(std::unique_ptr<data_sink> sink,
+  explicit impl(std::unique_ptr<data_sink>        sink,
                 chunked_orc_writer_options const& options,
-                SingleWriteMode mode,
-                rmm::mr::device_memory_resource* mr,
-                rmm::cuda_stream_view stream);
+                SingleWriteMode                   mode,
+                rmm::mr::device_memory_resource*  mr,
+                rmm::cuda_stream_view             stream);
 
   /**
    * @brief Destructor to complete any incomplete write and release resources.
@@ -121,11 +121,11 @@ class writer::impl {
    * @param dict_index Dictionary index memory
    * @param dict List of dictionary chunks
    */
-  void init_dictionaries(orc_column_view* columns,
-                         size_t num_rows,
-                         std::vector<int> const& str_col_ids,
-                         uint32_t* dict_data,
-                         uint32_t* dict_index,
+  void init_dictionaries(orc_column_view*                         columns,
+                         size_t                                   num_rows,
+                         std::vector<int> const&                  str_col_ids,
+                         uint32_t*                                dict_data,
+                         uint32_t*                                dict_index,
                          hostdevice_vector<gpu::DictionaryChunk>& dict);
 
   /**
@@ -139,13 +139,13 @@ class writer::impl {
    * @param dict_index List of dictionary indices
    * @param stripe_dict List of stripe dictionaries
    */
-  void build_dictionaries(orc_column_view* columns,
-                          size_t num_rows,
-                          std::vector<int> const& str_col_ids,
-                          std::vector<uint32_t> const& stripe_list,
+  void build_dictionaries(orc_column_view*                               columns,
+                          size_t                                         num_rows,
+                          std::vector<int> const&                        str_col_ids,
+                          std::vector<uint32_t> const&                   stripe_list,
                           hostdevice_vector<gpu::DictionaryChunk> const& dict,
-                          uint32_t* dict_index,
-                          hostdevice_vector<gpu::StripeDictionary>& stripe_dict);
+                          uint32_t*                                      dict_index,
+                          hostdevice_vector<gpu::StripeDictionary>&      stripe_dict);
 
   /**
    * @brief Returns stream information for each column
@@ -158,11 +158,11 @@ class writer::impl {
    *
    * @return The streams
    */
-  std::vector<Stream> gather_streams(orc_column_view* columns,
-                                     size_t num_columns,
-                                     size_t num_rows,
+  std::vector<Stream> gather_streams(orc_column_view*             columns,
+                                     size_t                       num_columns,
+                                     size_t                       num_rows,
                                      std::vector<uint32_t> const& stripe_list,
-                                     std::vector<int32_t>& strm_ids);
+                                     std::vector<int32_t>&        strm_ids);
 
   /**
    * @brief Encodes the streams as a series of column data chunks
@@ -179,14 +179,14 @@ class writer::impl {
    *
    * @return Device buffer containing encoded data
    */
-  rmm::device_buffer encode_columns(orc_column_view* columns,
-                                    size_t num_columns,
-                                    size_t num_rows,
-                                    size_t num_rowgroups,
-                                    std::vector<int> const& str_col_ids,
-                                    std::vector<uint32_t> const& stripe_list,
-                                    std::vector<Stream> const& streams,
-                                    std::vector<int32_t> const& strm_ids,
+  rmm::device_buffer encode_columns(orc_column_view*                  columns,
+                                    size_t                            num_columns,
+                                    size_t                            num_rows,
+                                    size_t                            num_rowgroups,
+                                    std::vector<int> const&           str_col_ids,
+                                    std::vector<uint32_t> const&      stripe_list,
+                                    std::vector<Stream> const&        streams,
+                                    std::vector<int32_t> const&       strm_ids,
                                     hostdevice_vector<gpu::EncChunk>& chunks);
 
   /**
@@ -203,11 +203,11 @@ class writer::impl {
    *
    * @return The stripes' information
    */
-  std::vector<StripeInformation> gather_stripes(size_t num_columns,
-                                                size_t num_rows,
-                                                size_t num_index_streams,
-                                                size_t num_data_streams,
-                                                std::vector<uint32_t> const& stripe_list,
+  std::vector<StripeInformation> gather_stripes(size_t                            num_columns,
+                                                size_t                            num_rows,
+                                                size_t                            num_index_streams,
+                                                size_t                            num_data_streams,
+                                                std::vector<uint32_t> const&      stripe_list,
                                                 hostdevice_vector<gpu::EncChunk>& chunks,
                                                 hostdevice_vector<gpu::StripeStream>& strm_desc);
 
@@ -226,13 +226,13 @@ class writer::impl {
    * @return The statistic blobs
    */
   std::vector<std::vector<uint8_t>> gather_statistic_blobs(
-    orc_column_view const* columns,
-    size_t num_columns,
-    size_t num_rows,
-    size_t num_rowgroups,
-    std::vector<uint32_t> const& stripe_list,
+    orc_column_view const*                columns,
+    size_t                                num_columns,
+    size_t                                num_rows,
+    size_t                                num_rowgroups,
+    std::vector<uint32_t> const&          stripe_list,
     std::vector<StripeInformation> const& stripes,
-    hostdevice_vector<gpu::EncChunk>& chunks);
+    hostdevice_vector<gpu::EncChunk>&     chunks);
 
   /**
    * @brief Write the specified column's row index stream
@@ -250,19 +250,19 @@ class writer::impl {
    * @param streams List of all streams
    * @param pbw Protobuf writer
    */
-  void write_index_stream(int32_t stripe_id,
-                          int32_t stream_id,
-                          orc_column_view* columns,
-                          size_t num_columns,
-                          size_t num_data_streams,
-                          size_t group,
-                          size_t groups_in_stripe,
-                          hostdevice_vector<gpu::EncChunk> const& chunks,
-                          hostdevice_vector<gpu::StripeStream> const& strm_desc,
+  void write_index_stream(int32_t                                        stripe_id,
+                          int32_t                                        stream_id,
+                          orc_column_view*                               columns,
+                          size_t                                         num_columns,
+                          size_t                                         num_data_streams,
+                          size_t                                         group,
+                          size_t                                         groups_in_stripe,
+                          hostdevice_vector<gpu::EncChunk> const&        chunks,
+                          hostdevice_vector<gpu::StripeStream> const&    strm_desc,
                           hostdevice_vector<gpu_inflate_status_s> const& comp_out,
-                          StripeInformation& stripe,
-                          std::vector<Stream>& streams,
-                          ProtobufWriter* pbw);
+                          StripeInformation&                             stripe,
+                          std::vector<Stream>&                           streams,
+                          ProtobufWriter*                                pbw);
 
   /**
    * @brief Write the specified column's data streams
@@ -275,11 +275,11 @@ class writer::impl {
    * @param streams List of all streams
    */
   void write_data_stream(gpu::StripeStream const& strm_desc,
-                         gpu::EncChunk const& chunk,
-                         uint8_t const* compressed_data,
-                         uint8_t* stream_out,
-                         StripeInformation& stripe,
-                         std::vector<Stream>& streams);
+                         gpu::EncChunk const&     chunk,
+                         uint8_t const*           compressed_data,
+                         uint8_t*                 stream_out,
+                         StripeInformation&       stripe,
+                         std::vector<Stream>&     streams);
 
   /**
    * @brief Insert 3-byte uncompressed block headers in a byte vector
@@ -317,17 +317,17 @@ class writer::impl {
   // Cuda stream to be used
   rmm::cuda_stream_view stream = rmm::cuda_stream_default;
 
-  size_t max_stripe_size_           = DEFAULT_STRIPE_SIZE;
-  size_t row_index_stride_          = default_row_index_stride;
-  size_t compression_blocksize_     = DEFAULT_COMPRESSION_BLOCKSIZE;
-  CompressionKind compression_kind_ = CompressionKind::NONE;
+  size_t          max_stripe_size_       = DEFAULT_STRIPE_SIZE;
+  size_t          row_index_stride_      = default_row_index_stride;
+  size_t          compression_blocksize_ = DEFAULT_COMPRESSION_BLOCKSIZE;
+  CompressionKind compression_kind_      = CompressionKind::NONE;
 
   bool enable_dictionary_ = true;
   bool enable_statistics_ = true;
 
   // Overall file metadata.  Filled in during the process and written during write_chunked_end()
   cudf::io::orc::FileFooter ff;
-  cudf::io::orc::Metadata md;
+  cudf::io::orc::Metadata   md;
   // current write position for rowgroups/chunks
   size_t current_chunk_offset;
   // optional user metadata
@@ -341,7 +341,7 @@ class writer::impl {
   // to track if the output has been written to sink
   bool closed = false;
 
-  std::vector<uint8_t> buffer_;
+  std::vector<uint8_t>       buffer_;
   std::unique_ptr<data_sink> out_sink_;
 };
 

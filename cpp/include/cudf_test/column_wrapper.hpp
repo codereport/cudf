@@ -140,10 +140,10 @@ template <typename ElementTo,
 rmm::device_buffer make_elements(InputIterator begin, InputIterator end)
 {
   static_assert(cudf::is_fixed_width<ElementTo>(), "Unexpected non-fixed width type.");
-  auto transformer     = fixed_width_type_converter<ElementFrom, ElementTo>{};
-  auto transform_begin = thrust::make_transform_iterator(begin, transformer);
-  auto const size      = cudf::distance(begin, end);
-  auto const elements  = thrust::host_vector<ElementTo>(transform_begin, transform_begin + size);
+  auto       transformer     = fixed_width_type_converter<ElementFrom, ElementTo>{};
+  auto       transform_begin = thrust::make_transform_iterator(begin, transformer);
+  auto const size            = cudf::distance(begin, end);
+  auto const elements = thrust::host_vector<ElementTo>(transform_begin, transform_begin + size);
   return rmm::device_buffer{elements.data(), size * sizeof(ElementTo)};
 }
 
@@ -165,11 +165,11 @@ template <typename ElementTo,
                                     cudf::is_fixed_point<ElementTo>()>* = nullptr>
 rmm::device_buffer make_elements(InputIterator begin, InputIterator end)
 {
-  using RepType        = typename ElementTo::rep;
-  auto transformer     = fixed_width_type_converter<ElementFrom, RepType>{};
-  auto transform_begin = thrust::make_transform_iterator(begin, transformer);
-  auto const size      = cudf::distance(begin, end);
-  auto const elements  = thrust::host_vector<RepType>(transform_begin, transform_begin + size);
+  using RepType              = typename ElementTo::rep;
+  auto       transformer     = fixed_width_type_converter<ElementFrom, RepType>{};
+  auto       transform_begin = thrust::make_transform_iterator(begin, transformer);
+  auto const size            = cudf::distance(begin, end);
+  auto const elements = thrust::host_vector<RepType>(transform_begin, transform_begin + size);
   return rmm::device_buffer{elements.data(), size * sizeof(RepType)};
 }
 
@@ -193,9 +193,9 @@ rmm::device_buffer make_elements(InputIterator begin, InputIterator end)
   using namespace numeric;
   using RepType = typename ElementTo::rep;
 
-  auto to_rep            = [](ElementTo fp) { return fp.value(); };
-  auto transformer_begin = thrust::make_transform_iterator(begin, to_rep);
-  auto const size        = cudf::distance(begin, end);
+  auto       to_rep            = [](ElementTo fp) { return fp.value(); };
+  auto       transformer_begin = thrust::make_transform_iterator(begin, to_rep);
+  auto const size              = cudf::distance(begin, end);
   auto const elements = thrust::host_vector<RepType>(transformer_begin, transformer_begin + size);
   return rmm::device_buffer{elements.data(), size * sizeof(RepType)};
 }
@@ -264,7 +264,7 @@ rmm::device_buffer make_null_mask(ValidityIterator begin, ValidityIterator end)
 template <typename StringsIterator, typename ValidityIterator>
 auto make_chars_and_offsets(StringsIterator begin, StringsIterator end, ValidityIterator v)
 {
-  std::vector<char> chars{};
+  std::vector<char>            chars{};
   std::vector<cudf::size_type> offsets(1, 0);
   for (auto str = begin; str < end; ++str) {
     std::string tmp = (*v++) ? std::string(*str) : std::string{};
@@ -397,7 +397,7 @@ class fixed_width_column_wrapper : public detail::column_wrapper {
    */
   template <typename ElementFrom>
   fixed_width_column_wrapper(std::initializer_list<ElementFrom> elements,
-                             std::initializer_list<bool> validity)
+                             std::initializer_list<bool>        validity)
     : fixed_width_column_wrapper(std::cbegin(elements), std::cend(elements), std::cbegin(validity))
   {
   }
@@ -444,8 +444,8 @@ class fixed_width_column_wrapper : public detail::column_wrapper {
    * @param validity The list of validity indicator booleans
    */
   template <typename InputIterator>
-  fixed_width_column_wrapper(InputIterator begin,
-                             InputIterator end,
+  fixed_width_column_wrapper(InputIterator                      begin,
+                             InputIterator                      end,
                              std::initializer_list<bool> const& validity)
     : fixed_width_column_wrapper(begin, end, std::cbegin(validity))
   {
@@ -502,7 +502,7 @@ class fixed_point_column_wrapper : public detail::column_wrapper {
   template <typename FixedPointRepIterator>
   fixed_point_column_wrapper(FixedPointRepIterator begin,
                              FixedPointRepIterator end,
-                             numeric::scale_type scale)
+                             numeric::scale_type   scale)
     : column_wrapper{}
   {
     CUDF_EXPECTS(numeric::is_supported_representation_type<Rep>(), "not valid representation type");
@@ -564,8 +564,8 @@ class fixed_point_column_wrapper : public detail::column_wrapper {
   template <typename FixedPointRepIterator, typename ValidityIterator>
   fixed_point_column_wrapper(FixedPointRepIterator begin,
                              FixedPointRepIterator end,
-                             ValidityIterator v,
-                             numeric::scale_type scale)
+                             ValidityIterator      v,
+                             numeric::scale_type   scale)
     : column_wrapper{}
   {
     CUDF_EXPECTS(numeric::is_supported_representation_type<Rep>(), "not valid representation type");
@@ -600,9 +600,9 @@ class fixed_point_column_wrapper : public detail::column_wrapper {
    * @param validity The initializer list of validity indicator booleans
    * @param scale    The scale of the elements in the column
    */
-  fixed_point_column_wrapper(std::initializer_list<Rep> elements,
+  fixed_point_column_wrapper(std::initializer_list<Rep>  elements,
                              std::initializer_list<bool> validity,
-                             numeric::scale_type scale)
+                             numeric::scale_type         scale)
     : fixed_point_column_wrapper(
         std::cbegin(elements), std::cend(elements), std::cbegin(validity), scale)
   {
@@ -628,8 +628,8 @@ class fixed_point_column_wrapper : public detail::column_wrapper {
    */
   template <typename ValidityIterator>
   fixed_point_column_wrapper(std::initializer_list<Rep> element_list,
-                             ValidityIterator v,
-                             numeric::scale_type scale)
+                             ValidityIterator           v,
+                             numeric::scale_type        scale)
     : fixed_point_column_wrapper(std::cbegin(element_list), std::cend(element_list), v, scale)
   {
   }
@@ -655,10 +655,10 @@ class fixed_point_column_wrapper : public detail::column_wrapper {
    * @param scale    The scale of the elements in the column
    */
   template <typename FixedPointRepIterator>
-  fixed_point_column_wrapper(FixedPointRepIterator begin,
-                             FixedPointRepIterator end,
+  fixed_point_column_wrapper(FixedPointRepIterator              begin,
+                             FixedPointRepIterator              end,
                              std::initializer_list<bool> const& validity,
-                             numeric::scale_type scale)
+                             numeric::scale_type                scale)
     : fixed_point_column_wrapper(begin, end, std::cbegin(validity), scale)
   {
   }
@@ -697,11 +697,11 @@ class strings_column_wrapper : public detail::column_wrapper {
   template <typename StringsIterator>
   strings_column_wrapper(StringsIterator begin, StringsIterator end) : column_wrapper{}
   {
-    std::vector<char> chars;
+    std::vector<char>            chars;
     std::vector<cudf::size_type> offsets;
-    auto all_valid           = thrust::make_constant_iterator(true);
-    std::tie(chars, offsets) = detail::make_chars_and_offsets(begin, end, all_valid);
-    wrapped                  = cudf::make_strings_column(chars, offsets);
+    auto                         all_valid = thrust::make_constant_iterator(true);
+    std::tie(chars, offsets)               = detail::make_chars_and_offsets(begin, end, all_valid);
+    wrapped                                = cudf::make_strings_column(chars, offsets);
   }
 
   /**
@@ -736,8 +736,8 @@ class strings_column_wrapper : public detail::column_wrapper {
   strings_column_wrapper(StringsIterator begin, StringsIterator end, ValidityIterator v)
     : column_wrapper{}
   {
-    size_type num_strings = std::distance(begin, end);
-    std::vector<char> chars;
+    size_type              num_strings = std::distance(begin, end);
+    std::vector<char>      chars;
     std::vector<size_type> offsets;
     std::tie(chars, offsets) = detail::make_chars_and_offsets(begin, end, v);
     wrapped =
@@ -801,7 +801,7 @@ class strings_column_wrapper : public detail::column_wrapper {
    * @param validity The list of validity indicator booleans
    */
   strings_column_wrapper(std::initializer_list<std::string> strings,
-                         std::initializer_list<bool> validity)
+                         std::initializer_list<bool>        validity)
     : strings_column_wrapper(std::cbegin(strings), std::cend(strings), std::cbegin(validity))
   {
   }
@@ -959,7 +959,7 @@ class dictionary_column_wrapper : public detail::column_wrapper {
    */
   template <typename ElementFrom>
   dictionary_column_wrapper(std::initializer_list<ElementFrom> elements,
-                            std::initializer_list<bool> validity)
+                            std::initializer_list<bool>        validity)
     : dictionary_column_wrapper(std::cbegin(elements), std::cend(elements), std::cbegin(validity))
   {
   }
@@ -1009,8 +1009,8 @@ class dictionary_column_wrapper : public detail::column_wrapper {
    * @param validity The list of validity indicator booleans
    */
   template <typename InputIterator>
-  dictionary_column_wrapper(InputIterator begin,
-                            InputIterator end,
+  dictionary_column_wrapper(InputIterator                      begin,
+                            InputIterator                      end,
                             std::initializer_list<bool> const& validity)
     : dictionary_column_wrapper(begin, end, std::cbegin(validity))
   {
@@ -1163,7 +1163,7 @@ class dictionary_column_wrapper<std::string> : public detail::column_wrapper {
    * @param validity The list of validity indicator booleans
    */
   dictionary_column_wrapper(std::initializer_list<std::string> strings,
-                            std::initializer_list<bool> validity)
+                            std::initializer_list<bool>        validity)
     : dictionary_column_wrapper(std::cbegin(strings), std::cend(strings), std::cbegin(validity))
   {
   }
@@ -1421,7 +1421,7 @@ class lists_column_wrapper : public detail::column_wrapper {
    */
   template <typename ValidityIterator>
   lists_column_wrapper(std::initializer_list<lists_column_wrapper<T, SourceElementT>> elements,
-                       ValidityIterator v)
+                       ValidityIterator                                               v)
     : column_wrapper{}
   {
     std::vector<bool> validity;
@@ -1450,7 +1450,7 @@ class lists_column_wrapper : public detail::column_wrapper {
    *
    */
   void build_from_nested(std::initializer_list<lists_column_wrapper<T, SourceElementT>> elements,
-                         std::vector<bool> const& v)
+                         std::vector<bool> const&                                       v)
   {
     auto valids = cudf::detail::make_counting_transform_iterator(
       0, [&v](auto i) { return v.empty() ? true : v[i]; });
@@ -1463,16 +1463,16 @@ class lists_column_wrapper : public detail::column_wrapper {
       [](auto acc, lists_column_wrapper const& lcw) {
         return lcw.depth > acc.second ? std::make_pair(lcw.get_view(), lcw.depth) : acc;
       });
-    column_view expected_hierarchy = hierarchy_and_depth.first;
-    int32_t const expected_depth   = hierarchy_and_depth.second;
+    column_view   expected_hierarchy = hierarchy_and_depth.first;
+    int32_t const expected_depth     = hierarchy_and_depth.second;
 
     // preprocess columns so that every column_view in 'cols' is an equivalent hierarchy
     std::vector<std::unique_ptr<column>> stubs;
-    std::vector<column_view> cols;
+    std::vector<column_view>             cols;
     std::tie(cols, stubs) = preprocess_columns(elements, expected_hierarchy, expected_depth);
 
     // generate offsets
-    size_type count = 0;
+    size_type              count = 0;
     std::vector<size_type> offsetv;
     std::transform(cols.cbegin(),
                    cols.cend(),
@@ -1597,11 +1597,11 @@ class lists_column_wrapper : public detail::column_wrapper {
 
   std::pair<std::vector<column_view>, std::vector<std::unique_ptr<column>>> preprocess_columns(
     std::initializer_list<lists_column_wrapper<T, SourceElementT>> const& elements,
-    column_view& expected_hierarchy,
-    int expected_depth)
+    column_view&                                                          expected_hierarchy,
+    int                                                                   expected_depth)
   {
     std::vector<std::unique_ptr<column>> stubs;
-    std::vector<column_view> cols;
+    std::vector<column_view>             cols;
 
     // preprocess the incoming lists.
     // - unwrap any "root" lists
@@ -1643,8 +1643,8 @@ class lists_column_wrapper : public detail::column_wrapper {
 
   column_view get_view() const { return root ? lists_column_view(*wrapped).child() : *wrapped; }
 
-  int depth = 0;
-  bool root = false;
+  int  depth = 0;
+  bool root  = false;
 };
 
 /**
@@ -1680,7 +1680,7 @@ class structs_column_wrapper : public detail::column_wrapper {
    * @param validity The vector of bools representing the column validity values
    */
   structs_column_wrapper(std::vector<std::unique_ptr<cudf::column>>&& child_columns,
-                         std::vector<bool> const& validity = {})
+                         std::vector<bool> const&                     validity = {})
   {
     init(std::move(child_columns), validity);
   }
@@ -1707,7 +1707,7 @@ class structs_column_wrapper : public detail::column_wrapper {
    */
   structs_column_wrapper(
     std::initializer_list<std::reference_wrapper<detail::column_wrapper>> child_column_wrappers,
-    std::vector<bool> const& validity = {})
+    std::vector<bool> const&                                              validity = {})
   {
     std::vector<std::unique_ptr<cudf::column>> child_columns;
     child_columns.reserve(child_column_wrappers.size());
@@ -1741,7 +1741,7 @@ class structs_column_wrapper : public detail::column_wrapper {
   template <typename V>
   structs_column_wrapper(
     std::initializer_list<std::reference_wrapper<detail::column_wrapper>> child_column_wrappers,
-    V validity_iter)
+    V                                                                     validity_iter)
   {
     std::vector<std::unique_ptr<cudf::column>> child_columns;
     child_columns.reserve(child_column_wrappers.size());
@@ -1754,7 +1754,7 @@ class structs_column_wrapper : public detail::column_wrapper {
 
  private:
   void init(std::vector<std::unique_ptr<cudf::column>>&& child_columns,
-            std::vector<bool> const& validity)
+            std::vector<bool> const&                     validity)
   {
     size_type num_rows = child_columns.empty() ? 0 : child_columns[0]->size();
 

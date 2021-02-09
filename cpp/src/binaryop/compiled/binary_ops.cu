@@ -102,12 +102,12 @@ struct apply_binop_scalar_rhs_lhs : apply_binop<Rhs, Lhs, Out> {
 
 template <typename Lhs, typename Rhs, typename Out>
 struct binary_op {
-  std::unique_ptr<column> operator()(column_view const& lhs,
-                                     scalar const& rhs,
-                                     binary_operator op,
-                                     data_type out_type,
-                                     bool const reversed,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(column_view const&               lhs,
+                                     scalar const&                    rhs,
+                                     binary_operator                  op,
+                                     data_type                        out_type,
+                                     bool const                       reversed,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     auto new_mask = binops::detail::scalar_col_valid_mask_and(lhs, rhs, stream, mr);
@@ -160,11 +160,11 @@ struct binary_op {
     return out;
   }
 
-  std::unique_ptr<column> operator()(column_view const& lhs,
-                                     column_view const& rhs,
-                                     binary_operator op,
-                                     data_type out_type,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(column_view const&               lhs,
+                                     column_view const&               rhs,
+                                     binary_operator                  op,
+                                     data_type                        out_type,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     auto new_mask = cudf::detail::bitmask_and(table_view({lhs, rhs}), stream, mr);
@@ -235,11 +235,11 @@ template <typename LhsDeviceViewT, typename RhsDeviceViewT, typename OutT, typen
 struct compare_functor {
   LhsDeviceViewT const lhs_dev_view_;  // Scalar or a column device view - lhs
   RhsDeviceViewT const rhs_dev_view_;  // Scalar or a column device view - rhs
-  CompareFunc const cfunc_;            // Comparison function
+  CompareFunc const    cfunc_;         // Comparison function
 
   compare_functor(LhsDeviceViewT const& lhs_dev_view,
                   RhsDeviceViewT const& rhs_dev_view,
-                  CompareFunc cf)
+                  CompareFunc           cf)
     : lhs_dev_view_(lhs_dev_view), rhs_dev_view_(rhs_dev_view), cfunc_(cf)
   {
   }
@@ -303,12 +303,12 @@ struct null_considering_binop {
   auto get_device_view(column_device_view const& col_item) const { return col_item; }
 
   template <typename LhsViewT, typename RhsViewT, typename OutT, typename CompareFunc>
-  void populate_out_col(LhsViewT const& lhsv,
-                        RhsViewT const& rhsv,
-                        cudf::size_type col_size,
+  void populate_out_col(LhsViewT const&       lhsv,
+                        RhsViewT const&       rhsv,
+                        cudf::size_type       col_size,
                         rmm::cuda_stream_view stream,
-                        CompareFunc cfunc,
-                        OutT* out_col) const
+                        CompareFunc           cfunc,
+                        OutT*                 out_col) const
   {
     // Create binop functor instance
     compare_functor<LhsViewT, RhsViewT, OutT, CompareFunc> binop_func{lhsv, rhsv, cfunc};
@@ -323,12 +323,12 @@ struct null_considering_binop {
 
   // This is invoked to perform comparison between cudf string types
   template <typename LhsT, typename RhsT>
-  std::unique_ptr<column> operator()(LhsT const& lhs,
-                                     RhsT const& rhs,
-                                     binary_operator op,
-                                     data_type output_type,
-                                     cudf::size_type col_size,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(LhsT const&                      lhs,
+                                     RhsT const&                      rhs,
+                                     binary_operator                  op,
+                                     data_type                        output_type,
+                                     cudf::size_type                  col_size,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr) const
   {
     std::unique_ptr<column> out;
@@ -346,8 +346,8 @@ struct null_considering_binop {
           data_type{type_id::BOOL8}, col_size, mask_state::ALL_VALID, stream, mr);
 
         // Create a compare function lambda
-        auto equal_func = [] __device__(bool lhs_valid,
-                                        bool rhs_valid,
+        auto equal_func = [] __device__(bool              lhs_valid,
+                                        bool              rhs_valid,
                                         cudf::string_view lhs_value,
                                         cudf::string_view rhs_value) {
           if (!lhs_valid && !rhs_valid) return true;
@@ -379,8 +379,8 @@ struct null_considering_binop {
         cudf::string_view const invalid_str{nullptr, 0};
 
         // Create a compare function lambda
-        auto minmax_func = [op, invalid_str] __device__(bool lhs_valid,
-                                                        bool rhs_valid,
+        auto minmax_func = [op, invalid_str] __device__(bool              lhs_valid,
+                                                        bool              rhs_valid,
                                                         cudf::string_view lhs_value,
                                                         cudf::string_view rhs_value) {
           if (!lhs_valid && !rhs_valid)
@@ -416,11 +416,11 @@ struct null_considering_binop {
 
 }  // namespace
 
-std::unique_ptr<column> binary_operation(scalar const& lhs,
-                                         column_view const& rhs,
-                                         binary_operator op,
-                                         data_type output_type,
-                                         rmm::cuda_stream_view stream,
+std::unique_ptr<column> binary_operation(scalar const&                    lhs,
+                                         column_view const&               rhs,
+                                         binary_operator                  op,
+                                         data_type                        output_type,
+                                         rmm::cuda_stream_view            stream,
                                          rmm::mr::device_memory_resource* mr)
 {
   // hard-coded to only work with cudf::string_view so we don't explode compile times
@@ -438,11 +438,11 @@ std::unique_ptr<column> binary_operation(scalar const& lhs,
   }
 }
 
-std::unique_ptr<column> binary_operation(column_view const& lhs,
-                                         scalar const& rhs,
-                                         binary_operator op,
-                                         data_type output_type,
-                                         rmm::cuda_stream_view stream,
+std::unique_ptr<column> binary_operation(column_view const&               lhs,
+                                         scalar const&                    rhs,
+                                         binary_operator                  op,
+                                         data_type                        output_type,
+                                         rmm::cuda_stream_view            stream,
                                          rmm::mr::device_memory_resource* mr)
 {
   // hard-coded to only work with cudf::string_view so we don't explode compile times
@@ -459,11 +459,11 @@ std::unique_ptr<column> binary_operation(column_view const& lhs,
   }
 }
 
-std::unique_ptr<column> binary_operation(column_view const& lhs,
-                                         column_view const& rhs,
-                                         binary_operator op,
-                                         data_type output_type,
-                                         rmm::cuda_stream_view stream,
+std::unique_ptr<column> binary_operation(column_view const&               lhs,
+                                         column_view const&               rhs,
+                                         binary_operator                  op,
+                                         data_type                        output_type,
+                                         rmm::cuda_stream_view            stream,
                                          rmm::mr::device_memory_resource* mr)
 {
   // hard-coded to only work with cudf::string_view so we don't explode compile times

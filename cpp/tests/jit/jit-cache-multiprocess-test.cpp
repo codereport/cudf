@@ -43,7 +43,7 @@ TEST_F(JitCacheMultiProcessTest, MultiProcessTest)
   // Cannot initialize scalars before forking
   rmm::device_scalar<int> *input;
   rmm::device_scalar<int> *output;
-  int expect = 64;
+  int                      expect = 64;
 
   auto tester = [&](int pid, int test_no) {
     // Brand new cache object that has nothing in in-memory cache
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
   // `set_current_device_resource` would result in a call to `cudaGetDevice()`
   // which would also initialize the CUDA context before the fork.
   auto const rmm_mode = "cuda";
-  auto resource       = cudf::test::create_memory_resource(rmm_mode);
+  auto       resource = cudf::test::create_memory_resource(rmm_mode);
   rmm::mr::set_per_device_resource(rmm::cuda_device_id{0}, resource.get());
   return RUN_ALL_TESTS();
 }

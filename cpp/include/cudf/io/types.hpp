@@ -97,7 +97,7 @@ enum statistics_freq {
  * cudf columns.
  */
 struct column_name_info {
-  std::string name;
+  std::string                   name;
   std::vector<column_name_info> children;
   column_name_info(std::string const& _name) : name(_name) {}
   column_name_info() = default;
@@ -121,7 +121,7 @@ struct column_name_info {
 struct table_metadata {
   std::vector<std::string> column_names;  //!< Names of columns contained in the table
   std::vector<column_name_info>
-    schema_info;  //!< Detailed name information for the entire output hierarchy
+                                     schema_info;  //!< Detailed name information for the entire output hierarchy
   std::map<std::string, std::string> user_data;  //!< Format-dependent metadata as key-values pairs
 };
 
@@ -158,7 +158,7 @@ struct table_metadata_with_nullability : public table_metadata {
  */
 struct table_with_metadata {
   std::unique_ptr<table> tbl;
-  table_metadata metadata;
+  table_metadata         metadata;
 };
 
 /**
@@ -168,7 +168,7 @@ struct table_with_metadata {
  */
 struct host_buffer {
   const char* data = nullptr;
-  size_t size      = 0;
+  size_t      size = 0;
   host_buffer()    = default;
   host_buffer(const char* data, size_t size) : data(data), size(size) {}
 };
@@ -177,11 +177,11 @@ struct host_buffer {
  * @brief Source information for read interfaces
  */
 struct source_info {
-  io_type type = io_type::FILEPATH;
-  std::vector<std::string> filepaths;
-  std::vector<host_buffer> buffers;
+  io_type                                                   type = io_type::FILEPATH;
+  std::vector<std::string>                                  filepaths;
+  std::vector<host_buffer>                                  buffers;
   std::vector<std::shared_ptr<arrow::io::RandomAccessFile>> files;
-  std::vector<cudf::io::datasource*> user_sources;
+  std::vector<cudf::io::datasource*>                        user_sources;
 
   source_info() = default;
 
@@ -217,9 +217,9 @@ struct source_info {
  * @brief Destination information for write interfaces
  */
 struct sink_info {
-  io_type type = io_type::VOID;
-  std::string filepath;
-  std::vector<char>* buffer      = nullptr;
+  io_type              type = io_type::VOID;
+  std::string          filepath;
+  std::vector<char>*   buffer    = nullptr;
   cudf::io::data_sink* user_sink = nullptr;
 
   sink_info() = default;

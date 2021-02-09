@@ -128,8 +128,8 @@ class corresponding_rows_not_equivalent {
     {
       if (lhs.is_valid(index) and rhs.is_valid(index)) {
         int ulp = 4;  // value taken from google test
-        T x     = lhs.element<T>(index);
-        T y     = rhs.element<T>(index);
+        T   x   = lhs.element<T>(index);
+        T   y   = rhs.element<T>(index);
         return std::abs(x - y) > std::numeric_limits<T>::epsilon() * std::abs(x + y) * ulp &&
                std::abs(x - y) >= std::numeric_limits<T>::min();
       } else {
@@ -161,10 +161,10 @@ class corresponding_rows_not_equivalent {
 };
 
 std::string differences_message(thrust::device_vector<int> const& differences,
-                                column_view const& lhs,
-                                column_view const& rhs,
-                                bool all_differences,
-                                int depth)
+                                column_view const&                lhs,
+                                column_view const&                rhs,
+                                bool                              all_differences,
+                                int                               depth)
 {
   CUDF_EXPECTS(not differences.empty(), "Shouldn't enter this function if `differences` is empty");
 
@@ -204,8 +204,8 @@ template <typename T, bool check_exact_equality>
 struct column_comparator_impl {
   void operator()(column_view const& lhs,
                   column_view const& rhs,
-                  bool print_all_differences,
-                  int depth)
+                  bool               print_all_differences,
+                  int                depth)
   {
     auto d_lhs = cudf::table_device_view::create(table_view{{lhs}});
     auto d_rhs = cudf::table_device_view::create(table_view{{rhs}});
@@ -237,8 +237,8 @@ template <bool check_exact_equality>
 struct column_comparator_impl<list_view, check_exact_equality> {
   void operator()(column_view const& lhs,
                   column_view const& rhs,
-                  bool print_all_differences,
-                  int depth)
+                  bool               print_all_differences,
+                  int                depth)
   {
     lists_column_view lhs_l(lhs);
     lists_column_view rhs_l(rhs);
@@ -274,8 +274,8 @@ struct column_comparator_impl<list_view, check_exact_equality> {
     // compare offsets, taking slicing into account
 
     // left side
-    size_type lhs_shift = cudf::detail::get_value<size_type>(lhs_l.offsets(), lhs_l.offset(), 0);
-    auto lhs_offsets    = thrust::make_transform_iterator(
+    size_type lhs_shift   = cudf::detail::get_value<size_type>(lhs_l.offsets(), lhs_l.offset(), 0);
+    auto      lhs_offsets = thrust::make_transform_iterator(
       lhs_l.offsets().begin<size_type>() + lhs_l.offset(),
       [lhs_shift] __device__(size_type offset) { return offset - lhs_shift; });
     auto lhs_valids = thrust::make_transform_iterator(
@@ -285,8 +285,8 @@ struct column_comparator_impl<list_view, check_exact_equality> {
       });
 
     // right side
-    size_type rhs_shift = cudf::detail::get_value<size_type>(rhs_l.offsets(), rhs_l.offset(), 0);
-    auto rhs_offsets    = thrust::make_transform_iterator(
+    size_type rhs_shift   = cudf::detail::get_value<size_type>(rhs_l.offsets(), rhs_l.offset(), 0);
+    auto      rhs_offsets = thrust::make_transform_iterator(
       rhs_l.offsets().begin<size_type>() + rhs_l.offset(),
       [rhs_shift] __device__(size_type offset) { return offset - rhs_shift; });
     auto rhs_valids = thrust::make_transform_iterator(
@@ -333,8 +333,8 @@ template <bool check_exact_equality>
 struct column_comparator_impl<struct_view, check_exact_equality> {
   void operator()(column_view const& lhs,
                   column_view const& rhs,
-                  bool print_all_differences,
-                  int depth)
+                  bool               print_all_differences,
+                  int                depth)
   {
     structs_column_view l_scv(lhs);
     structs_column_view r_scv(rhs);
@@ -359,8 +359,8 @@ struct column_comparator {
   template <typename T>
   void operator()(column_view const& lhs,
                   column_view const& rhs,
-                  bool print_all_differences,
-                  int depth = 0)
+                  bool               print_all_differences,
+                  int                depth = 0)
   {
     // compare properties
     cudf::type_dispatcher(lhs.type(), column_property_comparator<check_exact_equality>{}, lhs, rhs);
@@ -394,7 +394,7 @@ void expect_column_properties_equivalent(column_view const& lhs, column_view con
  */
 void expect_columns_equal(cudf::column_view const& lhs,
                           cudf::column_view const& rhs,
-                          bool print_all_differences)
+                          bool                     print_all_differences)
 {
   cudf::type_dispatcher(lhs.type(), column_comparator<true>{}, lhs, rhs, print_all_differences);
 }
@@ -404,7 +404,7 @@ void expect_columns_equal(cudf::column_view const& lhs,
  */
 void expect_columns_equivalent(cudf::column_view const& lhs,
                                cudf::column_view const& rhs,
-                               bool print_all_differences)
+                               bool                     print_all_differences)
 {
   cudf::type_dispatcher(lhs.type(), column_comparator<false>{}, lhs, rhs, print_all_differences);
 }
@@ -508,7 +508,7 @@ std::string nested_offsets_to_string(NestedColumnView const& c, std::string cons
   size_type output_size = c.size() + 1;
 
   // the first offset value to normalize everything against
-  size_type first = cudf::detail::get_value<size_type>(offsets, c.offset(), 0);
+  size_type                     first = cudf::detail::get_value<size_type>(offsets, c.offset(), 0);
   rmm::device_vector<size_type> shifted_offsets(output_size);
 
   // normalize the offset values for the column offset
@@ -521,7 +521,7 @@ std::string nested_offsets_to_string(NestedColumnView const& c, std::string cons
     [first] __device__(int32_t offset) { return static_cast<size_type>(offset - first); });
 
   thrust::host_vector<size_type> h_shifted_offsets(shifted_offsets);
-  std::ostringstream buffer;
+  std::ostringstream             buffer;
   for (size_t idx = 0; idx < h_shifted_offsets.size(); idx++) {
     buffer << h_shifted_offsets[idx];
     if (idx < h_shifted_offsets.size() - 1) { buffer << delimiter; }
@@ -531,9 +531,9 @@ std::string nested_offsets_to_string(NestedColumnView const& c, std::string cons
 
 struct column_view_printer {
   template <typename Element, typename std::enable_if_t<is_numeric<Element>()>* = nullptr>
-  void operator()(cudf::column_view const& col,
+  void operator()(cudf::column_view const&  col,
                   std::vector<std::string>& out,
-                  std::string const& indent)
+                  std::string const&        indent)
   {
     auto h_data = cudf::test::to_host<Element>(col);
 
@@ -557,9 +557,9 @@ struct column_view_printer {
   }
 
   template <typename Element, typename std::enable_if_t<is_timestamp<Element>()>* = nullptr>
-  void operator()(cudf::column_view const& col,
+  void operator()(cudf::column_view const&  col,
                   std::vector<std::string>& out,
-                  std::string const& indent)
+                  std::string const&        indent)
   {
     //
     //  For timestamps, convert timestamp column to column of strings, then
@@ -572,9 +572,9 @@ struct column_view_printer {
   }
 
   template <typename Element, typename std::enable_if_t<cudf::is_fixed_point<Element>()>* = nullptr>
-  void operator()(cudf::column_view const& col,
+  void operator()(cudf::column_view const&  col,
                   std::vector<std::string>& out,
-                  std::string const& indent)
+                  std::string const&        indent)
   {
     auto const h_data = cudf::test::to_host<Element>(col);
     if (col.nullable()) {
@@ -596,9 +596,9 @@ struct column_view_printer {
 
   template <typename Element,
             typename std::enable_if_t<std::is_same<Element, cudf::string_view>::value>* = nullptr>
-  void operator()(cudf::column_view const& col,
+  void operator()(cudf::column_view const&  col,
                   std::vector<std::string>& out,
-                  std::string const& indent)
+                  std::string const&        indent)
   {
     //
     //  Implementation for strings, call special to_host variant
@@ -619,9 +619,9 @@ struct column_view_printer {
 
   template <typename Element,
             typename std::enable_if_t<std::is_same<Element, cudf::dictionary32>::value>* = nullptr>
-  void operator()(cudf::column_view const& col,
+  void operator()(cudf::column_view const&  col,
                   std::vector<std::string>& out,
-                  std::string const& indent)
+                  std::string const&        indent)
   {
     cudf::dictionary_column_view dictionary(col);
     if (col.is_empty()) return;
@@ -642,9 +642,9 @@ struct column_view_printer {
 
   // Print the tick counts with the units
   template <typename Element, typename std::enable_if_t<is_duration<Element>()>* = nullptr>
-  void operator()(cudf::column_view const& col,
+  void operator()(cudf::column_view const&  col,
                   std::vector<std::string>& out,
-                  std::string const& indent)
+                  std::string const&        indent)
   {
     auto h_data = cudf::test::to_host<Element>(col);
 
@@ -670,15 +670,15 @@ struct column_view_printer {
 
   template <typename Element,
             typename std::enable_if_t<std::is_same<Element, cudf::list_view>::value>* = nullptr>
-  void operator()(cudf::column_view const& col,
+  void operator()(cudf::column_view const&  col,
                   std::vector<std::string>& out,
-                  std::string const& indent)
+                  std::string const&        indent)
   {
     lists_column_view lcv(col);
 
     // propage slicing to the child if necessary
-    column_view child    = lcv.get_sliced_child(0);
-    bool const is_sliced = lcv.offset() > 0 || child.offset() > 0;
+    column_view child     = lcv.get_sliced_child(0);
+    bool const  is_sliced = lcv.offset() > 0 || child.offset() > 0;
 
     std::string tmp =
       get_nested_type_str(col) + (is_sliced ? "(sliced)" : "") + ":\n" + indent +
@@ -698,9 +698,9 @@ struct column_view_printer {
 
   template <typename Element,
             typename std::enable_if_t<std::is_same<Element, cudf::struct_view>::value>* = nullptr>
-  void operator()(cudf::column_view const& col,
+  void operator()(cudf::column_view const&  col,
                   std::vector<std::string>& out,
-                  std::string const& indent)
+                  std::string const&        indent)
   {
     structs_column_view view{col};
 
@@ -745,10 +745,10 @@ std::vector<std::string> to_strings(cudf::column_view const& col, std::string co
  * @param indent Indentation for all output
  */
 std::string to_string(cudf::column_view const& col,
-                      std::string const& delimiter,
-                      std::string const& indent)
+                      std::string const&       delimiter,
+                      std::string const&       indent)
 {
-  std::ostringstream buffer;
+  std::ostringstream       buffer;
   std::vector<std::string> h_data = to_strings(col, indent);
 
   buffer << indent;
@@ -767,8 +767,8 @@ std::string to_string(cudf::column_view const& col,
  * a detailed description.
  */
 std::string to_string(std::vector<bitmask_type> const& null_mask,
-                      size_type null_mask_size,
-                      std::string const& indent)
+                      size_type                        null_mask_size,
+                      std::string const&               indent)
 {
   std::ostringstream buffer;
   buffer << indent;
@@ -817,7 +817,7 @@ void print(cudf::column_view const& col, std::ostream& os, std::string const& de
  */
 bool validate_host_masks(std::vector<bitmask_type> const& expected_mask,
                          std::vector<bitmask_type> const& got_mask,
-                         size_type number_of_elements)
+                         size_type                        number_of_elements)
 {
   return std::all_of(thrust::make_counting_iterator(0),
                      thrust::make_counting_iterator(number_of_elements),

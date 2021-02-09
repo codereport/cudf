@@ -36,12 +36,12 @@ namespace cudf {
 namespace detail {
 template <bool exact, typename SortMapIterator>
 struct quantile_functor {
-  SortMapIterator ordered_indices;
-  size_type size;
-  std::vector<double> const& q;
-  interpolation interp;
-  bool retain_types;
-  rmm::cuda_stream_view stream;
+  SortMapIterator                  ordered_indices;
+  size_type                        size;
+  std::vector<double> const&       q;
+  interpolation                    interp;
+  bool                             retain_types;
+  rmm::cuda_stream_view            stream;
   rmm::mr::device_memory_resource* mr;
 
   template <typename T>
@@ -104,7 +104,7 @@ struct quantile_functor {
         [input = *d_input] __device__(size_type idx) { return input.is_valid_nocheck(idx); });
 
       rmm::device_buffer mask;
-      size_type null_count;
+      size_type          null_count;
 
       std::tie(mask, null_count) = valid_if(
         q_device.begin(),
@@ -123,13 +123,13 @@ struct quantile_functor {
 };
 
 template <bool exact, typename SortMapIterator>
-std::unique_ptr<column> quantile(column_view const& input,
-                                 SortMapIterator ordered_indices,
-                                 size_type size,
-                                 std::vector<double> const& q,
-                                 interpolation interp,
-                                 bool retain_types,
-                                 rmm::cuda_stream_view stream,
+std::unique_ptr<column> quantile(column_view const&               input,
+                                 SortMapIterator                  ordered_indices,
+                                 size_type                        size,
+                                 std::vector<double> const&       q,
+                                 interpolation                    interp,
+                                 bool                             retain_types,
+                                 rmm::cuda_stream_view            stream,
                                  rmm::mr::device_memory_resource* mr)
 {
   auto functor = quantile_functor<exact, SortMapIterator>{
@@ -142,12 +142,12 @@ std::unique_ptr<column> quantile(column_view const& input,
   return type_dispatcher(input_type, functor, input);
 }
 
-std::unique_ptr<column> quantile(column_view const& input,
-                                 std::vector<double> const& q,
-                                 interpolation interp,
-                                 column_view const& indices,
-                                 bool exact,
-                                 rmm::cuda_stream_view stream,
+std::unique_ptr<column> quantile(column_view const&               input,
+                                 std::vector<double> const&       q,
+                                 interpolation                    interp,
+                                 column_view const&               indices,
+                                 bool                             exact,
+                                 rmm::cuda_stream_view            stream,
                                  rmm::mr::device_memory_resource* mr)
 {
   if (indices.is_empty()) {
@@ -173,11 +173,11 @@ std::unique_ptr<column> quantile(column_view const& input,
 
 }  // namespace detail
 
-std::unique_ptr<column> quantile(column_view const& input,
-                                 std::vector<double> const& q,
-                                 interpolation interp,
-                                 column_view const& ordered_indices,
-                                 bool exact,
+std::unique_ptr<column> quantile(column_view const&               input,
+                                 std::vector<double> const&       q,
+                                 interpolation                    interp,
+                                 column_view const&               ordered_indices,
+                                 bool                             exact,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

@@ -62,9 +62,9 @@ namespace hash {
  */
 template <typename Map>
 struct compute_single_pass_aggs_fn {
-  Map map;
-  size_type num_keys;
-  table_device_view input_values;
+  Map                       map;
+  size_type                 num_keys;
+  table_device_view         input_values;
   mutable_table_device_view output_values;
   aggregation::Kind const* __restrict__ aggs;
   bitmask_type const* __restrict__ row_bitmask;
@@ -87,13 +87,13 @@ struct compute_single_pass_aggs_fn {
    * null values should be skipped. It `true`, it is assumed `row_bitmask` is a
    * bitmask where bit `i` indicates the presence of a null value in row `i`.
    */
-  compute_single_pass_aggs_fn(Map map,
-                              size_type num_keys,
-                              table_device_view input_values,
+  compute_single_pass_aggs_fn(Map                       map,
+                              size_type                 num_keys,
+                              table_device_view         input_values,
                               mutable_table_device_view output_values,
-                              aggregation::Kind const* aggs,
-                              bitmask_type const* row_bitmask,
-                              bool skip_rows_with_nulls)
+                              aggregation::Kind const*  aggs,
+                              bitmask_type const*       row_bitmask,
+                              bool                      skip_rows_with_nulls)
     : map(map),
       num_keys(num_keys),
       input_values(input_values),

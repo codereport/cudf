@@ -94,11 +94,11 @@ namespace cudf {
  * @returns A table containing sorted data from all input tables
  */
 std::unique_ptr<cudf::table> merge(
-  std::vector<table_view> const& tables_to_merge,
-  std::vector<cudf::size_type> const& key_cols,
-  std::vector<cudf::order> const& column_order,
+  std::vector<table_view> const&       tables_to_merge,
+  std::vector<cudf::size_type> const&  key_cols,
+  std::vector<cudf::order> const&      column_order,
   std::vector<cudf::null_order> const& null_precedence = {},
-  rmm::mr::device_memory_resource* mr                  = rmm::mr::get_current_device_resource());
+  rmm::mr::device_memory_resource*     mr              = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group
 }  // namespace cudf

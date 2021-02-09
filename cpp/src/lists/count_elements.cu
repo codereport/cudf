@@ -42,8 +42,8 @@ namespace detail {
  * @param mr Device memory resource used to allocate the returned column's device memory
  * @return New INT32 column with lengths.
  */
-std::unique_ptr<column> count_elements(lists_column_view const& input,
-                                       rmm::cuda_stream_view stream,
+std::unique_ptr<column> count_elements(lists_column_view const&         input,
+                                       rmm::cuda_stream_view            stream,
                                        rmm::mr::device_memory_resource* mr)
 {
   auto device_column = cudf::column_device_view::create(input.parent(), stream);
@@ -71,7 +71,7 @@ std::unique_ptr<column> count_elements(lists_column_view const& input,
 
 // external APIS
 
-std::unique_ptr<column> count_elements(lists_column_view const& input,
+std::unique_ptr<column> count_elements(lists_column_view const&         input,
                                        rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

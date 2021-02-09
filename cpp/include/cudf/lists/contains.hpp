@@ -46,8 +46,8 @@ namespace lists {
  * @return std::unique_ptr<column> BOOL8 column of `n` rows with the result of the lookup
  */
 std::unique_ptr<column> contains(
-  cudf::lists_column_view const& lists,
-  cudf::scalar const& search_key,
+  cudf::lists_column_view const&   lists,
+  cudf::scalar const&              search_key,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -70,8 +70,8 @@ std::unique_ptr<column> contains(
  * @return std::unique_ptr<column> BOOL8 column of `n` rows with the result of the lookup
  */
 std::unique_ptr<column> contains(
-  cudf::lists_column_view const& lists,
-  cudf::column_view const& search_keys,
+  cudf::lists_column_view const&   lists,
+  cudf::column_view const&         search_keys,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

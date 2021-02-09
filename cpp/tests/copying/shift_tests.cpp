@@ -36,8 +36,8 @@ using TestTypes = cudf::test::Types<int32_t>;
 
 template <typename T, typename ScalarType = cudf::scalar_type_t<T>>
 std::unique_ptr<cudf::scalar> make_scalar(
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   auto s = new ScalarType(cudf::test::make_type_param_scalar<T>(0), false, stream, mr);
   return std::unique_ptr<cudf::scalar>(s);
@@ -45,9 +45,9 @@ std::unique_ptr<cudf::scalar> make_scalar(
 
 template <typename T, typename ScalarType = cudf::scalar_type_t<T>>
 std::unique_ptr<cudf::scalar> make_scalar(
-  T value,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  T                                value,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   auto s = new ScalarType(value, true, stream, mr);
   return std::unique_ptr<cudf::scalar>(s);
@@ -69,7 +69,7 @@ TYPED_TEST(ShiftTest, OneColumnEmpty)
 {
   using T = TypeParam;
 
-  std::vector<T> vals{};
+  std::vector<T>    vals{};
   std::vector<bool> mask{};
 
   auto input    = fixed_width_column_wrapper<T>{};
@@ -85,7 +85,7 @@ TYPED_TEST(ShiftTest, TwoColumnsEmpty)
 {
   using T = TypeParam;
 
-  std::vector<T> vals{};
+  std::vector<T>    vals{};
   std::vector<bool> mask{};
 
   auto input    = fixed_width_column_wrapper<T>(vals.begin(), vals.end(), mask.begin());

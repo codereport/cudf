@@ -69,7 +69,7 @@ auto make_columns(std::vector<std::vector<T>> const& values)
 }
 
 template <typename T>
-auto make_columns(std::vector<std::vector<T>> const& values,
+auto make_columns(std::vector<std::vector<T>> const&               values,
                   std::vector<std::vector<cudf::size_type>> const& valids)
 {
   std::vector<fixed_width_column_wrapper<T>> columns;
@@ -107,7 +107,7 @@ void run_test(size_t ncols, size_t nrows, bool add_nulls)
 
   std::vector<fixed_width_column_wrapper<T>> input_cols;
   std::vector<fixed_width_column_wrapper<T>> expected_cols;
-  std::vector<cudf::size_type> expected_nulls(nrows);
+  std::vector<cudf::size_type>               expected_nulls(nrows);
 
   if (add_nulls) {
     // Generate null mask as vector of vectors
@@ -181,9 +181,9 @@ TYPED_TEST(TransposeTest, EmptyColumns) { run_test<TypeParam>(10, 0, false); }
 TYPED_TEST(TransposeTest, MismatchedColumns)
 {
   fixed_width_column_wrapper<TypeParam, int32_t> col1({1, 2, 3});
-  fixed_width_column_wrapper<int8_t> col2{{4, 5, 6}};
-  fixed_width_column_wrapper<float> col3{{7, 8, 9}};
-  cudf::table_view input{{col1, col2, col3}};
+  fixed_width_column_wrapper<int8_t>             col2{{4, 5, 6}};
+  fixed_width_column_wrapper<float>              col3{{7, 8, 9}};
+  cudf::table_view                               input{{col1, col2, col3}};
   EXPECT_THROW(cudf::transpose(input), cudf::logic_error);
 }
 

@@ -63,7 +63,7 @@ static void BM_concatenate(benchmark::State& state)
 
   for (auto _ : state) {
     cuda_event_timer raii(state, true, 0);
-    auto result = cudf::concatenate(column_views);
+    auto             result = cudf::concatenate(column_views);
   }
 
   state.SetBytesProcessed(state.iterations() * num_cols * num_rows * sizeof(T));
@@ -125,7 +125,7 @@ static void BM_concatenate_tables(benchmark::State& state)
 
   for (auto _ : state) {
     cuda_event_timer raii(state, true, 0);
-    auto result = cudf::concatenate(table_views);
+    auto             result = cudf::concatenate(table_views);
   }
 
   state.SetBytesProcessed(state.iterations() * num_cols * num_rows * num_tables * sizeof(T));
@@ -185,7 +185,7 @@ static void BM_concatenate_strings(benchmark::State& state)
 
   for (auto _ : state) {
     cuda_event_timer raii(state, true, 0);
-    auto result = cudf::concatenate(column_views);
+    auto             result = cudf::concatenate(column_views);
   }
 
   state.SetBytesProcessed(state.iterations() * num_cols * num_rows *

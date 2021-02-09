@@ -56,8 +56,8 @@ column::column(column const &other)
 }
 
 // Copy ctor w/ explicit stream/mr
-column::column(column const &other,
-               rmm::cuda_stream_view stream,
+column::column(column const &                   other,
+               rmm::cuda_stream_view            stream,
                rmm::mr::device_memory_resource *mr)
   : _type{other._type},
     _size{other._size},
@@ -184,8 +184,8 @@ void column::set_null_count(size_type new_null_count)
 
 namespace {
 struct create_column_from_view {
-  cudf::column_view view;
-  rmm::cuda_stream_view stream{};
+  cudf::column_view                view;
+  rmm::cuda_stream_view            stream{};
   rmm::mr::device_memory_resource *mr;
 
   template <typename ColumnType,
@@ -203,7 +203,7 @@ struct create_column_from_view {
     std::vector<std::unique_ptr<column>> children;
     if (view.num_children()) {
       cudf::dictionary_column_view dict_view(view);
-      auto indices_view = column_view(dict_view.indices().type(),
+      auto                         indices_view = column_view(dict_view.indices().type(),
                                       dict_view.size(),
                                       dict_view.indices().head(),
                                       nullptr,

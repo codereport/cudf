@@ -32,8 +32,8 @@ namespace detail {
 /**
  * @brief Decode a column from a dictionary.
  */
-std::unique_ptr<column> decode(dictionary_column_view const& source,
-                               rmm::cuda_stream_view stream,
+std::unique_ptr<column> decode(dictionary_column_view const&    source,
+                               rmm::cuda_stream_view            stream,
                                rmm::mr::device_memory_resource* mr)
 {
   if (source.is_empty()) return make_empty_column(data_type{type_id::EMPTY});
@@ -63,7 +63,7 @@ std::unique_ptr<column> decode(dictionary_column_view const& source,
 
 }  // namespace detail
 
-std::unique_ptr<column> decode(dictionary_column_view const& source,
+std::unique_ptr<column> decode(dictionary_column_view const&    source,
                                rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

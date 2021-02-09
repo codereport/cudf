@@ -24,10 +24,10 @@
 
 namespace cudf {
 namespace io {
-constexpr int32_t batch_size    = (1 << 5);
-constexpr int32_t batch_count   = (1 << 2);
-constexpr int32_t prefetch_size = (1 << 9);  // 512B, in 32B chunks
-constexpr bool log_cyclecount   = false;
+constexpr int32_t batch_size     = (1 << 5);
+constexpr int32_t batch_count    = (1 << 2);
+constexpr int32_t prefetch_size  = (1 << 9);  // 512B, in 32B chunks
+constexpr bool    log_cyclecount = false;
 
 /**
  * @brief Describes a single LZ77 symbol (single entry in batch)
@@ -42,26 +42,26 @@ struct unsnap_batch_s {
  * @brief Queue structure used to exchange data between warps
  */
 struct unsnap_queue_s {
-  uint32_t prefetch_wrpos;         ///< Prefetcher write position
-  uint32_t prefetch_rdpos;         ///< Prefetch consumer read position
-  int32_t prefetch_end;            ///< Prefetch enable flag (nonzero stops prefetcher)
-  int32_t batch_len[batch_count];  ///< Length of each batch - <0:end, 0:not ready, >0:symbol count
+  uint32_t prefetch_wrpos;          ///< Prefetcher write position
+  uint32_t prefetch_rdpos;          ///< Prefetch consumer read position
+  int32_t  prefetch_end;            ///< Prefetch enable flag (nonzero stops prefetcher)
+  int32_t  batch_len[batch_count];  ///< Length of each batch - <0:end, 0:not ready, >0:symbol count
   unsnap_batch_s batch[batch_count * batch_size];  ///< LZ77 batch data
-  uint8_t buf[prefetch_size];                      ///< Prefetch buffer
+  uint8_t        buf[prefetch_size];               ///< Prefetch buffer
 };
 
 /**
  * @brief snappy decompression state
  */
 struct unsnap_state_s {
-  const uint8_t *base;         ///< base ptr of compressed stream
-  const uint8_t *end;          ///< end of compressed stream
-  uint32_t uncompressed_size;  ///< uncompressed stream size
-  uint32_t bytes_left;         ///< bytes to uncompressed remaining
-  int32_t error;               ///< current error status
-  uint32_t tstart;             ///< start time for perf logging
-  volatile unsnap_queue_s q;   ///< queue for cross-warp communication
-  gpu_inflate_input_s in;      ///< input parameters for current block
+  const uint8_t *         base;               ///< base ptr of compressed stream
+  const uint8_t *         end;                ///< end of compressed stream
+  uint32_t                uncompressed_size;  ///< uncompressed stream size
+  uint32_t                bytes_left;         ///< bytes to uncompressed remaining
+  int32_t                 error;              ///< current error status
+  uint32_t                tstart;             ///< start time for perf logging
+  volatile unsnap_queue_s q;                  ///< queue for cross-warp communication
+  gpu_inflate_input_s     in;                 ///< input parameters for current block
 };
 
 inline __device__ volatile uint8_t &byte_access(unsnap_state_s *s, uint32_t pos)
@@ -77,11 +77,11 @@ inline __device__ volatile uint8_t &byte_access(unsnap_state_s *s, uint32_t pos)
  */
 __device__ void snappy_prefetch_bytestream(unsnap_state_s *s, int t)
 {
-  const uint8_t *base  = s->base;
-  uint32_t end         = (uint32_t)(s->end - base);
-  uint32_t align_bytes = (uint32_t)(0x20 - (0x1f & reinterpret_cast<uintptr_t>(base)));
-  int32_t pos          = min(align_bytes, end);
-  int32_t blen;
+  const uint8_t *base        = s->base;
+  uint32_t       end         = (uint32_t)(s->end - base);
+  uint32_t       align_bytes = (uint32_t)(0x20 - (0x1f & reinterpret_cast<uintptr_t>(base)));
+  int32_t        pos         = min(align_bytes, end);
+  int32_t        blen;
   // Start by prefetching up to the next a 32B-aligned location
   if (t < pos) { s->q.buf[t] = base[t]; }
   blen = 0;
@@ -271,10 +271,10 @@ __device__ void snappy_decode_symbols(unsnap_state_s *s, uint32_t t)
   uint32_t end        = static_cast<uint32_t>(s->end - s->base);
   uint32_t bytes_left = s->uncompressed_size;
   uint32_t dst_pos    = 0;
-  int32_t batch       = 0;
+  int32_t  batch      = 0;
 
   for (;;) {
-    int32_t batch_len;
+    int32_t                  batch_len;
     volatile unsnap_batch_s *b;
 
     // Wait for prefetcher
@@ -310,7 +310,7 @@ __device__ void snappy_decode_symbols(unsnap_state_s *s, uint32_t t)
         batch_len = shuffle((t == 0) ? (short_sym_mask) ? __ffs(short_sym_mask) - 1 : 32 : 0);
         if (batch_len != 0) {
           uint32_t blen = 0;
-          int32_t ofs   = 0;
+          int32_t  ofs  = 0;
           if (t < batch_len) {
             blen = (b0 & 1) ? ((b0 >> 2) & 7) + 4 : ((b0 >> 2) + 1);
             ofs  = (b0 & 1) ? ((b0 & 0xe0) << 3) | byte_access(s, cur_t + 1)
@@ -356,7 +356,7 @@ __device__ void snappy_decode_symbols(unsnap_state_s *s, uint32_t t)
           batch_add = __ffs(ballot(is_long_sym)) - 1;
           if (batch_add != 0) {
             uint32_t blen = 0;
-            int32_t ofs   = 0;
+            int32_t  ofs  = 0;
             if (t < batch_add) {
               blen = (b0 & 1) ? ((b0 >> 2) & 7) + 4 : ((b0 >> 2) + 1);
               ofs  = (b0 & 1)
@@ -388,7 +388,7 @@ __device__ void snappy_decode_symbols(unsnap_state_s *s, uint32_t t)
     if (t == 0) {
       while (bytes_left > 0 && batch_len < batch_size) {
         uint32_t blen, offset;
-        uint8_t b0 = byte_access(s, cur);
+        uint8_t  b0 = byte_access(s, cur);
         if (b0 & 3) {
           uint8_t b1 = byte_access(s, cur + 1);
           if (!(b0 & 2)) {
@@ -482,12 +482,12 @@ template <typename Storage>
 __device__ void snappy_process_symbols(unsnap_state_s *s, int t, Storage &temp_storage)
 {
   const uint8_t *literal_base = s->base;
-  uint8_t *out                = static_cast<uint8_t *>(s->in.dstDevice);
-  int batch                   = 0;
+  uint8_t *      out          = static_cast<uint8_t *>(s->in.dstDevice);
+  int            batch        = 0;
 
   do {
     volatile unsnap_batch_s *b = &s->q.batch[batch * batch_size];
-    int32_t batch_len, blen_t, dist_t;
+    int32_t                  batch_len, blen_t, dist_t;
 
     if (t == 0) {
       while ((batch_len = s->q.batch_len[batch]) == 0) { nanosleep(100); }
@@ -515,9 +515,9 @@ __device__ void snappy_process_symbols(unsnap_state_s *s, int t, Storage &temp_s
         n          = min(min((uint32_t)__popc(start_mask), (uint32_t)(__ffs(stop_mask) - 1u)),
                 (uint32_t)batch_len);
         if (n != 0) {
-          uint32_t it  = __popc(start_mask & ((2 << t) - 1));
-          uint32_t tr  = t - shuffle(bofs - blen_t, it);
-          int32_t dist = shuffle(dist_t, it);
+          uint32_t it   = __popc(start_mask & ((2 << t) - 1));
+          uint32_t tr   = t - shuffle(bofs - blen_t, it);
+          int32_t  dist = shuffle(dist_t, it);
           if (it < n) {
             const uint8_t *src = (dist > 0) ? (out + t - dist) : (literal_base + tr - dist);
             out[t]             = *src;
@@ -558,12 +558,12 @@ __device__ void snappy_process_symbols(unsnap_state_s *s, int t, Storage &temp_s
         // Copy
         uint8_t b0, b1;
         if (t < blen) {
-          uint32_t pos       = t;
+          uint32_t       pos = t;
           const uint8_t *src = out + ((pos >= dist) ? (pos % dist) : pos) - dist;
           b0                 = *src;
         }
         if (32 + t < blen) {
-          uint32_t pos       = 32 + t;
+          uint32_t       pos = 32 + t;
           const uint8_t *src = out + ((pos >= dist) ? (pos % dist) : pos) - dist;
           b1                 = *src;
         }
@@ -610,9 +610,9 @@ __global__ void __launch_bounds__(block_size)
 {
   __shared__ __align__(16) unsnap_state_s state_g;
   __shared__ cub::WarpReduce<uint32_t>::TempStorage temp_storage;
-  int t             = threadIdx.x;
-  unsnap_state_s *s = &state_g;
-  int strm_id       = blockIdx.x;
+  int                                               t       = threadIdx.x;
+  unsnap_state_s *                                  s       = &state_g;
+  int                                               strm_id = blockIdx.x;
 
   if (t < sizeof(gpu_inflate_input_s) / sizeof(uint32_t)) {
     reinterpret_cast<uint32_t *>(&s->in)[t] =
@@ -690,14 +690,14 @@ __global__ void __launch_bounds__(block_size)
   }
 }
 
-cudaError_t __host__ gpu_unsnap(gpu_inflate_input_s *inputs,
+cudaError_t __host__ gpu_unsnap(gpu_inflate_input_s * inputs,
                                 gpu_inflate_status_s *outputs,
-                                int count,
+                                int                   count,
                                 rmm::cuda_stream_view stream)
 {
   uint32_t count32 = (count > 0) ? count : 0;
-  dim3 dim_block(128, 1);     // 4 warps per stream, 1 stream per block
-  dim3 dim_grid(count32, 1);  // TODO: Check max grid dimensions vs max expected count
+  dim3     dim_block(128, 1);     // 4 warps per stream, 1 stream per block
+  dim3     dim_grid(count32, 1);  // TODO: Check max grid dimensions vs max expected count
 
   unsnap_kernel<128><<<dim_grid, dim_block, 0, stream.value()>>>(inputs, outputs);
 

@@ -62,11 +62,11 @@ enum class pad_side {
  * @return New column with padded strings.
  */
 std::unique_ptr<column> pad(
-  strings_column_view const& strings,
-  size_type width,
-  pad_side side                       = cudf::strings::pad_side::RIGHT,
-  std::string const& fill_char        = " ",
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  strings_column_view const&       strings,
+  size_type                        width,
+  pad_side                         side      = cudf::strings::pad_side::RIGHT,
+  std::string const&               fill_char = " ",
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Add '0' as padding to the left of each string.
@@ -91,8 +91,8 @@ std::unique_ptr<column> pad(
  * @return New column of strings.
  */
 std::unique_ptr<column> zfill(
-  strings_column_view const& strings,
-  size_type width,
+  strings_column_view const&       strings,
+  size_type                        width,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group

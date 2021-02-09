@@ -50,11 +50,11 @@ std::istream* headers_code(std::string filename, std::iostream& stream)
   return nullptr;
 }
 
-void unary_operation(mutable_column_view output,
-                     column_view input,
-                     const std::string& udf,
-                     data_type output_type,
-                     bool is_ptx,
+void unary_operation(mutable_column_view   output,
+                     column_view           input,
+                     const std::string&    udf,
+                     data_type             output_type,
+                     bool                  is_ptx,
                      rmm::cuda_stream_view stream)
 {
   std::string hash = "prog_transform" + std::to_string(std::hash<std::string>{}(udf));
@@ -85,11 +85,11 @@ void unary_operation(mutable_column_view output,
 }  // namespace transformation
 
 namespace detail {
-std::unique_ptr<column> transform(column_view const& input,
-                                  std::string const& unary_udf,
-                                  data_type output_type,
-                                  bool is_ptx,
-                                  rmm::cuda_stream_view stream,
+std::unique_ptr<column> transform(column_view const&               input,
+                                  std::string const&               unary_udf,
+                                  data_type                        output_type,
+                                  bool                             is_ptx,
+                                  rmm::cuda_stream_view            stream,
                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(is_fixed_width(input.type()), "Unexpected non-fixed-width type.");
@@ -109,10 +109,10 @@ std::unique_ptr<column> transform(column_view const& input,
 
 }  // namespace detail
 
-std::unique_ptr<column> transform(column_view const& input,
-                                  std::string const& unary_udf,
-                                  data_type output_type,
-                                  bool is_ptx,
+std::unique_ptr<column> transform(column_view const&               input,
+                                  std::string const&               unary_udf,
+                                  data_type                        output_type,
+                                  bool                             is_ptx,
                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

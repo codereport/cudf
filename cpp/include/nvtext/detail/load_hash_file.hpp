@@ -40,8 +40,8 @@ namespace detail {
  * @param mr Memory resource to allocate any returned objects.
  * @return vocabulary hash-table elements
  */
-hashed_vocabulary load_vocabulary_file(std::string const& filename_hashed_vocabulary,
-                                       rmm::cuda_stream_view stream,
+hashed_vocabulary load_vocabulary_file(std::string const&               filename_hashed_vocabulary,
+                                       rmm::cuda_stream_view            stream,
                                        rmm::mr::device_memory_resource* mr);
 
 }  // namespace detail

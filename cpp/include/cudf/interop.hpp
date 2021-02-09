@@ -50,7 +50,7 @@ namespace cudf {
  * @return Table with a copy of the tensor data
  */
 std::unique_ptr<table> from_dlpack(
-  DLManagedTensor const* managed_tensor,
+  DLManagedTensor const*           managed_tensor,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -72,7 +72,7 @@ std::unique_ptr<table> from_dlpack(
  * @return 1D or 2D DLPack tensor with a copy of the table data, or nullptr
  */
 DLManagedTensor* to_dlpack(
-  table_view const& input,
+  table_view const&                input,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group
@@ -90,7 +90,7 @@ DLManagedTensor* to_dlpack(
  * but in future this can be updated as per requirement.
  */
 struct column_metadata {
-  std::string name;
+  std::string                  name;
   std::vector<column_metadata> children_meta;
 
   column_metadata(std::string const& _name) : name(_name) {}
@@ -110,7 +110,7 @@ struct column_metadata {
  * @param ar_mr arrow memory pool to allocate memory for arrow Table
  * @return arrow Table generated from `input`
  */
-std::shared_ptr<arrow::Table> to_arrow(table_view input,
+std::shared_ptr<arrow::Table> to_arrow(table_view                          input,
                                        std::vector<column_metadata> const& metadata = {},
                                        arrow::MemoryPool* ar_mr = arrow::default_memory_pool());
 
@@ -123,7 +123,7 @@ std::shared_ptr<arrow::Table> to_arrow(table_view input,
  */
 
 std::unique_ptr<table> from_arrow(
-  arrow::Table const& input,
+  arrow::Table const&              input,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

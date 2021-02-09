@@ -219,19 +219,19 @@ class alignas(16) column_device_view_base {
   }
 
  protected:
-  data_type _type{type_id::EMPTY};   ///< Element type
-  cudf::size_type _size{};           ///< Number of elements
-  void const* _data{};               ///< Pointer to device memory containing elements
-  bitmask_type const* _null_mask{};  ///< Pointer to device memory containing
-                                     ///< bitmask representing null elements.
-  size_type _offset{};               ///< Index position of the first element.
-                                     ///< Enables zero-copy slicing
+  data_type           _type{type_id::EMPTY};  ///< Element type
+  cudf::size_type     _size{};                ///< Number of elements
+  void const*         _data{};                ///< Pointer to device memory containing elements
+  bitmask_type const* _null_mask{};           ///< Pointer to device memory containing
+                                              ///< bitmask representing null elements.
+  size_type _offset{};                        ///< Index position of the first element.
+                                              ///< Enables zero-copy slicing
 
-  column_device_view_base(data_type type,
-                          size_type size,
-                          void const* data,
+  column_device_view_base(data_type           type,
+                          size_type           size,
+                          void const*         data,
                           bitmask_type const* null_mask,
-                          size_type offset)
+                          size_type           offset)
     : _type{type}, _size{size}, _data{data}, _null_mask{null_mask}, _offset{offset}
   {
   }
@@ -697,10 +697,10 @@ template <>
 __device__ inline string_view const column_device_view::element<string_view>(
   size_type element_index) const noexcept
 {
-  size_type index          = element_index + offset();  // account for this view's _offset
+  size_type      index     = element_index + offset();  // account for this view's _offset
   const int32_t* d_offsets = d_children[strings_column_view::offsets_column_index].data<int32_t>();
-  const char* d_strings    = d_children[strings_column_view::chars_column_index].data<char>();
-  size_type offset         = d_offsets[index];
+  const char*    d_strings = d_children[strings_column_view::chars_column_index].data<char>();
+  size_type      offset    = d_offsets[index];
   return string_view{d_strings + offset, d_offsets[index + 1] - offset};
 }
 
@@ -756,7 +756,7 @@ template <>
 __device__ inline dictionary32 const column_device_view::element<dictionary32>(
   size_type element_index) const noexcept
 {
-  size_type index    = element_index + offset();  // account for this view's _offset
+  size_type  index   = element_index + offset();  // account for this view's _offset
   auto const indices = d_children[0];
   return dictionary32{type_dispatcher(indices.type(), index_element_fn{}, indices, index)};
 }
@@ -812,9 +812,9 @@ __device__ inline bitmask_type get_mask_offset_word(bitmask_type const* __restri
                                                     size_type source_begin_bit,
                                                     size_type source_end_bit)
 {
-  size_type source_word_index = destination_word_index + word_index(source_begin_bit);
-  bitmask_type curr_word      = source[source_word_index];
-  bitmask_type next_word      = 0;
+  size_type    source_word_index = destination_word_index + word_index(source_begin_bit);
+  bitmask_type curr_word         = source[source_word_index];
+  bitmask_type next_word         = 0;
   if (word_index(source_end_bit) >
       word_index(source_begin_bit +
                  destination_word_index * detail::size_in_bits<bitmask_type>())) {
@@ -938,11 +938,11 @@ struct mutable_value_accessor {
 template <typename ColumnDeviceView, typename ColumnViewIterator>
 ColumnDeviceView* child_columns_to_device_array(ColumnViewIterator child_begin,
                                                 ColumnViewIterator child_end,
-                                                void* h_ptr,
-                                                void* d_ptr)
+                                                void*              h_ptr,
+                                                void*              d_ptr)
 {
-  ColumnDeviceView* d_children = detail::align_ptr_for_type<ColumnDeviceView>(d_ptr);
-  auto num_children            = std::distance(child_begin, child_end);
+  ColumnDeviceView* d_children   = detail::align_ptr_for_type<ColumnDeviceView>(d_ptr);
+  auto              num_children = std::distance(child_begin, child_end);
   if (num_children > 0) {
     // The beginning of the memory must be the fixed-sized ColumnDeviceView
     // struct objects in order for d_children to be used as an array.

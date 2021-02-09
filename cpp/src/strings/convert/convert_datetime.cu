@@ -86,8 +86,8 @@ enum class format_char_type : int8_t {
  */
 struct alignas(4) format_item {
   format_char_type item_type;  // specifier or literal indicator
-  char value;                  // specifier or literal value
-  int8_t length;               // item length in bytes
+  char             value;      // specifier or literal value
+  int8_t           length;     // item length in bytes
 
   static format_item new_specifier(char format_char, int8_t length)
   {
@@ -107,8 +107,8 @@ struct alignas(4) format_item {
  * components and when formatting a string from timestamp components.
  */
 struct format_compiler {
-  std::string format;
-  std::string template_string;
+  std::string                      format;
+  std::string                      template_string;
   rmm::device_uvector<format_item> d_items;
 
   std::map<char, int8_t> specifier_lengths = {{'Y', 4},
@@ -128,8 +128,8 @@ struct format_compiler {
   format_compiler(const char* fmt, rmm::cuda_stream_view stream) : format(fmt), d_items(0, stream)
   {
     std::vector<format_item> items;
-    const char* str = format.c_str();
-    auto length     = format.length();
+    const char*              str    = format.c_str();
+    auto                     length = format.length();
     while (length > 0) {
       char ch = *str++;
       length--;
@@ -173,17 +173,17 @@ struct format_compiler {
   format_item const* format_items() { return d_items.data(); }
   size_type template_bytes() const { return static_cast<size_type>(template_string.size()); }
   size_type items_count() const { return static_cast<size_type>(d_items.size()); }
-  int8_t subsecond_precision() const { return specifier_lengths.at('f'); }
+  int8_t    subsecond_precision() const { return specifier_lengths.at('f'); }
 };
 
 // this parses date/time characters into a timestamp integer
 template <typename T>  // timestamp type
 struct parse_datetime {
   column_device_view const d_strings;
-  format_item const* d_format_items;
-  size_type items_count;
-  timestamp_units units;
-  int8_t subsecond_precision;
+  format_item const*       d_format_items;
+  size_type                items_count;
+  timestamp_units          units;
+  int8_t                   subsecond_precision;
 
   /**
    * @brief Return power of ten value given an exponent.
@@ -200,8 +200,8 @@ struct parse_datetime {
   //
   __device__ int32_t str2int(const char* str, size_type bytes)
   {
-    const char* ptr = str;
-    int32_t value   = 0;
+    const char* ptr   = str;
+    int32_t     value = 0;
     for (size_type idx = 0; idx < bytes; ++idx) {
       char chr = *ptr++;
       if (chr < '0' || chr > '9') break;
@@ -252,7 +252,7 @@ struct parse_datetime {
         }
         case 'p': {
           string_view am_pm(ptr, 2);
-          auto hour = timeparts[TP_HOUR];
+          auto        hour = timeparts[TP_HOUR];
           if ((am_pm.compare("AM", 2) == 0) || (am_pm.compare("am", 2) == 0)) {
             if (hour == 12) hour = 0;
           } else if (hour < 12)
@@ -301,7 +301,7 @@ struct parse_datetime {
     if (units == timestamp_units::minutes)
       return static_cast<int64_t>(days * 24L * 60L) + (hour * 60L) + minute + tzadjust;
 
-    auto second = timeparts[TP_SECOND];
+    auto    second = timeparts[TP_SECOND];
     int64_t timestamp =
       (days * 24L * 3600L) + (hour * 3600L) + (minute * 60L) + second + (tzadjust * 60);
     if (units == timestamp_units::seconds) return timestamp;
@@ -373,14 +373,14 @@ timestamp_units dispatch_timestamp_to_units_fn::operator()<cudf::timestamp_ns>()
 struct dispatch_to_timestamps_fn {
   template <typename T, std::enable_if_t<cudf::is_timestamp<T>()>* = nullptr>
   void operator()(column_device_view const& d_strings,
-                  std::string const& format,
-                  timestamp_units units,
-                  mutable_column_view& results_view,
-                  rmm::cuda_stream_view stream) const
+                  std::string const&        format,
+                  timestamp_units           units,
+                  mutable_column_view&      results_view,
+                  rmm::cuda_stream_view     stream) const
   {
-    format_compiler compiler(format.c_str(), stream);
-    auto d_items   = compiler.format_items();
-    auto d_results = results_view.data<T>();
+    format_compiler   compiler(format.c_str(), stream);
+    auto              d_items   = compiler.format_items();
+    auto              d_results = results_view.data<T>();
     parse_datetime<T> pfn{
       d_strings, d_items, compiler.items_count(), units, compiler.subsecond_precision()};
     thrust::transform(rmm::exec_policy(stream),
@@ -403,10 +403,10 @@ struct dispatch_to_timestamps_fn {
 }  // namespace
 
 //
-std::unique_ptr<cudf::column> to_timestamps(strings_column_view const& strings,
-                                            data_type timestamp_type,
-                                            std::string const& format,
-                                            rmm::cuda_stream_view stream,
+std::unique_ptr<cudf::column> to_timestamps(strings_column_view const&       strings,
+                                            data_type                        timestamp_type,
+                                            std::string const&               format,
+                                            rmm::cuda_stream_view            stream,
                                             rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = strings.size();
@@ -438,8 +438,8 @@ std::unique_ptr<cudf::column> to_timestamps(strings_column_view const& strings,
  */
 struct check_datetime_format {
   column_device_view const d_strings;
-  format_item const* d_format_items;
-  size_type items_count;
+  format_item const*       d_format_items;
+  size_type                items_count;
 
   /**
    * @brief Check the specified characters are between ['0','9'].
@@ -468,8 +468,8 @@ struct check_datetime_format {
    */
   __device__ thrust::optional<int32_t> str2int(const char* str, size_type bytes)
   {
-    const char* ptr = str;
-    int32_t value   = 0;
+    const char* ptr   = str;
+    int32_t     value = 0;
     for (size_type idx = 0; idx < bytes; ++idx) {
       char chr = *ptr++;
       if (chr < '0' || chr > '9') return thrust::nullopt;
@@ -490,8 +490,8 @@ struct check_datetime_format {
    */
   __device__ bool check_value(const char* str, size_type bytes, int min_value, int max_value)
   {
-    const char* ptr = str;
-    int32_t value   = 0;
+    const char* ptr   = str;
+    int32_t     value = 0;
     for (size_type idx = 0; idx < bytes; ++idx) {
       char chr = *ptr++;
       if (chr < '0' || chr > '9') return false;
@@ -611,9 +611,9 @@ struct check_datetime_format {
   }
 };
 
-std::unique_ptr<cudf::column> is_timestamp(strings_column_view const& strings,
-                                           std::string const& format,
-                                           rmm::cuda_stream_view stream,
+std::unique_ptr<cudf::column> is_timestamp(strings_column_view const&       strings,
+                                           std::string const&               format,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = strings.size();
@@ -648,17 +648,17 @@ std::unique_ptr<cudf::column> is_timestamp(strings_column_view const& strings,
 
 // external APIs
 
-std::unique_ptr<cudf::column> to_timestamps(strings_column_view const& strings,
-                                            data_type timestamp_type,
-                                            std::string const& format,
+std::unique_ptr<cudf::column> to_timestamps(strings_column_view const&       strings,
+                                            data_type                        timestamp_type,
+                                            std::string const&               format,
                                             rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::to_timestamps(strings, timestamp_type, format, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<cudf::column> is_timestamp(strings_column_view const& strings,
-                                           std::string const& format,
+std::unique_ptr<cudf::column> is_timestamp(strings_column_view const&       strings,
+                                           std::string const&               format,
                                            rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -671,11 +671,11 @@ namespace {
 template <typename T>
 struct datetime_formatter {
   const column_device_view d_timestamps;
-  const format_item* d_format_items;
-  size_type items_count;
-  timestamp_units units;
-  const int32_t* d_offsets;
-  char* d_chars;
+  const format_item*       d_format_items;
+  size_type                items_count;
+  timestamp_units          units;
+  const int32_t*           d_offsets;
+  char*                    d_chars;
 
   __device__ cudf::timestamp_D::duration convert_to_days(int64_t timestamp, timestamp_units units)
   {
@@ -788,8 +788,8 @@ struct datetime_formatter {
   // utility to create 0-padded integers (up to 9 chars)
   __device__ char* int2str(char* str, int bytes, int val)
   {
-    char tmpl[9] = {'0', '0', '0', '0', '0', '0', '0', '0', '0'};
-    char* ptr    = tmpl;
+    char  tmpl[9] = {'0', '0', '0', '0', '0', '0', '0', '0', '0'};
+    char* ptr     = tmpl;
     while (val > 0) {
       int digit = val % 10;
       *ptr++    = '0' + digit;
@@ -849,8 +849,8 @@ struct datetime_formatter {
           break;
         case 'f':  // sub-second
         {
-          char subsecond_digits[] = "000000000";  // 9 max digits
-          const int digits        = [units = units] {
+          char      subsecond_digits[] = "000000000";  // 9 max digits
+          const int digits             = [units = units] {
             if (units == timestamp_units::ms) return 3;
             if (units == timestamp_units::us) return 6;
             if (units == timestamp_units::ns) return 9;
@@ -886,7 +886,7 @@ struct datetime_formatter {
   __device__ void operator()(size_type idx)
   {
     if (d_timestamps.is_null(idx)) return;
-    auto timestamp                  = d_timestamps.element<T>(idx);
+    auto    timestamp               = d_timestamps.element<T>(idx);
     int32_t timeparts[TP_ARRAYSIZE] = {0};
     dissect_timestamp(timestamp.time_since_epoch().count(), timeparts);
     // convert to characters
@@ -898,12 +898,12 @@ struct datetime_formatter {
 struct dispatch_from_timestamps_fn {
   template <typename T, std::enable_if_t<cudf::is_timestamp<T>()>* = nullptr>
   void operator()(column_device_view const& d_timestamps,
-                  format_item const* d_format_items,
-                  size_type items_count,
-                  timestamp_units units,
-                  const int32_t* d_offsets,
-                  char* d_chars,
-                  rmm::cuda_stream_view stream) const
+                  format_item const*        d_format_items,
+                  size_type                 items_count,
+                  timestamp_units           units,
+                  const int32_t*            d_offsets,
+                  char*                     d_chars,
+                  rmm::cuda_stream_view     stream) const
   {
     datetime_formatter<T> pfn{d_timestamps, d_format_items, items_count, units, d_offsets, d_chars};
     thrust::for_each_n(rmm::exec_policy(stream),
@@ -917,7 +917,7 @@ struct dispatch_from_timestamps_fn {
                   size_type,
                   timestamp_units,
                   const int32_t*,
-                  char* d_chars,
+                  char*                 d_chars,
                   rmm::cuda_stream_view stream) const
   {
     CUDF_FAIL("Only timestamps type are expected");
@@ -927,9 +927,9 @@ struct dispatch_from_timestamps_fn {
 }  // namespace
 
 //
-std::unique_ptr<column> from_timestamps(column_view const& timestamps,
-                                        std::string const& format,
-                                        rmm::cuda_stream_view stream,
+std::unique_ptr<column> from_timestamps(column_view const&               timestamps,
+                                        std::string const&               format,
+                                        rmm::cuda_stream_view            stream,
                                         rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = timestamps.size();
@@ -940,7 +940,7 @@ std::unique_ptr<column> from_timestamps(column_view const& timestamps,
     cudf::type_dispatcher(timestamps.type(), dispatch_timestamp_to_units_fn());
 
   format_compiler compiler(format.c_str(), stream);
-  auto d_format_items = compiler.format_items();
+  auto            d_format_items = compiler.format_items();
 
   auto column   = column_device_view::create(timestamps, stream);
   auto d_column = *column;
@@ -962,7 +962,7 @@ std::unique_ptr<column> from_timestamps(column_view const& timestamps,
 
   // build chars column
   size_type bytes = thrust::device_pointer_cast(d_new_offsets)[strings_count];
-  auto chars_column =
+  auto      chars_column =
     create_chars_child_column(strings_count, timestamps.null_count(), bytes, stream, mr);
   auto chars_view = chars_column->mutable_view();
   auto d_chars    = chars_view.template data<char>();
@@ -991,8 +991,8 @@ std::unique_ptr<column> from_timestamps(column_view const& timestamps,
 
 // external API
 
-std::unique_ptr<column> from_timestamps(column_view const& timestamps,
-                                        std::string const& format,
+std::unique_ptr<column> from_timestamps(column_view const&               timestamps,
+                                        std::string const&               format,
                                         rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

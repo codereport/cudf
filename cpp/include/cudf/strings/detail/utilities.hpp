@@ -36,11 +36,11 @@ namespace detail {
  * @return The chars child column for a strings column.
  */
 std::unique_ptr<column> create_chars_child_column(
-  size_type strings_count,
-  size_type null_count,
-  size_type bytes,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  size_type                        strings_count,
+  size_type                        null_count,
+  size_type                        bytes,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Create a strings column with no strings.
@@ -50,8 +50,8 @@ std::unique_ptr<column> create_chars_child_column(
  * @return Empty strings column
  */
 std::unique_ptr<column> make_empty_strings_column(
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Creates a string_view vector from a strings column.
@@ -73,8 +73,8 @@ rmm::device_vector<string_view> create_string_vector_from_column(
  */
 std::unique_ptr<cudf::column> child_offsets_from_string_vector(
   const rmm::device_vector<string_view>& strings,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  rmm::cuda_stream_view                  stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource*       mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Creates a chars column from a string_view vector.
@@ -88,10 +88,10 @@ std::unique_ptr<cudf::column> child_offsets_from_string_vector(
  */
 std::unique_ptr<cudf::column> child_chars_from_string_vector(
   const rmm::device_vector<string_view>& strings,
-  const int32_t* d_offsets,
-  cudf::size_type null_count,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  const int32_t*                         d_offsets,
+  cudf::size_type                        null_count,
+  rmm::cuda_stream_view                  stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource*       mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace detail
 }  // namespace strings

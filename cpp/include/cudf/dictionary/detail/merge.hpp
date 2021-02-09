@@ -39,11 +39,11 @@ namespace detail {
  * @param mr Device memory resource used to allocate the returned column's device memory.
  * @return New dictionary column.
  */
-std::unique_ptr<column> merge(dictionary_column_view const& lcol,
-                              dictionary_column_view const& rcol,
+std::unique_ptr<column> merge(dictionary_column_view const&     lcol,
+                              dictionary_column_view const&     rcol,
                               cudf::detail::index_vector const& row_order,
-                              rmm::cuda_stream_view stream,
-                              rmm::mr::device_memory_resource* mr);
+                              rmm::cuda_stream_view             stream,
+                              rmm::mr::device_memory_resource*  mr);
 
 }  // namespace detail
 }  // namespace dictionary

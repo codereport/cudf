@@ -49,8 +49,8 @@ struct byte_stream_s {
   const uint8_t *end;
   const uint8_t *base;
   // Parsed symbols
-  PageType page_type;
-  PageInfo page;
+  PageType        page_type;
+  PageInfo        page;
   ColumnChunkDesc ck;
 };
 
@@ -141,7 +141,7 @@ __device__ void skip_struct_field(byte_stream_s *bs, int field_type)
       case ST_FLD_LIST:
       case ST_FLD_SET: {  // NOTE: skipping a list of lists is not handled
         auto const c = getb(bs);
-        int n        = c >> 4;
+        int        n = c >> 4;
         if (n == 0xf) n = get_u32(bs);
         field_type = g_list2struct[c & 0xf];
         if (field_type == ST_FLD_STRUCT)
@@ -160,7 +160,7 @@ __device__ void skip_struct_field(byte_stream_s *bs, int field_type)
  * @return True if field type is not int32
  */
 struct ParquetFieldInt32 {
-  int field;
+  int      field;
   int32_t &val;
 
   __device__ ParquetFieldInt32(int f, int32_t &v) : field(f), val(v) {}
@@ -179,7 +179,7 @@ struct ParquetFieldInt32 {
  */
 template <typename Enum>
 struct ParquetFieldEnum {
-  int field;
+  int   field;
   Enum &val;
 
   __device__ ParquetFieldEnum(int f, Enum &v) : field(f), val(v) {}
@@ -199,7 +199,7 @@ struct ParquetFieldEnum {
  */
 template <typename Operator>
 struct ParquetFieldStruct {
-  int field;
+  int      field;
   Operator op;
 
   __device__ ParquetFieldStruct(int f) : field(f) {}
@@ -226,9 +226,9 @@ struct ParquetFieldStruct {
 template <int index>
 struct FunctionSwitchImpl {
   template <typename... Operator>
-  static inline __device__ bool run(byte_stream_s *bs,
-                                    int field_type,
-                                    const int &field,
+  static inline __device__ bool run(byte_stream_s *             bs,
+                                    int                         field_type,
+                                    const int &                 field,
                                     thrust::tuple<Operator...> &ops)
   {
     if (field == thrust::get<index>(ops).field) {
@@ -242,9 +242,9 @@ struct FunctionSwitchImpl {
 template <>
 struct FunctionSwitchImpl<0> {
   template <typename... Operator>
-  static inline __device__ bool run(byte_stream_s *bs,
-                                    int field_type,
-                                    const int &field,
+  static inline __device__ bool run(byte_stream_s *             bs,
+                                    int                         field_type,
+                                    const int &                 field,
                                     thrust::tuple<Operator...> &ops)
   {
     if (field == thrust::get<0>(ops).field) {
@@ -270,7 +270,7 @@ template <typename... Operator>
 inline __device__ bool parse_header(thrust::tuple<Operator...> &op, byte_stream_s *bs)
 {
   constexpr int index = thrust::tuple_size<thrust::tuple<Operator...>>::value - 1;
-  int field           = 0;
+  int           field = 0;
   while (true) {
     auto const current_byte = getb(bs);
     if (!current_byte) break;
@@ -341,19 +341,19 @@ extern "C" __global__ void __launch_bounds__(128)
   gpuParsePageHeader parse_page_header;
   __shared__ byte_stream_s bs_g[4];
 
-  int lane_id             = threadIdx.x % 32;
-  int chunk               = (blockIdx.x * 4) + (threadIdx.x / 32);
-  byte_stream_s *const bs = &bs_g[threadIdx.x / 32];
+  int                  lane_id = threadIdx.x % 32;
+  int                  chunk   = (blockIdx.x * 4) + (threadIdx.x / 32);
+  byte_stream_s *const bs      = &bs_g[threadIdx.x / 32];
 
   if (chunk < num_chunks and lane_id == 0) bs->ck = chunks[chunk];
   __syncthreads();
 
   if (chunk < num_chunks) {
-    size_t num_values, values_found;
-    uint32_t data_page_count       = 0;
-    uint32_t dictionary_page_count = 0;
-    int32_t max_num_pages;
-    int32_t num_dict_pages = bs->ck.num_dict_pages;
+    size_t    num_values, values_found;
+    uint32_t  data_page_count       = 0;
+    uint32_t  dictionary_page_count = 0;
+    int32_t   max_num_pages;
+    int32_t   num_dict_pages = bs->ck.num_dict_pages;
     PageInfo *page_info;
 
     if (!lane_id) {
@@ -438,20 +438,20 @@ extern "C" __global__ void __launch_bounds__(128)
 {
   __shared__ ColumnChunkDesc chunk_g[4];
 
-  int lane_id               = threadIdx.x % 32;
-  int chunk                 = (blockIdx.x * 4) + (threadIdx.x / 32);
-  ColumnChunkDesc *const ck = &chunk_g[threadIdx.x / 32];
+  int                    lane_id = threadIdx.x % 32;
+  int                    chunk   = (blockIdx.x * 4) + (threadIdx.x / 32);
+  ColumnChunkDesc *const ck      = &chunk_g[threadIdx.x / 32];
   if (chunk < num_chunks and lane_id == 0) *ck = chunks[chunk];
   __syncthreads();
 
   if (chunk >= num_chunks) { return; }
   if (!lane_id && ck->num_dict_pages > 0 && ck->str_dict_index) {
     // Data type to describe a string
-    nvstrdesc_s *dict_index = ck->str_dict_index;
-    const uint8_t *dict     = ck->page_info[0].page_data;
-    int dict_size           = ck->page_info[0].uncompressed_page_size;
-    int num_entries         = ck->page_info[0].num_input_values;
-    int pos = 0, cur = 0;
+    nvstrdesc_s *  dict_index  = ck->str_dict_index;
+    const uint8_t *dict        = ck->page_info[0].page_data;
+    int            dict_size   = ck->page_info[0].uncompressed_page_size;
+    int            num_entries = ck->page_info[0].num_input_values;
+    int            pos = 0, cur = 0;
     for (int i = 0; i < num_entries; i++) {
       int len = 0;
       if (cur + 4 <= dict_size) {
@@ -470,8 +470,8 @@ extern "C" __global__ void __launch_bounds__(128)
   }
 }
 
-void __host__ DecodePageHeaders(ColumnChunkDesc *chunks,
-                                int32_t num_chunks,
+void __host__ DecodePageHeaders(ColumnChunkDesc *     chunks,
+                                int32_t               num_chunks,
                                 rmm::cuda_stream_view stream)
 {
   dim3 dim_block(128, 1);
@@ -479,8 +479,8 @@ void __host__ DecodePageHeaders(ColumnChunkDesc *chunks,
   gpuDecodePageHeaders<<<dim_grid, dim_block, 0, stream.value()>>>(chunks, num_chunks);
 }
 
-void __host__ BuildStringDictionaryIndex(ColumnChunkDesc *chunks,
-                                         int32_t num_chunks,
+void __host__ BuildStringDictionaryIndex(ColumnChunkDesc *     chunks,
+                                         int32_t               num_chunks,
                                          rmm::cuda_stream_view stream)
 {
   dim3 dim_block(128, 1);

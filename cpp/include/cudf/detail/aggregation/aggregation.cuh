@@ -94,14 +94,14 @@ using corresponding_operator_t = typename corresponding_operator<k>::type;
 
 template <typename Source,
           aggregation::Kind k,
-          bool target_has_nulls,
-          bool source_has_nulls,
+          bool              target_has_nulls,
+          bool              source_has_nulls,
           typename Enable = void>
 struct update_target_element {
   __device__ void operator()(mutable_column_device_view target,
-                             size_type target_index,
-                             column_device_view source,
-                             size_type source_index) const noexcept
+                             size_type                  target_index,
+                             column_device_view         source,
+                             size_type                  source_index) const noexcept
   {
     release_assert(false and "Invalid source type and aggregation combination.");
   }
@@ -115,9 +115,9 @@ struct update_target_element<
   source_has_nulls,
   std::enable_if_t<is_fixed_width<Source>() && !is_fixed_point<Source>()>> {
   __device__ void operator()(mutable_column_device_view target,
-                             size_type target_index,
-                             column_device_view source,
-                             size_type source_index) const noexcept
+                             size_type                  target_index,
+                             column_device_view         source,
+                             size_type                  source_index) const noexcept
   {
     if (source_has_nulls and source.is_null(source_index)) { return; }
 
@@ -136,9 +136,9 @@ struct update_target_element<Source,
                              source_has_nulls,
                              std::enable_if_t<is_fixed_point<Source>()>> {
   __device__ void operator()(mutable_column_device_view target,
-                             size_type target_index,
-                             column_device_view source,
-                             size_type source_index) const noexcept
+                             size_type                  target_index,
+                             column_device_view         source,
+                             size_type                  source_index) const noexcept
   {
 #if (__CUDACC_VER_MAJOR__ != 10) or (__CUDACC_VER_MINOR__ != 2)
 
@@ -165,9 +165,9 @@ struct update_target_element<
   source_has_nulls,
   std::enable_if_t<is_fixed_width<Source>() && !is_fixed_point<Source>()>> {
   __device__ void operator()(mutable_column_device_view target,
-                             size_type target_index,
-                             column_device_view source,
-                             size_type source_index) const noexcept
+                             size_type                  target_index,
+                             column_device_view         source,
+                             size_type                  source_index) const noexcept
   {
     if (source_has_nulls and source.is_null(source_index)) { return; }
 
@@ -186,9 +186,9 @@ struct update_target_element<Source,
                              source_has_nulls,
                              std::enable_if_t<is_fixed_point<Source>()>> {
   __device__ void operator()(mutable_column_device_view target,
-                             size_type target_index,
-                             column_device_view source,
-                             size_type source_index) const noexcept
+                             size_type                  target_index,
+                             column_device_view         source,
+                             size_type                  source_index) const noexcept
   {
 #if (__CUDACC_VER_MAJOR__ != 10) or (__CUDACC_VER_MINOR__ != 2)
 
@@ -215,9 +215,9 @@ struct update_target_element<
   source_has_nulls,
   std::enable_if_t<is_fixed_width<Source>() && !is_fixed_point<Source>()>> {
   __device__ void operator()(mutable_column_device_view target,
-                             size_type target_index,
-                             column_device_view source,
-                             size_type source_index) const noexcept
+                             size_type                  target_index,
+                             column_device_view         source,
+                             size_type                  source_index) const noexcept
   {
     if (source_has_nulls and source.is_null(source_index)) { return; }
 
@@ -236,9 +236,9 @@ struct update_target_element<Source,
                              source_has_nulls,
                              std::enable_if_t<is_fixed_point<Source>()>> {
   __device__ void operator()(mutable_column_device_view target,
-                             size_type target_index,
-                             column_device_view source,
-                             size_type source_index) const noexcept
+                             size_type                  target_index,
+                             column_device_view         source,
+                             size_type                  source_index) const noexcept
   {
 #if (__CUDACC_VER_MAJOR__ != 10) or (__CUDACC_VER_MINOR__ != 2)
 
@@ -266,9 +266,9 @@ struct update_target_from_dictionary {
   template <typename KeyType,
             std::enable_if_t<is_fixed_width<KeyType>() && !is_fixed_point<KeyType>()>* = nullptr>
   __device__ void operator()(mutable_column_device_view& target,
-                             size_type target_index,
-                             column_device_view& d_dictionary,
-                             size_type source_index) const noexcept
+                             size_type                   target_index,
+                             column_device_view&         d_dictionary,
+                             size_type                   source_index) const noexcept
   {
 // This code will segfault in nvcc/ptxas 10.2 only
 // https://nvbugswb.nvidia.com/NvBugs5/SWBug.aspx?bugid=3186317
@@ -283,9 +283,9 @@ struct update_target_from_dictionary {
   template <typename KeyType,
             std::enable_if_t<!is_fixed_width<KeyType>() || is_fixed_point<KeyType>()>* = nullptr>
   __device__ void operator()(mutable_column_device_view& target,
-                             size_type target_index,
-                             column_device_view& d_dictionary,
-                             size_type source_index) const noexcept {};
+                             size_type                   target_index,
+                             column_device_view&         d_dictionary,
+                             size_type                   source_index) const noexcept {};
 };
 
 /**
@@ -297,9 +297,9 @@ struct update_target_from_dictionary {
 template <bool target_has_nulls, bool source_has_nulls>
 struct update_target_element<dictionary32, aggregation::SUM, target_has_nulls, source_has_nulls> {
   __device__ void operator()(mutable_column_device_view target,
-                             size_type target_index,
-                             column_device_view source,
-                             size_type source_index) const noexcept
+                             size_type                  target_index,
+                             column_device_view         source,
+                             size_type                  source_index) const noexcept
   {
     if (source_has_nulls and source.is_null(source_index)) { return; }
 
@@ -322,9 +322,9 @@ struct update_target_element<
   source_has_nulls,
   std::enable_if_t<is_valid_aggregation<Source, aggregation::COUNT_VALID>()>> {
   __device__ void operator()(mutable_column_device_view target,
-                             size_type target_index,
-                             column_device_view source,
-                             size_type source_index) const noexcept
+                             size_type                  target_index,
+                             column_device_view         source,
+                             size_type                  source_index) const noexcept
   {
     if (source_has_nulls and source.is_null(source_index)) { return; }
 
@@ -343,9 +343,9 @@ struct update_target_element<
   source_has_nulls,
   std::enable_if_t<is_valid_aggregation<Source, aggregation::COUNT_ALL>()>> {
   __device__ void operator()(mutable_column_device_view target,
-                             size_type target_index,
-                             column_device_view source,
-                             size_type source_index) const noexcept
+                             size_type                  target_index,
+                             column_device_view         source,
+                             size_type                  source_index) const noexcept
   {
     using Target = target_type_t<Source, aggregation::COUNT_ALL>;
     atomicAdd(&target.element<Target>(target_index), Target{1});
@@ -363,9 +363,9 @@ struct update_target_element<
   std::enable_if_t<is_valid_aggregation<Source, aggregation::ARGMAX>() and
                    cudf::is_relationally_comparable<Source, Source>()>> {
   __device__ void operator()(mutable_column_device_view target,
-                             size_type target_index,
-                             column_device_view source,
-                             size_type source_index) const noexcept
+                             size_type                  target_index,
+                             column_device_view         source,
+                             size_type                  source_index) const noexcept
   {
     if (source_has_nulls and source.is_null(source_index)) { return; }
 
@@ -390,9 +390,9 @@ struct update_target_element<
   std::enable_if_t<is_valid_aggregation<Source, aggregation::ARGMIN>() and
                    cudf::is_relationally_comparable<Source, Source>()>> {
   __device__ void operator()(mutable_column_device_view target,
-                             size_type target_index,
-                             column_device_view source,
-                             size_type source_index) const noexcept
+                             size_type                  target_index,
+                             column_device_view         source,
+                             size_type                  source_index) const noexcept
   {
     if (source_has_nulls and source.is_null(source_index)) { return; }
 
@@ -420,9 +420,9 @@ template <bool target_has_nulls = true, bool source_has_nulls = true>
 struct elementwise_aggregator {
   template <typename Source, aggregation::Kind k>
   __device__ void operator()(mutable_column_device_view target,
-                             size_type target_index,
-                             column_device_view source,
-                             size_type source_index) const noexcept
+                             size_type                  target_index,
+                             column_device_view         source,
+                             size_type                  source_index) const noexcept
   {
     update_target_element<Source, k, target_has_nulls, source_has_nulls>{}(
       target, target_index, source, source_index);
@@ -475,10 +475,10 @@ struct elementwise_aggregator {
  */
 template <bool target_has_nulls = true, bool source_has_nulls = true>
 __device__ inline void aggregate_row(mutable_table_device_view target,
-                                     size_type target_index,
-                                     table_device_view source,
-                                     size_type source_index,
-                                     aggregation::Kind const* aggs)
+                                     size_type                 target_index,
+                                     table_device_view         source,
+                                     size_type                 source_index,
+                                     aggregation::Kind const*  aggs)
 {
   for (auto i = 0; i < target.num_columns(); ++i) {
     dispatch_type_and_aggregation(source.column(i).type(),
@@ -566,14 +566,14 @@ struct identity_initializer {
  public:
   template <typename T, aggregation::Kind k>
   std::enable_if_t<is_supported<T, k>(), void> operator()(mutable_column_view const& col,
-                                                          rmm::cuda_stream_view stream)
+                                                          rmm::cuda_stream_view      stream)
   {
     thrust::fill(rmm::exec_policy(stream), col.begin<T>(), col.end<T>(), get_identity<T, k>());
   }
 
   template <typename T, aggregation::Kind k>
   std::enable_if_t<not is_supported<T, k>(), void> operator()(mutable_column_view const& col,
-                                                              rmm::cuda_stream_view stream)
+                                                              rmm::cuda_stream_view      stream)
   {
     CUDF_FAIL("Unsupported aggregation for initializing values");
   }
@@ -594,9 +594,9 @@ struct identity_initializer {
  * columns. The aggregations determine the identity value for each column.
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
-void initialize_with_identity(mutable_table_view& table,
+void initialize_with_identity(mutable_table_view&                   table,
                               std::vector<aggregation::Kind> const& aggs,
-                              rmm::cuda_stream_view stream);
+                              rmm::cuda_stream_view                 stream);
 
 }  // namespace detail
 }  // namespace cudf

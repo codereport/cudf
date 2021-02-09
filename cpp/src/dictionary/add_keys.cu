@@ -45,9 +45,9 @@ namespace detail {
  * ```
  */
 std::unique_ptr<column> add_keys(
-  dictionary_column_view const& dictionary_column,
-  column_view const& new_keys,
-  rmm::cuda_stream_view stream,
+  dictionary_column_view const&    dictionary_column,
+  column_view const&               new_keys,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(!new_keys.has_nulls(), "Keys must not have nulls");
@@ -94,10 +94,10 @@ std::unique_ptr<column> add_keys(
                                             mr)
                          ->release();
   // The output of lower_bound is INT32 but we need to convert to unsigned indices.
-  auto const indices_type = get_indices_type_for_size(keys_column->size());
-  auto indices_column     = [&] {
+  auto const indices_type   = get_indices_type_for_size(keys_column->size());
+  auto       indices_column = [&] {
     column_view gather_result = table_indices.front()->view();
-    auto const indices_size   = gather_result.size();
+    auto const  indices_size  = gather_result.size();
     // we can just use the lower-bound/gather data directly for UINT32 case
     if (indices_type.id() == type_id::UINT32) {
       auto contents = table_indices.front()->release();
@@ -122,8 +122,8 @@ std::unique_ptr<column> add_keys(
 
 }  // namespace detail
 
-std::unique_ptr<column> add_keys(dictionary_column_view const& dictionary_column,
-                                 column_view const& keys,
+std::unique_ptr<column> add_keys(dictionary_column_view const&    dictionary_column,
+                                 column_view const&               keys,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

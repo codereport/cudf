@@ -65,8 +65,8 @@ __device__ inline double stod(string_view const& d_str)
   }
   unsigned long max_mantissa = 0x0FFFFFFFFFFFFF;
   unsigned long digits       = 0;
-  int exp_off                = 0;
-  bool decimal               = false;
+  int           exp_off      = 0;
+  bool          decimal      = false;
   while (in_ptr < end) {
     char ch = *in_ptr;
     if (ch == '.') {
@@ -147,8 +147,8 @@ struct dispatch_to_floats_fn {
   template <typename FloatType,
             std::enable_if_t<std::is_floating_point<FloatType>::value>* = nullptr>
   void operator()(column_device_view const& strings_column,
-                  mutable_column_view& output_column,
-                  rmm::cuda_stream_view stream) const
+                  mutable_column_view&      output_column,
+                  rmm::cuda_stream_view     stream) const
   {
     auto d_results = output_column.data<FloatType>();
     thrust::transform(rmm::exec_policy(stream),
@@ -168,9 +168,9 @@ struct dispatch_to_floats_fn {
 }  // namespace
 
 // This will convert a strings column into any float column type.
-std::unique_ptr<column> to_floats(strings_column_view const& strings,
-                                  data_type output_type,
-                                  rmm::cuda_stream_view stream,
+std::unique_ptr<column> to_floats(strings_column_view const&       strings,
+                                  data_type                        output_type,
+                                  rmm::cuda_stream_view            stream,
                                   rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = strings.size();
@@ -195,8 +195,8 @@ std::unique_ptr<column> to_floats(strings_column_view const& strings,
 
 // external API
 
-std::unique_ptr<column> to_floats(strings_column_view const& strings,
-                                  data_type output_type,
+std::unique_ptr<column> to_floats(strings_column_view const&       strings,
+                                  data_type                        output_type,
                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -235,7 +235,7 @@ struct ftos_converter {
       *output++ = '0';
       return output;
     }
-    char buffer[significant_digits];  // should be big-enough for significant digits
+    char  buffer[significant_digits];  // should be big-enough for significant digits
     char* ptr = buffer;
     while (value > 0) {
       *ptr++ = (char)('0' + (value % 10));
@@ -250,10 +250,10 @@ struct ftos_converter {
    *
    * @return The number of decimal places.
    */
-  __device__ int dissect_value(double value,
+  __device__ int dissect_value(double        value,
                                unsigned int& integer,
                                unsigned int& decimal,
-                               int& exp10)
+                               int&          exp10)
   {
     int decimal_places = significant_digits - 1;
     // normalize step puts value between lower-limit and upper-limit
@@ -337,8 +337,8 @@ struct ftos_converter {
 
     // dissect value into components
     unsigned int integer = 0, decimal = 0;
-    int exp10          = 0;
-    int decimal_places = dissect_value(value, integer, decimal, exp10);
+    int          exp10          = 0;
+    int          decimal_places = dissect_value(value, integer, decimal, exp10);
     //
     // now build the string from the
     // components: sign, integer, decimal, exp10, decimal_places
@@ -351,7 +351,7 @@ struct ftos_converter {
     // decimal
     *ptr++ = '.';
     if (decimal_places) {
-      char buffer[10];
+      char  buffer[10];
       char* pb = buffer;
       while (decimal_places--) {
         *pb++ = (char)('0' + (decimal % 10));
@@ -394,8 +394,8 @@ struct ftos_converter {
 
     // dissect float into parts
     unsigned int integer = 0, decimal = 0;
-    int exp10          = 0;
-    int decimal_places = dissect_value(value, integer, decimal, exp10);
+    int          exp10          = 0;
+    int          decimal_places = dissect_value(value, integer, decimal, exp10);
     // now count up the components
     // sign
     int count = (int)bneg;
@@ -432,7 +432,7 @@ struct float_to_string_size_fn {
   __device__ size_type operator()(size_type idx)
   {
     if (d_column.is_null(idx)) return 0;
-    FloatType value = d_column.element<FloatType>(idx);
+    FloatType      value = d_column.element<FloatType>(idx);
     ftos_converter fts;
     return static_cast<size_type>(fts.compute_ftos_size(static_cast<double>(value)));
   }
@@ -441,13 +441,13 @@ struct float_to_string_size_fn {
 template <typename FloatType>
 struct float_to_string_fn {
   const column_device_view d_column;
-  const int32_t* d_offsets;
-  char* d_chars;
+  const int32_t*           d_offsets;
+  char*                    d_chars;
 
   __device__ void operator()(size_type idx)
   {
     if (d_column.is_null(idx)) return;
-    FloatType value = d_column.element<FloatType>(idx);
+    FloatType      value = d_column.element<FloatType>(idx);
     ftos_converter fts;
     fts.float_to_string(static_cast<double>(value), d_chars + d_offsets[idx]);
   }
@@ -461,13 +461,13 @@ struct float_to_string_fn {
 struct dispatch_from_floats_fn {
   template <typename FloatType,
             std::enable_if_t<std::is_floating_point<FloatType>::value>* = nullptr>
-  std::unique_ptr<column> operator()(column_view const& floats,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(column_view const&               floats,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr) const
   {
     size_type strings_count = floats.size();
-    auto column             = column_device_view::create(floats, stream);
-    auto d_column           = *column;
+    auto      column        = column_device_view::create(floats, stream);
+    auto      d_column      = *column;
 
     // copy the null mask
     rmm::device_buffer null_mask = cudf::detail::copy_bitmask(floats, stream, mr);
@@ -481,7 +481,7 @@ struct dispatch_from_floats_fn {
 
     // build chars column
     size_type bytes = thrust::device_pointer_cast(d_offsets)[strings_count];
-    auto chars_column =
+    auto      chars_column =
       detail::create_chars_child_column(strings_count, floats.null_count(), bytes, stream, mr);
     auto chars_view = chars_column->mutable_view();
     auto d_chars    = chars_view.template data<char>();
@@ -512,8 +512,8 @@ struct dispatch_from_floats_fn {
 }  // namespace
 
 // This will convert all float column types into a strings column.
-std::unique_ptr<column> from_floats(column_view const& floats,
-                                    rmm::cuda_stream_view stream,
+std::unique_ptr<column> from_floats(column_view const&               floats,
+                                    rmm::cuda_stream_view            stream,
                                     rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = floats.size();

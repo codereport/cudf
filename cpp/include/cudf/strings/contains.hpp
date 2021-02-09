@@ -48,8 +48,8 @@ namespace strings {
  * @return New column of boolean results for each string.
  */
 std::unique_ptr<column> contains_re(
-  strings_column_view const& strings,
-  std::string const& pattern,
+  strings_column_view const&       strings,
+  std::string const&               pattern,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -73,8 +73,8 @@ std::unique_ptr<column> contains_re(
  * @return New column of boolean results for each string.
  */
 std::unique_ptr<column> matches_re(
-  strings_column_view const& strings,
-  std::string const& pattern,
+  strings_column_view const&       strings,
+  std::string const&               pattern,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -98,8 +98,8 @@ std::unique_ptr<column> matches_re(
  * @return New INT32 column with counts for each string.
  */
 std::unique_ptr<column> count_re(
-  strings_column_view const& strings,
-  std::string const& pattern,
+  strings_column_view const&       strings,
+  std::string const&               pattern,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group

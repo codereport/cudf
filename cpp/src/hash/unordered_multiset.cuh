@@ -34,9 +34,9 @@ template <typename Element,
           typename Equality = equal_to<Element>>
 class unordered_multiset_device_view {
  public:
-  unordered_multiset_device_view(size_type hash_size,
+  unordered_multiset_device_view(size_type        hash_size,
                                  const size_type *hash_begin,
-                                 const Element *hash_data)
+                                 const Element *  hash_data)
     : hash_size{hash_size}, hash_begin{hash_begin}, hash_data{hash_data}, hasher(), equals()
   {
   }
@@ -53,11 +53,11 @@ class unordered_multiset_device_view {
   }
 
  private:
-  Hasher hasher;
-  Equality equals;
-  size_type hash_size;
+  Hasher           hasher;
+  Equality         equals;
+  size_type        hash_size;
   const size_type *hash_begin;
-  const Element *hash_data;
+  const Element *  hash_data;
 };
 
 /*
@@ -78,19 +78,19 @@ class unordered_multiset {
 
     rmm::device_vector<size_type> hash_bins_start(2 * d_col.size() + 1, size_type{0});
     rmm::device_vector<size_type> hash_bins_end(2 * d_col.size() + 1, size_type{0});
-    rmm::device_vector<Element> hash_data(d_col.size());
+    rmm::device_vector<Element>   hash_data(d_col.size());
 
-    Hasher hasher;
+    Hasher     hasher;
     size_type *d_hash_bins_start = hash_bins_start.data().get();
     size_type *d_hash_bins_end   = hash_bins_end.data().get();
-    Element *d_hash_data         = hash_data.data().get();
+    Element *  d_hash_data       = hash_data.data().get();
 
     thrust::for_each(rmm::exec_policy(stream),
                      thrust::make_counting_iterator<size_type>(0),
                      thrust::make_counting_iterator<size_type>(col.size()),
                      [d_hash_bins_start, d_col, hasher] __device__(size_t idx) {
                        if (!d_col.is_null(idx)) {
-                         Element e     = d_col.element<Element>(idx);
+                         Element   e   = d_col.element<Element>(idx);
                          size_type tmp = hasher(e) % (2 * d_col.size());
                          atomicAdd(d_hash_bins_start + tmp, size_type{1});
                        }
@@ -111,7 +111,7 @@ class unordered_multiset {
                      thrust::make_counting_iterator<size_type>(col.size()),
                      [d_hash_bins_end, d_hash_data, d_col, hasher] __device__(size_t idx) {
                        if (!d_col.is_null(idx)) {
-                         Element e           = d_col.element<Element>(idx);
+                         Element   e         = d_col.element<Element>(idx);
                          size_type tmp       = hasher(e) % (2 * d_col.size());
                          size_type offset    = atomicAdd(d_hash_bins_end + tmp, size_type{1});
                          d_hash_data[offset] = e;
@@ -128,16 +128,16 @@ class unordered_multiset {
   }
 
  private:
-  unordered_multiset(size_type size,
+  unordered_multiset(size_type                       size,
                      rmm::device_vector<size_type> &&hash_bins,
-                     rmm::device_vector<Element> &&hash_data)
+                     rmm::device_vector<Element> &&  hash_data)
     : size{size}, hash_bins{std::move(hash_bins)}, hash_data{std::move(hash_data)}
   {
   }
 
-  size_type size;
+  size_type                     size;
   rmm::device_vector<size_type> hash_bins;
-  rmm::device_vector<Element> hash_data;
+  rmm::device_vector<Element>   hash_data;
 };
 
 }  // namespace detail

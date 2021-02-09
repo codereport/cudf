@@ -98,10 +98,10 @@ namespace strings {
  *        Default is new-line character.
  */
 void print(strings_column_view const& strings,
-           size_type start       = 0,
-           size_type end         = -1,
-           size_type max_width   = -1,
-           const char* delimiter = "\n");
+           size_type                  start     = 0,
+           size_type                  end       = -1,
+           size_type                  max_width = -1,
+           const char*                delimiter = "\n");
 
 /**
  * @brief Create output per Arrow strings format.
@@ -114,9 +114,9 @@ void print(strings_column_view const& strings,
  * @return Pair containing a vector of chars and a vector of offsets.
  */
 std::pair<rmm::device_vector<char>, rmm::device_vector<size_type>> create_offsets(
-  strings_column_view const& strings,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  strings_column_view const&       strings,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace strings
 /** @} */  // end of group

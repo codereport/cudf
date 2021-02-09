@@ -43,9 +43,9 @@ __device__ __forceinline__ void setElement(T* array, cudf::size_type idx, const 
  */
 template <class T, class V>
 __device__ __forceinline__ void setElement(thrust::pair<T, V>* array,
-                                           cudf::size_type idx,
-                                           const T& t,
-                                           const V& v)
+                                           cudf::size_type     idx,
+                                           const T&            t,
+                                           const V&            v)
 {
   array[idx] = {t, v};
 }
@@ -74,12 +74,12 @@ __device__ __forceinline__ void setElement(void* array, cudf::size_type idx, con
  * @return void
  */
 template <class T>
-__global__ void count_and_set_positions(const char* data,
-                                        uint64_t size,
-                                        uint64_t offset,
-                                        const char key,
+__global__ void count_and_set_positions(const char*      data,
+                                        uint64_t         size,
+                                        uint64_t         offset,
+                                        const char       key,
                                         cudf::size_type* count,
-                                        T* positions)
+                                        T*               positions)
 {
   // thread IDs range per block, so also need the block id
   const uint64_t tid = threadIdx.x + (blockDim.x * blockIdx.x);
@@ -103,9 +103,9 @@ __global__ void count_and_set_positions(const char* data,
 
 template <class T>
 cudf::size_type find_all_from_set(const rmm::device_buffer& d_data,
-                                  const std::vector<char>& keys,
-                                  uint64_t result_offset,
-                                  T* positions)
+                                  const std::vector<char>&  keys,
+                                  uint64_t                  result_offset,
+                                  T*                        positions)
 {
   int block_size    = 0;  // suggested thread count to use
   int min_grid_size = 0;  // minimum block count required
@@ -127,13 +127,13 @@ cudf::size_type find_all_from_set(const rmm::device_buffer& d_data,
 }
 
 template <class T>
-cudf::size_type find_all_from_set(const char* h_data,
-                                  size_t h_size,
+cudf::size_type find_all_from_set(const char*              h_data,
+                                  size_t                   h_size,
                                   const std::vector<char>& keys,
-                                  uint64_t result_offset,
-                                  T* positions)
+                                  uint64_t                 result_offset,
+                                  T*                       positions)
 {
-  rmm::device_buffer d_chunk(std::min(max_chunk_bytes, h_size));
+  rmm::device_buffer                  d_chunk(std::min(max_chunk_bytes, h_size));
   rmm::device_vector<cudf::size_type> d_count(1, 0);
 
   int block_size    = 0;  // suggested thread count to use
@@ -145,9 +145,9 @@ cudf::size_type find_all_from_set(const char* h_data,
   for (size_t ci = 0; ci < chunk_count; ++ci) {
     const auto chunk_offset = ci * max_chunk_bytes;
     const auto h_chunk      = h_data + chunk_offset;
-    const int chunk_bytes   = std::min((size_t)(h_size - ci * max_chunk_bytes), max_chunk_bytes);
+    const int  chunk_bytes  = std::min((size_t)(h_size - ci * max_chunk_bytes), max_chunk_bytes);
     const auto chunk_bits   = divCeil(chunk_bytes, bytes_per_find_thread);
-    const int grid_size     = divCeil(chunk_bits, block_size);
+    const int  grid_size    = divCeil(chunk_bits, block_size);
 
     // Copy chunk to device
     CUDA_TRY(cudaMemcpyAsync(d_chunk.data(), h_chunk, chunk_bytes, cudaMemcpyDefault));
@@ -166,26 +166,26 @@ cudf::size_type find_all_from_set(const char* h_data,
 }
 
 template cudf::size_type find_all_from_set<uint64_t>(const rmm::device_buffer& d_data,
-                                                     const std::vector<char>& keys,
-                                                     uint64_t result_offset,
-                                                     uint64_t* positions);
+                                                     const std::vector<char>&  keys,
+                                                     uint64_t                  result_offset,
+                                                     uint64_t*                 positions);
 
 template cudf::size_type find_all_from_set<pos_key_pair>(const rmm::device_buffer& d_data,
-                                                         const std::vector<char>& keys,
-                                                         uint64_t result_offset,
-                                                         pos_key_pair* positions);
+                                                         const std::vector<char>&  keys,
+                                                         uint64_t                  result_offset,
+                                                         pos_key_pair*             positions);
 
-template cudf::size_type find_all_from_set<uint64_t>(const char* h_data,
-                                                     size_t h_size,
+template cudf::size_type find_all_from_set<uint64_t>(const char*              h_data,
+                                                     size_t                   h_size,
                                                      const std::vector<char>& keys,
-                                                     uint64_t result_offset,
-                                                     uint64_t* positions);
+                                                     uint64_t                 result_offset,
+                                                     uint64_t*                positions);
 
-template cudf::size_type find_all_from_set<pos_key_pair>(const char* h_data,
-                                                         size_t h_size,
+template cudf::size_type find_all_from_set<pos_key_pair>(const char*              h_data,
+                                                         size_t                   h_size,
                                                          const std::vector<char>& keys,
-                                                         uint64_t result_offset,
-                                                         pos_key_pair* positions);
+                                                         uint64_t                 result_offset,
+                                                         pos_key_pair*            positions);
 
 cudf::size_type count_all_from_set(const rmm::device_buffer& d_data, const std::vector<char>& keys)
 {
@@ -198,8 +198,8 @@ cudf::size_type count_all_from_set(const char* h_data, size_t h_size, const std:
 }
 
 std::string infer_compression_type(
-  const compression_type& compression_arg,
-  const std::string& filename,
+  const compression_type&                                 compression_arg,
+  const std::string&                                      filename,
   const std::vector<std::pair<std::string, std::string>>& ext_to_comp_map)
 {
   auto str_tolower = [](const auto& begin, const auto& end) {

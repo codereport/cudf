@@ -135,8 +135,8 @@ mutable_column_device_view::mutable_column_device_view(mutable_column_view sourc
 }
 
 mutable_column_device_view::mutable_column_device_view(mutable_column_view source,
-                                                       void* h_ptr,
-                                                       void* d_ptr)
+                                                       void*               h_ptr,
+                                                       void*               d_ptr)
   : detail::column_device_view_base{source.type(),
                                     source.size(),
                                     source.head(),

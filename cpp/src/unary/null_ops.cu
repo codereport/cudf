@@ -38,7 +38,7 @@ std::unique_ptr<column> is_null(cudf::column_view const& input, rmm::mr::device_
                          mr);
 }
 
-std::unique_ptr<column> is_valid(cudf::column_view const& input,
+std::unique_ptr<column> is_valid(cudf::column_view const&         input,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

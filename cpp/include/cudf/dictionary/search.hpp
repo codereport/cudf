@@ -37,8 +37,8 @@ namespace dictionary {
  * @return Numeric scalar index value of the key within the dictionary
  */
 std::unique_ptr<scalar> get_index(
-  dictionary_column_view const& dictionary,
-  scalar const& key,
+  dictionary_column_view const&    dictionary,
+  scalar const&                    key,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

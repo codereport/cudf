@@ -67,13 +67,13 @@ class wordpiece_tokenizer {
    *        specified in the `vocab_file`.
    */
   wordpiece_tokenizer(hashed_vocabulary const& vocab_table,
-                      uint32_t max_rows_final_tensor,
-                      uint32_t max_sequence_length,
-                      uint32_t stride,
-                      bool do_truncate,
-                      bool do_lower_case,
-                      rmm::cuda_stream_view stream,
-                      uint32_t max_word_length = 200);
+                      uint32_t                 max_rows_final_tensor,
+                      uint32_t                 max_sequence_length,
+                      uint32_t                 stride,
+                      bool                     do_truncate,
+                      bool                     do_lower_case,
+                      rmm::cuda_stream_view    stream,
+                      uint32_t                 max_word_length = 200);
 
   /**
    * @brief Splits the input text into token ids.
@@ -87,9 +87,9 @@ class wordpiece_tokenizer {
    * @param stream CUDA stream used for device memory operations and kernel launches.
    * @return Pointer to token-ids and token-id offsets
    */
-  uvector_pair tokenize(char const* d_strings,
-                        uint32_t const* d_offsets,
-                        uint32_t num_strings,
+  uvector_pair tokenize(char const*           d_strings,
+                        uint32_t const*       d_offsets,
+                        uint32_t              num_strings,
                         rmm::cuda_stream_view stream);
 
  private:
@@ -105,11 +105,11 @@ class wordpiece_tokenizer {
   void tokenize(uvector_pair& cps_and_offsets, rmm::cuda_stream_view stream);
 
   hashed_vocabulary const& vocab_table;
-  data_normalizer normalizer;  // removes punctuation, accents, etc
-  uint32_t const max_sequence_length;
-  uint32_t const stride;
-  bool const do_truncate;
-  uint32_t const max_word_length;
+  data_normalizer          normalizer;  // removes punctuation, accents, etc
+  uint32_t const           max_sequence_length;
+  uint32_t const           stride;
+  bool const               do_truncate;
+  uint32_t const           max_word_length;
 };
 
 }  // namespace detail

@@ -49,9 +49,9 @@ namespace {
  * returned column's device memory.
  */
 std::unique_ptr<column> merge_offsets(std::vector<lists_column_view> const& columns,
-                                      size_type total_list_count,
-                                      rmm::cuda_stream_view stream,
-                                      rmm::mr::device_memory_resource* mr)
+                                      size_type                             total_list_count,
+                                      rmm::cuda_stream_view                 stream,
+                                      rmm::mr::device_memory_resource*      mr)
 {
   // outgoing offsets
   auto merged_offsets = cudf::make_fixed_width_column(
@@ -90,8 +90,8 @@ std::unique_ptr<column> merge_offsets(std::vector<lists_column_view> const& colu
  * @copydoc cudf::lists::detail::concatenate
  */
 std::unique_ptr<column> concatenate(
-  std::vector<column_view> const& columns,
-  rmm::cuda_stream_view stream,
+  std::vector<column_view> const&  columns,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   std::vector<lists_column_view> lists_columns;

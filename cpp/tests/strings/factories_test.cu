@@ -45,14 +45,14 @@ TEST_F(StringsFactoriesTest, CreateColumnFromPair)
   cudf::size_type memsize = 0;
   for (auto itr = h_test_strings.begin(); itr != h_test_strings.end(); ++itr)
     memsize += *itr ? (cudf::size_type)strlen(*itr) : 0;
-  cudf::size_type count = (cudf::size_type)h_test_strings.size();
-  thrust::host_vector<char> h_buffer(memsize);
+  cudf::size_type             count = (cudf::size_type)h_test_strings.size();
+  thrust::host_vector<char>   h_buffer(memsize);
   thrust::device_vector<char> d_buffer(memsize);
   thrust::host_vector<thrust::pair<const char*, cudf::size_type>> strings(count);
-  thrust::host_vector<cudf::size_type> h_offsets(count + 1);
-  cudf::size_type offset = 0;
-  cudf::size_type nulls  = 0;
-  h_offsets[0]           = 0;
+  thrust::host_vector<cudf::size_type>                            h_offsets(count + 1);
+  cudf::size_type                                                 offset = 0;
+  cudf::size_type                                                 nulls  = 0;
+  h_offsets[0]                                                           = 0;
   for (cudf::size_type idx = 0; idx < count; ++idx) {
     const char* str = h_test_strings[idx];
     if (!str) {
@@ -84,8 +84,8 @@ TEST_F(StringsFactoriesTest, CreateColumnFromPair)
   EXPECT_EQ(strings_view.chars().size(), memsize);
 
   // check string data
-  auto strings_data = cudf::strings::create_offsets(strings_view);
-  thrust::host_vector<char> h_chars_data(strings_data.first);
+  auto                                 strings_data = cudf::strings::create_offsets(strings_view);
+  thrust::host_vector<char>            h_chars_data(strings_data.first);
   thrust::host_vector<cudf::size_type> h_offsets_data(strings_data.second);
   EXPECT_EQ(memcmp(h_buffer.data(), h_chars_data.data(), h_buffer.size()), 0);
   EXPECT_EQ(
@@ -106,13 +106,13 @@ TEST_F(StringsFactoriesTest, CreateColumnFromOffsets)
   cudf::size_type memsize = 0;
   for (auto itr = h_test_strings.begin(); itr != h_test_strings.end(); ++itr)
     memsize += *itr ? (cudf::size_type)strlen(*itr) : 0;
-  cudf::size_type count = (cudf::size_type)h_test_strings.size();
-  std::vector<char> h_buffer(memsize);
+  cudf::size_type              count = (cudf::size_type)h_test_strings.size();
+  std::vector<char>            h_buffer(memsize);
   std::vector<cudf::size_type> h_offsets(count + 1);
-  cudf::size_type offset         = 0;
-  h_offsets[0]                   = offset;
-  cudf::bitmask_type h_null_mask = 0;
-  cudf::size_type null_count     = 0;
+  cudf::size_type              offset = 0;
+  h_offsets[0]                        = offset;
+  cudf::bitmask_type h_null_mask      = 0;
+  cudf::size_type    null_count       = 0;
   for (cudf::size_type idx = 0; idx < count; ++idx) {
     h_null_mask     = (h_null_mask << 1);
     const char* str = h_test_strings[idx];
@@ -125,9 +125,9 @@ TEST_F(StringsFactoriesTest, CreateColumnFromOffsets)
       null_count++;
     h_offsets[idx + 1] = offset;
   }
-  std::vector<cudf::bitmask_type> h_nulls{h_null_mask};
-  rmm::device_vector<char> d_buffer(h_buffer);
-  rmm::device_vector<cudf::size_type> d_offsets(h_offsets);
+  std::vector<cudf::bitmask_type>        h_nulls{h_null_mask};
+  rmm::device_vector<char>               d_buffer(h_buffer);
+  rmm::device_vector<cudf::size_type>    d_offsets(h_offsets);
   rmm::device_vector<cudf::bitmask_type> d_nulls(h_nulls);
   auto column = cudf::make_strings_column(d_buffer, d_offsets, d_nulls, null_count);
   EXPECT_EQ(column->type(), cudf::data_type{cudf::type_id::STRING});
@@ -140,8 +140,8 @@ TEST_F(StringsFactoriesTest, CreateColumnFromOffsets)
   EXPECT_EQ(strings_view.chars().size(), memsize);
 
   // check string data
-  auto strings_data = cudf::strings::create_offsets(strings_view);
-  thrust::host_vector<char> h_chars_data(strings_data.first);
+  auto                                 strings_data = cudf::strings::create_offsets(strings_view);
+  thrust::host_vector<char>            h_chars_data(strings_data.first);
   thrust::host_vector<cudf::size_type> h_offsets_data(strings_data.second);
   EXPECT_EQ(memcmp(h_buffer.data(), h_chars_data.data(), h_buffer.size()), 0);
   EXPECT_EQ(
@@ -154,9 +154,9 @@ TEST_F(StringsFactoriesTest, CreateColumnFromOffsets)
 
 TEST_F(StringsFactoriesTest, CreateScalar)
 {
-  std::string value = "test string";
-  auto s            = cudf::make_string_scalar(value);
-  auto string_s     = static_cast<cudf::string_scalar*>(s.get());
+  std::string value    = "test string";
+  auto        s        = cudf::make_string_scalar(value);
+  auto        string_s = static_cast<cudf::string_scalar*>(s.get());
 
   EXPECT_EQ(string_s->to_string(), value);
   EXPECT_TRUE(string_s->is_valid());
@@ -165,8 +165,8 @@ TEST_F(StringsFactoriesTest, CreateScalar)
 
 TEST_F(StringsFactoriesTest, EmptyStringsColumn)
 {
-  rmm::device_vector<char> d_chars;
-  rmm::device_vector<cudf::size_type> d_offsets(1, 0);
+  rmm::device_vector<char>               d_chars;
+  rmm::device_vector<cudf::size_type>    d_offsets(1, 0);
   rmm::device_vector<cudf::bitmask_type> d_nulls;
 
   auto results = cudf::make_strings_column(d_chars, d_offsets, d_nulls, 0);
@@ -179,11 +179,11 @@ TEST_F(StringsFactoriesTest, EmptyStringsColumn)
 
 TEST_F(StringsFactoriesTest, CreateOffsets)
 {
-  std::vector<std::string> strings      = {"this", "is", "a", "column", "of", "strings"};
-  cudf::test::strings_column_wrapper sw = {strings.begin(), strings.end()};
-  cudf::column_view col(sw);
-  std::vector<cudf::size_type> indices{0, 2, 3, 6};
-  auto result = cudf::slice(col, indices);
+  std::vector<std::string>           strings = {"this", "is", "a", "column", "of", "strings"};
+  cudf::test::strings_column_wrapper sw      = {strings.begin(), strings.end()};
+  cudf::column_view                  col(sw);
+  std::vector<cudf::size_type>       indices{0, 2, 3, 6};
+  auto                               result = cudf::slice(col, indices);
 
   std::vector<std::vector<std::string>> expecteds{
     std::vector<std::string>{"this", "is"},              // [0,2)
@@ -191,12 +191,12 @@ TEST_F(StringsFactoriesTest, CreateOffsets)
   };
   for (size_t idx = 0; idx < result.size(); idx++) {
     auto strings_data = cudf::strings::create_offsets(cudf::strings_column_view(result[idx]));
-    thrust::host_vector<char> h_chars(strings_data.first);
+    thrust::host_vector<char>            h_chars(strings_data.first);
     thrust::host_vector<cudf::size_type> h_offsets(strings_data.second);
-    auto expected_strings = expecteds[idx];
+    auto                                 expected_strings = expecteds[idx];
     for (size_t jdx = 0; jdx < h_offsets.size() - 1; ++jdx) {
-      auto offset = h_offsets[jdx];
-      auto length = h_offsets[jdx + 1] - offset;
+      auto        offset = h_offsets[jdx];
+      auto        length = h_offsets[jdx + 1] - offset;
       std::string str(h_chars.data() + offset, length);
       EXPECT_EQ(str, expected_strings[jdx]);
     }

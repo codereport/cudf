@@ -39,8 +39,8 @@ constexpr uint64_t PRIME = 281474976710677;
  */
 __device__ uint64_t mul_mod_48(uint64_t num_48bit, uint64_t num)
 {
-  constexpr uint64_t mask          = (1ULL << 48) - 1;
-  constexpr uint8_t bit_chunk_size = 16;
+  constexpr uint64_t mask           = (1ULL << 48) - 1;
+  constexpr uint8_t  bit_chunk_size = 16;
 
   uint64_t result = 0;
 #pragma unroll
@@ -66,14 +66,14 @@ __device__ uint64_t mul_mod_48(uint64_t num_48bit, uint64_t num)
  * @return The sdbm hash of all elements in range `[sequence_start, sequence_start + length)`
  */
 __device__ uint64_t sdbm_hash(uint32_t const* sequence_start,
-                              uint32_t length,
-                              uint64_t start_value = 0)
+                              uint32_t        length,
+                              uint64_t        start_value = 0)
 {
   // This expression computes h_{i} = (65599*h{i-1} + new_val) mod 2^48 and was obtained from here:
   // http://www.cse.yorku.ca/~oz/hash.html
 
-  constexpr uint64_t mask = (1ULL << 48) - 1;
-  uint64_t hash_value     = start_value;
+  constexpr uint64_t mask       = (1ULL << 48) - 1;
+  uint64_t           hash_value = start_value;
 
   for (int i = 0; i < length; ++i) {
     hash_value = ((hash_value << 6) + (hash_value << 16) - hash_value) & mask;
@@ -99,7 +99,7 @@ __device__ uint64_t prev_sdbm_hash(uint64_t current_hash, uint32_t last_val)
   constexpr uint64_t mask = (1ULL << 48) - 1;
   // Multiplicative inverse of 65599 under mod 2**48
   constexpr uint64_t mod_inverse = 24320495251391;
-  uint64_t const prev_hash =
+  uint64_t const     prev_hash =
     mul_mod_48(mod_inverse, current_hash) - mul_mod_48(mod_inverse, last_val);
   return prev_hash & mask;
 }
@@ -139,10 +139,10 @@ __device__ uint32_t hash(uint64_t key, uint64_t a, uint64_t b, uint32_t table_si
  * @return -1 if key is not in the hash table. If the key is in the table returns an index in
  *         [0, vocab_size) indicating the index for the token in the bert model.
  */
-__device__ int retrieve(uint64_t const key,
-                        uint32_t const outer_table_a,
-                        uint32_t const outer_table_b,
-                        uint16_t const num_bins,
+__device__ int retrieve(uint64_t const  key,
+                        uint32_t const  outer_table_a,
+                        uint32_t const  outer_table_b,
+                        uint16_t const  num_bins,
                         uint64_t const* hash_table,
                         uint64_t const* bin_coefficients,
                         uint16_t const* bin_offsets)

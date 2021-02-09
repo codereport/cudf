@@ -44,19 +44,19 @@ namespace {
  */
 template <size_t stack_size>
 struct extract_fn {
-  reprog_device prog;
+  reprog_device      prog;
   column_device_view d_strings;
-  size_type column_index;
+  size_type          column_index;
 
   __device__ string_index_pair operator()(size_type idx)
   {
     u_char data1[stack_size], data2[stack_size];
     prog.set_stack_mem(data1, data2);
     if (d_strings.is_null(idx)) return string_index_pair{nullptr, 0};
-    string_view d_str = d_strings.element<string_view>(idx);
+    string_view       d_str = d_strings.element<string_view>(idx);
     string_index_pair result{nullptr, 0};
-    int32_t begin = 0;
-    int32_t end   = -1;  // handles empty strings automatically
+    int32_t           begin = 0;
+    int32_t           end   = -1;  // handles empty strings automatically
     if ((prog.find(idx, d_str, begin, end) > 0) &&
         (prog.extract(idx, d_str, begin, end, column_index) > 0)) {
       auto offset = d_str.byte_offset(begin);
@@ -71,9 +71,9 @@ struct extract_fn {
 
 //
 std::unique_ptr<table> extract(
-  strings_column_view const& strings,
-  std::string const& pattern,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  std::string const&               pattern,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   auto strings_count  = strings.size();
@@ -89,11 +89,11 @@ std::unique_ptr<table> extract(
 
   // build a result column for each group
   std::vector<std::unique_ptr<column>> results;
-  auto regex_insts = d_prog.insts_counts();
+  auto                                 regex_insts = d_prog.insts_counts();
 
   for (int32_t column_index = 0; column_index < groups; ++column_index) {
     rmm::device_vector<string_index_pair> indices(strings_count);
-    string_index_pair* d_indices = indices.data().get();
+    string_index_pair*                    d_indices = indices.data().get();
 
     if ((regex_insts > MAX_STACK_INSTS) || (regex_insts <= RX_SMALL_INSTS))
       thrust::transform(rmm::exec_policy(stream),
@@ -123,8 +123,8 @@ std::unique_ptr<table> extract(
 
 // external API
 
-std::unique_ptr<table> extract(strings_column_view const& strings,
-                               std::string const& pattern,
+std::unique_ptr<table> extract(strings_column_view const&       strings,
+                               std::string const&               pattern,
                                rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

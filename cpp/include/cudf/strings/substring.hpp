@@ -56,7 +56,7 @@ namespace strings {
  * @return New strings column with sorted elements of this instance.
  */
 std::unique_ptr<column> slice_strings(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   numeric_scalar<size_type> const& start = numeric_scalar<size_type>(0, false),
   numeric_scalar<size_type> const& stop  = numeric_scalar<size_type>(0, false),
   numeric_scalar<size_type> const& step  = numeric_scalar<size_type>(1),
@@ -100,9 +100,9 @@ std::unique_ptr<column> slice_strings(
  * @return New strings column with sorted elements of this instance.
  */
 std::unique_ptr<column> slice_strings(
-  strings_column_view const& strings,
-  column_view const& starts,
-  column_view const& stops,
+  strings_column_view const&       strings,
+  column_view const&               starts,
+  column_view const&               stops,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -143,9 +143,9 @@ std::unique_ptr<column> slice_strings(
  * @return New strings column containing the substrings.
  */
 std::unique_ptr<column> slice_strings(
-  strings_column_view const& strings,
-  string_scalar const& delimiter,
-  size_type count,
+  strings_column_view const&       strings,
+  string_scalar const&             delimiter,
+  size_type                        count,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -192,9 +192,9 @@ std::unique_ptr<column> slice_strings(
  * @return New strings column containing the substrings.
  */
 std::unique_ptr<column> slice_strings(
-  strings_column_view const& strings,
-  strings_column_view const& delimiter_strings,
-  size_type count,
+  strings_column_view const&       strings,
+  strings_column_view const&       delimiter_strings,
+  size_type                        count,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group

@@ -147,7 +147,7 @@ void generate_special_mapping_hash_table()
   // size of the table is the prime #, since we're just doing (key % hash_prime)
   std::vector<std::pair<bool, uint16_t>> hash_indices(hash_prime,
                                                       std::pair<bool, uint16_t>(false, 0));
-  int index = 0;
+  int                                    index = 0;
   std::for_each(std::begin(codepoints_in), std::end(codepoints_in), [&](uint16_t codepoint) {
     hash_indices[codepoint % hash_prime].first  = true;
     hash_indices[codepoint % hash_prime].second = index++;

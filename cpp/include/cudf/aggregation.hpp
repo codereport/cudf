@@ -97,7 +97,7 @@ class aggregation {
 
   // override functions for compound aggregations
   virtual std::vector<aggregation::Kind> get_simple_aggregations(data_type col_type) const;
-  virtual void finalize(cudf::detail::aggregation_finalizer& finalizer);
+  virtual void                           finalize(cudf::detail::aggregation_finalizer& finalizer);
 };
 
 enum class udf_type : bool { CUDA, PTX };
@@ -222,9 +222,9 @@ std::unique_ptr<aggregation> make_lead_aggregation(size_type offset);
  *
  * @return aggregation unique pointer housing user_defined_aggregator string.
  */
-std::unique_ptr<aggregation> make_udf_aggregation(udf_type type,
+std::unique_ptr<aggregation> make_udf_aggregation(udf_type           type,
                                                   std::string const& user_defined_aggregator,
-                                                  data_type output_type);
+                                                  data_type          output_type);
 
 /** @} */  // end of group
 }  // namespace cudf

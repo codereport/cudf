@@ -112,9 +112,9 @@ namespace io {
 #define BZ_MAX_SELECTORS (2 + (900000 / BZ_G_SIZE))
 
 typedef struct {
-  int32_t minLen;
-  int32_t limit[BZ_MAX_CODE_LEN];
-  int32_t base[BZ_MAX_CODE_LEN];
+  int32_t  minLen;
+  int32_t  limit[BZ_MAX_CODE_LEN];
+  int32_t  base[BZ_MAX_CODE_LEN];
   uint16_t perm[BZ_MAX_ALPHA_SIZE];
 } huff_s;
 
@@ -124,8 +124,8 @@ typedef struct {
   const uint8_t *cur;
   const uint8_t *end;
   const uint8_t *base;
-  uint64_t bitbuf;
-  uint32_t bitpos;
+  uint64_t       bitbuf;
+  uint32_t       bitpos;
 
   // Output
   uint8_t *out;
@@ -134,14 +134,14 @@ typedef struct {
 
   // misc administratium
   uint32_t blockSize100k;
-  int32_t currBlockNo;
-  int32_t save_nblock;
+  int32_t  currBlockNo;
+  int32_t  save_nblock;
 
   // for undoing the Burrows-Wheeler transform
   std::vector<uint32_t> tt;
-  uint32_t origPtr;
-  int32_t nblock_used;
-  int32_t unzftab[256];
+  uint32_t              origPtr;
+  int32_t               nblock_used;
+  int32_t               unzftab[256];
 
   // map of bytes used in block
   uint8_t seqToUnseq[256];
@@ -173,7 +173,7 @@ static void skipbits(unbz_state_s *s, uint32_t n)
   uint32_t bitpos = s->bitpos + n;
   if (bitpos >= 32) {
     const uint8_t *cur = s->cur + 4;
-    uint32_t next32 =
+    uint32_t       next32 =
       (cur + 4 < s->end) ? __builtin_bswap32(*reinterpret_cast<const uint32_t *>(cur + 4)) : 0;
     s->cur    = cur;
     s->bitbuf = (s->bitbuf << 32) | next32;
@@ -194,19 +194,19 @@ int32_t bz2_decompress_block(unbz_state_s *s)
 {
   int nInUse;
 
-  int32_t i;
-  int32_t j;
-  int32_t t;
-  int32_t alphaSize;
-  int32_t nGroups;
-  int32_t nSelectors;
-  int32_t EOB;
-  int32_t groupNo;
-  int32_t groupPos;
-  uint32_t nblock, nblockMAX;
+  int32_t       i;
+  int32_t       j;
+  int32_t       t;
+  int32_t       alphaSize;
+  int32_t       nGroups;
+  int32_t       nSelectors;
+  int32_t       EOB;
+  int32_t       groupNo;
+  int32_t       groupPos;
+  uint32_t      nblock, nblockMAX;
   const huff_s *gSel = nullptr;
-  uint32_t inUse16;
-  uint32_t sig0, sig1;
+  uint32_t      inUse16;
+  uint32_t      sig0, sig1;
 
   // Start-of-block signature
   sig0 = getbits(s, 24);
@@ -262,12 +262,12 @@ int32_t bz2_decompress_block(unbz_state_s *s)
 
   // Now the coding tables
   for (t = 0; t < nGroups; t++) {
-    int32_t pp, vec;
+    int32_t  pp, vec;
     uint8_t *length = &s->len[0];
-    int32_t curr    = getbits(s, 5);
-    int32_t minLen  = BZ_MAX_CODE_LEN - 1;
-    int32_t maxLen  = 0;
-    huff_s *sel     = &s->ht[t];
+    int32_t  curr   = getbits(s, 5);
+    int32_t  minLen = BZ_MAX_CODE_LEN - 1;
+    int32_t  maxLen = 0;
+    huff_s * sel    = &s->ht[t];
     for (i = 0; i < alphaSize; i++) {
       for (;;) {
         uint32_t v = showbits(s, 2);
@@ -342,7 +342,7 @@ int32_t bz2_decompress_block(unbz_state_s *s)
     uint32_t nextSym, nn, uc;
     for (;;) {
       uint32_t next32, zvec;
-      int32_t zn;
+      int32_t  zn;
       if (groupPos == 0) {
         if (++groupNo >= nSelectors) return BZ_DATA_ERROR;
         groupPos = BZ_G_SIZE;
@@ -456,11 +456,11 @@ int32_t bz2_decompress_block(unbz_state_s *s)
   // Verify the end-of-block signature: should be followed by another block or an end-of-stream
   // signature
   {
-    const uint8_t *save_cur = s->cur;
-    uint64_t save_bitbuf    = s->bitbuf;
-    uint32_t save_bitpos    = s->bitpos;
-    sig0                    = getbits(s, 24);
-    sig1                    = getbits(s, 24);
+    const uint8_t *save_cur    = s->cur;
+    uint64_t       save_bitbuf = s->bitbuf;
+    uint32_t       save_bitpos = s->bitpos;
+    sig0                       = getbits(s, 24);
+    sig1                       = getbits(s, 24);
     if (sig0 == 0x314159 && sig1 == 0x265359) {
       // Start of another block: restore bitstream location
       s->cur    = save_cur;
@@ -481,11 +481,11 @@ static void bzUnRLE(unbz_state_s *s)
   uint8_t *out    = s->out;
   uint8_t *outend = s->outend;
 
-  int32_t rle_cnt           = s->save_nblock;
-  int cprev                 = -1;
-  std::vector<uint32_t> &tt = s->tt;
-  uint32_t pos              = tt[s->origPtr] >> 8;
-  int mask                  = ~0;
+  int32_t                rle_cnt = s->save_nblock;
+  int                    cprev   = -1;
+  std::vector<uint32_t> &tt      = s->tt;
+  uint32_t               pos     = tt[s->origPtr] >> 8;
+  int                    mask    = ~0;
 
   s->nblock_used = rle_cnt + 1;
 
@@ -523,9 +523,9 @@ int32_t cpu_bz2_uncompress(
   const uint8_t *source, size_t sourceLen, uint8_t *dest, size_t *destLen, uint64_t *block_start)
 {
   unbz_state_s s{};
-  uint32_t v;
-  int ret;
-  size_t last_valid_block_in, last_valid_block_out;
+  uint32_t     v;
+  int          ret;
+  size_t       last_valid_block_in, last_valid_block_out;
 
   if (dest == NULL || destLen == NULL || source == NULL || sourceLen < 12) return BZ_PARAM_ERROR;
   s.currBlockNo = 0;

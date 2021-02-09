@@ -61,7 +61,7 @@ cudf_io::sink_info cuio_source_sink_pair::make_sink_info()
 }
 
 std::vector<cudf::type_id> dtypes_for_column_selection(std::vector<cudf::type_id> const& data_types,
-                                                       column_selection col_sel)
+                                                       column_selection                  col_sel)
 {
   std::vector<cudf::type_id> out_dtypes;
   out_dtypes.reserve(2 * data_types.size());
@@ -101,7 +101,7 @@ std::vector<int> select_column_indexes(int num_cols, column_selection col_sel)
 }
 
 std::vector<std::string> select_column_names(std::vector<std::string> const& col_names,
-                                             column_selection col_sel)
+                                             column_selection                col_sel)
 {
   auto const col_idxs_to_read = select_column_indexes(col_names.size(), col_sel);
 

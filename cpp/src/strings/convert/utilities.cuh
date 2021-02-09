@@ -32,11 +32,11 @@ namespace detail {
  */
 __device__ inline int64_t string_to_integer(string_view const& d_str)
 {
-  int64_t value   = 0;
+  int64_t   value = 0;
   size_type bytes = d_str.size_bytes();
   if (bytes == 0) return value;
-  const char* ptr = d_str.data();
-  int sign        = 1;
+  const char* ptr  = d_str.data();
+  int         sign = 1;
   if (*ptr == '-' || *ptr == '+') {
     sign = (*ptr == '-' ? -1 : 1);
     ++ptr;
@@ -66,10 +66,10 @@ __device__ inline void integer_to_string(IntegerType value, char* d_buffer)
   }
   bool is_negative = std::is_signed<IntegerType>::value ? (value < 0) : false;
   //
-  constexpr IntegerType base = 10;
-  constexpr int MAX_DIGITS   = 20;  // largest 64-bit integer is 20 digits
-  char digits[MAX_DIGITS];          // place-holder for digit chars
-  int digits_idx = 0;
+  constexpr IntegerType base       = 10;
+  constexpr int         MAX_DIGITS = 20;     // largest 64-bit integer is 20 digits
+  char                  digits[MAX_DIGITS];  // place-holder for digit chars
+  int                   digits_idx = 0;
   while (value != 0) {
     assert(digits_idx < MAX_DIGITS);
     digits[digits_idx++] = '0' + cudf::util::absolute_value(value % base);

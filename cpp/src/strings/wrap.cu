@@ -40,9 +40,9 @@ namespace {  // anonym.
 //
 struct execute_wrap {
   execute_wrap(column_device_view const d_column,
-               int32_t const* d_offsets,
-               char* d_chars,
-               size_type width)
+               int32_t const*           d_offsets,
+               char*                    d_chars,
+               size_type                width)
     : d_column_(d_column), d_offsets_(d_offsets), d_chars_(d_chars), width_(width)
   {
   }
@@ -51,8 +51,8 @@ struct execute_wrap {
   {
     if (d_column_.is_null(idx)) return 0;  // null string
 
-    string_view d_str = d_column_.template element<string_view>(idx);
-    char* d_buffer    = d_chars_ + d_offsets_[idx];
+    string_view d_str    = d_column_.template element<string_view>(idx);
+    char*       d_buffer = d_chars_ + d_offsets_[idx];
 
     int charOffsetToLastSpace = -1;
     int byteOffsetToLastSpace = -1;
@@ -82,18 +82,18 @@ struct execute_wrap {
 
  private:
   column_device_view const d_column_;
-  int32_t const* d_offsets_;
-  char* d_chars_;
-  size_type width_;
+  int32_t const*           d_offsets_;
+  char*                    d_chars_;
+  size_type                width_;
 };
 
 }  // namespace
 
 template <typename device_execute_functor>
 std::unique_ptr<column> wrap(
-  strings_column_view const& strings,
-  size_type width,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  size_type                        width,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(width > 0, "Positive wrap width required");
@@ -101,9 +101,9 @@ std::unique_ptr<column> wrap(
   auto strings_count = strings.size();
   if (strings_count == 0) return detail::make_empty_strings_column(stream, mr);
 
-  auto strings_column  = column_device_view::create(strings.parent(), stream);
-  auto d_column        = *strings_column;
-  size_type null_count = strings.null_count();
+  auto      strings_column = column_device_view::create(strings.parent(), stream);
+  auto      d_column       = *strings_column;
+  size_type null_count     = strings.null_count();
 
   // copy null mask
   rmm::device_buffer null_mask = cudf::detail::copy_bitmask(strings.parent(), stream, mr);
@@ -133,8 +133,8 @@ std::unique_ptr<column> wrap(
 
 }  // namespace detail
 
-std::unique_ptr<column> wrap(strings_column_view const& strings,
-                             size_type width,
+std::unique_ptr<column> wrap(strings_column_view const&       strings,
+                             size_type                        width,
                              rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

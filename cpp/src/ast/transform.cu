@@ -64,20 +64,20 @@ namespace detail {
  */
 template <cudf::size_type max_block_size>
 __launch_bounds__(max_block_size) __global__
-  void compute_column_kernel(table_device_view const table,
+  void compute_column_kernel(table_device_view const                                  table,
                              const cudf::detail::fixed_width_scalar_device_view_base* literals,
-                             mutable_column_device_view output_column,
+                             mutable_column_device_view                               output_column,
                              const detail::device_data_reference* data_references,
-                             const ast_operator* operators,
-                             const cudf::size_type* operator_source_indices,
-                             cudf::size_type num_operators,
-                             cudf::size_type num_intermediates)
+                             const ast_operator*                  operators,
+                             const cudf::size_type*               operator_source_indices,
+                             cudf::size_type                      num_operators,
+                             cudf::size_type                      num_intermediates)
 {
   extern __shared__ std::int64_t intermediate_storage[];
-  auto thread_intermediate_storage = &intermediate_storage[threadIdx.x * num_intermediates];
-  auto const start_idx             = cudf::size_type(threadIdx.x + blockIdx.x * blockDim.x);
-  auto const stride                = cudf::size_type(blockDim.x * gridDim.x);
-  auto const num_rows              = table.num_rows();
+  auto       thread_intermediate_storage = &intermediate_storage[threadIdx.x * num_intermediates];
+  auto const start_idx                   = cudf::size_type(threadIdx.x + blockIdx.x * blockDim.x);
+  auto const stride                      = cudf::size_type(blockDim.x * gridDim.x);
+  auto const num_rows                    = table.num_rows();
   auto const evaluator =
     cudf::ast::detail::row_evaluator(table, literals, thread_intermediate_storage, &output_column);
 
@@ -87,9 +87,9 @@ __launch_bounds__(max_block_size) __global__
   }
 }
 
-std::unique_ptr<column> compute_column(table_view const table,
-                                       expression const& expr,
-                                       rmm::cuda_stream_view stream,
+std::unique_ptr<column> compute_column(table_view const                 table,
+                                       expression const&                expr,
+                                       rmm::cuda_stream_view            stream,
                                        rmm::mr::device_memory_resource* mr)
 {
   // Linearize the AST
@@ -110,7 +110,7 @@ std::unique_ptr<column> compute_column(table_view const table,
   auto const host_data_buffer = plan.get_host_data_buffer();
   auto const buffer_offsets   = plan.get_offsets();
   auto const buffer_size      = host_data_buffer.second;
-  auto device_data_buffer =
+  auto       device_data_buffer =
     rmm::device_buffer(host_data_buffer.first.get(), buffer_size, stream, mr);
   // To reduce overhead, we don't call a stream sync here.
   // The stream is synced later when the table_device_view is created.
@@ -128,7 +128,7 @@ std::unique_ptr<column> compute_column(table_view const table,
     reinterpret_cast<const cudf::size_type*>(device_data_buffer_ptr + buffer_offsets[3]);
 
   // Create table device view
-  auto table_device         = table_device_view::create(table, stream);
+  auto       table_device   = table_device_view::create(table, stream);
   auto const table_num_rows = table.num_rows();
 
   // Prepare output column
@@ -140,7 +140,7 @@ std::unique_ptr<column> compute_column(table_view const table,
   // Configure kernel parameters
   auto const num_intermediates     = expr_linearizer.get_intermediate_count();
   auto const shmem_size_per_thread = static_cast<int>(sizeof(std::int64_t) * num_intermediates);
-  int device_id;
+  int        device_id;
   CUDA_TRY(cudaGetDevice(&device_id));
   int shmem_per_block_limit;
   CUDA_TRY(
@@ -151,7 +151,7 @@ std::unique_ptr<column> compute_column(table_view const table,
       ? std::min(MAX_BLOCK_SIZE, shmem_per_block_limit / shmem_size_per_thread)
       : MAX_BLOCK_SIZE;
   cudf::detail::grid_1d config(table_num_rows, block_size);
-  auto const shmem_size_per_block = shmem_size_per_thread * config.num_threads_per_block;
+  auto const            shmem_size_per_block = shmem_size_per_thread * config.num_threads_per_block;
 
   // Execute the kernel
   cudf::ast::detail::compute_column_kernel<MAX_BLOCK_SIZE>
@@ -170,8 +170,8 @@ std::unique_ptr<column> compute_column(table_view const table,
 
 }  // namespace detail
 
-std::unique_ptr<column> compute_column(table_view const table,
-                                       expression const& expr,
+std::unique_ptr<column> compute_column(table_view const                 table,
+                                       expression const&                expr,
                                        rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

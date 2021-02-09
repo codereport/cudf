@@ -33,8 +33,8 @@
 template <typename T>
 struct ChronoColumnTest : public cudf::test::BaseFixture {
   rmm::cuda_stream_view stream() { return rmm::cuda_stream_default; }
-  cudf::size_type size() { return cudf::size_type(100); }
-  cudf::data_type type() { return cudf::data_type{cudf::type_to_id<T>()}; }
+  cudf::size_type       size() { return cudf::size_type(100); }
+  cudf::data_type       type() { return cudf::data_type{cudf::type_to_id<T>()}; }
 };
 
 template <typename ChronoT>
@@ -84,7 +84,7 @@ TYPED_TEST(ChronoColumnTest, ChronoDurationsMatchPrimitiveRepresentation)
   // round-trip through the host to copy `chrono_col` values
   // to a new fixed_width_column_wrapper `primitive_col`
   // When C++17, use structured bindings
-  thrust::host_vector<Rep> chrono_col_data;
+  thrust::host_vector<Rep>        chrono_col_data;
   std::vector<cudf::bitmask_type> chrono_col_mask;
   std::tie(chrono_col_data, chrono_col_mask) = to_host<Rep>(chrono_col);
 
@@ -102,11 +102,11 @@ TYPED_TEST(ChronoColumnTest, ChronoDurationsMatchPrimitiveRepresentation)
 
 template <typename ChronoT>
 struct compare_chrono_elements {
-  cudf::binary_operator comp;
+  cudf::binary_operator    comp;
   cudf::column_device_view lhs;
   cudf::column_device_view rhs;
 
-  compare_chrono_elements(cudf::binary_operator _comp,
+  compare_chrono_elements(cudf::binary_operator     _comp,
                           cudf::column_device_view& _lhs,
                           cudf::column_device_view& _rhs)
     : comp(_comp), lhs(_lhs), rhs(_rhs)

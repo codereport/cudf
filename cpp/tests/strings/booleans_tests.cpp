@@ -30,7 +30,7 @@ struct StringsConvertTest : public cudf::test::BaseFixture {
 
 TEST_F(StringsConvertTest, ToBooleans)
 {
-  std::vector<const char*> h_strings{"false", nullptr, "", "true", "True", "False"};
+  std::vector<const char*>           h_strings{"false", nullptr, "", "true", "True", "False"};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),
@@ -39,7 +39,7 @@ TEST_F(StringsConvertTest, ToBooleans)
   auto strings_view = cudf::strings_column_view(strings);
   auto results      = cudf::strings::to_booleans(strings_view);
 
-  std::vector<bool> h_expected{false, false, false, true, false, false};
+  std::vector<bool>                            h_expected{false, false, false, true, false, false};
   cudf::test::fixed_width_column_wrapper<bool> expected(
     h_expected.begin(),
     h_expected.end(),
@@ -49,13 +49,13 @@ TEST_F(StringsConvertTest, ToBooleans)
 
 TEST_F(StringsConvertTest, FromBooleans)
 {
-  std::vector<const char*> h_strings{"true", nullptr, "false", "true", "true", "false"};
+  std::vector<const char*>           h_strings{"true", nullptr, "false", "true", "true", "false"};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; }));
 
-  std::vector<bool> h_column{true, false, false, true, true, false};
+  std::vector<bool>                            h_column{true, false, false, true, true, false};
   cudf::test::fixed_width_column_wrapper<bool> column(
     h_column.begin(),
     h_column.end(),
@@ -68,7 +68,7 @@ TEST_F(StringsConvertTest, FromBooleans)
 TEST_F(StringsConvertTest, ZeroSizeStringsColumnBoolean)
 {
   cudf::column_view zero_size_column(cudf::data_type{cudf::type_id::BOOL8}, 0, nullptr, nullptr, 0);
-  auto results = cudf::strings::from_booleans(zero_size_column);
+  auto              results = cudf::strings::from_booleans(zero_size_column);
   cudf::test::expect_strings_empty(results->view());
 }
 

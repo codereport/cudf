@@ -50,7 +50,7 @@ TYPED_TEST(FixedWidthColumnWrapperTest, EmptyIterator)
 TYPED_TEST(FixedWidthColumnWrapperTest, EmptyList)
 {
   cudf::test::fixed_width_column_wrapper<TypeParam> col{};
-  cudf::column_view view = col;
+  cudf::column_view                                 view = col;
   EXPECT_EQ(view.size(), 0);
   EXPECT_EQ(view.head(), nullptr);
   EXPECT_EQ(view.type(), this->data_type());
@@ -113,7 +113,7 @@ TYPED_TEST(FixedWidthColumnWrapperTest, NullableListConstructorAllValid)
   auto all_valid = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
   cudf::test::fixed_width_column_wrapper<TypeParam, int32_t> col({1, 2, 3, 4, 5}, all_valid);
-  cudf::column_view view = col;
+  cudf::column_view                                          view = col;
   EXPECT_EQ(view.size(), 5);
   EXPECT_NE(nullptr, view.head());
   EXPECT_EQ(view.type(), this->data_type());
@@ -147,7 +147,7 @@ TYPED_TEST(FixedWidthColumnWrapperTest, NullableListConstructorAllNull)
   auto all_null = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return false; });
 
   cudf::test::fixed_width_column_wrapper<TypeParam, int32_t> col({1, 2, 3, 4, 5}, all_null);
-  cudf::column_view view = col;
+  cudf::column_view                                          view = col;
   EXPECT_EQ(view.size(), 5);
   EXPECT_NE(nullptr, view.head());
   EXPECT_EQ(view.type(), this->data_type());
@@ -179,7 +179,7 @@ TYPED_TEST(FixedWidthColumnWrapperTest, NullablePairListConstructorAllNullMatch)
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i % 2 != 0; });
 
   cudf::test::fixed_width_column_wrapper<TypeParam, int32_t> match_col({1, 2, 3, 4, 5}, odd_valid);
-  cudf::column_view match_view = match_col;
+  cudf::column_view                                          match_view = match_col;
 
   using p = std::pair<int32_t, bool>;
   cudf::test::fixed_width_column_wrapper<TypeParam, int32_t> col({p{1, odd_valid[0]},
@@ -187,7 +187,7 @@ TYPED_TEST(FixedWidthColumnWrapperTest, NullablePairListConstructorAllNullMatch)
                                                                   p{3, odd_valid[2]},
                                                                   p{4, odd_valid[3]},
                                                                   p{5, odd_valid[4]}});
-  cudf::column_view view = col;
+  cudf::column_view                                          view = col;
 
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(view, match_view);
 }
@@ -197,8 +197,8 @@ TYPED_TEST(FixedWidthColumnWrapperTest, ReleaseWrapperAllValid)
   auto all_valid = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
   cudf::test::fixed_width_column_wrapper<TypeParam, int32_t> col({1, 2, 3, 4, 5}, all_valid);
-  auto colPtr            = col.release();
-  cudf::column_view view = *colPtr;
+  auto                                                       colPtr = col.release();
+  cudf::column_view                                          view   = *colPtr;
   EXPECT_EQ(view.size(), 5);
   EXPECT_NE(nullptr, view.head());
   EXPECT_EQ(view.type(), this->data_type());
@@ -212,8 +212,8 @@ TYPED_TEST(FixedWidthColumnWrapperTest, ReleaseWrapperAllNull)
   auto all_null = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return false; });
 
   cudf::test::fixed_width_column_wrapper<TypeParam, int32_t> col({1, 2, 3, 4, 5}, all_null);
-  auto colPtr            = col.release();
-  cudf::column_view view = *colPtr;
+  auto                                                       colPtr = col.release();
+  cudf::column_view                                          view   = *colPtr;
   EXPECT_EQ(view.size(), 5);
   EXPECT_NE(nullptr, view.head());
   EXPECT_EQ(view.type(), this->data_type());
@@ -234,7 +234,7 @@ TYPED_TEST_CASE(StringsColumnWrapperTest, cudf::test::StringTypes);
 TYPED_TEST(StringsColumnWrapperTest, EmptyList)
 {
   cudf::test::strings_column_wrapper col;
-  cudf::column_view view = col;
+  cudf::column_view                  view = col;
   EXPECT_EQ(view.size(), 0);
   EXPECT_EQ(view.head(), nullptr);
   EXPECT_EQ(view.type(), this->data_type());
@@ -267,7 +267,7 @@ TYPED_TEST(StringsColumnWrapperTest, NullablePairListConstructorAllNullMatch)
 
   cudf::test::strings_column_wrapper match_col({"a", "string", "", "test", "for", "nulls"},
                                                odd_valid);
-  cudf::column_view match_view = match_col;
+  cudf::column_view                  match_view = match_col;
 
   using p = std::pair<std::string, bool>;
   cudf::test::strings_column_wrapper col({p{"a", odd_valid[0]},
@@ -276,7 +276,7 @@ TYPED_TEST(StringsColumnWrapperTest, NullablePairListConstructorAllNullMatch)
                                           p{"test", odd_valid[3]},
                                           p{"for", odd_valid[4]},
                                           p{"nulls", odd_valid[5]}});
-  cudf::column_view view = col;
+  cudf::column_view                  view = col;
 
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(view, match_view);
 }

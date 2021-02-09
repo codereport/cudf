@@ -39,17 +39,17 @@ using vector_of_columns = std::vector<std::unique_ptr<cudf::column>>;
 std::pair<std::unique_ptr<cudf::table>, std::shared_ptr<arrow::Table>> get_tables(
   cudf::size_type length)
 {
-  std::vector<int64_t> int64_data(length);
-  std::vector<bool> bool_data(length);
+  std::vector<int64_t>     int64_data(length);
+  std::vector<bool>        bool_data(length);
   std::vector<std::string> string_data(length);
-  std::vector<uint8_t> validity(length);
-  std::vector<bool> bool_validity(length);
-  std::vector<uint8_t> bool_data_validity;
-  cudf::size_type length_of_individual_list = 3;
-  cudf::size_type length_of_list            = length_of_individual_list * length;
-  std::vector<int64_t> list_int64_data(length_of_list);
-  std::vector<uint8_t> list_int64_data_validity(length_of_list);
-  std::vector<int32_t> list_offsets(length + 1);
+  std::vector<uint8_t>     validity(length);
+  std::vector<bool>        bool_validity(length);
+  std::vector<uint8_t>     bool_data_validity;
+  cudf::size_type          length_of_individual_list = 3;
+  cudf::size_type          length_of_list            = length_of_individual_list * length;
+  std::vector<int64_t>     list_int64_data(length_of_list);
+  std::vector<uint8_t>     list_int64_data_validity(length_of_list);
+  std::vector<int32_t>     list_offsets(length + 1);
 
   std::vector<std::unique_ptr<cudf::column>> columns;
 
@@ -116,8 +116,8 @@ std::pair<std::unique_ptr<cudf::table>, std::shared_ptr<arrow::Table>> get_table
 
   auto string_array = get_arrow_array<cudf::string_view>(string_data, validity);
   cudf::dictionary_column_view view(dict_col->view());
-  auto keys       = cudf::test::to_host<int64_t>(view.keys()).first;
-  auto indices    = cudf::test::to_host<uint32_t>(view.indices()).first;
+  auto                         keys    = cudf::test::to_host<int64_t>(view.keys()).first;
+  auto                         indices = cudf::test::to_host<uint32_t>(view.indices()).first;
   auto dict_array = get_arrow_dict_array(std::vector<int64_t>(keys.begin(), keys.end()),
                                          std::vector<int32_t>(indices.begin(), indices.end()),
                                          validity);
@@ -125,11 +125,11 @@ std::pair<std::unique_ptr<cudf::table>, std::shared_ptr<arrow::Table>> get_table
   auto list_array = get_arrow_list_array<int64_t>(
     list_int64_data, list_offsets, list_int64_data_validity, bool_data_validity);
 
-  arrow::ArrayVector child_arrays({int64array, string_array});
+  arrow::ArrayVector                         child_arrays({int64array, string_array});
   std::vector<std::shared_ptr<arrow::Field>> fields = {
     arrow::field("integral", int64array->type(), int64array->null_count() > 0),
     arrow::field("string", string_array->type(), string_array->null_count() > 0)};
-  auto dtype = std::make_shared<arrow::StructType>(fields);
+  auto                           dtype = std::make_shared<arrow::StructType>(fields);
   std::shared_ptr<arrow::Buffer> mask_buffer =
     arrow::internal::BytesToBits(static_cast<std::vector<uint8_t>>(bool_data_validity))
       .ValueOrDie();
@@ -186,7 +186,7 @@ TEST_F(ToArrowTest, DateTimeTable)
   cudf::table_view input_view({col});
 
   std::shared_ptr<arrow::Array> arr;
-  arrow::TimestampBuilder timestamp_builder(timestamp(arrow::TimeUnit::type::MILLI),
+  arrow::TimestampBuilder       timestamp_builder(timestamp(arrow::TimeUnit::type::MILLI),
                                             arrow::default_memory_pool());
   CUDF_EXPECTS(timestamp_builder.AppendValues(std::vector<int64_t>{1, 2, 3, 4, 5, 6}).ok(),
                "Failed to append values");
@@ -212,7 +212,7 @@ TYPED_TEST(ToArrowTestDurationsTest, DurationTable)
   cudf::table_view input_view({col});
 
   std::shared_ptr<arrow::Array> arr;
-  arrow::TimeUnit::type arrow_unit;
+  arrow::TimeUnit::type         arrow_unit;
   switch (cudf::type_to_id<TypeParam>()) {
     case cudf::type_id::DURATION_SECONDS: arrow_unit = arrow::TimeUnit::type::SECOND; break;
     case cudf::type_id::DURATION_MILLISECONDS: arrow_unit = arrow::TimeUnit::type::MILLI; break;
@@ -246,7 +246,7 @@ TEST_F(ToArrowTest, NestedList)
 
   auto list_arr = get_arrow_list_array<int64_t>({6, 7, 8, 9}, {0, 1, 4}, {1, 0, 1, 1});
   std::vector<int32_t> offset{0, 0, 2};
-  auto mask_buffer     = arrow::internal::BytesToBits({0, 1}).ValueOrDie();
+  auto                 mask_buffer = arrow::internal::BytesToBits({0, 1}).ValueOrDie();
   auto nested_list_arr = std::make_shared<arrow::ListArray>(arrow::list(list(arrow::int64())),
                                                             offset.size() - 1,
                                                             arrow::Buffer::Wrap(offset),
@@ -274,7 +274,7 @@ TEST_F(ToArrowTest, StructColumn)
       .release();
   auto str_col2 =
     cudf::test::strings_column_wrapper{{"CUDF", "ROCKS", "EVERYWHERE"}, {0, 1, 0}}.release();
-  int num_rows{str_col->size()};
+  int  num_rows{str_col->size()};
   auto int_col = cudf::test::fixed_width_column_wrapper<int32_t, int32_t>{{48, 27, 25}}.release();
   auto int_col2 =
     cudf::test::fixed_width_column_wrapper<int32_t, int32_t>{{12, 24, 47}, {1, 0, 1}}.release();
@@ -296,7 +296,7 @@ TEST_F(ToArrowTest, StructColumn)
   cols.push_back(std::move(list_col));
   cols.push_back(std::move(sub_struct_col));
 
-  auto struct_col = cudf::make_structs_column(num_rows, std::move(cols), 0, {});
+  auto             struct_col = cudf::make_structs_column(num_rows, std::move(cols), 0, {});
   cudf::table_view input_view({struct_col->view()});
 
   // Create name metadata
@@ -308,23 +308,23 @@ TEST_F(ToArrowTest, StructColumn)
   // Create Arrow table
   std::vector<std::string> str{"Samuel Vimes", "Carrot Ironfoundersson", "Angua von Uberwald"};
   std::vector<std::string> str2{"CUDF", "ROCKS", "EVERYWHERE"};
-  auto str_array  = get_arrow_array<cudf::string_view>(str);
-  auto int_array  = get_arrow_array<int32_t>({48, 27, 25});
-  auto str2_array = get_arrow_array<cudf::string_view>(str2, {0, 1, 0});
-  auto int2_array = get_arrow_array<int32_t>({12, 24, 47}, {1, 0, 1});
-  auto bool_array = get_arrow_array<bool>({true, true, false});
+  auto                     str_array  = get_arrow_array<cudf::string_view>(str);
+  auto                     int_array  = get_arrow_array<int32_t>({48, 27, 25});
+  auto                     str2_array = get_arrow_array<cudf::string_view>(str2, {0, 1, 0});
+  auto                     int2_array = get_arrow_array<int32_t>({12, 24, 47}, {1, 0, 1});
+  auto                     bool_array = get_arrow_array<bool>({true, true, false});
   auto list_arr = get_arrow_list_array<int64_t>({1, 2, 3, 4, 5, 6, 7, 8, 9}, {0, 2, 4, 5, 6, 7, 9});
   std::vector<int32_t> offset{0, 3, 4, 6};
-  auto nested_list_arr = std::make_shared<arrow::ListArray>(
+  auto                 nested_list_arr = std::make_shared<arrow::ListArray>(
     arrow::list(list(arrow::int64())), offset.size() - 1, arrow::Buffer::Wrap(offset), list_arr);
 
   std::vector<std::shared_ptr<arrow::Array>> child_arrays2({str2_array, int2_array});
-  auto fields2 = std::vector<std::shared_ptr<arrow::Field>>{
+  auto                                       fields2 = std::vector<std::shared_ptr<arrow::Field>>{
     std::make_shared<arrow::Field>("string2", str2_array->type(), str2_array->null_count() > 0),
     std::make_shared<arrow::Field>("integral2", int2_array->type(), int2_array->null_count() > 0)};
-  auto dtype2                                = std::make_shared<arrow::StructType>(fields2);
+  auto                           dtype2      = std::make_shared<arrow::StructType>(fields2);
   std::shared_ptr<arrow::Buffer> mask_buffer = arrow::internal::BytesToBits({1, 1, 0}).ValueOrDie();
-  auto struct_array2                         = std::make_shared<arrow::StructArray>(
+  auto                           struct_array2 = std::make_shared<arrow::StructArray>(
     dtype2, static_cast<int64_t>(input_view.num_rows()), child_arrays2, mask_buffer);
 
   std::vector<std::shared_ptr<arrow::Array>> child_arrays(

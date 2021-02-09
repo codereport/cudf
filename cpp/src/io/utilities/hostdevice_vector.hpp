@@ -44,14 +44,14 @@ class hostdevice_vector {
     return *this;
   }
 
-  explicit hostdevice_vector(size_t max_size,
+  explicit hostdevice_vector(size_t                max_size,
                              rmm::cuda_stream_view stream = rmm::cuda_stream_default)
     : hostdevice_vector(max_size, max_size, stream)
   {
   }
 
-  explicit hostdevice_vector(size_t initial_size,
-                             size_t max_size,
+  explicit hostdevice_vector(size_t                initial_size,
+                             size_t                max_size,
                              rmm::cuda_stream_view stream = rmm::cuda_stream_default)
     : num_elements(initial_size), max_elements(max_size)
   {
@@ -83,9 +83,9 @@ class hostdevice_vector {
   size_t size() const noexcept { return num_elements; }
   size_t memory_size() const noexcept { return sizeof(T) * num_elements; }
 
-  T &operator[](size_t i) const { return h_data[i]; }
-  T *host_ptr(size_t offset = 0) const { return h_data + offset; }
-  T *device_ptr(size_t offset = 0) { return reinterpret_cast<T *>(d_data.data()) + offset; }
+  T &      operator[](size_t i) const { return h_data[i]; }
+  T *      host_ptr(size_t offset = 0) const { return h_data + offset; }
+  T *      device_ptr(size_t offset = 0) { return reinterpret_cast<T *>(d_data.data()) + offset; }
   T const *device_ptr(size_t offset = 0) const
   {
     return reinterpret_cast<T const *>(d_data.data()) + offset;
@@ -120,8 +120,8 @@ class hostdevice_vector {
   }
 
   rmm::cuda_stream_view stream{};
-  size_t max_elements{};
-  size_t num_elements{};
-  T *h_data{};
-  rmm::device_buffer d_data{};
+  size_t                max_elements{};
+  size_t                num_elements{};
+  T *                   h_data{};
+  rmm::device_buffer    d_data{};
 };

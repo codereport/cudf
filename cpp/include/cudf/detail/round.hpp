@@ -31,11 +31,11 @@ namespace detail {
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> round(
-  column_view const& input,
-  int32_t decimal_places,
-  rounding_method method,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  int32_t                          decimal_places,
+  rounding_method                  method,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace detail
 }  // namespace cudf

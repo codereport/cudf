@@ -28,18 +28,18 @@ namespace io {
 namespace parquet {
 namespace gpu {
 struct dict_state_s {
-  uint32_t row_cnt;
-  PageFragment *cur_fragment;
-  uint32_t *hashmap;
-  uint32_t total_dict_entries;  //!< Total number of entries in dictionary
-  uint32_t dictionary_size;     //!< Total dictionary size in bytes
-  uint32_t num_dict_entries;    //!< Dictionary entries in current fragment to add
-  uint32_t frag_dict_size;
-  EncColumnChunk ck;
-  EncColumnDesc col;
-  PageFragment frag;
+  uint32_t          row_cnt;
+  PageFragment *    cur_fragment;
+  uint32_t *        hashmap;
+  uint32_t          total_dict_entries;  //!< Total number of entries in dictionary
+  uint32_t          dictionary_size;     //!< Total dictionary size in bytes
+  uint32_t          num_dict_entries;    //!< Dictionary entries in current fragment to add
+  uint32_t          frag_dict_size;
+  EncColumnChunk    ck;
+  EncColumnDesc     col;
+  PageFragment      frag;
   volatile uint32_t scratch_red[32];
-  uint16_t frag_dict[max_page_fragment_size];
+  uint16_t          frag_dict[max_page_fragment_size];
 };
 
 /**
@@ -56,10 +56,10 @@ inline __device__ uint32_t nvstr_hash16(const uint8_t *p, uint32_t len)
 {
   uint32_t hash = len;
   if (len > 0) {
-    uint32_t align_p    = 3 & reinterpret_cast<uintptr_t>(p);
-    const uint32_t *p32 = reinterpret_cast<const uint32_t *>(p - align_p);
-    uint32_t ofs        = align_p * 8;
-    uint32_t v;
+    uint32_t        align_p = 3 & reinterpret_cast<uintptr_t>(p);
+    const uint32_t *p32     = reinterpret_cast<const uint32_t *>(p - align_p);
+    uint32_t        ofs     = align_p * 8;
+    uint32_t        v;
     while (len > 4) {
       v = *p32++;
       if (ofs) { v = __funnelshift_r(v, *p32, ofs); }
@@ -84,9 +84,9 @@ inline __device__ uint32_t nvstr_hash16(const uint8_t *p, uint32_t len)
  * @param[in] t thread id
  */
 __device__ void FetchDictionaryFragment(dict_state_s *s,
-                                        uint32_t *dict_data,
-                                        uint32_t frag_start_row,
-                                        uint32_t t)
+                                        uint32_t *    dict_data,
+                                        uint32_t      frag_start_row,
+                                        uint32_t      t)
 {
   if (t == 0) s->frag = *s->cur_fragment;
   __syncthreads();
@@ -107,9 +107,9 @@ __device__ void FetchDictionaryFragment(dict_state_s *s,
 /// Generate dictionary indices in ascending row order
 __device__ void GenerateDictionaryIndices(dict_state_s *s, uint32_t t)
 {
-  uint32_t *dict_index      = s->col.dict_index;
-  uint32_t *dict_data       = s->col.dict_data + s->ck.start_row;
-  uint32_t num_dict_entries = 0;
+  uint32_t *dict_index       = s->col.dict_index;
+  uint32_t *dict_data        = s->col.dict_data + s->ck.start_row;
+  uint32_t  num_dict_entries = 0;
 
   for (uint32_t i = 0; i < s->row_cnt; i += 1024) {
     uint32_t row = s->ck.start_row + i + t;
@@ -154,8 +154,8 @@ __global__ void __launch_bounds__(block_size, 1)
   __shared__ typename warp_reduce::TempStorage temp_storage[block_size / 32];
 
   dict_state_s *const s = &state_g;
-  uint32_t t            = threadIdx.x;
-  uint32_t dtype, dtype_len, dtype_len_in;
+  uint32_t            t = threadIdx.x;
+  uint32_t            dtype, dtype_len, dtype_len_in;
 
   if (t == 0) s->ck = chunks[blockIdx.x];
   __syncthreads();
@@ -193,9 +193,9 @@ __global__ void __launch_bounds__(block_size, 1)
       s->frag_dict_size   = 0;
     }
     for (uint32_t i = 0; i < num_dict_entries; i += 1024) {
-      bool is_valid    = (i + t < num_dict_entries);
-      uint32_t len     = 0;
-      uint32_t is_dupe = 0;
+      bool     is_valid = (i + t < num_dict_entries);
+      uint32_t len      = 0;
+      uint32_t is_dupe  = 0;
       uint32_t row, hash, next, *next_addr;
       uint32_t new_dict_entries;
 
@@ -210,7 +210,7 @@ __global__ void __launch_bounds__(block_size, 1)
           next_addr = &s->hashmap[hash];
           while ((next = atomicCAS(next_addr, 0, row + 1)) != 0) {
             auto const current = next - 1;
-            auto str2          = s->col.leaf_column->element<string_view>(current);
+            auto       str2    = s->col.leaf_column->element<string_view>(current);
             if (str1 == str2) {
               is_dupe = 1;
               break;
@@ -234,7 +234,7 @@ __global__ void __launch_bounds__(block_size, 1)
           next_addr = &s->hashmap[hash];
           while ((next = atomicCAS(next_addr, 0, row + 1)) != 0) {
             auto const current = next - 1;
-            uint64_t val2      = (dtype_len_in == 8)
+            uint64_t   val2    = (dtype_len_in == 8)
                               ? s->col.leaf_column->element<uint64_t>(current)
                               : (dtype_len_in == 4)
                                   ? s->col.leaf_column->element<uint32_t>(current)
@@ -325,10 +325,10 @@ __global__ void __launch_bounds__(block_size, 1)
  * @param[in] num_chunks Number of column chunks
  * @param[in] stream CUDA stream to use, default 0
  */
-void BuildChunkDictionaries(EncColumnChunk *chunks,
-                            uint32_t *dev_scratch,
-                            size_t scratch_size,
-                            uint32_t num_chunks,
+void BuildChunkDictionaries(EncColumnChunk *      chunks,
+                            uint32_t *            dev_scratch,
+                            size_t                scratch_size,
+                            uint32_t              num_chunks,
                             rmm::cuda_stream_view stream)
 {
   if (num_chunks > 0 && scratch_size > 0) {  // zero scratch size implies no dictionaries

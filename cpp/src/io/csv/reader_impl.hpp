@@ -76,9 +76,9 @@ class reader::impl {
    * @param options Settings for controlling reading behavior
    * @param mr Device memory resource to use for device memory allocation
    */
-  explicit impl(std::unique_ptr<datasource> source,
-                std::string filepath,
-                csv_reader_options const &options,
+  explicit impl(std::unique_ptr<datasource>      source,
+                std::string                      filepath,
+                csv_reader_options const &       options,
                 rmm::mr::device_memory_resource *mr);
 
   /**
@@ -107,11 +107,11 @@ class reader::impl {
    * @param stream CUDA stream used for device memory operations and kernel launches.
    */
   void gather_row_offsets(host_span<char const> data,
-                          size_t range_begin,
-                          size_t range_end,
-                          size_t skip_rows,
-                          int64_t num_rows,
-                          bool load_whole_file,
+                          size_t                range_begin,
+                          size_t                range_end,
+                          size_t                skip_rows,
+                          int64_t               num_rows,
+                          bool                  load_whole_file,
                           rmm::cuda_stream_view stream);
 
   /**
@@ -141,29 +141,29 @@ class reader::impl {
    * @return list of column buffers of decoded data, or ptr/size in the case of strings.
    */
   std::vector<column_buffer> decode_data(std::vector<data_type> const &column_types,
-                                         rmm::cuda_stream_view stream);
+                                         rmm::cuda_stream_view         stream);
 
  private:
   rmm::mr::device_memory_resource *mr_ = nullptr;
-  std::unique_ptr<datasource> source_;
-  std::string filepath_;
-  std::string compression_type_;
-  const csv_reader_options opts_;
+  std::unique_ptr<datasource>      source_;
+  std::string                      filepath_;
+  std::string                      compression_type_;
+  const csv_reader_options         opts_;
 
-  rmm::device_vector<char> data_;
+  rmm::device_vector<char>     data_;
   rmm::device_vector<uint64_t> row_offsets_;
-  cudf::size_type num_records_ = 0;  // Number of rows with actual data
-  int num_active_cols_         = 0;  // Number of columns to read
-  int num_actual_cols_         = 0;  // Number of columns in the dataset
+  cudf::size_type              num_records_     = 0;  // Number of rows with actual data
+  int                          num_active_cols_ = 0;  // Number of columns to read
+  int                          num_actual_cols_ = 0;  // Number of columns in the dataset
 
   // Parsing options
-  parse_options opts{};
+  parse_options                            opts{};
   thrust::host_vector<column_parse::flags> h_column_flags_;
-  rmm::device_vector<column_parse::flags> d_column_flags_;
+  rmm::device_vector<column_parse::flags>  d_column_flags_;
 
   // Intermediate data
   std::vector<std::string> col_names_;
-  std::vector<char> header_;
+  std::vector<char>        header_;
 };
 
 }  // namespace csv

@@ -36,11 +36,11 @@ template <bool source_has_nulls,
           typename SourceValueIterator,
           typename SourceValidityIterator>
 struct compute_element_size {
-  SourceValueIterator source_value_begin;
-  SourceValidityIterator source_validity_begin;
+  SourceValueIterator      source_value_begin;
+  SourceValidityIterator   source_validity_begin;
   cudf::column_device_view d_target;
-  cudf::size_type target_begin;
-  cudf::size_type target_end;
+  cudf::size_type          target_begin;
+  cudf::size_type          target_end;
 
   __device__ cudf::size_type operator()(cudf::size_type idx)
   {
@@ -98,12 +98,12 @@ namespace detail {
  */
 template <typename SourceValueIterator, typename SourceValidityIterator>
 std::unique_ptr<column> copy_range(
-  SourceValueIterator source_value_begin,
-  SourceValidityIterator source_validity_begin,
-  strings_column_view const& target,
-  size_type target_begin,
-  size_type target_end,
-  rmm::cuda_stream_view stream,
+  SourceValueIterator              source_value_begin,
+  SourceValidityIterator           source_validity_begin,
+  strings_column_view const&       target,
+  size_type                        target_begin,
+  size_type                        target_end,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(
@@ -143,7 +143,7 @@ std::unique_ptr<column> copy_range(
         mr);
     }
 
-    auto null_count = valid_mask.second;
+    auto               null_count = valid_mask.second;
     rmm::device_buffer null_mask{0, stream, mr};
     if (target.parent().nullable() || null_count > 0) { null_mask = std::move(valid_mask.first); }
 

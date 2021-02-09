@@ -37,12 +37,12 @@ class CopyRangeTypedTestFixture : public cudf::test::BaseFixture {
  public:
   static constexpr cudf::size_type column_size{1000};
 
-  void test(cudf::column_view const& source,
-            cudf::column_view const& expected,
+  void test(cudf::column_view const&   source,
+            cudf::column_view const&   expected,
             cudf::mutable_column_view& target,
-            cudf::size_type source_begin,
-            cudf::size_type source_end,
-            cudf::size_type target_begin)
+            cudf::size_type            source_begin,
+            cudf::size_type            source_end,
+            cudf::size_type            target_begin)
   {
     static_assert(cudf::is_fixed_width<T>(), "this code assumes fixed-width types.");
 
@@ -70,8 +70,8 @@ TYPED_TEST(CopyRangeTypedTestFixture, CopyWithNulls)
   cudf::size_type source_begin{9};
   cudf::size_type source_end{size - 50};
   cudf::size_type target_begin{30};
-  auto target_end = target_begin + (source_end - source_begin);
-  auto row_diff   = source_begin - target_begin;
+  auto            target_end = target_begin + (source_end - source_begin);
+  auto            row_diff   = source_begin - target_begin;
 
   cudf::test::fixed_width_column_wrapper<T, int32_t> target(
     thrust::make_counting_iterator(0),
@@ -110,8 +110,8 @@ TYPED_TEST(CopyRangeTypedTestFixture, CopyNoNulls)
   cudf::size_type source_begin{9};
   cudf::size_type source_end{size - 50};
   cudf::size_type target_begin{30};
-  auto target_end = target_begin + (source_end - source_begin);
-  auto row_diff   = source_begin - target_begin;
+  auto            target_end = target_begin + (source_end - source_begin);
+  auto            row_diff   = source_begin - target_begin;
 
   cudf::test::fixed_width_column_wrapper<T, int32_t> target(
     thrust::make_counting_iterator(0), thrust::make_counting_iterator(0) + size);
@@ -142,8 +142,8 @@ TYPED_TEST(CopyRangeTypedTestFixture, CopyWithNullsNonzeroOffset)
   cudf::size_type source_end{50};
   cudf::size_type target_offset{58};
   cudf::size_type target_begin{30};
-  auto target_end = target_begin + (source_end - source_begin);
-  auto row_diff   = (source_offset + source_begin) - (target_offset + target_begin);
+  auto            target_end = target_begin + (source_end - source_begin);
+  auto            row_diff   = (source_offset + source_begin) - (target_offset + target_begin);
 
   cudf::test::fixed_width_column_wrapper<T, int32_t> target(
     thrust::make_counting_iterator(0),
@@ -197,8 +197,8 @@ TEST_F(CopyRangeTestFixture, CopyWithNullsString)
   cudf::size_type source_begin{9};
   cudf::size_type source_end{50};
   cudf::size_type target_begin{30};
-  auto target_end = target_begin + (source_end - source_begin);
-  auto row_diff   = source_begin - target_begin;
+  auto            target_end = target_begin + (source_end - source_begin);
+  auto            row_diff   = source_begin - target_begin;
 
   auto target_elements = cudf::detail::make_counting_transform_iterator(
     0, [](auto i) { return "#" + std::to_string(i); });
@@ -236,8 +236,8 @@ TEST_F(CopyRangeTestFixture, CopyNoNullsString)
   cudf::size_type source_begin{9};
   cudf::size_type source_end{50};
   cudf::size_type target_begin{30};
-  auto target_end = target_begin + (source_end - source_begin);
-  auto row_diff   = source_begin - target_begin;
+  auto            target_end = target_begin + (source_end - source_begin);
+  auto            row_diff   = source_begin - target_begin;
 
   auto target_elements = cudf::detail::make_counting_transform_iterator(
     0, [](auto i) { return "#" + std::to_string(i); });
@@ -266,8 +266,8 @@ TEST_F(CopyRangeTestFixture, CopyWithNullsNonzeroOffsetString)
   cudf::size_type source_end{50};
   cudf::size_type target_offset{58};
   cudf::size_type target_begin{30};
-  auto target_end = target_begin + (source_end - source_begin);
-  auto row_diff   = (source_offset + source_begin) - (target_offset + target_begin);
+  auto            target_end = target_begin + (source_end - source_begin);
+  auto            row_diff   = (source_offset + source_begin) - (target_offset + target_begin);
 
   auto target_elements = cudf::detail::make_counting_transform_iterator(
     0, [](auto i) { return "#" + std::to_string(i); });
@@ -401,7 +401,7 @@ TEST_F(CopyRangeErrorTestFixture, InvalidRange)
     thrust::make_counting_iterator(0), thrust::make_counting_iterator(0) + size);
 
   cudf::mutable_column_view target_view{target};
-  cudf::column_view source_view{source};
+  cudf::column_view         source_view{source};
 
   // empty_range == no-op, this is valid
   EXPECT_NO_THROW(cudf::copy_range_in_place(source, target_view, 0, 0, 0));

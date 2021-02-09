@@ -64,8 +64,8 @@ enum class unary_operator : int32_t {
  * @returns Column of same size as `input` containing result of the operation
  */
 std::unique_ptr<cudf::column> unary_operation(
-  cudf::column_view const& input,
-  cudf::unary_operator op,
+  cudf::column_view const&         input,
+  cudf::unary_operator             op,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -79,7 +79,7 @@ std::unique_ptr<cudf::column> unary_operation(
  * representing `null` values.
  */
 std::unique_ptr<cudf::column> is_null(
-  cudf::column_view const& input,
+  cudf::column_view const&         input,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -93,7 +93,7 @@ std::unique_ptr<cudf::column> is_null(
  * representing `null` values.
  */
 std::unique_ptr<cudf::column> is_valid(
-  cudf::column_view const& input,
+  cudf::column_view const&         input,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -109,8 +109,8 @@ std::unique_ptr<cudf::column> is_valid(
  * @throw cudf::logic_error if `out_type` is not a fixed-width type
  */
 std::unique_ptr<column> cast(
-  column_view const& input,
-  data_type out_type,
+  column_view const&               input,
+  data_type                        out_type,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -126,7 +126,7 @@ std::unique_ptr<column> cast(
  * @returns A non-nullable column of `type_id::BOOL8` elements with `true` representing `NAN` values
  */
 std::unique_ptr<column> is_nan(
-  cudf::column_view const& input,
+  cudf::column_view const&         input,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -143,7 +143,7 @@ std::unique_ptr<column> is_nan(
  * values
  */
 std::unique_ptr<column> is_not_nan(
-  cudf::column_view const& input,
+  cudf::column_view const&         input,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

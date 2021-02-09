@@ -25,7 +25,7 @@
 template <typename T>
 cudf::test::fixed_width_column_wrapper<T> create_fixed_columns(cudf::size_type start,
                                                                cudf::size_type size,
-                                                               bool nullable)
+                                                               bool            nullable)
 {
   auto iter = cudf::detail::make_counting_transform_iterator(start, [](auto i) { return T(i); });
 
@@ -40,8 +40,8 @@ cudf::test::fixed_width_column_wrapper<T> create_fixed_columns(cudf::size_type s
 
 template <typename T>
 cudf::test::fixed_width_column_wrapper<T> create_expected_columns(cudf::size_type size,
-                                                                  bool nullable,
-                                                                  bool nulls_to_be)
+                                                                  bool            nullable,
+                                                                  bool            nulls_to_be)
 {
   if (not nullable) {
     auto iter = cudf::detail::make_counting_transform_iterator(
@@ -64,9 +64,9 @@ TYPED_TEST(IsNull, AllValid)
 {
   using T = TypeParam;
 
-  cudf::size_type start                         = 0;
-  cudf::size_type size                          = 10;
-  cudf::test::fixed_width_column_wrapper<T> col = create_fixed_columns<T>(start, size, false);
+  cudf::size_type                              start = 0;
+  cudf::size_type                              size  = 10;
+  cudf::test::fixed_width_column_wrapper<T>    col   = create_fixed_columns<T>(start, size, false);
   cudf::test::fixed_width_column_wrapper<bool> expected =
     create_expected_columns<bool>(size, false, true);
 
@@ -79,9 +79,9 @@ TYPED_TEST(IsNull, WithInvalids)
 {
   using T = TypeParam;
 
-  cudf::size_type start                         = 0;
-  cudf::size_type size                          = 10;
-  cudf::test::fixed_width_column_wrapper<T> col = create_fixed_columns<T>(start, size, true);
+  cudf::size_type                              start = 0;
+  cudf::size_type                              size  = 10;
+  cudf::test::fixed_width_column_wrapper<T>    col   = create_fixed_columns<T>(start, size, true);
   cudf::test::fixed_width_column_wrapper<bool> expected =
     create_expected_columns<bool>(size, true, true);
 
@@ -94,9 +94,9 @@ TYPED_TEST(IsNull, EmptyColumns)
 {
   using T = TypeParam;
 
-  cudf::size_type start                         = 0;
-  cudf::size_type size                          = 0;
-  cudf::test::fixed_width_column_wrapper<T> col = create_fixed_columns<T>(start, size, true);
+  cudf::size_type                              start = 0;
+  cudf::size_type                              size  = 0;
+  cudf::test::fixed_width_column_wrapper<T>    col   = create_fixed_columns<T>(start, size, true);
   cudf::test::fixed_width_column_wrapper<bool> expected =
     create_expected_columns<bool>(size, true, true);
 
@@ -115,9 +115,9 @@ TYPED_TEST(IsNotNull, AllValid)
 {
   using T = TypeParam;
 
-  cudf::size_type start                         = 0;
-  cudf::size_type size                          = 10;
-  cudf::test::fixed_width_column_wrapper<T> col = create_fixed_columns<T>(start, size, false);
+  cudf::size_type                              start = 0;
+  cudf::size_type                              size  = 10;
+  cudf::test::fixed_width_column_wrapper<T>    col   = create_fixed_columns<T>(start, size, false);
   cudf::test::fixed_width_column_wrapper<bool> expected =
     create_expected_columns<bool>(size, false, false);
 
@@ -130,9 +130,9 @@ TYPED_TEST(IsNotNull, WithInvalids)
 {
   using T = TypeParam;
 
-  cudf::size_type start                         = 0;
-  cudf::size_type size                          = 10;
-  cudf::test::fixed_width_column_wrapper<T> col = create_fixed_columns<T>(start, size, true);
+  cudf::size_type                              start = 0;
+  cudf::size_type                              size  = 10;
+  cudf::test::fixed_width_column_wrapper<T>    col   = create_fixed_columns<T>(start, size, true);
   cudf::test::fixed_width_column_wrapper<bool> expected =
     create_expected_columns<bool>(size, true, false);
 
@@ -145,9 +145,9 @@ TYPED_TEST(IsNotNull, EmptyColumns)
 {
   using T = TypeParam;
 
-  cudf::size_type start                         = 0;
-  cudf::size_type size                          = 0;
-  cudf::test::fixed_width_column_wrapper<T> col = create_fixed_columns<T>(start, size, true);
+  cudf::size_type                              start = 0;
+  cudf::size_type                              size  = 0;
+  cudf::test::fixed_width_column_wrapper<T>    col   = create_fixed_columns<T>(start, size, true);
   cudf::test::fixed_width_column_wrapper<bool> expected =
     create_expected_columns<bool>(size, true, false);
 
@@ -166,7 +166,7 @@ TYPED_TEST(IsNAN, AllValid)
 {
   using T = TypeParam;
 
-  cudf::test::fixed_width_column_wrapper<T> col{{T(1), T(2), T(NAN), T(4), T(NAN), T(6), T(7)}};
+  cudf::test::fixed_width_column_wrapper<T>    col{{T(1), T(2), T(NAN), T(4), T(NAN), T(6), T(7)}};
   cudf::test::fixed_width_column_wrapper<bool> expected = {
     false, false, true, false, true, false, false};
 
@@ -180,7 +180,7 @@ TYPED_TEST(IsNAN, WithNull)
   using T = TypeParam;
 
   // The last NAN is null
-  cudf::test::fixed_width_column_wrapper<T> col{{T(1), T(2), T(NAN), T(4), T(NAN), T(6), T(7)},
+  cudf::test::fixed_width_column_wrapper<T>    col{{T(1), T(2), T(NAN), T(4), T(NAN), T(6), T(7)},
                                                 {1, 0, 1, 1, 0, 1, 1}};
   cudf::test::fixed_width_column_wrapper<bool> expected = {
     false, false, true, false, false, false, false};
@@ -194,7 +194,7 @@ TYPED_TEST(IsNAN, EmptyColumn)
 {
   using T = TypeParam;
 
-  cudf::test::fixed_width_column_wrapper<T> col{};
+  cudf::test::fixed_width_column_wrapper<T>    col{};
   cudf::test::fixed_width_column_wrapper<bool> expected = {};
 
   std::unique_ptr<cudf::column> got = cudf::is_nan(col);
@@ -219,7 +219,7 @@ TYPED_TEST(IsNotNAN, AllValid)
 {
   using T = TypeParam;
 
-  cudf::test::fixed_width_column_wrapper<T> col{{T(1), T(2), T(NAN), T(4), T(NAN), T(6), T(7)}};
+  cudf::test::fixed_width_column_wrapper<T>    col{{T(1), T(2), T(NAN), T(4), T(NAN), T(6), T(7)}};
   cudf::test::fixed_width_column_wrapper<bool> expected = {
     true, true, false, true, false, true, true};
 
@@ -233,7 +233,7 @@ TYPED_TEST(IsNotNAN, WithNull)
   using T = TypeParam;
 
   // The last NAN is null
-  cudf::test::fixed_width_column_wrapper<T> col{{T(1), T(2), T(NAN), T(4), T(NAN), T(6), T(7)},
+  cudf::test::fixed_width_column_wrapper<T>    col{{T(1), T(2), T(NAN), T(4), T(NAN), T(6), T(7)},
                                                 {1, 0, 1, 1, 0, 1, 1}};
   cudf::test::fixed_width_column_wrapper<bool> expected = {
     true, true, false, true, true, true, true};
@@ -247,7 +247,7 @@ TYPED_TEST(IsNotNAN, EmptyColumn)
 {
   using T = TypeParam;
 
-  cudf::test::fixed_width_column_wrapper<T> col{};
+  cudf::test::fixed_width_column_wrapper<T>    col{};
   cudf::test::fixed_width_column_wrapper<bool> expected = {};
 
   std::unique_ptr<cudf::column> got = cudf::is_not_nan(col);

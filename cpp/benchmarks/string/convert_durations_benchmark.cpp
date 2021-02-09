@@ -67,7 +67,7 @@ void BM_convert_to_durations(benchmark::State& state)
   cudf::test::fixed_width_column_wrapper<TypeParam> source_durations(data, data + source_size);
   auto results = cudf::strings::from_durations(source_durations, "%D days %H:%M:%S");
   cudf::strings_column_view source_string(*results);
-  auto output_type = cudf::data_type(cudf::type_to_id<TypeParam>());
+  auto                      output_type = cudf::data_type(cudf::type_to_id<TypeParam>());
 
   for (auto _ : state) {
     cuda_event_timer raii(state, true);  // flush_l2_cache = true, stream = 0

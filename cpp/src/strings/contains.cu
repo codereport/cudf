@@ -47,7 +47,7 @@ namespace {
  */
 template <size_t stack_size>
 struct contains_fn {
-  reprog_device prog;
+  reprog_device      prog;
   column_device_view d_strings;
   bool bmatch{false};  // do not make this a template parameter to keep compile times down
 
@@ -57,8 +57,8 @@ struct contains_fn {
     u_char data1[stack_size], data2[stack_size];
     prog.set_stack_mem(data1, data2);
     string_view d_str = d_strings.element<string_view>(idx);
-    int32_t begin     = 0;
-    int32_t end       = bmatch ? 1  // match only the beginning of the string;
+    int32_t     begin = 0;
+    int32_t     end   = bmatch ? 1  // match only the beginning of the string;
                          : -1;      // this handles empty strings too
     return static_cast<bool>(prog.find(idx, d_str, begin, end));
   }
@@ -66,11 +66,11 @@ struct contains_fn {
 
 //
 std::unique_ptr<column> contains_util(
-  strings_column_view const& strings,
-  std::string const& pattern,
-  bool beginning_only                 = false,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  strings_column_view const&       strings,
+  std::string const&               pattern,
+  bool                             beginning_only = false,
+  rmm::cuda_stream_view            stream         = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr             = rmm::mr::get_current_device_resource())
 {
   auto strings_count  = strings.size();
   auto strings_column = column_device_view::create(strings.parent(), stream);
@@ -117,18 +117,18 @@ std::unique_ptr<column> contains_util(
 }  // namespace
 
 std::unique_ptr<column> contains_re(
-  strings_column_view const& strings,
-  std::string const& pattern,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  std::string const&               pattern,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   return contains_util(strings, pattern, false, stream, mr);
 }
 
 std::unique_ptr<column> matches_re(
-  strings_column_view const& strings,
-  std::string const& pattern,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  std::string const&               pattern,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   return contains_util(strings, pattern, true, stream, mr);
@@ -138,16 +138,16 @@ std::unique_ptr<column> matches_re(
 
 // external APIs
 
-std::unique_ptr<column> contains_re(strings_column_view const& strings,
-                                    std::string const& pattern,
+std::unique_ptr<column> contains_re(strings_column_view const&       strings,
+                                    std::string const&               pattern,
                                     rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::contains_re(strings, pattern, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> matches_re(strings_column_view const& strings,
-                                   std::string const& pattern,
+std::unique_ptr<column> matches_re(strings_column_view const&       strings,
+                                   std::string const&               pattern,
                                    rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -161,7 +161,7 @@ namespace {
  */
 template <size_t stack_size>
 struct count_fn {
-  reprog_device prog;
+  reprog_device      prog;
   column_device_view d_strings;
 
   __device__ int32_t operator()(unsigned int idx)
@@ -169,10 +169,10 @@ struct count_fn {
     u_char data1[stack_size], data2[stack_size];
     prog.set_stack_mem(data1, data2);
     if (d_strings.is_null(idx)) return 0;
-    string_view d_str  = d_strings.element<string_view>(idx);
-    auto const nchars  = d_str.length();
-    int32_t find_count = 0;
-    int32_t begin      = 0;
+    string_view d_str      = d_strings.element<string_view>(idx);
+    auto const  nchars     = d_str.length();
+    int32_t     find_count = 0;
+    int32_t     begin      = 0;
     while (begin < nchars) {
       auto end = static_cast<int32_t>(nchars);
       if (prog.find(idx, d_str, begin, end) <= 0) break;
@@ -186,9 +186,9 @@ struct count_fn {
 }  // namespace
 
 std::unique_ptr<column> count_re(
-  strings_column_view const& strings,
-  std::string const& pattern,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  std::string const&               pattern,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   auto strings_count  = strings.size();
@@ -237,8 +237,8 @@ std::unique_ptr<column> count_re(
 
 // external API
 
-std::unique_ptr<column> count_re(strings_column_view const& strings,
-                                 std::string const& pattern,
+std::unique_ptr<column> count_re(strings_column_view const&       strings,
+                                 std::string const&               pattern,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

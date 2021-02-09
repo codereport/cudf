@@ -203,12 +203,12 @@ void ProtobufReader::read(Metadata &s, size_t maxlen)
 /**
  * @Brief Add a single rowIndexEntry, negative input values treated as not present
  */
-void ProtobufWriter::put_row_index_entry(int32_t present_blk,
-                                         int32_t present_ofs,
-                                         int32_t data_blk,
-                                         int32_t data_ofs,
-                                         int32_t data2_blk,
-                                         int32_t data2_ofs,
+void ProtobufWriter::put_row_index_entry(int32_t  present_blk,
+                                         int32_t  present_ofs,
+                                         int32_t  data_blk,
+                                         int32_t  data_ofs,
+                                         int32_t  data2_blk,
+                                         int32_t  data2_ofs,
                                          TypeKind kind)
 {
   size_t sz = 0, lpos;
@@ -412,7 +412,7 @@ const uint8_t *OrcDecompressor::Decompress(const uint8_t *srcBytes, size_t srcLe
     return srcBytes + 3;
   }
   m_buf.resize(max_dst_length);
-  auto dst          = m_buf.data();
+  auto   dst        = m_buf.data();
   size_t dst_length = 0;
   for (size_t i = 0; i + 3 < srcLen;) {
     uint32_t block_len       = srcBytes[i] | (srcBytes[i + 1] << 8) | (srcBytes[i + 2] << 16);
@@ -440,9 +440,9 @@ metadata::metadata(datasource *const src) : source(src)
   const auto max_ps_size = std::min(len, static_cast<size_t>(256));
 
   // Read uncompressed postscript section (max 255 bytes + 1 byte for length)
-  auto buffer            = source->host_read(len - max_ps_size, max_ps_size);
-  const size_t ps_length = buffer->data()[max_ps_size - 1];
-  const uint8_t *ps_data = &buffer->data()[max_ps_size - ps_length - 1];
+  auto           buffer    = source->host_read(len - max_ps_size, max_ps_size);
+  const size_t   ps_length = buffer->data()[max_ps_size - 1];
+  const uint8_t *ps_data   = &buffer->data()[max_ps_size - ps_length - 1];
   ProtobufReader(ps_data, ps_length).read(ps);
   CUDF_EXPECTS(ps.footerLength + ps_length < len, "Invalid footer length");
 
@@ -453,7 +453,7 @@ metadata::metadata(datasource *const src) : source(src)
   // Read compressed filefooter section
   buffer           = source->host_read(len - ps_length - 1 - ps.footerLength, ps.footerLength);
   size_t ff_length = 0;
-  auto ff_data     = decompressor->Decompress(buffer->data(), ps.footerLength, &ff_length);
+  auto   ff_data   = decompressor->Decompress(buffer->data(), ps.footerLength, &ff_length);
   ProtobufReader(ff_data, ff_length).read(ff);
   CUDF_EXPECTS(get_num_columns() > 0, "No columns found");
 
@@ -461,7 +461,7 @@ metadata::metadata(datasource *const src) : source(src)
   buffer =
     source->host_read(len - ps_length - 1 - ps.footerLength - ps.metadataLength, ps.metadataLength);
   size_t md_length = 0;
-  auto md_data     = decompressor->Decompress(buffer->data(), ps.metadataLength, &md_length);
+  auto   md_data   = decompressor->Decompress(buffer->data(), ps.metadataLength, &md_length);
   orc::ProtobufReader(md_data, md_length).read(md);
 }
 
@@ -519,9 +519,9 @@ std::vector<metadata::OrcStripeInfo> metadata::select_stripes(const std::vector<
       const auto sf_comp_length = stripe->footerLength;
       CUDF_EXPECTS(sf_comp_offset + sf_comp_length < source->size(), "Invalid stripe information");
 
-      const auto buffer = source->host_read(sf_comp_offset, sf_comp_length);
-      size_t sf_length  = 0;
-      auto sf_data      = decompressor->Decompress(buffer->data(), sf_comp_length, &sf_length);
+      const auto buffer    = source->host_read(sf_comp_offset, sf_comp_length);
+      size_t     sf_length = 0;
+      auto       sf_data   = decompressor->Decompress(buffer->data(), sf_comp_length, &sf_length);
       ProtobufReader(sf_data, sf_length).read(stripefooters[i]);
       selection[i].second = &stripefooters[i];
     }
@@ -531,7 +531,7 @@ std::vector<metadata::OrcStripeInfo> metadata::select_stripes(const std::vector<
 }
 
 std::vector<int> metadata::select_columns(std::vector<std::string> use_names,
-                                          bool &has_timestamp_column)
+                                          bool &                   has_timestamp_column)
 {
   std::vector<int> selection;
 
@@ -564,12 +564,12 @@ std::vector<int> metadata::select_columns(std::vector<std::string> use_names,
 
 void metadata::init_column_names()
 {
-  auto const schema_idxs = get_schema_indexes();
-  auto const &types      = ff.types;
+  auto const  schema_idxs = get_schema_indexes();
+  auto const &types       = ff.types;
   for (int32_t col_id = 0; col_id < get_num_columns(); ++col_id) {
     std::string col_name;
-    uint32_t parent_idx = col_id;
-    uint32_t idx        = col_id;
+    uint32_t    parent_idx = col_id;
+    uint32_t    idx        = col_id;
     do {
       idx        = parent_idx;
       parent_idx = (idx < types.size()) ? static_cast<uint32_t>(schema_idxs[idx].parent) : ~0;
@@ -593,8 +593,8 @@ std::vector<metadata::schema_indexes> metadata::get_schema_indexes() const
 
   auto const schema_size = static_cast<uint32_t>(result.size());
   for (uint32_t i = 0; i < schema_size; i++) {
-    auto const &subtypes    = ff.types[i].subtypes;
-    auto const num_children = static_cast<uint32_t>(subtypes.size());
+    auto const &subtypes     = ff.types[i].subtypes;
+    auto const  num_children = static_cast<uint32_t>(subtypes.size());
     if (result[i].parent == -1) {  // Not initialized
       result[i].parent = i;        // set root node as its own parent
     }

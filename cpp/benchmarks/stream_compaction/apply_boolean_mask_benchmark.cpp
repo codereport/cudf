@@ -47,8 +47,8 @@ void size_range(benchmark::internal::Benchmark* b)
 template <typename T>
 T random_int(T min, T max)
 {
-  static unsigned const seed = 13377331;
-  static std::mt19937 engine{seed};
+  static unsigned const                   seed = 13377331;
+  static std::mt19937                     engine{seed};
   static std::uniform_int_distribution<T> uniform{min, max};
 
   return uniform(engine);
@@ -60,9 +60,9 @@ void calculate_bandwidth(benchmark::State& state, cudf::size_type num_columns)
   cudf::size_type const column_size{static_cast<cudf::size_type>(state.range(0))};
   cudf::size_type const percent_true{static_cast<cudf::size_type>(state.range(1))};
 
-  float const fraction                  = percent_true / 100.f;
+  float const           fraction        = percent_true / 100.f;
   cudf::size_type const column_size_out = fraction * column_size;
-  int64_t const mask_size =
+  int64_t const         mask_size =
     sizeof(bool) * column_size + cudf::bitmask_allocation_size_bytes(column_size);
   int64_t const validity_bytes_in = (fraction >= 1.0f / 32)
                                       ? cudf::bitmask_allocation_size_bytes(column_size)
@@ -94,7 +94,7 @@ void BM_apply_boolean_mask(benchmark::State& state, cudf::size_type num_columns)
 
   std::vector<wrapper> columns;
 
-  std::vector<T> data(column_size);
+  std::vector<T>    data(column_size);
   std::vector<bool> validity(column_size, true);
 
   std::iota(data.begin(), data.end(), 0);
@@ -117,7 +117,7 @@ void BM_apply_boolean_mask(benchmark::State& state, cudf::size_type num_columns)
 
   for (auto _ : state) {
     cuda_event_timer raii(state, true);
-    auto result = cudf::apply_boolean_mask(source_table, mask);
+    auto             result = cudf::apply_boolean_mask(source_table, mask);
   }
 
   calculate_bandwidth<T>(state, num_columns);

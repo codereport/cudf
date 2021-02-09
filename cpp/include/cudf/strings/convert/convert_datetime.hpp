@@ -69,9 +69,9 @@ namespace strings {
  * @return New datetime column.
  */
 std::unique_ptr<column> to_timestamps(
-  strings_column_view const& strings,
-  data_type timestamp_type,
-  std::string const& format,
+  strings_column_view const&       strings,
+  data_type                        timestamp_type,
+  std::string const&               format,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -111,8 +111,8 @@ std::unique_ptr<column> to_timestamps(
  * @return New BOOL8 column.
  */
 std::unique_ptr<column> is_timestamp(
-  strings_column_view const& strings,
-  std::string const& format,
+  strings_column_view const&       strings,
+  std::string const&               format,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -160,9 +160,9 @@ std::unique_ptr<column> is_timestamp(
  * @return New strings column with formatted timestamps.
  */
 std::unique_ptr<column> from_timestamps(
-  column_view const& timestamps,
-  std::string const& format           = "%Y-%m-%dT%H:%M:%SZ",
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               timestamps,
+  std::string const&               format = "%Y-%m-%dT%H:%M:%SZ",
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group
 }  // namespace strings

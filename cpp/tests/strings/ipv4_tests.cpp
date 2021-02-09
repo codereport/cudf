@@ -72,7 +72,7 @@ TEST_F(StringsConvertTest, IntegersToIPv4)
 TEST_F(StringsConvertTest, ZeroSizeStringsColumnIPV4)
 {
   cudf::column_view zero_size_column(cudf::data_type{cudf::type_id::INT64}, 0, nullptr, nullptr, 0);
-  auto results = cudf::strings::integers_to_ipv4(zero_size_column);
+  auto              results = cudf::strings::integers_to_ipv4(zero_size_column);
   cudf::test::expect_strings_empty(results->view());
   results = cudf::strings::ipv4_to_integers(results->view());
   EXPECT_EQ(0, results->size());
@@ -86,7 +86,7 @@ TEST_F(StringsConvertTest, IPv4Error)
 
 TEST_F(StringsConvertTest, IsIPv4)
 {
-  std::vector<const char*> h_strings{"",
+  std::vector<const char*>           h_strings{"",
                                      "123.456.789.10",
                                      nullptr,
                                      "0.0.0.0",

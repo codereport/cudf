@@ -51,7 +51,7 @@ namespace strings {
  * @return New INT64 column converted from strings.
  */
 std::unique_ptr<column> ipv4_to_integers(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -74,7 +74,7 @@ std::unique_ptr<column> ipv4_to_integers(
  * @return New strings column.
  */
 std::unique_ptr<column> integers_to_ipv4(
-  column_view const& integers,
+  column_view const&               integers,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -99,7 +99,7 @@ std::unique_ptr<column> integers_to_ipv4(
  * @return New column of boolean results for each string.
  */
 std::unique_ptr<column> is_ipv4(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group

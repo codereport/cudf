@@ -38,9 +38,9 @@ TEST_F(StringsPadTest, Padding)
     h_strings.begin(),
     h_strings.end(),
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; }));
-  cudf::size_type width = 6;
-  std::string phil      = "+";
-  auto strings_view     = cudf::strings_column_view(strings);
+  cudf::size_type width        = 6;
+  std::string     phil         = "+";
+  auto            strings_view = cudf::strings_column_view(strings);
 
   {
     auto results = cudf::strings::pad(strings_view, width, cudf::strings::pad_side::RIGHT, phil);
@@ -80,8 +80,8 @@ TEST_F(StringsPadTest, Padding)
 TEST_F(StringsPadTest, PaddingBoth)
 {
   cudf::test::strings_column_wrapper strings({"koala", "foxx", "fox", "chameleon"});
-  std::string phil  = "+";
-  auto strings_view = cudf::strings_column_view(strings);
+  std::string                        phil         = "+";
+  auto                               strings_view = cudf::strings_column_view(strings);
 
   {  // even width left justify
     auto results = cudf::strings::pad(strings_view, 6, cudf::strings::pad_side::BOTH, phil);
@@ -110,15 +110,15 @@ class StringsPadParmsTest : public StringsPadTest,
 
 TEST_P(StringsPadParmsTest, Padding)
 {
-  std::vector<std::string> h_strings{"eee ddd", "bb cc", "aa", "bbb", "fff", "", "o"};
+  std::vector<std::string>           h_strings{"eee ddd", "bb cc", "aa", "bbb", "fff", "", "o"};
   cudf::test::strings_column_wrapper strings(h_strings.begin(), h_strings.end());
-  cudf::size_type width = GetParam();
-  auto strings_view     = cudf::strings_column_view(strings);
-  auto results          = cudf::strings::pad(strings_view, width, cudf::strings::pad_side::RIGHT);
+  cudf::size_type                    width        = GetParam();
+  auto                               strings_view = cudf::strings_column_view(strings);
+  auto results = cudf::strings::pad(strings_view, width, cudf::strings::pad_side::RIGHT);
 
   std::vector<std::string> h_expected;
   for (auto itr = h_strings.begin(); itr != h_strings.end(); ++itr) {
-    std::string str      = *itr;
+    std::string     str  = *itr;
     cudf::size_type size = str.size();
     if (size < width) str.insert(size, width - size, ' ');
     h_expected.push_back(str);
@@ -140,9 +140,9 @@ TEST_F(StringsPadTest, ZFill)
     h_strings.begin(),
     h_strings.end(),
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; }));
-  cudf::size_type width = 6;
-  std::string phil      = "+";
-  auto strings_view     = cudf::strings_column_view(strings);
+  cudf::size_type width        = 6;
+  std::string     phil         = "+";
+  auto            strings_view = cudf::strings_column_view(strings);
 
   auto results = cudf::strings::zfill(strings_view, width);
 
@@ -178,7 +178,7 @@ TEST_F(StringsPadTest, Wrap1)
 
 TEST_F(StringsPadTest, Wrap2)
 {
-  std::vector<const char*> h_strings{"the quick brown fox jumped over the lazy brown dog",
+  std::vector<const char*>           h_strings{"the quick brown fox jumped over the lazy brown dog",
                                      "hello, world"};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),

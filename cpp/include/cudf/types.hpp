@@ -163,8 +163,8 @@ enum class sorted : bool { NO, YES };
  * @brief Indicates how a collection of values has been ordered.
  */
 struct order_info {
-  sorted is_sorted;
-  order ordering;
+  sorted     is_sorted;
+  order      ordering;
   null_order null_ordering;
 };
 

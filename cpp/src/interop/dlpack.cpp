@@ -80,7 +80,7 @@ struct data_type_to_DLDataType_impl {
   template <typename T, std::enable_if_t<is_numeric<T>()>* = nullptr>
   DLDataType operator()()
   {
-    uint8_t const bits{sizeof(T) * 8};
+    uint8_t const  bits{sizeof(T) * 8};
     uint16_t const lanes{1};
     if (std::is_floating_point<T>::value) {
       return DLDataType{kDLFloat, bits, lanes};
@@ -105,8 +105,8 @@ DLDataType data_type_to_DLDataType(data_type type)
 
 // Context object to own memory allocated for DLManagedTensor
 struct dltensor_context {
-  int64_t shape[2];
-  int64_t strides[2];
+  int64_t            shape[2];
+  int64_t            strides[2];
   rmm::device_buffer buffer;
 
   static void deleter(DLManagedTensor* arg)
@@ -120,8 +120,8 @@ struct dltensor_context {
 }  // namespace
 
 namespace detail {
-std::unique_ptr<table> from_dlpack(DLManagedTensor const* managed_tensor,
-                                   rmm::cuda_stream_view stream,
+std::unique_ptr<table> from_dlpack(DLManagedTensor const*           managed_tensor,
+                                   rmm::cuda_stream_view            stream,
                                    rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(nullptr != managed_tensor, "managed_tensor is null");
@@ -187,8 +187,8 @@ std::unique_ptr<table> from_dlpack(DLManagedTensor const* managed_tensor,
   return std::make_unique<table>(std::move(columns));
 }
 
-DLManagedTensor* to_dlpack(table_view const& input,
-                           rmm::cuda_stream_view stream,
+DLManagedTensor* to_dlpack(table_view const&                input,
+                           rmm::cuda_stream_view            stream,
                            rmm::mr::device_memory_resource* mr)
 {
   auto const num_rows = input.num_rows();
@@ -196,7 +196,7 @@ DLManagedTensor* to_dlpack(table_view const& input,
   if (num_rows == 0) { return nullptr; }
 
   // Ensure that type is convertible to DLDataType
-  data_type const type    = input.column(0).type();
+  data_type const  type   = input.column(0).type();
   DLDataType const dltype = data_type_to_DLDataType(type);
 
   // Ensure all columns are the same type
@@ -267,7 +267,7 @@ DLManagedTensor* to_dlpack(table_view const& input,
 
 }  // namespace detail
 
-std::unique_ptr<table> from_dlpack(DLManagedTensor const* managed_tensor,
+std::unique_ptr<table> from_dlpack(DLManagedTensor const*           managed_tensor,
                                    rmm::mr::device_memory_resource* mr)
 {
   return detail::from_dlpack(managed_tensor, rmm::cuda_stream_default, mr);

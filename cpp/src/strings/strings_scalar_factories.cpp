@@ -20,8 +20,8 @@
 
 namespace cudf {
 // Create a strings-type column from array of pointer/size pairs
-std::unique_ptr<scalar> make_string_scalar(std::string const& string,
-                                           rmm::cuda_stream_view stream,
+std::unique_ptr<scalar> make_string_scalar(std::string const&               string,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
 {
   auto s = new string_scalar(string, true, stream, mr);

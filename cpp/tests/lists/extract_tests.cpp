@@ -171,12 +171,12 @@ TYPED_TEST(ListsExtractNumericsTest, ExtractElementNestedLists)
 
   {
     auto result = cudf::lists::extract_list_element(cudf::lists_column_view(list), 0);
-    LCW expected({LCW{2, 3}, LCW{}, LCW{6, 7, 8}, LCW{15, 16}}, validity.begin());
+    LCW  expected({LCW{2, 3}, LCW{}, LCW{6, 7, 8}, LCW{15, 16}}, validity.begin());
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(expected, *result);
   }
   {
     auto result = cudf::lists::extract_list_element(cudf::lists_column_view(list), 1);
-    LCW expected({LCW{4, 5}, LCW{}, LCW{9, 10, 11}, LCW{17, 18}}, validity.begin());
+    LCW  expected({LCW{4, 5}, LCW{}, LCW{9, 10, 11}, LCW{17, 18}}, validity.begin());
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(expected, *result);
   }
   {
@@ -188,17 +188,17 @@ TYPED_TEST(ListsExtractNumericsTest, ExtractElementNestedLists)
   {
     auto result = cudf::lists::extract_list_element(cudf::lists_column_view(list), 3);
     std::vector<int32_t> expected_validity{0, 0, 0, 1};
-    LCW expected({LCW{}, LCW{}, LCW{}, LCW{21, 22}}, expected_validity.begin());
+    LCW                  expected({LCW{}, LCW{}, LCW{}, LCW{21, 22}}, expected_validity.begin());
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(expected, *result);
   }
   {
     auto result = cudf::lists::extract_list_element(cudf::lists_column_view(list), -1);
-    LCW expected({LCW{4, 5}, LCW{}, LCW{12, 13, 14}, LCW{23, 24}}, validity.begin());
+    LCW  expected({LCW{4, 5}, LCW{}, LCW{12, 13, 14}, LCW{23, 24}}, validity.begin());
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(expected, *result);
   }
   {
     auto result = cudf::lists::extract_list_element(cudf::lists_column_view(list), -2);
-    LCW expected({LCW{2, 3}, LCW{}, LCW{9, 10, 11}, LCW{21, 22}}, validity.begin());
+    LCW  expected({LCW{2, 3}, LCW{}, LCW{9, 10, 11}, LCW{21, 22}}, validity.begin());
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(expected, *result);
   }
   {
@@ -213,7 +213,7 @@ TEST_F(ListsExtractTest, ExtractElementEmpty)
 {
   using LCW = cudf::test::lists_column_wrapper<cudf::string_view>;
 
-  LCW empty{};
+  LCW  empty{};
   auto result = cudf::lists::extract_list_element(cudf::lists_column_view(empty), 1);
   EXPECT_EQ(0, result->size());
 

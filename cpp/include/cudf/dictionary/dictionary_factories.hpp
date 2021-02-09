@@ -61,10 +61,10 @@ namespace cudf {
  * @return New dictionary column.
  */
 std::unique_ptr<column> make_dictionary_column(
-  column_view const& keys_column,
-  column_view const& indices_column,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               keys_column,
+  column_view const&               indices_column,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Construct a dictionary column by taking ownership of the provided keys
@@ -88,8 +88,8 @@ std::unique_ptr<column> make_dictionary_column(
  */
 std::unique_ptr<column> make_dictionary_column(std::unique_ptr<column> keys_column,
                                                std::unique_ptr<column> indices_column,
-                                               rmm::device_buffer&& null_mask,
-                                               size_type null_count);
+                                               rmm::device_buffer&&    null_mask,
+                                               size_type               null_count);
 
 /**
  * @brief Construct a dictionary column by taking ownership of the provided keys
@@ -113,10 +113,10 @@ std::unique_ptr<column> make_dictionary_column(std::unique_ptr<column> keys_colu
  * @return New dictionary column.
  */
 std::unique_ptr<column> make_dictionary_column(
-  std::unique_ptr<column> keys_column,
-  std::unique_ptr<column> indices_column,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  std::unique_ptr<column>          keys_column,
+  std::unique_ptr<column>          indices_column,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group
 }  // namespace cudf

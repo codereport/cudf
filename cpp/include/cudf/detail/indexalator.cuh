@@ -67,7 +67,7 @@ struct base_indexalator {
   CUDA_HOST_DEVICE_CALLABLE T operator++(int)
   {
     T tmp{static_cast<T&>(*this)};
-    operator++();
+      operator++();
     return tmp;
   }
 
@@ -87,7 +87,7 @@ struct base_indexalator {
   CUDA_HOST_DEVICE_CALLABLE T operator--(int)
   {
     T tmp{static_cast<T&>(*this)};
-    operator--();
+      operator--();
     return tmp;
   }
 
@@ -209,7 +209,7 @@ struct base_indexalator {
    */
   base_indexalator(int32_t width, data_type dtype) : width_(width), dtype_(dtype) {}
 
-  int width_;        /// integer type width = 1,2,4, or 8
+  int       width_;  /// integer type width = 1,2,4, or 8
   data_type dtype_;  /// for type-dispatcher calls
 };
 

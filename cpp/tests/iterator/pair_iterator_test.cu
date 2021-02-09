@@ -66,13 +66,13 @@ TYPED_TEST(PairIteratorTest, mean_var_output)
   transformer_pair_meanvar<T> transformer{};
 
   const int column_size{5000};
-  const T init{0};
+  const T   init{0};
 
   // data and valid arrays
-  std::vector<T> host_values(column_size);
+  std::vector<T>    host_values(column_size);
   std::vector<bool> host_bools(column_size);
 
-  cudf::test::UniformRandomGenerator<T> rng;
+  cudf::test::UniformRandomGenerator<T>    rng;
   cudf::test::UniformRandomGenerator<bool> rbg;
   std::generate(host_values.begin(), host_values.end(), [&rng]() { return rng.generate(); });
   std::generate(host_bools.begin(), host_bools.end(), [&rbg]() { return rbg.generate(); });
@@ -132,7 +132,7 @@ TYPED_TEST(IteratorTest, nonull_pair_iterator)
 
   // create a column
   cudf::test::fixed_width_column_wrapper<T> w_col(host_values.begin(), host_values.end());
-  auto d_col = cudf::column_device_view::create(w_col);
+  auto                                      d_col = cudf::column_device_view::create(w_col);
 
   // calculate the expected value by CPU.
   thrust::host_vector<thrust::pair<T, bool>> replaced_array(host_values.size());

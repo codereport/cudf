@@ -42,7 +42,7 @@ namespace cudf {
  * the column views in the views vector
  */
 rmm::device_buffer concatenate_masks(
-  std::vector<column_view> const& views,
+  std::vector<column_view> const&  views,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -58,7 +58,7 @@ rmm::device_buffer concatenate_masks(
  * elements of `columns_to_concat` respectively in the same order.
  */
 std::unique_ptr<column> concatenate(
-  std::vector<column_view> const& columns_to_concat,
+  std::vector<column_view> const&  columns_to_concat,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -89,7 +89,7 @@ std::unique_ptr<column> concatenate(
  * elements of `tables_to_concat` respectively in the same order.
  */
 std::unique_ptr<table> concatenate(
-  std::vector<table_view> const& tables_to_concat,
+  std::vector<table_view> const&   tables_to_concat,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

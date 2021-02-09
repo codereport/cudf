@@ -88,7 +88,7 @@ struct dictionary_access_pair_fn {
 
  private:
   column_device_view const d_dictionary;
-  bool has_nulls;
+  bool                     has_nulls;
 };
 
 /**
@@ -109,7 +109,7 @@ struct dictionary_access_pair_fn {
  */
 template <typename KeyType>
 auto make_dictionary_pair_iterator(column_device_view const& dictionary_column,
-                                   bool has_nulls = true)
+                                   bool                      has_nulls = true)
 {
   CUDF_EXPECTS(is_dictionary(dictionary_column.type()),
                "Dictionary iterator is only for dictionary columns");

@@ -25,8 +25,8 @@
 
 // to enable, run cmake with -DBUILD_BENCHMARKS=ON
 
-constexpr int64_t data_size        = 512 << 20;
-constexpr cudf::size_type num_cols = 64;
+constexpr int64_t         data_size = 512 << 20;
+constexpr cudf::size_type num_cols  = 64;
 
 namespace cudf_io = cudf::io;
 
@@ -35,9 +35,9 @@ class OrcWrite : public cudf::benchmark {
 
 void BM_orc_write_varying_inout(benchmark::State& state)
 {
-  auto const data_types             = get_type_or_group(state.range(0));
-  cudf::size_type const cardinality = state.range(1);
-  cudf::size_type const run_length  = state.range(2);
+  auto const                      data_types  = get_type_or_group(state.range(0));
+  cudf::size_type const           cardinality = state.range(1);
+  cudf::size_type const           run_length  = state.range(2);
   cudf_io::compression_type const compression =
     state.range(3) ? cudf_io::compression_type::SNAPPY : cudf_io::compression_type::NONE;
   io_type const sink_type = static_cast<io_type>(state.range(4));
@@ -51,7 +51,7 @@ void BM_orc_write_varying_inout(benchmark::State& state)
 
   cuio_source_sink_pair source_sink(sink_type);
   for (auto _ : state) {
-    cuda_event_timer raii(state, true);  // flush_l2_cache = true, stream = 0
+    cuda_event_timer            raii(state, true);  // flush_l2_cache = true, stream = 0
     cudf_io::orc_writer_options options =
       cudf_io::orc_writer_options::builder(source_sink.make_sink_info(), view)
         .compression(compression);
@@ -76,7 +76,7 @@ void BM_orc_write_varying_options(benchmark::State& state)
 
   cuio_source_sink_pair source_sink(io_type::FILEPATH);
   for (auto _ : state) {
-    cuda_event_timer raii(state, true);  // flush_l2_cache = true, stream = 0
+    cuda_event_timer                  raii(state, true);  // flush_l2_cache = true, stream = 0
     cudf_io::orc_writer_options const options =
       cudf_io::orc_writer_options::builder(source_sink.make_sink_info(), view)
         .compression(compression)

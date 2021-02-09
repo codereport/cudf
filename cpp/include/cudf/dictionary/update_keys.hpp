@@ -53,8 +53,8 @@ namespace dictionary {
  * @return New dictionary column.
  */
 std::unique_ptr<column> add_keys(
-  dictionary_column_view const& dictionary_column,
-  column_view const& new_keys,
+  dictionary_column_view const&    dictionary_column,
+  column_view const&               new_keys,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -83,8 +83,8 @@ std::unique_ptr<column> add_keys(
  * @return New dictionary column.
  */
 std::unique_ptr<column> remove_keys(
-  dictionary_column_view const& dictionary_column,
-  column_view const& keys_to_remove,
+  dictionary_column_view const&    dictionary_column,
+  column_view const&               keys_to_remove,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -104,7 +104,7 @@ std::unique_ptr<column> remove_keys(
  * @return New dictionary column.
  */
 std::unique_ptr<column> remove_unused_keys(
-  dictionary_column_view const& dictionary_column,
+  dictionary_column_view const&    dictionary_column,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -135,8 +135,8 @@ std::unique_ptr<column> remove_unused_keys(
  * @return New dictionary column.
  */
 std::unique_ptr<column> set_keys(
-  dictionary_column_view const& dictionary_column,
-  column_view const& keys,
+  dictionary_column_view const&    dictionary_column,
+  column_view const&               keys,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

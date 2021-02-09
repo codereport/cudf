@@ -78,13 +78,13 @@ __device__ bool is_float(string_view const& d_str)
   if (d_str.compare("NaN", 3) == 0) return true;
   if (d_str.compare("Inf", 3) == 0) return true;
   if (d_str.compare("-Inf", 4) == 0) return true;
-  bool decimal_found  = false;
-  bool exponent_found = false;
-  size_type bytes     = d_str.size_bytes();
-  const char* data    = d_str.data();
+  bool        decimal_found  = false;
+  bool        exponent_found = false;
+  size_type   bytes          = d_str.size_bytes();
+  const char* data           = d_str.data();
   // sign character allowed at the beginning of the string
-  size_type chidx = (*data == '-' || *data == '+') ? 1 : 0;
-  bool result     = chidx < bytes;
+  size_type chidx  = (*data == '-' || *data == '+') ? 1 : 0;
+  bool      result = chidx < bytes;
   // check for float chars [0-9] and a single decimal '.'
   // and scientific notation [eE][+-][0-9]
   for (; chidx < bytes; ++chidx) {

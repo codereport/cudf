@@ -61,9 +61,9 @@ namespace detail {
  *
  * calls copy_if() with the `boolean_mask_filter` functor.
  */
-std::unique_ptr<table> apply_boolean_mask(table_view const& input,
-                                          column_view const& boolean_mask,
-                                          rmm::cuda_stream_view stream,
+std::unique_ptr<table> apply_boolean_mask(table_view const&                input,
+                                          column_view const&               boolean_mask,
+                                          rmm::cuda_stream_view            stream,
                                           rmm::mr::device_memory_resource* mr)
 {
   if (boolean_mask.is_empty()) { return empty_like(input); }
@@ -87,8 +87,8 @@ std::unique_ptr<table> apply_boolean_mask(table_view const& input,
 /*
  * Filters a table_view using a column_view of boolean values as a mask.
  */
-std::unique_ptr<table> apply_boolean_mask(table_view const& input,
-                                          column_view const& boolean_mask,
+std::unique_ptr<table> apply_boolean_mask(table_view const&                input,
+                                          column_view const&               boolean_mask,
                                           rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

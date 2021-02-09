@@ -37,9 +37,9 @@ namespace detail {
  *
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
-std::unique_ptr<column> encode(column_view const& input_column,
-                               data_type indices_type,
-                               rmm::cuda_stream_view stream,
+std::unique_ptr<column> encode(column_view const&               input_column,
+                               data_type                        indices_type,
+                               rmm::cuda_stream_view            stream,
                                rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(is_unsigned(indices_type), "indices must be type unsigned integer");
@@ -84,8 +84,8 @@ data_type get_indices_type_for_size(size_type keys_size)
 
 // external API
 
-std::unique_ptr<column> encode(column_view const& input_column,
-                               data_type indices_type,
+std::unique_ptr<column> encode(column_view const&               input_column,
+                               data_type                        indices_type,
                                rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

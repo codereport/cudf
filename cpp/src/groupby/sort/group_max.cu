@@ -21,11 +21,11 @@
 namespace cudf {
 namespace groupby {
 namespace detail {
-std::unique_ptr<column> group_max(column_view const& values,
-                                  size_type num_groups,
+std::unique_ptr<column> group_max(column_view const&                   values,
+                                  size_type                            num_groups,
                                   rmm::device_vector<size_type> const& group_labels,
-                                  rmm::cuda_stream_view stream,
-                                  rmm::mr::device_memory_resource* mr)
+                                  rmm::cuda_stream_view                stream,
+                                  rmm::mr::device_memory_resource*     mr)
 {
   return type_dispatcher(values.type(),
                          reduce_functor<aggregation::MAX>{},

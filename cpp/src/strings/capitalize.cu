@@ -44,8 +44,8 @@ struct probe_execute_base {
   using char_info = thrust::pair<uint32_t, detail::character_flags_table_type>;
 
   probe_execute_base(column_device_view const d_column,
-                     int32_t const* d_offsets = nullptr,
-                     char* d_chars            = nullptr)
+                     int32_t const*           d_offsets = nullptr,
+                     char*                    d_chars   = nullptr)
     : d_column_(d_column),
       d_flags_(get_character_flags_table()),       // set flag table
       d_case_table_(get_character_cases_table()),  // set case table
@@ -58,7 +58,7 @@ struct probe_execute_base {
 
   __device__ char_info get_char_info(char_utf8 chr) const
   {
-    uint32_t code_point                     = detail::utf8_to_codepoint(chr);
+    uint32_t                           code_point = detail::utf8_to_codepoint(chr);
     detail::character_flags_table_type flag = code_point <= 0x00FFFF ? d_flags_[code_point] : 0;
     return char_info{code_point, flag};
   }
@@ -74,11 +74,11 @@ struct probe_execute_base {
   }
 
  private:
-  column_device_view const d_column_;
+  column_device_view const          d_column_;
   character_flags_table_type const* d_flags_;
   character_cases_table_type const* d_case_table_;
-  int32_t const* d_offsets_;
-  char* d_chars_;
+  int32_t const*                    d_offsets_;
+  char*                             d_chars_;
 };
 
 // class that factors out the common inside-loop behavior
@@ -93,8 +93,8 @@ struct probe_execute_capitalize : public probe_execute_base {
   }
 
   probe_execute_capitalize(column_device_view const d_column,
-                           int32_t const* d_offsets,
-                           char* d_chars)
+                           int32_t const*           d_offsets,
+                           char*                    d_chars)
     : probe_execute_base(d_column, d_offsets, d_chars)
   {
   }
@@ -103,8 +103,8 @@ struct probe_execute_capitalize : public probe_execute_base {
   {
     auto the_chr = *itr;
 
-    auto pair_char_info                     = get_char_info(the_chr);
-    detail::character_flags_table_type flag = pair_char_info.second;
+    auto                               pair_char_info = get_char_info(the_chr);
+    detail::character_flags_table_type flag           = pair_char_info.second;
 
     if ((itr == d_str.begin()) ? IS_LOWER(flag) : IS_UPPER(flag))
       the_chr = convert_char(pair_char_info);
@@ -130,7 +130,7 @@ struct probe_capitalize : private probe_execute_capitalize {
     if (get_column().is_null(idx)) return 0;  // null string
 
     string_view d_str = get_column().template element<string_view>(idx);
-    int32_t bytes     = 0;
+    int32_t     bytes = 0;
 
     for (auto itr = d_str.begin(); itr != d_str.end(); ++itr) {
       bytes += detail::bytes_in_char_utf8(generate_chr(itr, d_str));
@@ -154,8 +154,8 @@ struct execute_capitalize : private probe_execute_capitalize {
   {
     if (get_column().is_null(idx)) return 0;  // null string
 
-    string_view d_str = get_column().template element<string_view>(idx);
-    char* d_buffer    = get_output_ptr(idx);
+    string_view d_str    = get_column().template element<string_view>(idx);
+    char*       d_buffer = get_output_ptr(idx);
 
     for (auto itr = d_str.begin(); itr != d_str.end(); ++itr) {
       d_buffer += detail::from_char_utf8(generate_chr(itr, d_str), d_buffer);
@@ -178,13 +178,13 @@ struct probe_execute_title : public probe_execute_base {
   }
 
   __device__ thrust::pair<char_utf8, bool> generate_chr(string_view::const_iterator itr,
-                                                        string_view d_str,
-                                                        bool bcapnext) const
+                                                        string_view                 d_str,
+                                                        bool                        bcapnext) const
   {
     auto the_chr = *itr;
 
-    auto pair_char_info                     = get_char_info(the_chr);
-    detail::character_flags_table_type flag = pair_char_info.second;
+    auto                               pair_char_info = get_char_info(the_chr);
+    detail::character_flags_table_type flag           = pair_char_info.second;
 
     if (!IS_ALPHA(flag)) {
       bcapnext = true;
@@ -211,7 +211,7 @@ struct probe_title : private probe_execute_title {
     if (get_column().is_null(idx)) return 0;  // null string
 
     string_view d_str = get_column().template element<string_view>(idx);
-    int32_t bytes     = 0;
+    int32_t     bytes = 0;
 
     bool bcapnext = true;
     for (auto itr = d_str.begin(); itr != d_str.end(); ++itr) {
@@ -238,8 +238,8 @@ struct execute_title : private probe_execute_title {
   {
     if (get_column().is_null(idx)) return 0;  // null string
 
-    string_view d_str = get_column().template element<string_view>(idx);
-    char* d_buffer    = get_output_ptr(idx);
+    string_view d_str    = get_column().template element<string_view>(idx);
+    char*       d_buffer = get_output_ptr(idx);
 
     bool bcapnext = true;
     for (auto itr = d_str.begin(); itr != d_str.end(); ++itr) {
@@ -255,7 +255,7 @@ struct execute_title : private probe_execute_title {
 }  // namespace
 }  // namespace detail
 
-std::unique_ptr<column> capitalize(strings_column_view const& strings,
+std::unique_ptr<column> capitalize(strings_column_view const&       strings,
                                    rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -263,7 +263,7 @@ std::unique_ptr<column> capitalize(strings_column_view const& strings,
     strings, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> title(strings_column_view const& strings,
+std::unique_ptr<column> title(strings_column_view const&       strings,
                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

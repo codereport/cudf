@@ -35,7 +35,7 @@ namespace lists {
 namespace {
 
 auto get_search_keys_device_iterable_view(cudf::column_view const& search_keys,
-                                          rmm::cuda_stream_view stream)
+                                          rmm::cuda_stream_view    stream)
 {
   return column_device_view::create(search_keys, stream);
 }
@@ -94,11 +94,11 @@ struct lookup_functor {
 
   template <typename ElementType, typename SearchKeyPairIter>
   void search_each_list_row(cudf::detail::lists_column_device_view const& d_lists,
-                            SearchKeyPairIter search_key_pair_iter,
-                            cudf::mutable_column_device_view mutable_ret_bools,
-                            cudf::mutable_column_device_view mutable_ret_validity,
-                            rmm::cuda_stream_view stream,
-                            rmm::mr::device_memory_resource* mr)
+                            SearchKeyPairIter                             search_key_pair_iter,
+                            cudf::mutable_column_device_view              mutable_ret_bools,
+                            cudf::mutable_column_device_view              mutable_ret_validity,
+                            rmm::cuda_stream_view                         stream,
+                            rmm::mr::device_memory_resource*              mr)
   {
     thrust::for_each(
       rmm::exec_policy(stream),
@@ -108,8 +108,8 @@ struct lookup_functor {
        search_key_pair_iter,
        d_bools    = mutable_ret_bools.data<bool>(),
        d_validity = mutable_ret_validity.data<bool>()] __device__(auto row_index) {
-        auto search_key_and_validity    = search_key_pair_iter[row_index];
-        auto const& search_key_is_valid = search_key_and_validity.second;
+        auto        search_key_and_validity = search_key_pair_iter[row_index];
+        auto const& search_key_is_valid     = search_key_and_validity.second;
 
         if (search_keys_have_nulls && !search_key_is_valid) {
           d_bools[row_index]    = false;
@@ -143,9 +143,9 @@ struct lookup_functor {
 
   template <typename ElementType, typename SearchKeyType>
   std::enable_if_t<is_supported<ElementType>::value, std::unique_ptr<column>> operator()(
-    cudf::lists_column_view const& lists,
-    SearchKeyType const& search_key,
-    rmm::cuda_stream_view stream,
+    cudf::lists_column_view const&   lists,
+    SearchKeyType const&             search_key,
+    rmm::cuda_stream_view            stream,
     rmm::mr::device_memory_resource* mr)
   {
     using namespace cudf;
@@ -188,7 +188,7 @@ struct lookup_functor {
       d_lists, search_key_iter, *mutable_result_bools, *mutable_result_validity, stream, mr);
 
     rmm::device_buffer null_mask;
-    size_type num_nulls;
+    size_type          num_nulls;
 
     std::tie(null_mask, num_nulls) =
       construct_null_mask(lists, result_validity->view(), stream, mr);
@@ -202,9 +202,9 @@ struct lookup_functor {
 
 namespace detail {
 
-std::unique_ptr<column> contains(cudf::lists_column_view const& lists,
-                                 cudf::scalar const& search_key,
-                                 rmm::cuda_stream_view stream,
+std::unique_ptr<column> contains(cudf::lists_column_view const&   lists,
+                                 cudf::scalar const&              search_key,
+                                 rmm::cuda_stream_view            stream,
                                  rmm::mr::device_memory_resource* mr)
 {
   return search_key.is_valid(stream)
@@ -214,9 +214,9 @@ std::unique_ptr<column> contains(cudf::lists_column_view const& lists,
                search_key.type(), lookup_functor<true>{}, lists, search_key, stream, mr);
 }
 
-std::unique_ptr<column> contains(cudf::lists_column_view const& lists,
-                                 cudf::column_view const& search_keys,
-                                 rmm::cuda_stream_view stream,
+std::unique_ptr<column> contains(cudf::lists_column_view const&   lists,
+                                 cudf::column_view const&         search_keys,
+                                 rmm::cuda_stream_view            stream,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(search_keys.size() == lists.size(),
@@ -231,16 +231,16 @@ std::unique_ptr<column> contains(cudf::lists_column_view const& lists,
 
 }  // namespace detail
 
-std::unique_ptr<column> contains(cudf::lists_column_view const& lists,
-                                 cudf::scalar const& search_key,
+std::unique_ptr<column> contains(cudf::lists_column_view const&   lists,
+                                 cudf::scalar const&              search_key,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::contains(lists, search_key, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> contains(cudf::lists_column_view const& lists,
-                                 cudf::column_view const& search_keys,
+std::unique_ptr<column> contains(cudf::lists_column_view const&   lists,
+                                 cudf::column_view const&         search_keys,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

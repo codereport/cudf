@@ -105,11 +105,11 @@ struct whitespace_string_tokenizer {
   }
 
  private:
-  string_view const d_str;
-  bool spaces;  // true if current position is whitespace
+  string_view const                 d_str;
+  bool                              spaces;  // true if current position is whitespace
   cudf::string_view::const_iterator itr;
-  size_type start_position;
-  size_type end_position;
+  size_type                         start_position;
+  size_type                         end_position;
 };
 
 }  // namespace detail

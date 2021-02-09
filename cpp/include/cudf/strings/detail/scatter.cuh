@@ -54,12 +54,12 @@ namespace detail {
  */
 template <typename SourceIterator, typename MapIterator>
 std::unique_ptr<column> scatter(
-  SourceIterator begin,
-  SourceIterator end,
-  MapIterator scatter_map,
-  strings_column_view const& target,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  SourceIterator                   begin,
+  SourceIterator                   end,
+  MapIterator                      scatter_map,
+  strings_column_view const&       target,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   auto strings_count = target.size();
   if (strings_count == 0) return make_empty_strings_column(stream, mr);

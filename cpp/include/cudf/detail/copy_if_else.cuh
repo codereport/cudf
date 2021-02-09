@@ -42,14 +42,14 @@ template <size_type block_size,
           typename Filter,
           bool has_validity>
 __launch_bounds__(block_size) __global__
-  void copy_if_else_kernel(LeftIter lhs,
-                           RightIter rhs,
-                           Filter filter,
+  void copy_if_else_kernel(LeftIter                   lhs,
+                           RightIter                  rhs,
+                           Filter                     filter,
                            mutable_column_device_view out,
                            size_type *__restrict__ const valid_count)
 {
   const size_type tid            = threadIdx.x + blockIdx.x * block_size;
-  const int warp_id              = tid / warp_size;
+  const int       warp_id        = tid / warp_size;
   const size_type warps_per_grid = gridDim.x * block_size / warp_size;
 
   // begin/end indices for the column data
@@ -63,7 +63,7 @@ __launch_bounds__(block_size) __global__
 
   // lane id within the current warp
   constexpr size_type leader_lane{0};
-  const int lane_id = threadIdx.x % warp_size;
+  const int           lane_id = threadIdx.x % warp_size;
 
   size_type warp_valid_count{0};
 
@@ -159,21 +159,21 @@ __launch_bounds__(block_size) __global__
  */
 template <typename FilterFn, typename LeftIter, typename RightIter>
 std::unique_ptr<column> copy_if_else(
-  bool nullable,
-  LeftIter lhs_begin,
-  LeftIter lhs_end,
-  RightIter rhs,
-  FilterFn filter,
-  cudf::data_type output_type,
-  rmm::cuda_stream_view stream,
+  bool                             nullable,
+  LeftIter                         lhs_begin,
+  LeftIter                         lhs_end,
+  RightIter                        rhs,
+  FilterFn                         filter,
+  cudf::data_type                  output_type,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource *mr = rmm::mr::get_current_device_resource())
 {
   using Element =
     typename thrust::tuple_element<0, typename thrust::iterator_traits<LeftIter>::value_type>::type;
 
-  size_type size           = std::distance(lhs_begin, lhs_end);
-  size_type num_els        = cudf::util::round_up_safe(size, warp_size);
-  constexpr int block_size = 256;
+  size_type             size       = std::distance(lhs_begin, lhs_end);
+  size_type             num_els    = cudf::util::round_up_safe(size, warp_size);
+  constexpr int         block_size = 256;
   cudf::detail::grid_1d grid{num_els, block_size, 1};
 
   std::unique_ptr<column> out = make_fixed_width_column(

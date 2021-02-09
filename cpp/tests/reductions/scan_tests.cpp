@@ -46,8 +46,8 @@ template <typename T>
 struct ScanTest : public cudf::test::BaseFixture {
   void scan_test(cudf::test::fixed_width_column_wrapper<T> const col_in,
                  cudf::test::fixed_width_column_wrapper<T> const expected_col_out,
-                 std::unique_ptr<aggregation> const& agg,
-                 scan_type inclusive)
+                 std::unique_ptr<aggregation> const&             agg,
+                 scan_type                                       inclusive)
   {
     bool do_print = false;
 
@@ -56,7 +56,7 @@ struct ScanTest : public cudf::test::BaseFixture {
     this->val_check(std::get<0>(int_values), do_print, "input = ");
     this->val_check(std::get<0>(exact_values), do_print, "exact = ");
 
-    const column_view input_view = col_in;
+    const column_view             input_view = col_in;
     std::unique_ptr<cudf::column> col_out;
 
     CUDF_EXPECT_NO_THROW(col_out = cudf::scan(input_view, agg, inclusive));
@@ -126,7 +126,7 @@ TYPED_TEST(ScanTest, Min)
 {
   auto const v =
     cudf::test::make_type_param_vector<TypeParam>({123, 64, 63, 99, -5, 123, -16, -120, -111});
-  auto const b = std::vector<bool>{1, 0, 1, 1, 1, 1, 0, 0, 1};
+  auto const             b = std::vector<bool>{1, 0, 1, 1, 1, 1, 0, 0, 1};
   std::vector<TypeParam> exact(v.size());
 
   std::partial_sum(
@@ -155,7 +155,7 @@ TYPED_TEST(ScanTest, Max)
 {
   auto const v =
     cudf::test::make_type_param_vector<TypeParam>({-120, 5, 0, -120, -111, 64, 63, 99, 123, -16});
-  auto const b = std::vector<bool>{1, 0, 1, 1, 1, 1, 0, 1, 0, 1};
+  auto const             b = std::vector<bool>{1, 0, 1, 1, 1, 1, 0, 1, 0, 1};
   std::vector<TypeParam> exact(v.size());
 
   std::partial_sum(
@@ -182,8 +182,8 @@ TYPED_TEST(ScanTest, Max)
 
 TYPED_TEST(ScanTest, Product)
 {
-  auto const v = cudf::test::make_type_param_vector<TypeParam>({5, -1, 1, 3, -2, 4});
-  auto const b = std::vector<bool>{1, 1, 1, 0, 1, 1};
+  auto const             v = cudf::test::make_type_param_vector<TypeParam>({5, -1, 1, 3, -2, 4});
+  auto const             b = std::vector<bool>{1, 1, 1, 0, 1, 1};
   std::vector<TypeParam> exact(v.size());
 
   std::partial_sum(v.cbegin(), v.cend(), exact.begin(), std::multiplies<TypeParam>{});
@@ -215,7 +215,7 @@ TYPED_TEST(ScanTest, Sum)
         {-120, 5, 6, 113, -111, 64, -63, 9, 34, -16});
     return cudf::test::make_type_param_vector<TypeParam>({12, 5, 6, 13, 11, 14, 3, 9, 34, 16});
   }();
-  auto const b = std::vector<bool>{1, 0, 1, 1, 0, 0, 1, 1, 1, 1};
+  auto const             b = std::vector<bool>{1, 0, 1, 1, 0, 0, 1, 1, 1, 1};
   std::vector<TypeParam> exact(v.size());
 
   std::partial_sum(v.cbegin(), v.cend(), exact.begin(), std::plus<TypeParam>{});
@@ -242,8 +242,8 @@ TYPED_TEST(ScanTest, Sum)
 struct ScanStringTest : public cudf::test::BaseFixture {
   void scan_test(cudf::test::strings_column_wrapper const& col_in,
                  cudf::test::strings_column_wrapper const& expected_col_out,
-                 std::unique_ptr<aggregation> const& agg,
-                 scan_type inclusive)
+                 std::unique_ptr<aggregation> const&       agg,
+                 scan_type                                 inclusive)
   {
     bool do_print = false;
     if (do_print) {
@@ -255,7 +255,7 @@ struct ScanStringTest : public cudf::test::BaseFixture {
       std::cout << "}\n";
     }
 
-    const column_view input_view = col_in;
+    const column_view             input_view = col_in;
     std::unique_ptr<cudf::column> col_out;
 
     CUDF_EXPECT_NO_THROW(col_out = cudf::scan(input_view, agg, inclusive));
@@ -276,7 +276,7 @@ TEST_F(ScanStringTest, Min)
 {
   std::vector<std::string> v = {
     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
-  std::vector<bool> b = {1, 0, 1, 1, 0, 0, 1, 0, 1};
+  std::vector<bool>        b = {1, 0, 1, 1, 0, 0, 1, 0, 1};
   std::vector<std::string> exact(v.size());
 
   std::partial_sum(v.cbegin(), v.cend(), exact.begin(), [](auto const& a, auto const& b) {
@@ -307,7 +307,7 @@ TEST_F(ScanStringTest, Max)
 {
   std::vector<std::string> v = {
     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
-  std::vector<bool> b = {1, 0, 1, 1, 0, 0, 1, 1, 1};
+  std::vector<bool>        b = {1, 0, 1, 1, 0, 0, 1, 1, 1};
   std::vector<std::string> exact(v.size());
 
   std::partial_sum(v.cbegin(), v.cend(), exact.begin(), [](auto const& a, auto const& b) {
@@ -336,16 +336,16 @@ TEST_F(ScanStringTest, Max)
 
 TYPED_TEST(ScanTest, skip_nulls)
 {
-  bool do_print = false;
-  auto const v  = cudf::test::make_type_param_vector<TypeParam>({1, 2, 3, 4, 5, 6, 7, 8, 1, 1});
-  auto const b  = std::vector<bool>{1, 1, 1, 1, 1, 0, 1, 0, 1, 1};
+  bool       do_print = false;
+  auto const v = cudf::test::make_type_param_vector<TypeParam>({1, 2, 3, 4, 5, 6, 7, 8, 1, 1});
+  auto const b = std::vector<bool>{1, 1, 1, 1, 1, 0, 1, 0, 1, 1};
   cudf::test::fixed_width_column_wrapper<TypeParam> const col_in(v.begin(), v.end(), b.begin());
-  const column_view input_view = col_in;
-  std::unique_ptr<cudf::column> col_out;
+  const column_view                                       input_view = col_in;
+  std::unique_ptr<cudf::column>                           col_out;
 
   // test output calculation
   std::vector<TypeParam> out_v(input_view.size());
-  std::vector<bool> out_b(input_view.size());
+  std::vector<bool>      out_b(input_view.size());
 
   zip_scan(v.cbegin(),
            v.cend(),
@@ -389,9 +389,9 @@ TEST_F(ScanStringTest, skip_nulls)
   // data and valid arrays
   std::vector<std::string> v(
     {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"});
-  std::vector<bool> b({1, 1, 1, 0, 0, 0, 1, 1, 1});
+  std::vector<bool>        b({1, 1, 1, 0, 0, 0, 1, 1, 1});
   std::vector<std::string> exact(v.size());
-  std::vector<bool> out_b(v.size());
+  std::vector<bool>        out_b(v.size());
 
   auto const STRING_MIN = std::string(1, char(0));
 
@@ -407,7 +407,7 @@ TEST_F(ScanStringTest, skip_nulls)
   // string column with nulls
   cudf::test::strings_column_wrapper col_nulls(v.begin(), v.end(), b.begin());
   cudf::test::strings_column_wrapper expected2(exact.begin(), exact.end(), out_b.begin());
-  std::unique_ptr<cudf::column> col_out;
+  std::unique_ptr<cudf::column>      col_out;
   // skipna=false
   CUDF_EXPECT_NO_THROW(
     col_out = cudf::scan(
@@ -433,15 +433,15 @@ TEST_F(ScanStringTest, skip_nulls)
 
 TYPED_TEST(ScanTest, EmptyColumnskip_nulls)
 {
-  bool do_print = false;
-  std::vector<TypeParam> v{};
-  std::vector<bool> b{};
+  bool                                                    do_print = false;
+  std::vector<TypeParam>                                  v{};
+  std::vector<bool>                                       b{};
   cudf::test::fixed_width_column_wrapper<TypeParam> const col_in(v.begin(), v.end(), b.begin());
-  std::unique_ptr<cudf::column> col_out;
+  std::unique_ptr<cudf::column>                           col_out;
 
   // test output calculation
   std::vector<TypeParam> out_v(v.size());
-  std::vector<bool> out_b(v.size());
+  std::vector<bool>      out_b(v.size());
 
   // skipna=true (default)
   CUDF_EXPECT_NO_THROW(

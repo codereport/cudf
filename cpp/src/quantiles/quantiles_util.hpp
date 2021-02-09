@@ -89,7 +89,7 @@ struct quantile_index {
   size_type lower;
   size_type higher;
   size_type nearest;
-  double fraction;
+  double    fraction;
 
   CUDA_HOST_DEVICE_CALLABLE
   quantile_index(size_type count, double quantile)
@@ -123,7 +123,7 @@ struct quantile_index {
  */
 template <typename Result, typename ValueAccessor>
 CUDA_HOST_DEVICE_CALLABLE Result
-select_quantile(ValueAccessor get_value, size_type size, double q, interpolation interp)
+                          select_quantile(ValueAccessor get_value, size_type size, double q, interpolation interp)
 {
   if (size < 2) { return get_value(0); }
 
@@ -154,7 +154,7 @@ select_quantile(ValueAccessor get_value, size_type size, double q, interpolation
 
 template <typename Result, typename Iterator>
 CUDA_HOST_DEVICE_CALLABLE Result
-select_quantile_data(Iterator begin, size_type size, double q, interpolation interp)
+                          select_quantile_data(Iterator begin, size_type size, double q, interpolation interp)
 {
   quantile_index idx(size, q);
 
@@ -181,9 +181,9 @@ select_quantile_data(Iterator begin, size_type size, double q, interpolation int
 }
 
 template <typename Iterator>
-CUDA_HOST_DEVICE_CALLABLE bool select_quantile_validity(Iterator begin,
-                                                        size_type size,
-                                                        double q,
+CUDA_HOST_DEVICE_CALLABLE bool select_quantile_validity(Iterator      begin,
+                                                        size_type     size,
+                                                        double        q,
                                                         interpolation interp)
 {
   quantile_index idx(size, q);

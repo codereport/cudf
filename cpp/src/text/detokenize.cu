@@ -48,20 +48,20 @@ namespace {
  * the same row. The `d_separator` is appended between each token.
  */
 struct detokenizer_fn {
-  cudf::column_device_view const d_strings;  // these are the tokens
-  int32_t const* d_row_map;                  // indices sorted by output row
-  cudf::size_type const* d_token_offsets;    // to each input token array
-  cudf::string_view const d_separator;       // append after each token
-  int32_t const* d_offsets{};                // offsets to output buffer d_chars
-  char* d_chars{};                           // output buffer for characters
+  cudf::column_device_view const d_strings;        // these are the tokens
+  int32_t const*                 d_row_map;        // indices sorted by output row
+  cudf::size_type const*         d_token_offsets;  // to each input token array
+  cudf::string_view const        d_separator;      // append after each token
+  int32_t const*                 d_offsets{};      // offsets to output buffer d_chars
+  char*                          d_chars{};        // output buffer for characters
 
   __device__ cudf::size_type operator()(cudf::size_type idx)
   {
-    auto const offset      = d_token_offsets[idx];
-    auto d_tokens          = d_row_map + offset;
-    auto const token_count = d_token_offsets[idx + 1] - offset;
-    auto out_ptr           = d_chars ? d_chars + d_offsets[idx] : nullptr;
-    cudf::size_type nbytes = 0;
+    auto const      offset      = d_token_offsets[idx];
+    auto            d_tokens    = d_row_map + offset;
+    auto const      token_count = d_token_offsets[idx + 1] - offset;
+    auto            out_ptr     = d_chars ? d_chars + d_offsets[idx] : nullptr;
+    cudf::size_type nbytes      = 0;
     for (cudf::size_type jdx = 0; jdx < token_count; ++jdx) {
       auto const str_index = d_tokens[jdx];
       if (d_strings.is_null(str_index)) continue;
@@ -85,8 +85,8 @@ struct detokenizer_fn {
 template <typename IndexType>
 struct index_changed_fn {
   IndexType const* d_rows;
-  int32_t const* d_row_map;
-  __device__ bool operator()(cudf::size_type idx)
+  int32_t const*   d_row_map;
+  __device__ bool  operator()(cudf::size_type idx)
   {
     return (idx == 0) || (d_rows[d_row_map[idx]] != d_rows[d_row_map[idx - 1]]);
   }
@@ -99,14 +99,14 @@ struct index_changed_fn {
 struct token_row_offsets_fn {
   cudf::column_view const row_indices;
   cudf::column_view const sorted_indices;
-  cudf::size_type const tokens_counts;
+  cudf::size_type const   tokens_counts;
 
   template <typename T, std::enable_if_t<cudf::is_index_type<T>()>* = nullptr>
   std::unique_ptr<rmm::device_uvector<cudf::size_type>> operator()(
     rmm::cuda_stream_view stream) const
   {
     index_changed_fn<T> pfn{row_indices.data<T>(), sorted_indices.template data<int32_t>()};
-    auto const output_count =
+    auto const          output_count =
       thrust::count_if(rmm::exec_policy(stream),
                        thrust::make_counting_iterator<cudf::size_type>(0),
                        thrust::make_counting_iterator<cudf::size_type>(tokens_counts),
@@ -137,9 +137,9 @@ struct token_row_offsets_fn {
  * @copydoc nvtext::detokenize
  */
 std::unique_ptr<cudf::column> detokenize(cudf::strings_column_view const& strings,
-                                         cudf::column_view const& row_indices,
-                                         cudf::string_scalar const& separator,
-                                         rmm::cuda_stream_view stream,
+                                         cudf::column_view const&         row_indices,
+                                         cudf::string_scalar const&       separator,
+                                         rmm::cuda_stream_view            stream,
                                          rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(separator.is_valid(), "Parameter separator must be valid");
@@ -153,8 +153,8 @@ std::unique_ptr<cudf::column> detokenize(cudf::strings_column_view const& string
 
   auto strings_column = cudf::column_device_view::create(strings.parent(), stream);
   // the indices may not be in order so we need to sort them
-  auto sorted_rows     = cudf::stable_sorted_order(cudf::table_view({row_indices}));
-  auto const d_row_map = sorted_rows->view().data<int32_t>();
+  auto       sorted_rows = cudf::stable_sorted_order(cudf::table_view({row_indices}));
+  auto const d_row_map   = sorted_rows->view().data<int32_t>();
 
   // create offsets for the tokens for each output string
   auto tokens_offsets =
@@ -165,7 +165,7 @@ std::unique_ptr<cudf::column> detokenize(cudf::strings_column_view const& string
 
   // create output strings offsets by calculating the size of each output string
   cudf::string_view const d_separator(separator.data(), separator.size());
-  auto offsets_transformer_itr = thrust::make_transform_iterator(
+  auto                    offsets_transformer_itr = thrust::make_transform_iterator(
     thrust::make_counting_iterator<cudf::size_type>(0),
     detokenizer_fn{*strings_column, d_row_map, tokens_offsets->data(), d_separator});
   auto offsets_column = cudf::strings::detail::make_offsets_child_column(
@@ -199,8 +199,8 @@ std::unique_ptr<cudf::column> detokenize(cudf::strings_column_view const& string
 }  // namespace detail
 
 std::unique_ptr<cudf::column> detokenize(cudf::strings_column_view const& strings,
-                                         cudf::column_view const& row_indices,
-                                         cudf::string_scalar const& separator,
+                                         cudf::column_view const&         row_indices,
+                                         cudf::string_scalar const&       separator,
                                          rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

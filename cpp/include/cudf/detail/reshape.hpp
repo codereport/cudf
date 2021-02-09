@@ -31,7 +31,7 @@ namespace detail {
  */
 std::unique_ptr<table> tile(
   table_view const& input,
-  size_type count,
+  size_type         count,
   rmm::cuda_stream_view               = rmm::cuda_stream_default,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 }  // namespace detail

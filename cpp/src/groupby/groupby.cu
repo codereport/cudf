@@ -40,10 +40,10 @@
 namespace cudf {
 namespace groupby {
 // Constructor
-groupby::groupby(table_view const& keys,
-                 null_policy include_null_keys,
-                 sorted keys_are_sorted,
-                 std::vector<order> const& column_order,
+groupby::groupby(table_view const&              keys,
+                 null_policy                    include_null_keys,
+                 sorted                         keys_are_sorted,
+                 std::vector<order> const&      column_order,
                  std::vector<null_order> const& null_precedence)
   : _keys{keys},
     _include_null_keys{include_null_keys},
@@ -56,8 +56,8 @@ groupby::groupby(table_view const& keys,
 // Select hash vs. sort groupby implementation
 std::pair<std::unique_ptr<table>, std::vector<aggregation_result>> groupby::dispatch_aggregation(
   std::vector<aggregation_request> const& requests,
-  rmm::cuda_stream_view stream,
-  rmm::mr::device_memory_resource* mr)
+  rmm::cuda_stream_view                   stream,
+  rmm::mr::device_memory_resource*        mr)
 {
   // If sort groupby has been called once on this groupby object, then
   // always use sort groupby from now on. Because once keys are sorted,
@@ -164,7 +164,7 @@ groupby::groups groupby::get_groups(table_view values, rmm::mr::device_memory_re
   CUDF_FUNC_RANGE();
   auto grouped_keys = helper().sorted_keys(rmm::cuda_stream_default, mr);
 
-  auto group_offsets = helper().group_offsets(0);
+  auto                   group_offsets = helper().group_offsets(0);
   std::vector<size_type> group_offsets_vector(group_offsets.size());
   thrust::copy(group_offsets.begin(), group_offsets.end(), group_offsets_vector.begin());
 

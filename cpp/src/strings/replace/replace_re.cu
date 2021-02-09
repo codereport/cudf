@@ -51,11 +51,11 @@ namespace {
 template <size_t stack_size>
 struct replace_regex_fn {
   column_device_view const d_strings;
-  reprog_device prog;
-  string_view const d_repl;
-  size_type maxrepl;
-  int32_t* d_offsets{};
-  char* d_chars{};
+  reprog_device            prog;
+  string_view const        d_repl;
+  size_type                maxrepl;
+  int32_t*                 d_offsets{};
+  char*                    d_chars{};
 
   __device__ void operator()(size_type idx)
   {
@@ -66,15 +66,15 @@ struct replace_regex_fn {
     u_char data1[stack_size];
     u_char data2[stack_size];
     prog.set_stack_mem(data1, data2);
-    auto const d_str  = d_strings.element<string_view>(idx);
-    auto const nchars = d_str.length();                  // number of characters in input string
-    auto nbytes       = d_str.size_bytes();              // number of bytes in input string
-    auto mxn          = maxrepl < 0 ? nchars : maxrepl;  // max possible replaces for this string
-    auto in_ptr       = d_str.data();                    // input pointer (i)
-    auto out_ptr      = d_chars ? d_chars + d_offsets[idx] : nullptr;  // output pointer (o)
-    size_type lpos    = 0;
-    int32_t begin     = 0;
-    int32_t end       = static_cast<int32_t>(nchars);
+    auto const d_str   = d_strings.element<string_view>(idx);
+    auto const nchars  = d_str.length();                  // number of characters in input string
+    auto       nbytes  = d_str.size_bytes();              // number of bytes in input string
+    auto       mxn     = maxrepl < 0 ? nchars : maxrepl;  // max possible replaces for this string
+    auto       in_ptr  = d_str.data();                    // input pointer (i)
+    auto       out_ptr = d_chars ? d_chars + d_offsets[idx] : nullptr;  // output pointer (o)
+    size_type  lpos    = 0;
+    int32_t    begin   = 0;
+    int32_t    end     = static_cast<int32_t>(nchars);
     // copy input to output replacing strings as we go
     while (mxn-- > 0)  // maximum number of replaces
     {
@@ -103,12 +103,12 @@ struct replace_regex_fn {
 
 //
 std::unique_ptr<column> replace_re(
-  strings_column_view const& strings,
-  std::string const& pattern,
-  string_scalar const& repl           = string_scalar(""),
-  size_type maxrepl                   = -1,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  strings_column_view const&       strings,
+  std::string const&               pattern,
+  string_scalar const&             repl    = string_scalar(""),
+  size_type                        maxrepl = -1,
+  rmm::cuda_stream_view            stream  = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr      = rmm::mr::get_current_device_resource())
 {
   auto strings_count = strings.size();
   if (strings_count == 0) return make_empty_strings_column(stream, mr);
@@ -166,10 +166,10 @@ std::unique_ptr<column> replace_re(
 
 // external API
 
-std::unique_ptr<column> replace_re(strings_column_view const& strings,
-                                   std::string const& pattern,
-                                   string_scalar const& repl,
-                                   size_type maxrepl,
+std::unique_ptr<column> replace_re(strings_column_view const&       strings,
+                                   std::string const&               pattern,
+                                   string_scalar const&             repl,
+                                   size_type                        maxrepl,
                                    rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

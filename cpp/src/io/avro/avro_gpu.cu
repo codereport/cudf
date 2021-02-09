@@ -65,20 +65,20 @@ static inline int64_t __device__ avro_decode_zigzag_varint(const uint8_t *&cur, 
  *
  * @return data pointer at the end of the row (start of next row)
  */
-static const uint8_t *__device__ avro_decode_row(const schemadesc_s *schema,
-                                                 schemadesc_s *schema_g,
-                                                 uint32_t schema_len,
-                                                 size_t row,
-                                                 size_t max_rows,
-                                                 const uint8_t *cur,
-                                                 const uint8_t *end,
+static const uint8_t *__device__ avro_decode_row(const schemadesc_s *     schema,
+                                                 schemadesc_s *           schema_g,
+                                                 uint32_t                 schema_len,
+                                                 size_t                   row,
+                                                 size_t                   max_rows,
+                                                 const uint8_t *          cur,
+                                                 const uint8_t *          end,
                                                  device_span<nvstrdesc_s> global_dictionary)
 {
   uint32_t array_start = 0, array_repeat_count = 0;
-  int array_children = 0;
+  int      array_children = 0;
   for (uint32_t i = 0; i < schema_len;) {
     uint32_t kind = schema[i].kind;
-    int skip      = 0;
+    int      skip = 0;
 
     if (kind == type_union) {
       int skip_after;
@@ -118,8 +118,8 @@ static const uint8_t *__device__ avro_decode_row(const schemadesc_s *schema,
         } else if (kind == type_long) {
           if (dataptr != nullptr && row < max_rows) { static_cast<int64_t *>(dataptr)[row] = v; }
         } else {  // string or enum
-          size_t count    = 0;
-          const char *ptr = 0;
+          size_t      count = 0;
+          const char *ptr   = 0;
           if (kind == type_enum) {  // dictionary
             size_t idx = schema[i].count + v;
             if (idx < global_dictionary.size()) {
@@ -228,25 +228,25 @@ static const uint8_t *__device__ avro_decode_row(const schemadesc_s *schema,
  */
 // blockDim {32,num_warps,1}
 extern "C" __global__ void __launch_bounds__(num_warps * 32, 2)
-  gpuDecodeAvroColumnData(block_desc_s *blocks,
-                          schemadesc_s *schema_g,
+  gpuDecodeAvroColumnData(block_desc_s *           blocks,
+                          schemadesc_s *           schema_g,
                           device_span<nvstrdesc_s> global_dictionary,
-                          const uint8_t *avro_data,
-                          uint32_t num_blocks,
-                          uint32_t schema_len,
-                          uint32_t min_row_size,
-                          size_t max_rows,
-                          size_t first_row)
+                          const uint8_t *          avro_data,
+                          uint32_t                 num_blocks,
+                          uint32_t                 schema_len,
+                          uint32_t                 min_row_size,
+                          size_t                   max_rows,
+                          size_t                   first_row)
 {
   __shared__ __align__(8) schemadesc_s g_shared_schema[max_shared_schema_len];
   __shared__ __align__(8) block_desc_s blk_g[num_warps];
 
-  schemadesc_s *schema;
-  block_desc_s *const blk = &blk_g[threadIdx.y];
-  uint32_t block_id       = blockIdx.x * num_warps + threadIdx.y;
-  size_t cur_row;
-  uint32_t rows_remaining;
-  const uint8_t *cur, *end;
+  schemadesc_s *      schema;
+  block_desc_s *const blk      = &blk_g[threadIdx.y];
+  uint32_t            block_id = blockIdx.x * num_warps + threadIdx.y;
+  size_t              cur_row;
+  uint32_t            rows_remaining;
+  const uint8_t *     cur, *end;
 
   // Fetch schema into shared mem if possible
   if (schema_len <= max_shared_schema_len) {
@@ -266,7 +266,7 @@ extern "C" __global__ void __launch_bounds__(num_warps * 32, 2)
   cur            = avro_data + blk->offset;
   end            = cur + blk->size;
   while (rows_remaining > 0 && cur < end) {
-    uint32_t nrows;
+    uint32_t       nrows;
     const uint8_t *start = cur;
 
     if (cur_row > first_row + max_rows) break;
@@ -311,16 +311,16 @@ extern "C" __global__ void __launch_bounds__(num_warps * 32, 2)
  * @param[in] min_row_size Minimum size in bytes of a row
  * @param[in] stream CUDA stream to use, default 0
  */
-void DecodeAvroColumnData(block_desc_s *blocks,
-                          schemadesc_s *schema,
+void DecodeAvroColumnData(block_desc_s *           blocks,
+                          schemadesc_s *           schema,
                           device_span<nvstrdesc_s> global_dictionary,
-                          const uint8_t *avro_data,
-                          uint32_t num_blocks,
-                          uint32_t schema_len,
-                          size_t max_rows,
-                          size_t first_row,
-                          uint32_t min_row_size,
-                          rmm::cuda_stream_view stream)
+                          const uint8_t *          avro_data,
+                          uint32_t                 num_blocks,
+                          uint32_t                 schema_len,
+                          size_t                   max_rows,
+                          size_t                   first_row,
+                          uint32_t                 min_row_size,
+                          rmm::cuda_stream_view    stream)
 {
   // num_warps warps per threadblock
   dim3 const dim_block(32, num_warps);

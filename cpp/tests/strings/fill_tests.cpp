@@ -31,7 +31,7 @@ struct StringsFillTest : public cudf::test::BaseFixture {
 
 TEST_F(StringsFillTest, Fill)
 {
-  std::vector<const char*> h_strings{"eee", "bb", nullptr, "", "aa", "bbb", "ééé"};
+  std::vector<const char*>           h_strings{"eee", "bb", nullptr, "", "aa", "bbb", "ééé"};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),
@@ -40,7 +40,7 @@ TEST_F(StringsFillTest, Fill)
   {
     auto results = cudf::strings::detail::fill(view, 1, 5, cudf::string_scalar("zz"));
 
-    std::vector<const char*> h_expected{"eee", "zz", "zz", "zz", "zz", "bbb", "ééé"};
+    std::vector<const char*>           h_expected{"eee", "zz", "zz", "zz", "zz", "bbb", "ééé"};
     cudf::test::strings_column_wrapper expected(
       h_expected.begin(),
       h_expected.end(),
@@ -86,7 +86,7 @@ TEST_F(StringsFillTest, ZeroSizeStringsColumns)
 
 TEST_F(StringsFillTest, FillRangeError)
 {
-  std::vector<const char*> h_strings{"eee", "bb", nullptr, "", "aa", "bbb", "ééé"};
+  std::vector<const char*>           h_strings{"eee", "bb", nullptr, "", "aa", "bbb", "ééé"};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),

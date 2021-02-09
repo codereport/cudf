@@ -47,13 +47,13 @@ namespace {
  * in each string given a vector of char_range values.
  */
 struct filter_fn {
-  column_device_view const d_strings;
-  filter_type keep_characters;
+  column_device_view const                 d_strings;
+  filter_type                              keep_characters;
   rmm::device_vector<char_range>::iterator table_begin;
   rmm::device_vector<char_range>::iterator table_end;
-  string_view const d_replacement;
-  int32_t const* d_offsets{};
-  char* d_chars{};
+  string_view const                        d_replacement;
+  int32_t const*                           d_offsets{};
+  char*                                    d_chars{};
 
   /**
    * @brief Return true if this character should be removed.
@@ -83,12 +83,12 @@ struct filter_fn {
   __device__ size_type operator()(size_type idx)
   {
     if (d_strings.is_null(idx)) return 0;
-    string_view d_str = d_strings.element<string_view>(idx);
-    size_type nbytes  = d_str.size_bytes();
-    auto const in_ptr = d_str.data();
-    auto out_ptr      = d_chars ? d_chars + d_offsets[idx] : nullptr;
+    string_view d_str   = d_strings.element<string_view>(idx);
+    size_type   nbytes  = d_str.size_bytes();
+    auto const  in_ptr  = d_str.data();
+    auto        out_ptr = d_chars ? d_chars + d_offsets[idx] : nullptr;
     for (auto itr = d_str.begin(); itr != d_str.end(); ++itr) {
-      auto const char_size = bytes_in_char_utf8(*itr);
+      auto const        char_size = bytes_in_char_utf8(*itr);
       string_view const d_newchar =
         remove_char(*itr) ? d_replacement : string_view(in_ptr + itr.byte_offset(), char_size);
       nbytes += d_newchar.size_bytes() - char_size;
@@ -104,12 +104,12 @@ struct filter_fn {
  * @copydoc cudf::strings::filter_characters
  */
 std::unique_ptr<column> filter_characters(
-  strings_column_view const& strings,
+  strings_column_view const&                               strings,
   std::vector<std::pair<cudf::char_utf8, cudf::char_utf8>> characters_to_filter,
-  filter_type keep_characters,
-  string_scalar const& replacement,
-  rmm::cuda_stream_view stream,
-  rmm::mr::device_memory_resource* mr)
+  filter_type                                              keep_characters,
+  string_scalar const&                                     replacement,
+  rmm::cuda_stream_view                                    stream,
+  rmm::mr::device_memory_resource*                         mr)
 {
   size_type strings_count = strings.size();
   if (strings_count == 0) return make_empty_strings_column(stream, mr);
@@ -117,7 +117,7 @@ std::unique_ptr<column> filter_characters(
   cudf::string_view d_replacement(replacement.data(), replacement.size());
 
   // convert input table for copy to device memory
-  size_type table_size = static_cast<size_type>(characters_to_filter.size());
+  size_type                       table_size = static_cast<size_type>(characters_to_filter.size());
   thrust::host_vector<char_range> htable(table_size);
   std::transform(
     characters_to_filter.begin(), characters_to_filter.end(), htable.begin(), [](auto entry) {
@@ -133,14 +133,14 @@ std::unique_ptr<column> filter_characters(
 
   // create offsets column
   filter_fn ffn{d_strings, keep_characters, table.begin(), table.end(), d_replacement};
-  auto offsets_transformer_itr = cudf::detail::make_counting_transform_iterator(0, ffn);
-  auto offsets_column          = make_offsets_child_column(
+  auto      offsets_transformer_itr = cudf::detail::make_counting_transform_iterator(0, ffn);
+  auto      offsets_column          = make_offsets_child_column(
     offsets_transformer_itr, offsets_transformer_itr + strings_count, stream, mr);
   ffn.d_offsets = offsets_column->view().data<int32_t>();
 
   // build chars column
   size_type bytes = cudf::detail::get_value<int32_t>(offsets_column->view(), strings_count, stream);
-  auto chars_column = strings::detail::create_chars_child_column(
+  auto      chars_column = strings::detail::create_chars_child_column(
     strings_count, strings.null_count(), bytes, stream, mr);
   ffn.d_chars = chars_column->mutable_view().data<char>();
   thrust::for_each_n(rmm::exec_policy(stream),
@@ -163,11 +163,11 @@ std::unique_ptr<column> filter_characters(
  * @copydoc cudf::strings::filter_characters
  */
 std::unique_ptr<column> filter_characters(
-  strings_column_view const& strings,
+  strings_column_view const&                               strings,
   std::vector<std::pair<cudf::char_utf8, cudf::char_utf8>> characters_to_filter,
-  filter_type keep_characters,
-  string_scalar const& replacement,
-  rmm::mr::device_memory_resource* mr)
+  filter_type                                              keep_characters,
+  string_scalar const&                                     replacement,
+  rmm::mr::device_memory_resource*                         mr)
 {
   CUDF_FUNC_RANGE();
   return detail::filter_characters(

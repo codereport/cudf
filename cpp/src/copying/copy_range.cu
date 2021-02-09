@@ -40,12 +40,12 @@
 
 namespace {
 template <typename T>
-void in_place_copy_range(cudf::column_view const& source,
+void in_place_copy_range(cudf::column_view const&   source,
                          cudf::mutable_column_view& target,
-                         cudf::size_type source_begin,
-                         cudf::size_type source_end,
-                         cudf::size_type target_begin,
-                         rmm::cuda_stream_view stream)
+                         cudf::size_type            source_begin,
+                         cudf::size_type            source_end,
+                         cudf::size_type            target_begin,
+                         rmm::cuda_stream_view      stream)
 {
   auto p_source_device_view = cudf::column_device_view::create(source, stream);
   if (source.has_nulls()) {
@@ -67,13 +67,13 @@ void in_place_copy_range(cudf::column_view const& source,
 }
 
 struct in_place_copy_range_dispatch {
-  cudf::column_view const& source;
+  cudf::column_view const&   source;
   cudf::mutable_column_view& target;
 
   template <typename T>
-  std::enable_if_t<cudf::is_fixed_width<T>(), void> operator()(cudf::size_type source_begin,
-                                                               cudf::size_type source_end,
-                                                               cudf::size_type target_begin,
+  std::enable_if_t<cudf::is_fixed_width<T>(), void> operator()(cudf::size_type       source_begin,
+                                                               cudf::size_type       source_end,
+                                                               cudf::size_type       target_begin,
                                                                rmm::cuda_stream_view stream)
   {
     in_place_copy_range<T>(source, target, source_begin, source_end, target_begin, stream);
@@ -95,10 +95,10 @@ struct out_of_place_copy_range_dispatch {
 
   template <typename T>
   std::unique_ptr<cudf::column> operator()(
-    cudf::size_type source_begin,
-    cudf::size_type source_end,
-    cudf::size_type target_begin,
-    rmm::cuda_stream_view stream,
+    cudf::size_type                  source_begin,
+    cudf::size_type                  source_end,
+    cudf::size_type                  target_begin,
+    rmm::cuda_stream_view            stream,
     rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
   {
     auto p_ret = std::make_unique<cudf::column>(target, stream, mr);
@@ -119,10 +119,10 @@ struct out_of_place_copy_range_dispatch {
 
 template <>
 std::unique_ptr<cudf::column> out_of_place_copy_range_dispatch::operator()<cudf::string_view>(
-  cudf::size_type source_begin,
-  cudf::size_type source_end,
-  cudf::size_type target_begin,
-  rmm::cuda_stream_view stream,
+  cudf::size_type                  source_begin,
+  cudf::size_type                  source_end,
+  cudf::size_type                  target_begin,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr)
 {
   auto target_end           = target_begin + (source_end - source_begin);
@@ -152,10 +152,10 @@ std::unique_ptr<cudf::column> out_of_place_copy_range_dispatch::operator()<cudf:
 
 template <>
 std::unique_ptr<cudf::column> out_of_place_copy_range_dispatch::operator()<cudf::dictionary32>(
-  cudf::size_type source_begin,
-  cudf::size_type source_end,
-  cudf::size_type target_begin,
-  rmm::cuda_stream_view stream,
+  cudf::size_type                  source_begin,
+  cudf::size_type                  source_end,
+  cudf::size_type                  target_begin,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr)
 {
   // check the keys in the source and target
@@ -172,9 +172,9 @@ std::unique_ptr<cudf::column> out_of_place_copy_range_dispatch::operator()<cudf:
   auto const source_view = cudf::dictionary_column_view(source_matched->view());
 
   // build the new indices by calling in_place_copy_range on just the indices
-  auto const source_indices = source_view.get_indices_annotated();
-  auto target_contents      = target_matched->release();
-  auto target_indices(std::move(target_contents.children.front()));
+  auto const                source_indices  = source_view.get_indices_annotated();
+  auto                      target_contents = target_matched->release();
+  auto                      target_indices(std::move(target_contents.children.front()));
   cudf::mutable_column_view new_indices(
     target_indices->type(),
     dict_target.size(),
@@ -207,10 +207,10 @@ std::unique_ptr<cudf::column> out_of_place_copy_range_dispatch::operator()<cudf:
 
 template <>
 std::unique_ptr<cudf::column> out_of_place_copy_range_dispatch::operator()<cudf::list_view>(
-  cudf::size_type source_begin,
-  cudf::size_type source_end,
-  cudf::size_type target_begin,
-  rmm::cuda_stream_view stream,
+  cudf::size_type                  source_begin,
+  cudf::size_type                  source_end,
+  cudf::size_type                  target_begin,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FAIL("list_view type not supported");
@@ -220,11 +220,11 @@ std::unique_ptr<cudf::column> out_of_place_copy_range_dispatch::operator()<cudf:
 
 namespace cudf {
 namespace detail {
-void copy_range_in_place(column_view const& source,
-                         mutable_column_view& target,
-                         size_type source_begin,
-                         size_type source_end,
-                         size_type target_begin,
+void copy_range_in_place(column_view const&    source,
+                         mutable_column_view&  target,
+                         size_type             source_begin,
+                         size_type             source_end,
+                         size_type             target_begin,
                          rmm::cuda_stream_view stream)
 {
   CUDF_EXPECTS(cudf::is_fixed_width(target.type()) == true,
@@ -247,12 +247,12 @@ void copy_range_in_place(column_view const& source,
   }
 }
 
-std::unique_ptr<column> copy_range(column_view const& source,
-                                   column_view const& target,
-                                   size_type source_begin,
-                                   size_type source_end,
-                                   size_type target_begin,
-                                   rmm::cuda_stream_view stream,
+std::unique_ptr<column> copy_range(column_view const&               source,
+                                   column_view const&               target,
+                                   size_type                        source_begin,
+                                   size_type                        source_end,
+                                   size_type                        target_begin,
+                                   rmm::cuda_stream_view            stream,
                                    rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS((source_begin >= 0) && (source_end <= source.size()) &&
@@ -272,22 +272,22 @@ std::unique_ptr<column> copy_range(column_view const& source,
 
 }  // namespace detail
 
-void copy_range_in_place(column_view const& source,
+void copy_range_in_place(column_view const&   source,
                          mutable_column_view& target,
-                         size_type source_begin,
-                         size_type source_end,
-                         size_type target_begin)
+                         size_type            source_begin,
+                         size_type            source_end,
+                         size_type            target_begin)
 {
   CUDF_FUNC_RANGE();
   return detail::copy_range_in_place(
     source, target, source_begin, source_end, target_begin, rmm::cuda_stream_default);
 }
 
-std::unique_ptr<column> copy_range(column_view const& source,
-                                   column_view const& target,
-                                   size_type source_begin,
-                                   size_type source_end,
-                                   size_type target_begin,
+std::unique_ptr<column> copy_range(column_view const&               source,
+                                   column_view const&               target,
+                                   size_type                        source_begin,
+                                   size_type                        source_end,
+                                   size_type                        target_begin,
                                    rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

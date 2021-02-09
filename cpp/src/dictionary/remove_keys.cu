@@ -54,10 +54,10 @@ namespace {
  */
 template <typename KeysKeeper>
 std::unique_ptr<column> remove_keys_fn(
-  dictionary_column_view const& dictionary_column,
-  KeysKeeper keys_to_keep_fn,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  dictionary_column_view const&    dictionary_column,
+  KeysKeeper                       keys_to_keep_fn,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   auto const keys_view    = dictionary_column.keys();
   auto const indices_type = dictionary_column.indices().type();
@@ -90,8 +90,8 @@ std::unique_ptr<column> remove_keys_fn(
         table_view{{keys_view, keys_positions->view()}}, keys_to_keep_fn, stream, mr)
         ->release();
     auto const filtered_view = table_keys[1]->view();
-    auto filtered_itr = cudf::detail::indexalator_factory::make_input_iterator(filtered_view);
-    auto positions_itr =
+    auto       filtered_itr = cudf::detail::indexalator_factory::make_input_iterator(filtered_view);
+    auto       positions_itr =
       cudf::detail::indexalator_factory::make_input_iterator(keys_positions->view());
     // build indices mapper
     // Example scatter([0,1,2][0,2,4][max,max,max,max,max]) => [0,max,1,max,2]
@@ -123,8 +123,8 @@ std::unique_ptr<column> remove_keys_fn(
   indices_column->set_null_mask(rmm::device_buffer{}, 0);
 
   // compute new nulls -- merge the existing nulls with the newly created ones (value<0)
-  auto const offset = dictionary_column.offset();
-  auto d_null_mask  = dictionary_column.null_mask();
+  auto const offset      = dictionary_column.offset();
+  auto       d_null_mask = dictionary_column.null_mask();
   auto indices_itr = cudf::detail::indexalator_factory::make_input_iterator(indices_column->view());
   auto new_nulls   = cudf::detail::valid_if(
     thrust::make_counting_iterator<size_type>(0),
@@ -146,30 +146,30 @@ std::unique_ptr<column> remove_keys_fn(
 }  // namespace
 
 std::unique_ptr<column> remove_keys(
-  dictionary_column_view const& dictionary_column,
-  column_view const& keys_to_remove,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  dictionary_column_view const&    dictionary_column,
+  column_view const&               keys_to_remove,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(!keys_to_remove.has_nulls(), "keys_to_remove must not have nulls");
   auto const keys_view = dictionary_column.keys();
   CUDF_EXPECTS(keys_view.type() == keys_to_remove.type(), "keys types must match");
 
   // locate keys to remove by searching the keys column
-  auto const matches = cudf::detail::contains(keys_view, keys_to_remove, stream, mr);
-  auto d_matches     = matches->view().data<bool>();
+  auto const matches   = cudf::detail::contains(keys_view, keys_to_remove, stream, mr);
+  auto       d_matches = matches->view().data<bool>();
   // call common utility method to keep the keys not matched to keys_to_remove
   auto key_matcher = [d_matches] __device__(size_type idx) { return !d_matches[idx]; };
   return remove_keys_fn(dictionary_column, key_matcher, stream, mr);
 }
 
 std::unique_ptr<column> remove_unused_keys(
-  dictionary_column_view const& dictionary_column,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  dictionary_column_view const&    dictionary_column,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   // locate the keys to remove
-  auto const keys_size     = dictionary_column.keys_size();
+  auto const  keys_size    = dictionary_column.keys_size();
   column_view indices_view = dictionary_column.get_indices_annotated();
 
   // search the indices values with key indices to look for any holes
@@ -192,15 +192,15 @@ std::unique_ptr<column> remove_unused_keys(
 
 // external APIs
 
-std::unique_ptr<column> remove_keys(dictionary_column_view const& dictionary_column,
-                                    column_view const& keys_to_remove,
+std::unique_ptr<column> remove_keys(dictionary_column_view const&    dictionary_column,
+                                    column_view const&               keys_to_remove,
                                     rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::remove_keys(dictionary_column, keys_to_remove, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> remove_unused_keys(dictionary_column_view const& dictionary_column,
+std::unique_ptr<column> remove_unused_keys(dictionary_column_view const&    dictionary_column,
                                            rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

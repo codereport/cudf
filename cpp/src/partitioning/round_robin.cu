@@ -75,10 +75,10 @@ using VectorT = rmm::device_vector<T>;
  * offsets for each partition within the table
  */
 std::pair<std::unique_ptr<cudf::table>, std::vector<cudf::size_type>> degenerate_partitions(
-  cudf::table_view const& input,
-  cudf::size_type num_partitions,
-  cudf::size_type start_partition,
-  rmm::cuda_stream_view stream,
+  cudf::table_view const&          input,
+  cudf::size_type                  num_partitions,
+  cudf::size_type                  start_partition,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr)
 {
   auto nrows = input.num_rows();
@@ -171,11 +171,11 @@ std::pair<std::unique_ptr<cudf::table>, std::vector<cudf::size_type>> degenerate
 namespace cudf {
 namespace detail {
 std::pair<std::unique_ptr<table>, std::vector<cudf::size_type>> round_robin_partition(
-  table_view const& input,
-  cudf::size_type num_partitions,
-  cudf::size_type start_partition     = 0,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  table_view const&                input,
+  cudf::size_type                  num_partitions,
+  cudf::size_type                  start_partition = 0,
+  rmm::cuda_stream_view            stream          = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr              = rmm::mr::get_current_device_resource())
 {
   auto nrows = input.num_rows();
 
@@ -282,10 +282,10 @@ std::pair<std::unique_ptr<table>, std::vector<cudf::size_type>> round_robin_part
 }  // namespace detail
 
 std::pair<std::unique_ptr<cudf::table>, std::vector<cudf::size_type>> round_robin_partition(
-  table_view const& input,
-  cudf::size_type num_partitions,
-  cudf::size_type start_partition     = 0,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  table_view const&                input,
+  cudf::size_type                  num_partitions,
+  cudf::size_type                  start_partition = 0,
+  rmm::mr::device_memory_resource* mr              = rmm::mr::get_current_device_resource())
 {
   CUDF_FUNC_RANGE();
   return cudf::detail::round_robin_partition(

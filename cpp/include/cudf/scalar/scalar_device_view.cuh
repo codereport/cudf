@@ -56,7 +56,7 @@ class scalar_device_view_base {
 
  protected:
   data_type _type{type_id::EMPTY};  ///< Value data type
-  bool* _is_valid{};                ///< Pointer to device memory containing
+  bool*     _is_valid{};            ///< Pointer to device memory containing
                                     ///< boolean representing validity of the value.
 
   scalar_device_view_base(data_type type, bool* is_valid) : _type(type), _is_valid(is_valid) {}
@@ -253,7 +253,7 @@ class string_scalar_device_view : public detail::scalar_device_view_base {
 
  private:
   const char* _data{};  ///< Pointer to device memory containing the value
-  size_type _size;      ///< Size of the string in bytes
+  size_type   _size;    ///< Size of the string in bytes
 };
 
 /**

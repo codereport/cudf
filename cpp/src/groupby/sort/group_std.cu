@@ -39,11 +39,11 @@ namespace {
 template <typename ResultType, typename Iterator>
 struct var_transform {
   column_device_view const d_values;
-  Iterator values_iter;
-  ResultType const* d_means;
-  size_type const* d_group_sizes;
-  size_type const* d_group_labels;
-  size_type ddof;
+  Iterator                 values_iter;
+  ResultType const*        d_means;
+  size_type const*         d_group_sizes;
+  size_type const*         d_group_labels;
+  size_type                ddof;
 
   __device__ ResultType operator()(size_type i)
   {
@@ -63,14 +63,14 @@ struct var_transform {
 };
 
 template <typename ResultType, typename Iterator>
-void reduce_by_key_fn(column_device_view const& values,
-                      Iterator values_iter,
+void reduce_by_key_fn(column_device_view const&            values,
+                      Iterator                             values_iter,
                       rmm::device_vector<size_type> const& group_labels,
-                      ResultType const* d_means,
-                      size_type const* d_group_sizes,
-                      size_type ddof,
-                      ResultType* d_result,
-                      rmm::cuda_stream_view stream)
+                      ResultType const*                    d_means,
+                      size_type const*                     d_group_sizes,
+                      size_type                            ddof,
+                      ResultType*                          d_result,
+                      rmm::cuda_stream_view                stream)
 {
   auto var_iter = thrust::make_transform_iterator(
     thrust::make_counting_iterator(0),
@@ -88,13 +88,13 @@ void reduce_by_key_fn(column_device_view const& values,
 struct var_functor {
   template <typename T>
   std::enable_if_t<std::is_arithmetic<T>::value, std::unique_ptr<column>> operator()(
-    column_view const& values,
-    column_view const& group_means,
-    column_view const& group_sizes,
+    column_view const&                   values,
+    column_view const&                   group_means,
+    column_view const&                   group_sizes,
     rmm::device_vector<size_type> const& group_labels,
-    size_type ddof,
-    rmm::cuda_stream_view stream,
-    rmm::mr::device_memory_resource* mr)
+    size_type                            ddof,
+    rmm::cuda_stream_view                stream,
+    rmm::mr::device_memory_resource*     mr)
   {
 // Running this in debug build causes a runtime error:
 // `reduce_by_key failed on 2nd step: invalid device function`
@@ -154,13 +154,13 @@ struct var_functor {
 
 }  // namespace
 
-std::unique_ptr<column> group_var(column_view const& values,
-                                  column_view const& group_means,
-                                  column_view const& group_sizes,
+std::unique_ptr<column> group_var(column_view const&                   values,
+                                  column_view const&                   group_means,
+                                  column_view const&                   group_sizes,
                                   rmm::device_vector<size_type> const& group_labels,
-                                  size_type ddof,
-                                  rmm::cuda_stream_view stream,
-                                  rmm::mr::device_memory_resource* mr)
+                                  size_type                            ddof,
+                                  rmm::cuda_stream_view                stream,
+                                  rmm::mr::device_memory_resource*     mr)
 {
   auto values_type = cudf::is_dictionary(values.type())
                        ? dictionary_column_view(values).keys().type()

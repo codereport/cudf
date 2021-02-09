@@ -25,8 +25,8 @@
 
 // to enable, run cmake with -DBUILD_BENCHMARKS=ON
 
-constexpr size_t data_size         = 256 << 20;
-constexpr cudf::size_type num_cols = 64;
+constexpr size_t          data_size = 256 << 20;
+constexpr cudf::size_type num_cols  = 64;
 
 namespace cudf_io = cudf::io;
 
@@ -35,13 +35,13 @@ class CsvRead : public cudf::benchmark {
 
 void BM_csv_read_varying_input(benchmark::State& state)
 {
-  auto const data_types     = get_type_or_group(state.range(0));
+  auto const    data_types  = get_type_or_group(state.range(0));
   io_type const source_type = static_cast<io_type>(state.range(1));
 
   auto const tbl  = create_random_table(data_types, num_cols, table_size_bytes{data_size});
   auto const view = tbl->view();
 
-  cuio_source_sink_pair source_sink(source_type);
+  cuio_source_sink_pair       source_sink(source_type);
   cudf_io::csv_writer_options options =
     cudf_io::csv_writer_options::builder(source_sink.make_sink_info(), view)
       .include_header(true)
@@ -76,7 +76,7 @@ void BM_csv_read_varying_options(benchmark::State& state)
   auto const tbl  = create_random_table(data_types, data_types.size(), table_size_bytes{data_size});
   auto const view = tbl->view();
 
-  std::vector<char> csv_data;
+  std::vector<char>           csv_data;
   cudf_io::csv_writer_options options =
     cudf_io::csv_writer_options::builder(cudf_io::sink_info{&csv_data}, view)
       .include_header(true)
@@ -92,7 +92,7 @@ void BM_csv_read_varying_options(benchmark::State& state)
       .comment('#')
       .prefix("BM_");
 
-  size_t const chunk_size             = csv_data.size() / num_chunks;
+  size_t const          chunk_size    = csv_data.size() / num_chunks;
   cudf::size_type const chunk_row_cnt = view.num_rows() / num_chunks;
   for (auto _ : state) {
     cuda_event_timer raii(state, true);  // flush_l2_cache = true, stream = 0

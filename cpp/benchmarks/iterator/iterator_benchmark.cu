@@ -31,8 +31,8 @@
 template <typename T>
 T random_int(T min, T max)
 {
-  static unsigned seed = 13377331;
-  static std::mt19937 engine{seed};
+  static unsigned                         seed = 13377331;
+  static std::mt19937                     engine{seed};
   static std::uniform_int_distribution<T> uniform{min, max};
 
   return uniform(engine);
@@ -63,9 +63,9 @@ void raw_stream_bench_cub(cudf::column_view &col, rmm::device_vector<T> &result)
 {
   // std::cout << "raw stream cub: " << "\t";
 
-  T init{0};
-  auto begin    = col.data<T>();
-  int num_items = col.size();
+  T    init{0};
+  auto begin     = col.data<T>();
+  int  num_items = col.size();
 
   reduce_by_cub(result.begin(), begin, num_items, init);
 };
@@ -75,9 +75,9 @@ void iterator_bench_cub(cudf::column_view &col, rmm::device_vector<T> &result)
 {
   // std::cout << "iterator cub " << ( (has_null) ? "<true>: " : "<false>: " ) << "\t";
 
-  T init{0};
-  auto d_col    = cudf::column_device_view::create(col);
-  int num_items = col.size();
+  T    init{0};
+  auto d_col     = cudf::column_device_view::create(col);
+  int  num_items = col.size();
   if (has_null) {
     auto begin = cudf::detail::make_null_replacement_iterator(*d_col, init);
     reduce_by_cub(result.begin(), begin, num_items, init);
@@ -93,7 +93,7 @@ void raw_stream_bench_thrust(cudf::column_view &col, rmm::device_vector<T> &resu
 {
   // std::cout << "raw stream thust: " << "\t\t";
 
-  T init{0};
+  T    init{0};
   auto d_in  = col.data<T>();
   auto d_end = d_in + col.size();
   thrust::reduce(thrust::device, d_in, d_end, init, cudf::DeviceSum{});
@@ -104,7 +104,7 @@ void iterator_bench_thrust(cudf::column_view &col, rmm::device_vector<T> &result
 {
   // std::cout << "iterator thust " << ( (has_null) ? "<true>: " : "<false>: " ) << "\t";
 
-  T init{0};
+  T    init{0};
   auto d_col = cudf::column_device_view::create(col);
   if (has_null) {
     auto d_in  = cudf::detail::make_null_replacement_iterator(*d_col, init);
@@ -129,7 +129,7 @@ void BM_iterator(benchmark::State &state)
   auto num_gen = thrust::counting_iterator<cudf::size_type>(0);
 
   cudf::test::fixed_width_column_wrapper<T> wrap_hasnull_F(num_gen, num_gen + column_size);
-  cudf::column_view hasnull_F = wrap_hasnull_F;
+  cudf::column_view                         hasnull_F = wrap_hasnull_F;
 
   rmm::device_vector<T> dev_result(1, T{0});
   for (auto _ : state) {
@@ -162,24 +162,24 @@ __device__ thrust::pair<T, bool> operator+(thrust::pair<T, bool> lhs, thrust::pa
 }
 // -----------------------------------------------------------------------------
 template <typename T, bool has_null>
-void pair_iterator_bench_cub(cudf::column_view &col,
+void pair_iterator_bench_cub(cudf::column_view &                        col,
                              rmm::device_vector<thrust::pair<T, bool>> &result)
 {
   thrust::pair<T, bool> init{0, false};
-  auto d_col    = cudf::column_device_view::create(col);
-  int num_items = col.size();
-  auto begin    = d_col->pair_begin<T, has_null>();
+  auto                  d_col     = cudf::column_device_view::create(col);
+  int                   num_items = col.size();
+  auto                  begin     = d_col->pair_begin<T, has_null>();
   reduce_by_cub(result.begin(), begin, num_items, init);
 }
 
 template <typename T, bool has_null>
-void pair_iterator_bench_thrust(cudf::column_view &col,
+void pair_iterator_bench_thrust(cudf::column_view &                        col,
                                 rmm::device_vector<thrust::pair<T, bool>> &result)
 {
   thrust::pair<T, bool> init{0, false};
-  auto d_col = cudf::column_device_view::create(col);
-  auto d_in  = d_col->pair_begin<T, has_null>();
-  auto d_end = d_in + col.size();
+  auto                  d_col = cudf::column_device_view::create(col);
+  auto                  d_in  = d_col->pair_begin<T, has_null>();
+  auto                  d_end = d_in + col.size();
   thrust::reduce(thrust::device, d_in, d_end, init, cudf::DeviceSum{});
 }
 

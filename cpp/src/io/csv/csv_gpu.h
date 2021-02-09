@@ -113,11 +113,11 @@ inline __host__ __device__ rowctx32_t get_row_context(packed_rowctx_t packed_ctx
  * @param packed_ctx row context of character block
  * @return total_row_count * 4 + output context id
  */
-inline __host__ __device__ rowctx64_t select_row_context(rowctx64_t sel_ctx,
+inline __host__ __device__ rowctx64_t select_row_context(rowctx64_t      sel_ctx,
                                                          packed_rowctx_t packed_ctx)
 {
-  uint32_t ctxid = static_cast<uint32_t>(sel_ctx & 3);
-  rowctx32_t ctx = get_row_context(packed_ctx, ctxid);
+  uint32_t   ctxid = static_cast<uint32_t>(sel_ctx & 3);
+  rowctx32_t ctx   = get_row_context(packed_ctx, ctxid);
   return (sel_ctx & ~3) + ctx;
 }
 
@@ -150,17 +150,17 @@ inline __host__ __device__ rowctx64_t select_row_context(rowctx64_t sel_ctx,
  * @return Number of row contexts
  */
 uint32_t gather_row_offsets(cudf::io::parse_options_view const &options,
-                            uint64_t *row_ctx,
-                            device_span<uint64_t> offsets_out,
-                            device_span<char const> data,
-                            size_t chunk_size,
-                            size_t parse_pos,
-                            size_t start_offset,
-                            size_t data_size,
-                            size_t byte_range_start,
-                            size_t byte_range_end,
-                            size_t skip_rows,
-                            rmm::cuda_stream_view stream);
+                            uint64_t *                          row_ctx,
+                            device_span<uint64_t>               offsets_out,
+                            device_span<char const>             data,
+                            size_t                              chunk_size,
+                            size_t                              parse_pos,
+                            size_t                              start_offset,
+                            size_t                              data_size,
+                            size_t                              byte_range_start,
+                            size_t                              byte_range_end,
+                            size_t                              skip_rows,
+                            rmm::cuda_stream_view               stream);
 
 /**
  * Count the number of blank rows in the given row offset array
@@ -171,9 +171,9 @@ uint32_t gather_row_offsets(cudf::io::parse_options_view const &options,
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 size_t count_blank_rows(cudf::io::parse_options_view const &options,
-                        device_span<char const> data,
-                        device_span<uint64_t const> row_offsets,
-                        rmm::cuda_stream_view stream);
+                        device_span<char const>             data,
+                        device_span<uint64_t const>         row_offsets,
+                        rmm::cuda_stream_view               stream);
 
 /**
  * Remove blank rows in the given row offset array
@@ -184,9 +184,9 @@ size_t count_blank_rows(cudf::io::parse_options_view const &options,
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 void remove_blank_rows(const cudf::io::parse_options_view &options,
-                       device_span<char const> data,
-                       rmm::device_vector<uint64_t> &row_offsets,
-                       rmm::cuda_stream_view stream);
+                       device_span<char const>             data,
+                       rmm::device_vector<uint64_t> &      row_offsets,
+                       rmm::cuda_stream_view               stream);
 
 /**
  * @brief Launches kernel for detecting possible dtype of each column of data
@@ -200,12 +200,12 @@ void remove_blank_rows(const cudf::io::parse_options_view &options,
  * @return stats Histogram of each dtypes' occurrence for each column
  */
 thrust::host_vector<column_type_histogram> detect_column_types(
-  cudf::io::parse_options_view const &options,
-  device_span<char const> data,
+  cudf::io::parse_options_view const &   options,
+  device_span<char const>                data,
   device_span<column_parse::flags const> column_flags,
-  device_span<uint64_t const> row_offsets,
-  size_t const num_active_columns,
-  rmm::cuda_stream_view stream);
+  device_span<uint64_t const>            row_offsets,
+  size_t const                           num_active_columns,
+  rmm::cuda_stream_view                  stream);
 
 /**
  * @brief Launches kernel for decoding row-column data
@@ -219,14 +219,14 @@ thrust::host_vector<column_type_histogram> detect_column_types(
  * @param[out] valids Device memory output of column valids bitmap data
  * @param[in] stream CUDA stream to use, default 0
  */
-void decode_row_column_data(cudf::io::parse_options_view const &options,
-                            device_span<char const> data,
+void decode_row_column_data(cudf::io::parse_options_view const &   options,
+                            device_span<char const>                data,
                             device_span<column_parse::flags const> column_flags,
-                            device_span<uint64_t const> row_offsets,
-                            device_span<cudf::data_type const> dtypes,
-                            device_span<void *> columns,
-                            device_span<cudf::bitmask_type *> valids,
-                            rmm::cuda_stream_view stream);
+                            device_span<uint64_t const>            row_offsets,
+                            device_span<cudf::data_type const>     dtypes,
+                            device_span<void *>                    columns,
+                            device_span<cudf::bitmask_type *>      valids,
+                            rmm::cuda_stream_view                  stream);
 
 }  // namespace gpu
 }  // namespace csv

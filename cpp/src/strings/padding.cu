@@ -35,15 +35,15 @@ namespace detail {
 namespace {
 struct compute_pad_output_length_fn {
   column_device_view d_strings;
-  size_type width;
-  size_type fill_char_size;
+  size_type          width;
+  size_type          fill_char_size;
 
   __device__ size_type operator()(size_type idx)
   {
     if (d_strings.is_null(idx)) return 0;
-    string_view d_str = d_strings.element<string_view>(idx);
-    size_type bytes   = d_str.size_bytes();
-    size_type length  = d_str.length();
+    string_view d_str  = d_strings.element<string_view>(idx);
+    size_type   bytes  = d_str.size_bytes();
+    size_type   length = d_str.length();
     if (width > length)                            // no truncating
       bytes += fill_char_size * (width - length);  // add padding
     return bytes;
@@ -53,12 +53,12 @@ struct compute_pad_output_length_fn {
 }  // namespace
 
 std::unique_ptr<column> pad(
-  strings_column_view const& strings,
-  size_type width,
-  pad_side side                       = pad_side::RIGHT,
-  std::string const& fill_char        = " ",
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  strings_column_view const&       strings,
+  size_type                        width,
+  pad_side                         side      = pad_side::RIGHT,
+  std::string const&               fill_char = " ",
+  rmm::cuda_stream_view            stream    = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource())
 {
   size_type strings_count = strings.size();
   if (strings_count == 0) return make_empty_strings_column(stream, mr);
@@ -80,8 +80,8 @@ std::unique_ptr<column> pad(
   auto d_offsets = offsets_column->view().data<int32_t>();
 
   // build chars column
-  size_type bytes   = thrust::device_pointer_cast(d_offsets)[strings_count];
-  auto chars_column = strings::detail::create_chars_child_column(
+  size_type bytes        = thrust::device_pointer_cast(d_offsets)[strings_count];
+  auto      chars_column = strings::detail::create_chars_child_column(
     strings_count, strings.null_count(), bytes, stream, mr);
   auto d_chars = chars_column->mutable_view().data<char>();
 
@@ -92,9 +92,9 @@ std::unique_ptr<column> pad(
       strings_count,
       [d_strings, width, d_fill_char, d_offsets, d_chars] __device__(size_type idx) {
         if (d_strings.is_null(idx)) return;
-        string_view d_str = d_strings.element<string_view>(idx);
-        auto length       = d_str.length();
-        char* ptr         = d_chars + d_offsets[idx];
+        string_view d_str  = d_strings.element<string_view>(idx);
+        auto        length = d_str.length();
+        char*       ptr    = d_chars + d_offsets[idx];
         while (length++ < width) ptr += from_char_utf8(d_fill_char, ptr);
         copy_string(ptr, d_str);
       });
@@ -105,10 +105,10 @@ std::unique_ptr<column> pad(
       strings_count,
       [d_strings, width, d_fill_char, d_offsets, d_chars] __device__(size_type idx) {
         if (d_strings.is_null(idx)) return;
-        string_view d_str = d_strings.element<string_view>(idx);
-        auto length       = d_str.length();
-        char* ptr         = d_chars + d_offsets[idx];
-        ptr               = copy_string(ptr, d_str);
+        string_view d_str  = d_strings.element<string_view>(idx);
+        auto        length = d_str.length();
+        char*       ptr    = d_chars + d_offsets[idx];
+        ptr                = copy_string(ptr, d_str);
         while (length++ < width) ptr += from_char_utf8(d_fill_char, ptr);
       });
   } else if (side == pad_side::BOTH) {
@@ -119,8 +119,8 @@ std::unique_ptr<column> pad(
       [d_strings, width, d_fill_char, d_offsets, d_chars] __device__(size_type idx) {
         if (d_strings.is_null(idx)) return;
         string_view d_str = d_strings.element<string_view>(idx);
-        char* ptr         = d_chars + d_offsets[idx];
-        int32_t pad       = static_cast<int32_t>(width - d_str.length());
+        char*       ptr   = d_chars + d_offsets[idx];
+        int32_t     pad   = static_cast<int32_t>(width - d_str.length());
         auto right_pad    = (width & 1) ? pad / 2 : (pad - pad / 2);  // odd width = right-justify
         auto left_pad =
           pad - right_pad;  // e.g. width=7 gives "++foxx+" while width=6 gives "+fox++"
@@ -145,9 +145,9 @@ std::unique_ptr<column> pad(
 // directly write it to the output buffer without extra logic for multi-byte UTF-8 chars.
 //
 std::unique_ptr<column> zfill(
-  strings_column_view const& strings,
-  size_type width,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  size_type                        width,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   size_type strings_count = strings.size();
@@ -168,8 +168,8 @@ std::unique_ptr<column> zfill(
   auto d_offsets = offsets_column->view().data<int32_t>();
 
   // build chars column
-  size_type bytes   = thrust::device_pointer_cast(d_offsets)[strings_count];
-  auto chars_column = strings::detail::create_chars_child_column(
+  size_type bytes        = thrust::device_pointer_cast(d_offsets)[strings_count];
+  auto      chars_column = strings::detail::create_chars_child_column(
     strings_count, strings.null_count(), bytes, stream, mr);
   auto d_chars = chars_column->mutable_view().data<char>();
 
@@ -178,9 +178,9 @@ std::unique_ptr<column> zfill(
                      strings_count,
                      [d_strings, width, d_offsets, d_chars] __device__(size_type idx) {
                        if (d_strings.is_null(idx)) return;
-                       string_view d_str = d_strings.element<string_view>(idx);
-                       auto length       = d_str.length();
-                       char* out_ptr     = d_chars + d_offsets[idx];
+                       string_view d_str   = d_strings.element<string_view>(idx);
+                       auto        length  = d_str.length();
+                       char*       out_ptr = d_chars + d_offsets[idx];
                        while (length++ < width) *out_ptr++ = '0';  // prepend zero char
                        copy_string(out_ptr, d_str);
                      });
@@ -198,18 +198,18 @@ std::unique_ptr<column> zfill(
 
 // Public APIs
 
-std::unique_ptr<column> pad(strings_column_view const& strings,
-                            size_type width,
-                            pad_side side,
-                            std::string const& fill_char,
+std::unique_ptr<column> pad(strings_column_view const&       strings,
+                            size_type                        width,
+                            pad_side                         side,
+                            std::string const&               fill_char,
                             rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::pad(strings, width, side, fill_char, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> zfill(strings_column_view const& strings,
-                              size_type width,
+std::unique_ptr<column> zfill(strings_column_view const&       strings,
+                              size_type                        width,
                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

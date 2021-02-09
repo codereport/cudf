@@ -227,8 +227,8 @@ __inline__ __device__ void extract_time(
   constexpr char sep = ':';
 
   // Adjust for AM/PM and any whitespace before
-  int hour_adjust = 0;
-  auto last       = end - 1;
+  int  hour_adjust = 0;
+  auto last        = end - 1;
   if (*last == 'M' || *last == 'm') {
     if (*(last - 1) == 'P' || *(last - 1) == 'p') { hour_adjust = 12; }
     last = last - 2;
@@ -294,8 +294,8 @@ __inline__ __device__ int32_t to_date(char const* begin, char const* end, bool d
  */
 __inline__ __device__ int64_t to_date_time(char const* begin, char const* end, bool dayfirst)
 {
-  int day, month, year;
-  int hour, minute, second, millisecond = 0;
+  int     day, month, year;
+  int     hour, minute, second, millisecond = 0;
   int64_t answer = -1;
 
   // Find end of the date portion
@@ -344,7 +344,7 @@ template <typename T>
 __inline__ __device__ T parse_integer(char const** begin, char const* end)
 {
   bool const is_negative = (**begin == '-');
-  T value                = 0;
+  T          value       = 0;
 
   auto cur = *begin + is_negative;
   while (cur < end) {
@@ -393,9 +393,9 @@ __inline__ __device__ int64_t to_time_delta(char const* begin, char const* end)
   constexpr char sep = ':';
 
   int32_t days{0};
-  int8_t hour{0};
+  int8_t  hour{0};
   // single pass to parse days, hour, minute, seconds, nanosecond
-  auto cur         = begin;
+  auto       cur   = begin;
   auto const value = parse_integer<int32_t>(&cur, end);
   cur              = skip_spaces(cur, end);
   if (std::is_same<T, cudf::duration_D>::value || cur >= end) {  // %value
@@ -422,7 +422,7 @@ __inline__ __device__ int64_t to_time_delta(char const* begin, char const* end)
   } else if (*cur == '.') {  //.n
     auto const start_subsecond        = ++cur;
     nanosecond                        = parse_integer<int>(&cur, end);
-    int8_t const num_digits           = min(9L, cur - start_subsecond);
+    int8_t const      num_digits      = min(9L, cur - start_subsecond);
     constexpr int64_t powers_of_ten[] = {
       1L, 10L, 100L, 1000L, 10000L, 100000L, 1000000L, 10000000L, 100000000L, 1000000000L};
     nanosecond *= powers_of_ten[9 - num_digits];

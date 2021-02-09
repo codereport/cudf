@@ -68,10 +68,10 @@ enum class rounding_method : int32_t { HALF_UP, HALF_EVEN };
  * @return std::unique_ptr<column> Column with each of the values rounded
  */
 std::unique_ptr<column> round(
-  column_view const& input,
-  int32_t decimal_places              = 0,
-  rounding_method method              = rounding_method::HALF_UP,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  int32_t                          decimal_places = 0,
+  rounding_method                  method         = rounding_method::HALF_UP,
+  rmm::mr::device_memory_resource* mr             = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group
 }  // namespace cudf

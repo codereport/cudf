@@ -48,9 +48,9 @@ __global__ void valid_if_kernel(
   bitmask_type* output, InputIterator begin, size_type size, Predicate p, size_type* valid_count)
 {
   constexpr size_type leader_lane{0};
-  auto const lane_id{threadIdx.x % warp_size};
-  size_type i = threadIdx.x + blockIdx.x * blockDim.x;
-  size_type warp_valid_count{0};
+  auto const          lane_id{threadIdx.x % warp_size};
+  size_type           i = threadIdx.x + blockIdx.x * blockDim.x;
+  size_type           warp_valid_count{0};
 
   auto active_mask = __ballot_sync(0xFFFF'FFFF, i < size);
   while (i < size) {
@@ -86,11 +86,11 @@ __global__ void valid_if_kernel(
  */
 template <typename InputIterator, typename Predicate>
 std::pair<rmm::device_buffer, size_type> valid_if(
-  InputIterator begin,
-  InputIterator end,
-  Predicate p,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  InputIterator                    begin,
+  InputIterator                    end,
+  Predicate                        p,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(begin <= end, "Invalid range.");
 
@@ -103,7 +103,7 @@ std::pair<rmm::device_buffer, size_type> valid_if(
     rmm::device_scalar<size_type> valid_count{0, stream};
 
     constexpr size_type block_size{256};
-    grid_1d grid{size, block_size};
+    grid_1d             grid{size, block_size};
 
     valid_if_kernel<block_size><<<grid.num_blocks, grid.num_threads_per_block, 0, stream.value()>>>(
       static_cast<bitmask_type*>(null_mask.data()), begin, size, p, valid_count.data());
@@ -151,13 +151,13 @@ template <typename InputIterator1,
           typename InputIterator2,
           typename BinaryPredicate,
           int32_t block_size>
-__global__ void valid_if_n_kernel(InputIterator1 begin1,
-                                  InputIterator2 begin2,
+__global__ void valid_if_n_kernel(InputIterator1  begin1,
+                                  InputIterator2  begin2,
                                   BinaryPredicate p,
-                                  bitmask_type* masks[],
-                                  size_type mask_count,
-                                  size_type mask_num_bits,
-                                  size_type* valid_counts)
+                                  bitmask_type*   masks[],
+                                  size_type       mask_count,
+                                  size_type       mask_num_bits,
+                                  size_type*      valid_counts)
 {
   for (size_type mask_idx = 0; mask_idx < mask_count; mask_idx++) {
     auto const mask = masks[mask_idx];

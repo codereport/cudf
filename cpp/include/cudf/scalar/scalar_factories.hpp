@@ -39,9 +39,9 @@ namespace cudf {
  * @param mr Device memory resource used to allocate the scalar's `data` and `is_valid` bool.
  */
 std::unique_ptr<scalar> make_numeric_scalar(
-  data_type type,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  data_type                        type,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Construct scalar with uninitialized storage to hold a value of the
@@ -55,9 +55,9 @@ std::unique_ptr<scalar> make_numeric_scalar(
  * @param mr Device memory resource used to allocate the scalar's `data` and `is_valid` bool.
  */
 std::unique_ptr<scalar> make_timestamp_scalar(
-  data_type type,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  data_type                        type,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Construct scalar with uninitialized storage to hold a value of the
@@ -71,9 +71,9 @@ std::unique_ptr<scalar> make_timestamp_scalar(
  * @param mr Device memory resource used to allocate the scalar's `data` and `is_valid` bool.
  */
 std::unique_ptr<scalar> make_duration_scalar(
-  data_type type,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  data_type                        type,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Construct scalar with uninitialized storage to hold a value of the
@@ -87,9 +87,9 @@ std::unique_ptr<scalar> make_duration_scalar(
  * @param mr Device memory resource used to allocate the scalar's `data` and `is_valid` bool.
  */
 std::unique_ptr<scalar> make_fixed_width_scalar(
-  data_type type,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  data_type                        type,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Construct STRING type scalar given a `std::string`.
@@ -103,9 +103,9 @@ std::unique_ptr<scalar> make_fixed_width_scalar(
  * @param mr Device memory resource used to allocate the scalar's `data` and `is_valid` bool.
  */
 std::unique_ptr<scalar> make_string_scalar(
-  std::string const& string,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  std::string const&               string,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Constructs default constructed scalar of type `type`
@@ -126,9 +126,9 @@ std::unique_ptr<scalar> make_default_constructed_scalar(data_type type);
  */
 template <typename T>
 std::unique_ptr<scalar> make_fixed_width_scalar(
-  T value,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  T                                value,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   return std::make_unique<scalar_type_t<T>>(value, true, stream, mr);
 }
@@ -143,10 +143,10 @@ std::unique_ptr<scalar> make_fixed_width_scalar(
  */
 template <typename T>
 std::unique_ptr<scalar> make_fixed_point_scalar(
-  typename T::rep value,
-  numeric::scale_type scale,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  typename T::rep                  value,
+  numeric::scale_type              scale,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   return std::make_unique<scalar_type_t<T>>(value, scale, true, stream, mr);
 }

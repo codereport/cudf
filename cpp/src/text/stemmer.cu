@@ -54,7 +54,7 @@ namespace {
  */
 __device__ bool is_consonant(cudf::string_view::const_iterator string_iterator)
 {
-  auto ch = *string_iterator;
+  auto                    ch = *string_iterator;
   cudf::string_view const d_vowels("aeiou", 5);
   if (d_vowels.find(ch) >= 0) return false;
   if ((ch != 'y') || (string_iterator.position() == 0)) return true;
@@ -70,8 +70,8 @@ __device__ bool is_consonant(cudf::string_view::const_iterator string_iterator)
 template <typename PositionIterator>
 struct is_letter_fn {
   cudf::column_device_view const d_strings;
-  letter_type ltype;
-  PositionIterator position_itr;
+  letter_type                    ltype;
+  PositionIterator               position_itr;
 
   __device__ bool operator()(cudf::size_type idx)
   {
@@ -93,9 +93,9 @@ struct is_letter_fn {
 
 template <typename PositionIterator>
 std::unique_ptr<cudf::column> is_letter(cudf::strings_column_view const& strings,
-                                        letter_type ltype,
-                                        PositionIterator position_itr,
-                                        rmm::cuda_stream_view stream,
+                                        letter_type                      ltype,
+                                        PositionIterator                 position_itr,
+                                        rmm::cuda_stream_view            stream,
                                         rmm::mr::device_memory_resource* mr)
 {
   if (strings.is_empty()) return cudf::make_empty_column(cudf::data_type{cudf::type_id::BOOL8});
@@ -126,9 +126,9 @@ namespace {
 struct dispatch_is_letter_fn {
   template <typename T, std::enable_if_t<cudf::is_index_type<T>()>* = nullptr>
   std::unique_ptr<cudf::column> operator()(cudf::strings_column_view const& strings,
-                                           letter_type ltype,
-                                           cudf::column_view const& indices,
-                                           rmm::cuda_stream_view stream,
+                                           letter_type                      ltype,
+                                           cudf::column_view const&         indices,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr) const
   {
     CUDF_EXPECTS(strings.size() == indices.size(),
@@ -185,9 +185,9 @@ struct porter_stemmer_measure_fn {
     if (d_strings.is_null(idx)) return 0;
     cudf::string_view d_str = d_strings.element<cudf::string_view>(idx);
     if (d_str.empty()) return 0;
-    int32_t measure = 0;
-    auto itr        = d_str.begin();
-    bool vowel_run  = !is_consonant(itr);
+    int32_t measure   = 0;
+    auto    itr       = d_str.begin();
+    bool    vowel_run = !is_consonant(itr);
     while (itr != d_str.end()) {
       if (is_consonant(itr)) {
         if (vowel_run) measure++;
@@ -204,7 +204,7 @@ struct porter_stemmer_measure_fn {
 }  // namespace
 
 std::unique_ptr<cudf::column> porter_stemmer_measure(cudf::strings_column_view const& strings,
-                                                     rmm::cuda_stream_view stream,
+                                                     rmm::cuda_stream_view            stream,
                                                      rmm::mr::device_memory_resource* mr)
 {
   if (strings.is_empty()) return cudf::make_empty_column(cudf::data_type{cudf::type_id::INT32});
@@ -228,9 +228,9 @@ std::unique_ptr<cudf::column> porter_stemmer_measure(cudf::strings_column_view c
 }
 
 std::unique_ptr<cudf::column> is_letter(cudf::strings_column_view const& strings,
-                                        letter_type ltype,
-                                        cudf::column_view const& indices,
-                                        rmm::cuda_stream_view stream,
+                                        letter_type                      ltype,
+                                        cudf::column_view const&         indices,
+                                        rmm::cuda_stream_view            stream,
                                         rmm::mr::device_memory_resource* mr)
 {
   return cudf::type_dispatcher(
@@ -242,8 +242,8 @@ std::unique_ptr<cudf::column> is_letter(cudf::strings_column_view const& strings
 // external APIs
 
 std::unique_ptr<cudf::column> is_letter(cudf::strings_column_view const& strings,
-                                        letter_type ltype,
-                                        cudf::size_type character_index,
+                                        letter_type                      ltype,
+                                        cudf::size_type                  character_index,
                                         rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -255,8 +255,8 @@ std::unique_ptr<cudf::column> is_letter(cudf::strings_column_view const& strings
 }
 
 std::unique_ptr<cudf::column> is_letter(cudf::strings_column_view const& strings,
-                                        letter_type ltype,
-                                        cudf::column_view const& indices,
+                                        letter_type                      ltype,
+                                        cudf::column_view const&         indices,
                                         rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

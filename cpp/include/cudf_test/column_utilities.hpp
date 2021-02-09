@@ -59,7 +59,7 @@ void expect_column_properties_equivalent(cudf::column_view const& lhs,
  */
 void expect_columns_equal(cudf::column_view const& lhs,
                           cudf::column_view const& rhs,
-                          bool print_all_differences = false);
+                          bool                     print_all_differences = false);
 
 /**
  * @brief Verifies the element-wise equivalence of two columns.
@@ -73,7 +73,7 @@ void expect_columns_equal(cudf::column_view const& lhs,
  */
 void expect_columns_equivalent(cudf::column_view const& lhs,
                                cudf::column_view const& rhs,
-                               bool print_all_differences = false);
+                               bool                     print_all_differences = false);
 
 /**
  * @brief Verifies the bitwise equality of two device memory buffers.
@@ -114,8 +114,8 @@ std::vector<std::string> to_strings(cudf::column_view const& col);
  * @param col       The column view
  */
 void print(cudf::column_view const& col,
-           std::ostream& os             = std::cout,
-           std::string const& delimiter = ",");
+           std::ostream&            os        = std::cout,
+           std::string const&       delimiter = ",");
 
 /**
  * @brief Copy the null bitmask from a column view to a host vector
@@ -138,7 +138,7 @@ std::vector<bitmask_type> bitmask_to_host(cudf::column_view const& c);
  */
 bool validate_host_masks(std::vector<bitmask_type> const& expected_mask,
                          std::vector<bitmask_type> const& got_mask_begin,
-                         size_type number_of_elements);
+                         size_type                        number_of_elements);
 
 /**
  * @brief Copies the data and bitmask of a `column_view` to the host.
@@ -198,7 +198,7 @@ std::pair<thrust::host_vector<T>, std::vector<bitmask_type>> to_host(column_view
 template <>
 inline std::pair<thrust::host_vector<std::string>, std::vector<bitmask_type>> to_host(column_view c)
 {
-  auto strings_data = cudf::strings::create_offsets(strings_column_view(c));
+  auto                      strings_data = cudf::strings::create_offsets(strings_column_view(c));
   thrust::host_vector<char> h_chars(strings_data.first);
   thrust::host_vector<size_type> h_offsets(strings_data.second);
 

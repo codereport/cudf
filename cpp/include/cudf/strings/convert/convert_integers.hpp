@@ -50,8 +50,8 @@ namespace strings {
  * @return New column with integers converted from strings.
  */
 std::unique_ptr<column> to_integers(
-  strings_column_view const& strings,
-  data_type output_type,
+  strings_column_view const&       strings,
+  data_type                        output_type,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -70,7 +70,7 @@ std::unique_ptr<column> to_integers(
  * @return New strings column with integers as strings.
  */
 std::unique_ptr<column> from_integers(
-  column_view const& integers,
+  column_view const&               integers,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -97,8 +97,8 @@ std::unique_ptr<column> from_integers(
  * @return New column with integers converted from strings.
  */
 std::unique_ptr<column> hex_to_integers(
-  strings_column_view const& strings,
-  data_type output_type,
+  strings_column_view const&       strings,
+  data_type                        output_type,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -123,7 +123,7 @@ std::unique_ptr<column> hex_to_integers(
  * @return New column of boolean results for each string.
  */
 std::unique_ptr<column> is_hex(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group

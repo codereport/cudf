@@ -42,7 +42,7 @@ csv_reader_options_builder csv_reader_options::builder(source_info const& src)
 }
 
 // Returns builder for csv_writer_options
-csv_writer_options_builder csv_writer_options::builder(sink_info const& sink,
+csv_writer_options_builder csv_writer_options::builder(sink_info const&  sink,
                                                        table_view const& table)
 {
   return csv_writer_options_builder{sink, table};
@@ -55,7 +55,7 @@ orc_reader_options_builder orc_reader_options::builder(source_info const& src)
 }
 
 // Returns builder for orc_writer_options
-orc_writer_options_builder orc_writer_options::builder(sink_info const& sink,
+orc_writer_options_builder orc_writer_options::builder(sink_info const&  sink,
                                                        table_view const& table)
 {
   return orc_writer_options_builder{sink, table};
@@ -86,7 +86,7 @@ parquet_reader_options_builder parquet_reader_options::builder(source_info const
 }
 
 // Returns builder for parquet_writer_options
-parquet_writer_options_builder parquet_writer_options::builder(sink_info const& sink,
+parquet_writer_options_builder parquet_writer_options::builder(sink_info const&  sink,
                                                                table_view const& table)
 {
   return parquet_writer_options_builder{sink, table};
@@ -107,8 +107,8 @@ chunked_parquet_writer_options_builder chunked_parquet_writer_options::builder(
 
 namespace {
 template <typename reader, typename reader_options>
-std::unique_ptr<reader> make_reader(source_info const& src_info,
-                                    reader_options const& options,
+std::unique_ptr<reader> make_reader(source_info const&               src_info,
+                                    reader_options const&            options,
                                     rmm::mr::device_memory_resource* mr)
 {
   if (src_info.type == io_type::FILEPATH) {
@@ -368,7 +368,7 @@ void write_orc(orc_writer_options const& options, rmm::mr::device_memory_resourc
  * @copydoc cudf::io::orc_chunked_writer::orc_chunked_writer
  */
 orc_chunked_writer::orc_chunked_writer(chunked_orc_writer_options const& op,
-                                       rmm::mr::device_memory_resource* mr)
+                                       rmm::mr::device_memory_resource*  mr)
 {
   namespace io_detail = cudf::io::detail;
   writer              = make_writer<detail_orc::writer>(
@@ -400,7 +400,7 @@ void orc_chunked_writer::close()
 using namespace cudf::io::detail::parquet;
 namespace detail_parquet = cudf::io::detail::parquet;
 
-table_with_metadata read_parquet(parquet_reader_options const& options,
+table_with_metadata read_parquet(parquet_reader_options const&    options,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -422,7 +422,7 @@ std::unique_ptr<std::vector<uint8_t>> merge_rowgroup_metadata(
 /**
  * @copydoc cudf::io::write_parquet
  */
-std::unique_ptr<std::vector<uint8_t>> write_parquet(parquet_writer_options const& options,
+std::unique_ptr<std::vector<uint8_t>> write_parquet(parquet_writer_options const&    options,
                                                     rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -439,7 +439,7 @@ std::unique_ptr<std::vector<uint8_t>> write_parquet(parquet_writer_options const
  * @copydoc cudf::io::parquet_chunked_writer::parquet_chunked_writer
  */
 parquet_chunked_writer::parquet_chunked_writer(chunked_parquet_writer_options const& op,
-                                               rmm::mr::device_memory_resource* mr)
+                                               rmm::mr::device_memory_resource*      mr)
 {
   namespace io_detail = cudf::io::detail;
   writer              = make_writer<detail_parquet::writer>(

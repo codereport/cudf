@@ -79,7 +79,7 @@ class metadata : public file_metadata {
    */
   void init_and_select_rows(int &row_start, int &row_count)
   {
-    const auto buffer = source->host_read(0, source->size());
+    const auto      buffer = source->host_read(0, source->size());
     avro::container pod(buffer->data(), buffer->size());
     CUDF_EXPECTS(pod.parse(this, row_count, row_start), "Cannot parse metadata");
     row_start = skip_rows;
@@ -139,10 +139,10 @@ class metadata : public file_metadata {
 };
 
 rmm::device_buffer reader::impl::decompress_data(const rmm::device_buffer &comp_block_data,
-                                                 rmm::cuda_stream_view stream)
+                                                 rmm::cuda_stream_view     stream)
 {
-  size_t uncompressed_data_size = 0;
-  hostdevice_vector<gpu_inflate_input_s> inflate_in(_metadata->block_list.size());
+  size_t                                  uncompressed_data_size = 0;
+  hostdevice_vector<gpu_inflate_input_s>  inflate_in(_metadata->block_list.size());
   hostdevice_vector<gpu_inflate_status_s> inflate_out(_metadata->block_list.size());
 
   if (_metadata->codec == "deflate") {
@@ -153,9 +153,9 @@ rmm::device_buffer reader::impl::decompress_data(const rmm::device_buffer &comp_
   } else if (_metadata->codec == "snappy") {
     // Extract the uncompressed length from the snappy stream
     for (size_t i = 0; i < _metadata->block_list.size(); i++) {
-      const auto buffer  = _source->host_read(_metadata->block_list[i].offset, 4);
-      const uint8_t *blk = buffer->data();
-      uint32_t blk_len   = blk[0];
+      const auto     buffer  = _source->host_read(_metadata->block_list[i].offset, 4);
+      const uint8_t *blk     = buffer->data();
+      uint32_t       blk_len = blk[0];
       if (blk_len > 0x7f) {
         blk_len = (blk_len & 0x7f) | (blk[1] << 7);
         if (blk_len > 0x3fff) {
@@ -233,18 +233,18 @@ rmm::device_buffer reader::impl::decompress_data(const rmm::device_buffer &comp_
   return decomp_block_data;
 }
 
-void reader::impl::decode_data(const rmm::device_buffer &block_data,
+void reader::impl::decode_data(const rmm::device_buffer &                        block_data,
                                const std::vector<std::pair<uint32_t, uint32_t>> &dict,
-                               device_span<gpu::nvstrdesc_s> global_dictionary,
-                               size_t num_rows,
-                               std::vector<std::pair<int, std::string>> selection,
-                               std::vector<column_buffer> &out_buffers,
-                               rmm::cuda_stream_view stream)
+                               device_span<gpu::nvstrdesc_s>                     global_dictionary,
+                               size_t                                            num_rows,
+                               std::vector<std::pair<int, std::string>>          selection,
+                               std::vector<column_buffer> &                      out_buffers,
+                               rmm::cuda_stream_view                             stream)
 {
   // Build gpu schema
   hostdevice_vector<gpu::schemadesc_s> schema_desc(_metadata->schema.size());
-  uint32_t min_row_data_size = 0;
-  int skip_field_cnt         = 0;
+  uint32_t                             min_row_data_size = 0;
+  int                                  skip_field_cnt    = 0;
   for (size_t i = 0; i < _metadata->schema.size(); i++) {
     type_kind_e kind = _metadata->schema[i].kind;
     if (skip_field_cnt != 0) {
@@ -279,9 +279,9 @@ void reader::impl::decode_data(const rmm::device_buffer &block_data,
   }
   std::vector<void *> valid_alias(out_buffers.size(), nullptr);
   for (size_t i = 0; i < out_buffers.size(); i++) {
-    const auto col_idx  = selection[i].first;
-    int schema_data_idx = _metadata->columns[col_idx].schema_data_idx;
-    int schema_null_idx = _metadata->columns[col_idx].schema_null_idx;
+    const auto col_idx         = selection[i].first;
+    int        schema_data_idx = _metadata->columns[col_idx].schema_data_idx;
+    int        schema_null_idx = _metadata->columns[col_idx].schema_null_idx;
 
     schema_desc[schema_data_idx].dataptr = out_buffers[i].data();
     if (schema_null_idx >= 0) {
@@ -332,8 +332,8 @@ void reader::impl::decode_data(const rmm::device_buffer &block_data,
   }
 }
 
-reader::impl::impl(std::unique_ptr<datasource> source,
-                   avro_reader_options const &options,
+reader::impl::impl(std::unique_ptr<datasource>      source,
+                   avro_reader_options const &      options,
                    rmm::mr::device_memory_resource *mr)
   : _mr(mr), _source(std::move(source)), _columns(options.get_columns())
 {
@@ -342,13 +342,13 @@ reader::impl::impl(std::unique_ptr<datasource> source,
 }
 
 table_with_metadata reader::impl::read(avro_reader_options const &options,
-                                       rmm::cuda_stream_view stream)
+                                       rmm::cuda_stream_view      stream)
 {
   auto skip_rows = options.get_skip_rows();
   auto num_rows  = options.get_num_rows();
   num_rows       = (num_rows != 0) ? num_rows : -1;
   std::vector<std::unique_ptr<column>> out_columns;
-  table_metadata metadata_out;
+  table_metadata                       metadata_out;
 
   // Select and read partial metadata / schema within the subset of rows
   _metadata->init_and_select_rows(skip_rows, num_rows);
@@ -381,11 +381,11 @@ table_with_metadata reader::impl::read(avro_reader_options const &options,
         }
       }
 
-      size_t total_dictionary_entries = 0;
-      size_t dictionary_data_size     = 0;
+      size_t                                     total_dictionary_entries = 0;
+      size_t                                     dictionary_data_size     = 0;
       std::vector<std::pair<uint32_t, uint32_t>> dict(column_types.size());
       for (size_t i = 0; i < column_types.size(); ++i) {
-        auto col_idx     = selected_columns[i].first;
+        auto  col_idx    = selected_columns[i].first;
         auto &col_schema = _metadata->schema[_metadata->columns[col_idx].schema_data_idx];
         dict[i].first    = static_cast<uint32_t>(total_dictionary_entries);
         dict[i].second   = static_cast<uint32_t>(col_schema.symbols.size());
@@ -394,15 +394,15 @@ table_with_metadata reader::impl::read(avro_reader_options const &options,
       }
 
       rmm::device_uvector<gpu::nvstrdesc_s> d_global_dict(total_dictionary_entries, stream);
-      rmm::device_uvector<char> d_global_dict_data(dictionary_data_size, stream);
+      rmm::device_uvector<char>             d_global_dict_data(dictionary_data_size, stream);
       if (total_dictionary_entries > 0) {
         std::vector<gpu::nvstrdesc_s> h_global_dict(total_dictionary_entries);
-        std::vector<char> h_global_dict_data(dictionary_data_size);
-        size_t dict_pos = 0;
+        std::vector<char>             h_global_dict_data(dictionary_data_size);
+        size_t                        dict_pos = 0;
         for (size_t i = 0; i < column_types.size(); ++i) {
-          auto const col_idx     = selected_columns[i].first;
+          auto const  col_idx    = selected_columns[i].first;
           auto const &col_schema = _metadata->schema[_metadata->columns[col_idx].schema_data_idx];
-          auto const col_dict_entries = &(h_global_dict[dict[i].first]);
+          auto const  col_dict_entries = &(h_global_dict[dict[i].first]);
           for (size_t j = 0; j < dict[i].second; j++) {
             auto const &symbols = col_schema.symbols[j];
 
@@ -461,8 +461,8 @@ table_with_metadata reader::impl::read(avro_reader_options const &options,
 }
 
 // Forward to implementation
-reader::reader(std::vector<std::string> const &filepaths,
-               avro_reader_options const &options,
+reader::reader(std::vector<std::string> const & filepaths,
+               avro_reader_options const &      options,
                rmm::mr::device_memory_resource *mr)
 {
   CUDF_EXPECTS(filepaths.size() == 1, "Only a single source is currently supported.");
@@ -471,8 +471,8 @@ reader::reader(std::vector<std::string> const &filepaths,
 
 // Forward to implementation
 reader::reader(std::vector<std::unique_ptr<cudf::io::datasource>> &&sources,
-               avro_reader_options const &options,
-               rmm::mr::device_memory_resource *mr)
+               avro_reader_options const &                          options,
+               rmm::mr::device_memory_resource *                    mr)
 {
   CUDF_EXPECTS(sources.size() == 1, "Only a single source is currently supported.");
   _impl = std::make_unique<impl>(std::move(sources[0]), options, mr);

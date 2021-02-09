@@ -30,14 +30,14 @@ namespace {
 struct dispatch_is_not_nan {
   template <typename T>
   std::enable_if_t<std::is_floating_point<T>::value, bool> __device__
-  operator()(cudf::column_device_view col_device_view, cudf::size_type i)
+                                                           operator()(cudf::column_device_view col_device_view, cudf::size_type i)
   {
     return col_device_view.is_valid(i) ? not std::isnan(col_device_view.element<T>(i)) : true;
   }
 
   template <typename T>
   std::enable_if_t<not std::is_floating_point<T>::value, bool> __device__
-  operator()(cudf::column_device_view col_device_view, cudf::size_type i)
+                                                               operator()(cudf::column_device_view col_device_view, cudf::size_type i)
   {
     return true;
   }
@@ -63,14 +63,14 @@ struct valid_table_filter {
   ~valid_table_filter() = default;
 
   valid_table_filter(cudf::table_device_view const& keys_device_view,
-                     cudf::size_type keep_threshold)
+                     cudf::size_type                keep_threshold)
     : keep_threshold(keep_threshold), keys_device_view(keys_device_view)
   {
   }
 
  protected:
-  cudf::size_type keep_threshold;
-  cudf::size_type num_columns;
+  cudf::size_type         keep_threshold;
+  cudf::size_type         num_columns;
   cudf::table_device_view keys_device_view;
 };
 
@@ -81,10 +81,10 @@ namespace detail {
 /*
  * Filters a table to remove nans elements.
  */
-std::unique_ptr<table> drop_nans(table_view const& input,
-                                 std::vector<size_type> const& keys,
-                                 cudf::size_type keep_threshold,
-                                 rmm::cuda_stream_view stream,
+std::unique_ptr<table> drop_nans(table_view const&                input,
+                                 std::vector<size_type> const&    keys,
+                                 cudf::size_type                  keep_threshold,
+                                 rmm::cuda_stream_view            stream,
                                  rmm::mr::device_memory_resource* mr)
 {
   auto keys_view = input.select(keys);
@@ -109,9 +109,9 @@ std::unique_ptr<table> drop_nans(table_view const& input,
 /*
  * Filters a table to remove nan elements.
  */
-std::unique_ptr<table> drop_nans(table_view const& input,
-                                 std::vector<size_type> const& keys,
-                                 cudf::size_type keep_threshold,
+std::unique_ptr<table> drop_nans(table_view const&                input,
+                                 std::vector<size_type> const&    keys,
+                                 cudf::size_type                  keep_threshold,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -120,8 +120,8 @@ std::unique_ptr<table> drop_nans(table_view const& input,
 /*
  * Filters a table to remove nan null elements.
  */
-std::unique_ptr<table> drop_nans(table_view const& input,
-                                 std::vector<size_type> const& keys,
+std::unique_ptr<table> drop_nans(table_view const&                input,
+                                 std::vector<size_type> const&    keys,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

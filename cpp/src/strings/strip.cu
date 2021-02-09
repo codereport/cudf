@@ -59,10 +59,10 @@ enum TwoPass {
 template <TwoPass Pass = SizeOnly>
 struct strip_fn {
   column_device_view const d_strings;
-  strip_type stype;  // right, left, or both
-  string_view d_to_strip;
-  int32_t const* d_offsets{};
-  char* d_chars{};
+  strip_type               stype;  // right, left, or both
+  string_view              d_to_strip;
+  int32_t const*           d_offsets{};
+  char*                    d_chars{};
 
   __device__ bool is_strip_character(char_utf8 chr)
   {
@@ -76,10 +76,10 @@ struct strip_fn {
   __device__ size_type operator()(size_type idx)
   {
     if (d_strings.is_null(idx)) return 0;
-    string_view d_str     = d_strings.element<string_view>(idx);
-    size_type length      = d_str.length();
-    size_type left_offset = 0;
-    auto itr              = d_str.begin();
+    string_view d_str       = d_strings.element<string_view>(idx);
+    size_type   length      = d_str.length();
+    size_type   left_offset = 0;
+    auto        itr         = d_str.begin();
     if (stype == strip_type::LEFT || stype == strip_type::BOTH) {
       for (; itr != d_str.end();) {
         if (!is_strip_character(*itr++)) break;
@@ -104,11 +104,11 @@ struct strip_fn {
 }  // namespace
 
 std::unique_ptr<column> strip(
-  strings_column_view const& strings,
-  strip_type stype                    = strip_type::BOTH,
-  string_scalar const& to_strip       = string_scalar(""),
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  strings_column_view const&       strings,
+  strip_type                       stype    = strip_type::BOTH,
+  string_scalar const&             to_strip = string_scalar(""),
+  rmm::cuda_stream_view            stream   = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr       = rmm::mr::get_current_device_resource())
 {
   auto strings_count = strings.size();
   if (strings_count == 0) return detail::make_empty_strings_column(stream, mr);
@@ -116,9 +116,9 @@ std::unique_ptr<column> strip(
   CUDF_EXPECTS(to_strip.is_valid(), "Parameter to_strip must be valid");
   string_view d_to_strip(to_strip.data(), to_strip.size());
 
-  auto strings_column  = column_device_view::create(strings.parent(), stream);
-  auto d_column        = *strings_column;
-  size_type null_count = strings.null_count();
+  auto      strings_column = column_device_view::create(strings.parent(), stream);
+  auto      d_column       = *strings_column;
+  size_type null_count     = strings.null_count();
 
   // copy null mask
   rmm::device_buffer null_mask = cudf::detail::copy_bitmask(strings.parent(), stream, mr);
@@ -132,10 +132,10 @@ std::unique_ptr<column> strip(
   auto d_offsets    = offsets_view.data<int32_t>();
 
   // build the chars column -- convert characters based on case_flag parameter
-  size_type bytes   = thrust::device_pointer_cast(d_offsets)[strings_count];
-  auto chars_column = create_chars_child_column(strings_count, null_count, bytes, stream, mr);
-  auto chars_view   = chars_column->mutable_view();
-  auto d_chars      = chars_view.data<char>();
+  size_type bytes        = thrust::device_pointer_cast(d_offsets)[strings_count];
+  auto      chars_column = create_chars_child_column(strings_count, null_count, bytes, stream, mr);
+  auto      chars_view   = chars_column->mutable_view();
+  auto      d_chars      = chars_view.data<char>();
   thrust::for_each_n(rmm::exec_policy(stream),
                      thrust::make_counting_iterator<size_type>(0),
                      strings_count,
@@ -154,9 +154,9 @@ std::unique_ptr<column> strip(
 
 // external APIs
 
-std::unique_ptr<column> strip(strings_column_view const& strings,
-                              strip_type stype,
-                              string_scalar const& to_strip,
+std::unique_ptr<column> strip(strings_column_view const&       strings,
+                              strip_type                       stype,
+                              string_scalar const&             to_strip,
                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

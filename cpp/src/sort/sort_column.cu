@@ -44,9 +44,9 @@ struct column_sorted_order_fn {
    * @param stream CUDA stream used for device memory operations and kernel launches
    */
   template <typename T, typename std::enable_if_t<is_radix_sort_supported<T>()>* = nullptr>
-  void radix_sort(column_view const& input,
-                  mutable_column_view& indices,
-                  bool ascending,
+  void radix_sort(column_view const&    input,
+                  mutable_column_view&  indices,
+                  bool                  ascending,
                   rmm::cuda_stream_view stream)
   {
     // A non-stable sort on a column of arithmetic type with no nulls will use a radix sort
@@ -88,10 +88,10 @@ struct column_sorted_order_fn {
    */
   template <typename T,
             typename std::enable_if_t<cudf::is_relationally_comparable<T, T>()>* = nullptr>
-  void operator()(column_view const& input,
-                  mutable_column_view& indices,
-                  bool ascending,
-                  null_order null_precedence,
+  void operator()(column_view const&    input,
+                  mutable_column_view&  indices,
+                  bool                  ascending,
+                  null_order            null_precedence,
                   rmm::cuda_stream_view stream)
   {
     // column with nulls or non-supported types will also use a comparator
@@ -121,10 +121,10 @@ struct column_sorted_order_fn {
  * sorted_order(column_view&,order,null_order,rmm::cuda_stream_view,rmm::mr::device_memory_resource*)
  */
 template <>
-std::unique_ptr<column> sorted_order<false>(column_view const& input,
-                                            order column_order,
-                                            null_order null_precedence,
-                                            rmm::cuda_stream_view stream,
+std::unique_ptr<column> sorted_order<false>(column_view const&               input,
+                                            order                            column_order,
+                                            null_order                       null_precedence,
+                                            rmm::cuda_stream_view            stream,
                                             rmm::mr::device_memory_resource* mr)
 {
   auto sorted_indices = cudf::make_numeric_column(

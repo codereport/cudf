@@ -17,12 +17,12 @@
 auto strings_to_string_views(std::vector<std::string>& input_strings)
 {
   auto all_valid = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
-  std::vector<char> chars;
+  std::vector<char>    chars;
   std::vector<int32_t> offsets;
   std::tie(chars, offsets) = cudf::test::detail::make_chars_and_offsets(
     input_strings.begin(), input_strings.end(), all_valid);
   thrust::device_vector<char> dev_chars(chars);
-  char* c_start = thrust::raw_pointer_cast(dev_chars.data());
+  char*                       c_start = thrust::raw_pointer_cast(dev_chars.data());
 
   // calculate the expected value by CPU. (but contains device pointers)
   std::vector<cudf::string_view> replaced_array(input_strings.size());
@@ -50,8 +50,8 @@ TYPED_TEST(IteratorTest, non_null_iterator)
   thrust::host_vector<T> replaced_array(host_array);
 
   // driven by iterator as a pointer of device array.
-  auto it_dev      = dev_array.begin();
-  T expected_value = *std::min_element(replaced_array.begin(), replaced_array.end());
+  auto it_dev         = dev_array.begin();
+  T    expected_value = *std::min_element(replaced_array.begin(), replaced_array.end());
   this->iterator_test_thrust(replaced_array, it_dev, dev_array.size());
   this->iterator_test_cub(expected_value, it_dev, dev_array.size());
 
@@ -109,10 +109,10 @@ TEST_F(TransformedIteratorTest, null_iterator_upcast)
   T init{0};
 
   // data and valid arrays
-  std::vector<T> host_values(column_size);
+  std::vector<T>    host_values(column_size);
   std::vector<bool> host_bools(column_size);
 
-  cudf::test::UniformRandomGenerator<T> rng(-128, 127);
+  cudf::test::UniformRandomGenerator<T>    rng(-128, 127);
   cudf::test::UniformRandomGenerator<bool> rbg;
   std::generate(host_values.begin(), host_values.end(), [&rng]() { return rng.generate(); });
   std::generate(host_bools.begin(), host_bools.end(), [&rbg]() { return rbg.generate(); });
@@ -148,14 +148,14 @@ TEST_F(TransformedIteratorTest, null_iterator_square)
   const int column_size{1000};
   using T        = int8_t;
   using T_upcast = int64_t;
-  T init{0};
+  T                                   init{0};
   cudf::transformer_squared<T_upcast> transformer{};
 
   // data and valid arrays
-  std::vector<T> host_values(column_size);
+  std::vector<T>    host_values(column_size);
   std::vector<bool> host_bools(column_size);
 
-  cudf::test::UniformRandomGenerator<T> rng(-128, 127);
+  cudf::test::UniformRandomGenerator<T>    rng(-128, 127);
   cudf::test::UniformRandomGenerator<bool> rbg;
   std::generate(host_values.begin(), host_values.end(), [&rng]() { return rng.generate(); });
   std::generate(host_bools.begin(), host_bools.end(), [&rbg]() { return rbg.generate(); });
@@ -188,13 +188,13 @@ TEST_F(TransformedIteratorTest, large_size_reduction)
   using T = int64_t;
 
   const int column_size{1000000};
-  const T init{0};
+  const T   init{0};
 
   // data and valid arrays
-  std::vector<T> host_values(column_size);
+  std::vector<T>    host_values(column_size);
   std::vector<bool> host_bools(column_size);
 
-  cudf::test::UniformRandomGenerator<T> rng(-128, 128);
+  cudf::test::UniformRandomGenerator<T>    rng(-128, 128);
   cudf::test::UniformRandomGenerator<bool> rbg;
   std::generate(host_values.begin(), host_values.end(), [&rng]() { return rng.generate(); });
   std::generate(host_bools.begin(), host_bools.end(), [&rbg]() { return rbg.generate(); });
@@ -229,7 +229,7 @@ TEST_F(StringIteratorTest, string_view_null_iterator)
   std::string zero("zero");
   // the char data has to be in GPU
   thrust::device_vector<char> initmsg(zero.begin(), zero.end());
-  T init = T{initmsg.data().get(), int(initmsg.size())};
+  T                           init = T{initmsg.data().get(), int(initmsg.size())};
 
   // data and valid arrays
   std::vector<std::string> host_values(
@@ -245,7 +245,7 @@ TEST_F(StringIteratorTest, string_view_null_iterator)
                  [zero](auto s, auto b) { return b ? s : zero; });
 
   thrust::device_vector<char> dev_chars;
-  thrust::host_vector<T> replaced_array(host_values.size());
+  thrust::host_vector<T>      replaced_array(host_values.size());
   std::tie(dev_chars, replaced_array) = strings_to_string_views(replaced_strings);
 
   // create a column with bool vector
@@ -266,19 +266,19 @@ TEST_F(StringIteratorTest, string_view_no_null_iterator)
   std::string zero("zero");
   // the char data has to be in GPU
   thrust::device_vector<char> initmsg(zero.begin(), zero.end());
-  T init = T{initmsg.data().get(), int(initmsg.size())};
+  T                           init = T{initmsg.data().get(), int(initmsg.size())};
 
   // data array
   std::vector<std::string> host_values(
     {"one", "two", "three", "four", "five", "six", "eight", "nine"});
 
   thrust::device_vector<char> dev_chars;
-  thrust::host_vector<T> all_array(host_values.size());
+  thrust::host_vector<T>      all_array(host_values.size());
   std::tie(dev_chars, all_array) = strings_to_string_views(host_values);
 
   // create a column with bool vector
   cudf::test::strings_column_wrapper w_col(host_values.begin(), host_values.end());
-  auto d_col = cudf::column_device_view::create(w_col);
+  auto                               d_col = cudf::column_device_view::create(w_col);
 
   // GPU test
   auto it_dev = d_col->begin<T>();
@@ -292,13 +292,13 @@ TEST_F(StringIteratorTest, string_scalar_iterator)
   std::string zero("zero");
   // the char data has to be in GPU
   thrust::device_vector<char> initmsg(zero.begin(), zero.end());
-  T init = T{initmsg.data().get(), int(initmsg.size())};
+  T                           init = T{initmsg.data().get(), int(initmsg.size())};
 
   // data array
   std::vector<std::string> host_values(100, zero);
 
   thrust::device_vector<char> dev_chars;
-  thrust::host_vector<T> all_array(host_values.size());
+  thrust::host_vector<T>      all_array(host_values.size());
   std::tie(dev_chars, all_array) = strings_to_string_views(host_values);
 
   // calculate the expected value by CPU.

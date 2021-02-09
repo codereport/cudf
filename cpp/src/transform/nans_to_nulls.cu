@@ -32,8 +32,8 @@ struct dispatch_nan_to_null {
   template <typename T>
   std::enable_if_t<std::is_floating_point<T>::value,
                    std::pair<std::unique_ptr<rmm::device_buffer>, cudf::size_type>>
-  operator()(column_view const& input,
-             rmm::cuda_stream_view stream,
+  operator()(column_view const&               input,
+             rmm::cuda_stream_view            stream,
              rmm::mr::device_memory_resource* mr)
   {
     auto input_device_view_ptr = column_device_view::create(input, stream);
@@ -72,8 +72,8 @@ struct dispatch_nan_to_null {
   template <typename T>
   std::enable_if_t<!std::is_floating_point<T>::value,
                    std::pair<std::unique_ptr<rmm::device_buffer>, cudf::size_type>>
-  operator()(column_view const& input,
-             rmm::cuda_stream_view stream,
+  operator()(column_view const&               input,
+             rmm::cuda_stream_view            stream,
              rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("Input column can't be a non-floating type");

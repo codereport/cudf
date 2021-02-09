@@ -32,8 +32,8 @@ namespace detail {
  * explanation.
  */
 std::string to_string(cudf::column_view const& col,
-                      std::string const& delimiter,
-                      std::string const& indent = "");
+                      std::string const&       delimiter,
+                      std::string const&       indent = "");
 
 /**
  * @brief Formats a null mask as a string
@@ -44,8 +44,8 @@ std::string to_string(cudf::column_view const& col,
  * explanation.
  */
 std::string to_string(std::vector<bitmask_type> const& null_mask,
-                      size_type null_mask_size,
-                      std::string const& indent = "");
+                      size_type                        null_mask_size,
+                      std::string const&               indent = "");
 
 /**
  * @brief Convert column values to a host vector of strings

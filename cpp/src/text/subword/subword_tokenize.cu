@@ -54,10 +54,10 @@ __global__ void kernel_compute_tensor_metadata(
   uint32_t const* offsets,
   uint32_t const* row2tensor,
   uint32_t const* row2row_within_tensor,
-  uint32_t max_sequence_length,
-  uint32_t nrows_tensor_token_ids,
-  uint32_t stride,
-  bool do_truncate,
+  uint32_t        max_sequence_length,
+  uint32_t        nrows_tensor_token_ids,
+  uint32_t        stride,
+  bool            do_truncate,
   // output
   uint32_t* final_tensor,
   uint32_t* attn_mask,
@@ -124,13 +124,13 @@ __global__ void kernel_compute_tensor_metadata(
 }  // namespace
 
 tokenizer_result subword_tokenize(cudf::strings_column_view const& strings,
-                                  hashed_vocabulary const& vocab_table,
-                                  uint32_t max_sequence_length,
-                                  uint32_t stride,
-                                  bool do_lower_case,
-                                  bool do_truncate,
-                                  uint32_t max_rows_tensor,
-                                  rmm::cuda_stream_view stream,
+                                  hashed_vocabulary const&         vocab_table,
+                                  uint32_t                         max_sequence_length,
+                                  uint32_t                         stride,
+                                  bool                             do_lower_case,
+                                  bool                             do_truncate,
+                                  uint32_t                         max_rows_tensor,
+                                  rmm::cuda_stream_view            stream,
                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(stride <= max_sequence_length,
@@ -165,7 +165,7 @@ tokenizer_result subword_tokenize(cudf::strings_column_view const& strings,
   // Compute the string-per-tensor offsets values by scanning
   // over the number of tokens for each string.
   rmm::device_uvector<uint32_t> offsets_per_tensor(strings_count + 1, stream);
-  auto d_offsets_per_tensor = offsets_per_tensor.data();
+  auto                          d_offsets_per_tensor = offsets_per_tensor.data();
 
   thrust::transform_exclusive_scan(
     rmm::exec_policy(stream),
@@ -184,9 +184,9 @@ tokenizer_result subword_tokenize(cudf::strings_column_view const& strings,
 
   // compute global_row to tensor, and global_row to within_tensor_row correspondence
   rmm::device_uvector<uint32_t> row2tensor(nrows_tensor_token_ids, stream);
-  auto d_row2tensor = row2tensor.data();
+  auto                          d_row2tensor = row2tensor.data();
   rmm::device_uvector<uint32_t> row2row_within_tensor(nrows_tensor_token_ids, stream);
-  auto d_row2row_within_tensor = row2row_within_tensor.data();
+  auto                          d_row2row_within_tensor = row2row_within_tensor.data();
   thrust::for_each_n(
     rmm::exec_policy(stream),
     thrust::make_counting_iterator<uint32_t>(0),
@@ -219,7 +219,7 @@ tokenizer_result subword_tokenize(cudf::strings_column_view const& strings,
                                                    mr);
 
   // compute final-tensor, mask, and metadata
-  constexpr int block_size = 256;
+  constexpr int               block_size = 256;
   cudf::detail::grid_1d const grid{
     static_cast<cudf::size_type>(nrows_tensor_token_ids * max_sequence_length), block_size};
   kernel_compute_tensor_metadata<<<grid.num_blocks,
@@ -248,12 +248,12 @@ tokenizer_result subword_tokenize(cudf::strings_column_view const& strings,
 }  // namespace detail
 
 tokenizer_result subword_tokenize(cudf::strings_column_view const& strings,
-                                  std::string const& filename_hashed_vocabulary,
-                                  uint32_t max_sequence_length,
-                                  uint32_t stride,
-                                  bool do_lower_case,
-                                  bool do_truncate,
-                                  uint32_t max_rows_tensor,
+                                  std::string const&               filename_hashed_vocabulary,
+                                  uint32_t                         max_sequence_length,
+                                  uint32_t                         stride,
+                                  bool                             do_lower_case,
+                                  bool                             do_truncate,
+                                  uint32_t                         max_rows_tensor,
                                   rmm::mr::device_memory_resource* mr)
 {
   hashed_vocabulary vocab_table = load_vocabulary_file(filename_hashed_vocabulary, mr);
@@ -270,12 +270,12 @@ tokenizer_result subword_tokenize(cudf::strings_column_view const& strings,
 }
 
 tokenizer_result subword_tokenize(cudf::strings_column_view const& strings,
-                                  hashed_vocabulary const& vocabulary_table,
-                                  uint32_t max_sequence_length,
-                                  uint32_t stride,
-                                  bool do_lower_case,
-                                  bool do_truncate,
-                                  uint32_t max_rows_tensor,
+                                  hashed_vocabulary const&         vocabulary_table,
+                                  uint32_t                         max_sequence_length,
+                                  uint32_t                         stride,
+                                  bool                             do_lower_case,
+                                  bool                             do_truncate,
+                                  uint32_t                         max_rows_tensor,
                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

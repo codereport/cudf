@@ -106,9 +106,9 @@ typename std::enable_if_t<cudf::is_timestamp<T>(), T> accumulate(std::vector<T> 
 template <typename T>
 struct AtomicsTest : public cudf::test::BaseFixture {
   void atomic_test(std::vector<int> const& v_input,
-                   bool is_cas_test,
-                   int block_size = 0,
-                   int grid_size  = 1)
+                   bool                    is_cas_test,
+                   int                     block_size = 0,
+                   int                     grid_size  = 1)
   {
     size_t vec_size = v_input.size();
 
@@ -167,7 +167,7 @@ TYPED_TEST_CASE(AtomicsTest, cudf::test::FixedWidthTypesWithoutFixedPoint);
 // tests for atomicAdd/Min/Max
 TYPED_TEST(AtomicsTest, atomicOps)
 {
-  bool is_cas_test = false;
+  bool             is_cas_test = false;
   std::vector<int> input_array({0, 6, 0, -14, 13, 64, -13, -20, 45});
   this->atomic_test(input_array, is_cas_test);
 
@@ -178,7 +178,7 @@ TYPED_TEST(AtomicsTest, atomicOps)
 // tests for atomicCAS
 TYPED_TEST(AtomicsTest, atomicCAS)
 {
-  bool is_cas_test = true;
+  bool             is_cas_test = true;
   std::vector<int> input_array({0, 6, 0, -14, 13, 64, -13, -20, 45});
   this->atomic_test(input_array, is_cas_test);
 
@@ -190,8 +190,8 @@ TYPED_TEST(AtomicsTest, atomicCAS)
 TYPED_TEST(AtomicsTest, atomicOpsGrid)
 {
   bool is_cas_test = false;
-  int block_size   = 3;
-  int grid_size    = 4;
+  int  block_size  = 3;
+  int  grid_size   = 4;
 
   std::vector<int> input_array({0, 6, 0, -14, 13, 64, -13, -20, 45});
   this->atomic_test(input_array, is_cas_test, block_size, grid_size);
@@ -204,8 +204,8 @@ TYPED_TEST(AtomicsTest, atomicOpsGrid)
 TYPED_TEST(AtomicsTest, atomicCASGrid)
 {
   bool is_cas_test = true;
-  int block_size   = 3;
-  int grid_size    = 4;
+  int  block_size  = 3;
+  int  grid_size   = 4;
 
   std::vector<int> input_array({0, 6, 0, -14, 13, 64, -13, -20, 45});
   this->atomic_test(input_array, is_cas_test, block_size, grid_size);
@@ -218,12 +218,12 @@ TYPED_TEST(AtomicsTest, atomicCASGrid)
 TYPED_TEST(AtomicsTest, atomicOpsRandom)
 {
   bool is_cas_test = false;
-  int block_size   = 256;
-  int grid_size    = 64;
+  int  block_size  = 256;
+  int  grid_size   = 64;
 
   std::vector<int> input_array(grid_size * block_size);
 
-  std::default_random_engine engine;
+  std::default_random_engine      engine;
   std::uniform_int_distribution<> dist(-10, 10);
   std::generate(input_array.begin(), input_array.end(), [&]() { return dist(engine); });
 
@@ -233,12 +233,12 @@ TYPED_TEST(AtomicsTest, atomicOpsRandom)
 TYPED_TEST(AtomicsTest, atomicCASRandom)
 {
   bool is_cas_test = true;
-  int block_size   = 256;
-  int grid_size    = 64;
+  int  block_size  = 256;
+  int  grid_size   = 64;
 
   std::vector<int> input_array(grid_size * block_size);
 
-  std::default_random_engine engine;
+  std::default_random_engine      engine;
   std::uniform_int_distribution<> dist(-10, 10);
   std::generate(input_array.begin(), input_array.end(), [&]() { return dist(engine); });
 
@@ -265,7 +265,7 @@ template <typename T>
 struct AtomicsBitwiseOpTest : public cudf::test::BaseFixture {
   void atomic_test(std::vector<uint64_t> const& v_input, int block_size = 0, int grid_size = 1)
   {
-    size_t vec_size = v_input.size();
+    size_t         vec_size = v_input.size();
     std::vector<T> v(vec_size);
     std::transform(v_input.begin(), v_input.end(), v.begin(), [](int x) {
       T t(x);
@@ -281,7 +281,7 @@ struct AtomicsBitwiseOpTest : public cudf::test::BaseFixture {
                                T(0),
                                T(0),
                                T(0)};  // +3 elements padding for int8 tests
-    T exact[3];
+    T              exact[3];
     exact[0] = std::accumulate(
       v.begin(), v.end(), identity[0], [](T acc, uint64_t i) { return acc & T(i); });
     exact[1] = std::accumulate(

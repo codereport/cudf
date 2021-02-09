@@ -58,8 +58,8 @@ struct InsertTest : public cudf::test::BaseFixture {
     rmm::cuda_stream_default.synchronize();
   }
 
-  const cudf::size_type size{10000};
-  rmm::device_vector<pair_type> pairs;
+  const cudf::size_type                                     size{10000};
+  rmm::device_vector<pair_type>                             pairs;
   std::unique_ptr<map_type, std::function<void(map_type*)>> map;
 };
 
@@ -117,8 +117,8 @@ template <typename pair_type,
 struct identical_pair_generator {
   identical_pair_generator(key_type k = 42, value_type v = 42) : key{k}, value{v} {}
   __device__ pair_type operator()(cudf::size_type i) { return thrust::make_pair(key, value); }
-  key_type key;
-  value_type value;
+  key_type             key;
+  value_type           value;
 };
 
 template <typename pair_type,

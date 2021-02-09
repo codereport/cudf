@@ -31,7 +31,7 @@ namespace cudf {
 namespace io {
 
 struct timezone_table_view {
-  int32_t gmt_offset = 0;
+  int32_t                                  gmt_offset = 0;
   cudf::detail::device_span<int64_t const> ttimes;
   cudf::detail::device_span<int32_t const> offsets;
 };
@@ -58,8 +58,8 @@ static constexpr uint32_t cycle_entry_cnt = 2 * cycle_years;
  */
 CUDA_HOST_DEVICE_CALLABLE int32_t get_gmt_offset_impl(int64_t const *ttimes,
                                                       int32_t const *offsets,
-                                                      size_t count,
-                                                      int64_t ts)
+                                                      size_t         count,
+                                                      int64_t        ts)
 {
   // Returns start of the range if all elements are larger than the input timestamp
   auto last_less_equal_ttime_idx = [&](long begin_idx, long end_idx, int64_t ts) {
@@ -87,7 +87,7 @@ CUDA_HOST_DEVICE_CALLABLE int32_t get_gmt_offset_impl(int64_t const *ttimes,
  */
 inline __host__ int32_t get_gmt_offset(cudf::detail::host_span<int64_t const> ttimes,
                                        cudf::detail::host_span<int32_t const> offsets,
-                                       int64_t ts)
+                                       int64_t                                ts)
 {
   CUDF_EXPECTS(ttimes.size() == offsets.size(),
                "transition times and offsets must have the same length");
@@ -101,16 +101,16 @@ inline __host__ int32_t get_gmt_offset(cudf::detail::host_span<int64_t const> tt
  */
 inline __device__ int32_t get_gmt_offset(cudf::detail::device_span<int64_t const> ttimes,
                                          cudf::detail::device_span<int32_t const> offsets,
-                                         int64_t ts)
+                                         int64_t                                  ts)
 {
   return get_gmt_offset_impl(ttimes.begin(), offsets.begin(), ttimes.size(), ts);
 }
 
 struct timezone_table {
-  int32_t gmt_offset = 0;
+  int32_t                     gmt_offset = 0;
   rmm::device_vector<int64_t> ttimes;
   rmm::device_vector<int32_t> offsets;
-  timezone_table_view view() const { return {gmt_offset, ttimes, offsets}; }
+  timezone_table_view         view() const { return {gmt_offset, ttimes, offsets}; }
 };
 
 /**

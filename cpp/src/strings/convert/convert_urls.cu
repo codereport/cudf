@@ -41,8 +41,8 @@ namespace {
 //
 struct url_encoder_fn {
   column_device_view const d_strings;
-  int32_t const* d_offsets{};
-  char* d_chars{};
+  int32_t const*           d_offsets{};
+  char*                    d_chars{};
 
   // utility to create 2-byte hex characters from single binary byte
   __device__ void byte_to_hex(uint8_t byte, char* hex)
@@ -73,9 +73,9 @@ struct url_encoder_fn {
     if (d_strings.is_null(idx)) return 0;
     string_view d_str = d_strings.element<string_view>(idx);
     //
-    char* out_ptr    = d_chars ? d_chars + d_offsets[idx] : nullptr;
-    size_type nbytes = 0;
-    char hex[2];  // two-byte hex max
+    char*     out_ptr = d_chars ? d_chars + d_offsets[idx] : nullptr;
+    size_type nbytes  = 0;
+    char      hex[2];  // two-byte hex max
     for (auto itr = d_str.begin(); itr != d_str.end(); ++itr) {
       auto ch = *itr;
       if (ch < 128) {
@@ -93,7 +93,7 @@ struct url_encoder_fn {
         }
       } else  // these are to be utf-8 url-encoded
       {
-        uint8_t char_bytes[4];  // holds utf-8 bytes for one character
+        uint8_t   char_bytes[4];  // holds utf-8 bytes for one character
         size_type char_width = from_char_utf8(ch, reinterpret_cast<char*>(char_bytes));
         nbytes += char_width * 3;  // '%' plus 2 hex chars per byte (example: é is %C3%A9)
         // process each byte in this current character
@@ -112,8 +112,8 @@ struct url_encoder_fn {
 
 //
 std::unique_ptr<column> url_encode(
-  strings_column_view const& strings,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   size_type strings_count = strings.size();
@@ -155,7 +155,7 @@ std::unique_ptr<column> url_encode(
 }  // namespace detail
 
 // external API
-std::unique_ptr<column> url_encode(strings_column_view const& strings,
+std::unique_ptr<column> url_encode(strings_column_view const&       strings,
                                    rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -176,8 +176,8 @@ namespace {
 //
 struct url_decoder_fn {
   column_device_view const d_strings;
-  int32_t const* d_offsets{};
-  char* d_chars{};
+  int32_t const*           d_offsets{};
+  char*                    d_chars{};
 
   // utility to convert a hex char into a single byte
   __device__ uint8_t hex_char_to_byte(char ch)
@@ -192,11 +192,11 @@ struct url_decoder_fn {
   __device__ size_type operator()(size_type idx)
   {
     if (d_strings.is_null(idx)) return 0;
-    string_view d_str = d_strings.element<string_view>(idx);
-    char* out_ptr = d_chars ? out_ptr = d_chars + d_offsets[idx] : nullptr;
-    size_type nbytes                  = 0;
-    const char* in_ptr                = d_str.data();
-    const char* end                   = in_ptr + d_str.size_bytes();
+    string_view d_str   = d_strings.element<string_view>(idx);
+    char*       out_ptr = d_chars ? out_ptr = d_chars + d_offsets[idx] : nullptr;
+    size_type   nbytes                      = 0;
+    const char* in_ptr                      = d_str.data();
+    const char* end                         = in_ptr + d_str.size_bytes();
     while (in_ptr < end)  // walk through each byte
     {
       char ch = *in_ptr++;
@@ -215,8 +215,8 @@ struct url_decoder_fn {
 
 //
 std::unique_ptr<column> url_decode(
-  strings_column_view const& strings,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   size_type strings_count = strings.size();
@@ -260,7 +260,7 @@ std::unique_ptr<column> url_decode(
 
 // external API
 
-std::unique_ptr<column> url_decode(strings_column_view const& strings,
+std::unique_ptr<column> url_decode(strings_column_view const&       strings,
                                    rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

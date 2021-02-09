@@ -40,7 +40,7 @@ namespace strings {
  * @return New column of strings with characters converted.
  */
 std::unique_ptr<column> to_lower(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -57,7 +57,7 @@ std::unique_ptr<column> to_lower(
  * @return New column of strings with characters converted.
  */
 std::unique_ptr<column> to_upper(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -75,7 +75,7 @@ std::unique_ptr<column> to_upper(
  * @return New column of strings with characters converted.
  */
 std::unique_ptr<column> swapcase(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group

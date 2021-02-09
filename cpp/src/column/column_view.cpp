@@ -28,12 +28,12 @@
 
 namespace cudf {
 namespace detail {
-column_view_base::column_view_base(data_type type,
-                                   size_type size,
-                                   void const* data,
+column_view_base::column_view_base(data_type           type,
+                                   size_type           size,
+                                   void const*         data,
                                    bitmask_type const* null_mask,
-                                   size_type null_count,
-                                   size_type offset)
+                                   size_type           null_count,
+                                   size_type           offset)
   : _type{type},
     _size{size},
     _data{data},
@@ -79,12 +79,12 @@ size_type column_view_base::null_count(size_type begin, size_type end) const
 }  // namespace detail
 
 // Immutable view constructor
-column_view::column_view(data_type type,
-                         size_type size,
-                         void const* data,
-                         bitmask_type const* null_mask,
-                         size_type null_count,
-                         size_type offset,
+column_view::column_view(data_type                       type,
+                         size_type                       size,
+                         void const*                     data,
+                         bitmask_type const*             null_mask,
+                         size_type                       null_count,
+                         size_type                       offset,
                          std::vector<column_view> const& children)
   : detail::column_view_base{type, size, data, null_mask, null_count, offset}, _children{children}
 {
@@ -94,12 +94,12 @@ column_view::column_view(data_type type,
 }
 
 // Mutable view constructor
-mutable_column_view::mutable_column_view(data_type type,
-                                         size_type size,
-                                         void* data,
-                                         bitmask_type* null_mask,
-                                         size_type null_count,
-                                         size_type offset,
+mutable_column_view::mutable_column_view(data_type                               type,
+                                         size_type                               size,
+                                         void*                                   data,
+                                         bitmask_type*                           null_mask,
+                                         size_type                               null_count,
+                                         size_type                               offset,
                                          std::vector<mutable_column_view> const& children)
   : detail::column_view_base{type, size, data, null_mask, null_count, offset},
     mutable_children{children}

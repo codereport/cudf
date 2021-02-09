@@ -21,9 +21,9 @@
 
 #include <rmm/cuda_stream_view.hpp>
 
-std::unique_ptr<cudf::scalar> cudf::reduction::mean(column_view const& col,
-                                                    cudf::data_type const output_dtype,
-                                                    rmm::cuda_stream_view stream,
+std::unique_ptr<cudf::scalar> cudf::reduction::mean(column_view const&               col,
+                                                    cudf::data_type const            output_dtype,
+                                                    rmm::cuda_stream_view            stream,
                                                     rmm::mr::device_memory_resource* mr)
 {
   using reducer = cudf::reduction::compound::element_type_dispatcher<cudf::reduction::op::mean>;

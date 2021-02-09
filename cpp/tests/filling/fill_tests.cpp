@@ -40,10 +40,10 @@ class FillTypedTestFixture : public cudf::test::BaseFixture {
   static constexpr cudf::size_type column_size{1000};
 
   template <typename BitInitializerType = decltype(all_valid)>
-  void test(cudf::size_type begin,
-            cudf::size_type end,
-            T value,
-            bool value_is_valid                     = true,
+  void test(cudf::size_type    begin,
+            cudf::size_type    end,
+            T                  value,
+            bool               value_is_valid       = true,
             BitInitializerType destination_validity = all_valid)
   {
     static_assert(cudf::is_fixed_width<T>() == true, "this code assumes fixed-width types.");
@@ -56,7 +56,7 @@ class FillTypedTestFixture : public cudf::test::BaseFixture {
       cudf::detail::make_counting_transform_iterator(0, destination_validity));
 
     std::unique_ptr<cudf::scalar> p_val{nullptr};
-    cudf::data_type type{cudf::type_to_id<T>()};
+    cudf::data_type               type{cudf::type_to_id<T>()};
     if (cudf::is_numeric<T>()) {
       p_val = cudf::make_numeric_scalar(type);
     } else if (cudf::is_timestamp<T>()) {
@@ -102,7 +102,7 @@ TYPED_TEST(FillTypedTestFixture, SetSingle)
   using T = TypeParam;
 
   cudf::size_type index{9};
-  T value = cudf::test::make_type_param_scalar<TypeParam>(1);
+  T               value = cudf::test::make_type_param_scalar<TypeParam>(1);
 
   // First set it as valid
   this->test(index, index + 1, value, true);
@@ -132,7 +132,7 @@ TYPED_TEST(FillTypedTestFixture, SetRange)
 
   cudf::size_type begin{99};
   cudf::size_type end{299};
-  T value = cudf::test::make_type_param_scalar<TypeParam>(1);
+  T               value = cudf::test::make_type_param_scalar<TypeParam>(1);
 
   // First set it as valid
   this->test(begin, end, value, true);
@@ -149,7 +149,7 @@ TYPED_TEST(FillTypedTestFixture, SetRangeNullCount)
 
   cudf::size_type begin{10};
   cudf::size_type end{50};
-  T value = cudf::test::make_type_param_scalar<TypeParam>(1);
+  T               value = cudf::test::make_type_param_scalar<TypeParam>(1);
 
   // First set it as valid value
   this->test(begin, end, value, true, odd_valid);
@@ -172,10 +172,10 @@ class FillStringTestFixture : public cudf::test::BaseFixture {
   static constexpr cudf::size_type column_size{100};
 
   template <typename BitInitializerType = decltype(all_valid)>
-  void test(cudf::size_type begin,
-            cudf::size_type end,
-            std::string value,
-            bool value_is_valid                     = true,
+  void test(cudf::size_type    begin,
+            cudf::size_type    end,
+            std::string        value,
+            bool               value_is_valid       = true,
             BitInitializerType destination_validity = all_valid)
   {
     cudf::size_type size{FillStringTestFixture::column_size};
@@ -215,7 +215,7 @@ TEST_F(FillStringTestFixture, SetSingle)
   cudf::size_type size{FillStringTestFixture::column_size};
 
   cudf::size_type index{9};
-  auto value = "#" + std::to_string(size * 2);
+  auto            value = "#" + std::to_string(size * 2);
 
   // First set it as valid
   this->test(index, index + 1, value, true);
@@ -243,7 +243,7 @@ TEST_F(FillStringTestFixture, SetRange)
 
   cudf::size_type begin{9};
   cudf::size_type end{99};
-  auto value = "#" + std::to_string(size * 2);
+  auto            value = "#" + std::to_string(size * 2);
 
   // First set it as valid
   this->test(begin, end, value, true);
@@ -258,7 +258,7 @@ TEST_F(FillStringTestFixture, SetRangeNullCount)
 
   cudf::size_type begin{10};
   cudf::size_type end{50};
-  auto value = "#" + std::to_string(size * 2);
+  auto            value = "#" + std::to_string(size * 2);
 
   // First set it as valid value
   this->test(begin, end, value, true, odd_valid);

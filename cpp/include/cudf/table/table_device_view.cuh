@@ -68,8 +68,8 @@ class table_device_view_base {
 
  private:
   ColumnDeviceView* _columns{};  ///< Array of view objects in device memory
-  size_type _num_rows{};
-  size_type _num_columns{};
+  size_type         _num_rows{};
+  size_type         _num_columns{};
 
  protected:
   table_device_view_base(HostTableView source_view, rmm::cuda_stream_view stream);
@@ -80,7 +80,7 @@ class table_device_view_base {
 
 class table_device_view : public detail::table_device_view_base<column_device_view, table_view> {
  public:
-  static auto create(table_view source_view,
+  static auto create(table_view            source_view,
                      rmm::cuda_stream_view stream = rmm::cuda_stream_default)
   {
     auto deleter = [](table_device_view* t) { t->destroy(); };
@@ -98,7 +98,7 @@ class table_device_view : public detail::table_device_view_base<column_device_vi
 class mutable_table_device_view
   : public detail::table_device_view_base<mutable_column_device_view, mutable_table_view> {
  public:
-  static auto create(mutable_table_view source_view,
+  static auto create(mutable_table_view    source_view,
                      rmm::cuda_stream_view stream = rmm::cuda_stream_default)
   {
     auto deleter = [](mutable_table_device_view* t) { t->destroy(); };
@@ -138,10 +138,10 @@ auto contiguous_copy_column_device_views(HostTableView source_view, rmm::cuda_st
   // ColumnDeviceViews so the column can set the pointer(s) for any
   // of its child objects.
   // align both h_ptr, d_ptr
-  auto descendant_storage = std::make_unique<rmm::device_buffer>(padded_views_size_bytes, stream);
-  void* h_ptr             = detail::align_ptr_for_type<ColumnDeviceView>(h_buffer.data());
-  void* d_ptr    = detail::align_ptr_for_type<ColumnDeviceView>(descendant_storage->data());
-  auto d_columns = detail::child_columns_to_device_array<ColumnDeviceView>(
+  auto  descendant_storage = std::make_unique<rmm::device_buffer>(padded_views_size_bytes, stream);
+  void* h_ptr              = detail::align_ptr_for_type<ColumnDeviceView>(h_buffer.data());
+  void* d_ptr     = detail::align_ptr_for_type<ColumnDeviceView>(descendant_storage->data());
+  auto  d_columns = detail::child_columns_to_device_array<ColumnDeviceView>(
     source_view.begin(), source_view.end(), h_ptr, d_ptr);
 
   CUDA_TRY(cudaMemcpyAsync(d_ptr, h_ptr, views_size_bytes, cudaMemcpyDefault, stream.value()));

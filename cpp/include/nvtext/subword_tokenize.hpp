@@ -34,12 +34,12 @@ namespace nvtext {
  * @brief The vocabulary data for use with the subword_tokenize function.
  */
 struct hashed_vocabulary {
-  uint16_t first_token_id{};
-  uint16_t separator_token_id{};
-  uint16_t unknown_token_id{};
-  uint32_t outer_hash_a{};
-  uint32_t outer_hash_b{};
-  uint16_t num_bins{};
+  uint16_t                      first_token_id{};
+  uint16_t                      separator_token_id{};
+  uint16_t                      unknown_token_id{};
+  uint32_t                      outer_hash_a{};
+  uint32_t                      outer_hash_b{};
+  uint16_t                      num_bins{};
   std::unique_ptr<cudf::column> table;             // uint64
   std::unique_ptr<cudf::column> bin_coefficients;  // uint64
   std::unique_ptr<cudf::column> bin_offsets;       // uint16
@@ -60,7 +60,7 @@ struct hashed_vocabulary {
  * @return vocabulary hash-table elements
  */
 hashed_vocabulary load_vocabulary_file(
-  std::string const& filename_hashed_vocabulary,
+  std::string const&               filename_hashed_vocabulary,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -152,12 +152,12 @@ struct tokenizer_result {
  */
 tokenizer_result subword_tokenize(
   cudf::strings_column_view const& strings,
-  std::string const& filename_hashed_vocabulary,
-  uint32_t max_sequence_length,
-  uint32_t stride,
-  bool do_lower_case,
-  bool do_truncate,
-  uint32_t max_rows_tensor,
+  std::string const&               filename_hashed_vocabulary,
+  uint32_t                         max_sequence_length,
+  uint32_t                         stride,
+  bool                             do_lower_case,
+  bool                             do_truncate,
+  uint32_t                         max_rows_tensor,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -171,12 +171,12 @@ tokenizer_result subword_tokenize(
  */
 tokenizer_result subword_tokenize(
   cudf::strings_column_view const& strings,
-  hashed_vocabulary const& vocabulary_table,
-  uint32_t max_sequence_length,
-  uint32_t stride,
-  bool do_lower_case,
-  bool do_truncate,
-  uint32_t max_rows_tensor,
+  hashed_vocabulary const&         vocabulary_table,
+  uint32_t                         max_sequence_length,
+  uint32_t                         stride,
+  bool                             do_lower_case,
+  bool                             do_truncate,
+  uint32_t                         max_rows_tensor,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

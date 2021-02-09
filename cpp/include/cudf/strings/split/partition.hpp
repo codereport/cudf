@@ -56,9 +56,9 @@ namespace strings {
  * @return New table of strings columns.
  */
 std::unique_ptr<table> partition(
-  strings_column_view const& strings,
-  string_scalar const& delimiter      = string_scalar(""),
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  strings_column_view const&       strings,
+  string_scalar const&             delimiter = string_scalar(""),
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Returns a set of 3 columns by splitting each string using the
@@ -88,9 +88,9 @@ std::unique_ptr<table> partition(
  * @return New strings columns.
  */
 std::unique_ptr<table> rpartition(
-  strings_column_view const& strings,
-  string_scalar const& delimiter      = string_scalar(""),
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  strings_column_view const&       strings,
+  string_scalar const&             delimiter = string_scalar(""),
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group
 }  // namespace strings

@@ -25,12 +25,12 @@
 namespace cudf {
 namespace groupby {
 namespace detail {
-std::unique_ptr<column> group_argmax(column_view const& values,
-                                     size_type num_groups,
+std::unique_ptr<column> group_argmax(column_view const&                   values,
+                                     size_type                            num_groups,
                                      rmm::device_vector<size_type> const& group_labels,
-                                     column_view const& key_sort_order,
-                                     rmm::cuda_stream_view stream,
-                                     rmm::mr::device_memory_resource* mr)
+                                     column_view const&                   key_sort_order,
+                                     rmm::cuda_stream_view                stream,
+                                     rmm::mr::device_memory_resource*     mr)
 {
   auto indices = type_dispatcher(values.type(),
                                  reduce_functor<aggregation::ARGMAX>{},

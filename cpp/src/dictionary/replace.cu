@@ -43,8 +43,8 @@ namespace {
 template <bool has_nulls = false>
 struct nullable_index_accessor {
   cudf::detail::input_indexalator iter;
-  bitmask_type const* null_mask{};
-  size_type const offset{};
+  bitmask_type const*             null_mask{};
+  size_type const                 offset{};
 
   /**
    * @brief Create an accessor from a column_view.
@@ -104,14 +104,14 @@ auto make_scalar_iterator(scalar const& input)
  * @return Always returns column of type INT32 (size_type)
  */
 template <typename ReplacementIter>
-std::unique_ptr<column> replace_indices(column_view const& input,
-                                        ReplacementIter replacement_iter,
-                                        rmm::cuda_stream_view stream,
+std::unique_ptr<column> replace_indices(column_view const&               input,
+                                        ReplacementIter                  replacement_iter,
+                                        rmm::cuda_stream_view            stream,
                                         rmm::mr::device_memory_resource* mr)
 {
   auto const input_view = column_device_view::create(input, stream);
   auto const d_input    = *input_view;
-  auto predicate        = [d_input] __device__(auto i) { return d_input.is_valid(i); };
+  auto       predicate  = [d_input] __device__(auto i) { return d_input.is_valid(i); };
 
   using Element = typename thrust::
     tuple_element<0, typename thrust::iterator_traits<ReplacementIter>::value_type>::type;
@@ -134,9 +134,9 @@ std::unique_ptr<column> replace_indices(column_view const& input,
  * @copydoc cudf::dictionary::detail::replace_nulls(cudf::column_view const&,cudf::column_view
  * const& rmm::cuda_stream_view, rmm::mr::device_memory_resource*)
  */
-std::unique_ptr<column> replace_nulls(dictionary_column_view const& input,
-                                      dictionary_column_view const& replacement,
-                                      rmm::cuda_stream_view stream,
+std::unique_ptr<column> replace_nulls(dictionary_column_view const&    input,
+                                      dictionary_column_view const&    replacement,
+                                      rmm::cuda_stream_view            stream,
                                       rmm::mr::device_memory_resource* mr)
 {
   if (input.is_empty()) { return cudf::empty_like(input.parent()); }
@@ -151,7 +151,7 @@ std::unique_ptr<column> replace_nulls(dictionary_column_view const& input,
   auto const input_indices =
     dictionary_column_view(matched.front()->view()).get_indices_annotated();
   auto const repl_indices = dictionary_column_view(matched.back()->view()).get_indices_annotated();
-  auto new_indices =
+  auto       new_indices =
     repl_indices.has_nulls()
       ? replace_indices(input_indices, make_nullable_index_iterator<true>(repl_indices), stream, mr)
       : replace_indices(
@@ -165,9 +165,9 @@ std::unique_ptr<column> replace_nulls(dictionary_column_view const& input,
  * @copydoc cudf::dictionary::detail::replace_nulls(cudf::column_view const&,cudf::scalar
  * const&, rmm::cuda_stream_view, rmm::mr::device_memory_resource*)
  */
-std::unique_ptr<column> replace_nulls(dictionary_column_view const& input,
-                                      scalar const& replacement,
-                                      rmm::cuda_stream_view stream,
+std::unique_ptr<column> replace_nulls(dictionary_column_view const&    input,
+                                      scalar const&                    replacement,
+                                      rmm::cuda_stream_view            stream,
                                       rmm::mr::device_memory_resource* mr)
 {
   if (input.is_empty()) { return cudf::empty_like(input.parent()); }
@@ -184,7 +184,7 @@ std::unique_ptr<column> replace_nulls(dictionary_column_view const& input,
 
   // now build the new indices by doing replace-null on the updated indices
   auto const input_indices = input_view.get_indices_annotated();
-  auto new_indices =
+  auto       new_indices =
     replace_indices(input_indices, make_scalar_iterator(*scalar_index), stream, mr);
   new_indices->set_null_mask(rmm::device_buffer{0, stream, mr}, 0);
 

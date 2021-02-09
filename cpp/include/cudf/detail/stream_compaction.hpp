@@ -31,11 +31,11 @@ namespace detail {
  * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<table> drop_nulls(
-  table_view const& input,
-  std::vector<size_type> const& keys,
-  cudf::size_type keep_threshold,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  table_view const&                input,
+  std::vector<size_type> const&    keys,
+  cudf::size_type                  keep_threshold,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::drop_nans(table_view const&, std::vector<size_type> const&,
@@ -44,11 +44,11 @@ std::unique_ptr<table> drop_nulls(
  * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<table> drop_nans(
-  table_view const& input,
-  std::vector<size_type> const& keys,
-  cudf::size_type keep_threshold,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  table_view const&                input,
+  std::vector<size_type> const&    keys,
+  cudf::size_type                  keep_threshold,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::apply_boolean_mask
@@ -56,10 +56,10 @@ std::unique_ptr<table> drop_nans(
  * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<table> apply_boolean_mask(
-  table_view const& input,
-  column_view const& boolean_mask,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  table_view const&                input,
+  column_view const&               boolean_mask,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::drop_duplicates
@@ -67,21 +67,21 @@ std::unique_ptr<table> apply_boolean_mask(
  * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<table> drop_duplicates(
-  table_view const& input,
-  std::vector<size_type> const& keys,
-  duplicate_keep_option keep,
-  null_equality nulls_equal           = null_equality::EQUAL,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  table_view const&                input,
+  std::vector<size_type> const&    keys,
+  duplicate_keep_option            keep,
+  null_equality                    nulls_equal = null_equality::EQUAL,
+  rmm::cuda_stream_view            stream      = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr          = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::distinct_count(column_view const&, null_policy, nan_policy)
  *
  * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
-cudf::size_type distinct_count(column_view const& input,
-                               null_policy null_handling,
-                               nan_policy nan_handling,
+cudf::size_type distinct_count(column_view const&    input,
+                               null_policy           null_handling,
+                               nan_policy            nan_handling,
                                rmm::cuda_stream_view stream = rmm::cuda_stream_default);
 
 /**
@@ -89,9 +89,9 @@ cudf::size_type distinct_count(column_view const& input,
  *
  * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
-cudf::size_type distinct_count(table_view const& input,
-                               null_equality nulls_equal    = null_equality::EQUAL,
-                               rmm::cuda_stream_view stream = rmm::cuda_stream_default);
+cudf::size_type distinct_count(table_view const&     input,
+                               null_equality         nulls_equal = null_equality::EQUAL,
+                               rmm::cuda_stream_view stream      = rmm::cuda_stream_default);
 
 }  // namespace detail
 }  // namespace cudf

@@ -49,7 +49,7 @@ TYPED_TEST_CASE(MergeStringTest, cudf::test::FixedWidthTypes);
 TYPED_TEST(MergeStringTest, Merge1StringKeyColumns)
 {
   strings_column_wrapper leftColWrap1({"ab", "bc", "cd", "de", "ef", "fg", "gh", "hi"});
-  cudf::size_type inputRows1 = static_cast<cudf::column_view const&>(leftColWrap1).size();
+  cudf::size_type        inputRows1 = static_cast<cudf::column_view const&>(leftColWrap1).size();
 
   auto sequence0 = cudf::detail::make_counting_transform_iterator(0, [](auto row) {
     if (cudf::type_to_id<TypeParam>() == cudf::type_id::BOOL8)
@@ -62,15 +62,15 @@ TYPED_TEST(MergeStringTest, Merge1StringKeyColumns)
     sequence0, sequence0 + inputRows1);
 
   strings_column_wrapper rightColWrap1({"ac", "bd", "ce", "df", "eg", "fh", "gi", "hj"});
-  cudf::size_type inputRows2 = static_cast<cudf::column_view const&>(rightColWrap1).size();
+  cudf::size_type        inputRows2 = static_cast<cudf::column_view const&>(rightColWrap1).size();
   fixed_width_column_wrapper<TypeParam, typename decltype(sequence0)::value_type> rightColWrap2(
     sequence0, sequence0 + inputRows2);
 
   cudf::table_view left_view{{leftColWrap1, leftColWrap2}};
   cudf::table_view right_view{{rightColWrap1, rightColWrap2}};
 
-  std::vector<cudf::size_type> key_cols{0};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING};
+  std::vector<cudf::size_type>  key_cols{0};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   std::unique_ptr<cudf::table> p_outputTable;
@@ -79,7 +79,7 @@ TYPED_TEST(MergeStringTest, Merge1StringKeyColumns)
 
   cudf::column_view const& a_left_tbl_cview{static_cast<cudf::column_view const&>(leftColWrap1)};
   cudf::column_view const& a_right_tbl_cview{static_cast<cudf::column_view const&>(rightColWrap1)};
-  const cudf::size_type outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
+  const cudf::size_type    outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
 
   strings_column_wrapper expectedDataWrap1({"ab",
                                             "ac",
@@ -160,8 +160,8 @@ TYPED_TEST(MergeStringTest, Merge2StringKeyColumns)
 
   cudf::table_view right_view{{rightColWrap1, rightColWrap2, rightColWrap3}};
 
-  std::vector<cudf::size_type> key_cols{0, 2};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING, cudf::order::DESCENDING};
+  std::vector<cudf::size_type>  key_cols{0, 2};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING, cudf::order::DESCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   std::unique_ptr<cudf::table> p_outputTable;
@@ -170,8 +170,8 @@ TYPED_TEST(MergeStringTest, Merge2StringKeyColumns)
 
   cudf::column_view const& a_left_tbl_cview{static_cast<cudf::column_view const&>(leftColWrap1)};
   cudf::column_view const& a_right_tbl_cview{static_cast<cudf::column_view const&>(rightColWrap1)};
-  const cudf::size_type outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
-  strings_column_wrapper expectedDataWrap1({"ab",
+  const cudf::size_type    outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
+  strings_column_wrapper   expectedDataWrap1({"ab",
                                             "ac",
                                             "bc",
                                             "bd",
@@ -254,8 +254,8 @@ TYPED_TEST(MergeStringTest, Merge1StringKeyNullColumns)
 
   cudf::table_view right_view{{rightColWrap1, rightColWrap2}};
 
-  std::vector<cudf::size_type> key_cols{0};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING};
+  std::vector<cudf::size_type>  key_cols{0};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::AFTER};
 
   std::unique_ptr<cudf::table> p_outputTable;
@@ -264,7 +264,7 @@ TYPED_TEST(MergeStringTest, Merge1StringKeyNullColumns)
 
   cudf::column_view const& a_left_tbl_cview{static_cast<cudf::column_view const&>(leftColWrap1)};
   cudf::column_view const& a_right_tbl_cview{static_cast<cudf::column_view const&>(rightColWrap1)};
-  const cudf::size_type outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
+  const cudf::size_type    outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
 
   // data: "ab", "ac", "bc", "bd", "cd", "ce", "de", "df" | valid: 1 1 1 1 1 1 0 0
   strings_column_wrapper expectedDataWrap1({"ab",
@@ -347,8 +347,8 @@ TYPED_TEST(MergeStringTest, Merge2StringKeyNullColumns)
 
   cudf::table_view right_view{{rightColWrap1, rightColWrap2, rightColWrap3}};
 
-  std::vector<cudf::size_type> key_cols{0, 2};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING, cudf::order::DESCENDING};
+  std::vector<cudf::size_type>  key_cols{0, 2};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING, cudf::order::DESCENDING};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::AFTER, cudf::null_order::BEFORE};
 
   std::unique_ptr<cudf::table> p_outputTable;
@@ -357,8 +357,8 @@ TYPED_TEST(MergeStringTest, Merge2StringKeyNullColumns)
 
   cudf::column_view const& a_left_tbl_cview{static_cast<cudf::column_view const&>(leftColWrap1)};
   cudf::column_view const& a_right_tbl_cview{static_cast<cudf::column_view const&>(rightColWrap1)};
-  const cudf::size_type outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
-  strings_column_wrapper expectedDataWrap1({"ab",
+  const cudf::size_type    outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
+  strings_column_wrapper   expectedDataWrap1({"ab",
                                             "ac",
                                             "bc",
                                             "bd",

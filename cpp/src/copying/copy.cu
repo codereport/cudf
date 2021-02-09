@@ -32,13 +32,13 @@ namespace {
  */
 template <typename T, typename Left, typename Right, typename Filter>
 struct copy_if_else_functor_impl {
-  std::unique_ptr<column> operator()(Left const& lhs,
-                                     Right const& rhs,
-                                     size_type size,
-                                     bool left_nullable,
-                                     bool right_nullable,
-                                     Filter filter,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(Left const&                      lhs,
+                                     Right const&                     rhs,
+                                     size_type                        size,
+                                     bool                             left_nullable,
+                                     bool                             right_nullable,
+                                     Filter                           filter,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     using Type = device_storage_type_t<T>;
@@ -73,13 +73,13 @@ struct copy_if_else_functor_impl {
  */
 template <typename Left, typename Right, typename Filter>
 struct copy_if_else_functor_impl<string_view, Left, Right, Filter> {
-  std::unique_ptr<column> operator()(Left const& lhs,
-                                     Right const& rhs,
-                                     size_type size,
-                                     bool left_nullable,
-                                     bool right_nullable,
-                                     Filter filter,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(Left const&                      lhs,
+                                     Right const&                     rhs,
+                                     size_type                        size,
+                                     bool                             left_nullable,
+                                     bool                             right_nullable,
+                                     Filter                           filter,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     using T = string_view;
@@ -111,13 +111,13 @@ struct copy_if_else_functor_impl<string_view, Left, Right, Filter> {
  */
 template <typename Left, typename Right, typename Filter>
 struct copy_if_else_functor_impl<list_view, Left, Right, Filter> {
-  std::unique_ptr<column> operator()(Left const& lhs,
-                                     Right const& rhs,
-                                     size_type size,
-                                     bool left_nullable,
-                                     bool right_nullable,
-                                     Filter filter,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(Left const&                      lhs,
+                                     Right const&                     rhs,
+                                     size_type                        size,
+                                     bool                             left_nullable,
+                                     bool                             right_nullable,
+                                     Filter                           filter,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("copy_if_else not supported for list_view yet");
@@ -126,13 +126,13 @@ struct copy_if_else_functor_impl<list_view, Left, Right, Filter> {
 
 template <typename Left, typename Right, typename Filter>
 struct copy_if_else_functor_impl<struct_view, Left, Right, Filter> {
-  std::unique_ptr<column> operator()(Left const& lhs,
-                                     Right const& rhs,
-                                     size_type size,
-                                     bool left_nullable,
-                                     bool right_nullable,
-                                     Filter filter,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(Left const&                      lhs,
+                                     Right const&                     rhs,
+                                     size_type                        size,
+                                     bool                             left_nullable,
+                                     bool                             right_nullable,
+                                     Filter                           filter,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("copy_if_else not supported for struct_view yet");
@@ -145,13 +145,13 @@ struct copy_if_else_functor_impl<struct_view, Left, Right, Filter> {
  */
 struct copy_if_else_functor {
   template <typename T, typename Left, typename Right, typename Filter>
-  std::unique_ptr<column> operator()(Left const& lhs,
-                                     Right const& rhs,
-                                     size_type size,
-                                     bool left_nullable,
-                                     bool right_nullable,
-                                     Filter filter,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(Left const&                      lhs,
+                                     Right const&                     rhs,
+                                     size_type                        size,
+                                     bool                             left_nullable,
+                                     bool                             right_nullable,
+                                     Filter                           filter,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     copy_if_else_functor_impl<T, Left, Right, Filter> copier{};
@@ -161,12 +161,12 @@ struct copy_if_else_functor {
 
 // wrap up boolean_mask into a filter lambda
 template <typename Left, typename Right>
-std::unique_ptr<column> copy_if_else(Left const& lhs,
-                                     Right const& rhs,
-                                     bool left_nullable,
-                                     bool right_nullable,
-                                     column_view const& boolean_mask,
-                                     rmm::cuda_stream_view stream,
+std::unique_ptr<column> copy_if_else(Left const&                      lhs,
+                                     Right const&                     rhs,
+                                     bool                             left_nullable,
+                                     bool                             right_nullable,
+                                     column_view const&               boolean_mask,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(lhs.type() == rhs.type(), "Both inputs must be of the same type");
@@ -175,8 +175,8 @@ std::unique_ptr<column> copy_if_else(Left const& lhs,
 
   if (boolean_mask.is_empty()) { return cudf::make_empty_column(lhs.type()); }
 
-  auto bool_mask_device_p             = column_device_view::create(boolean_mask);
-  column_device_view bool_mask_device = *bool_mask_device_p;
+  auto               bool_mask_device_p = column_device_view::create(boolean_mask);
+  column_device_view bool_mask_device   = *bool_mask_device_p;
 
   if (boolean_mask.has_nulls()) {
     auto filter = [bool_mask_device] __device__(cudf::size_type i) {
@@ -211,10 +211,10 @@ std::unique_ptr<column> copy_if_else(Left const& lhs,
 
 };  // namespace
 
-std::unique_ptr<column> copy_if_else(column_view const& lhs,
-                                     column_view const& rhs,
-                                     column_view const& boolean_mask,
-                                     rmm::cuda_stream_view stream,
+std::unique_ptr<column> copy_if_else(column_view const&               lhs,
+                                     column_view const&               rhs,
+                                     column_view const&               boolean_mask,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(boolean_mask.size() == lhs.size(),
@@ -229,10 +229,10 @@ std::unique_ptr<column> copy_if_else(column_view const& lhs,
                       mr);
 }
 
-std::unique_ptr<column> copy_if_else(scalar const& lhs,
-                                     column_view const& rhs,
-                                     column_view const& boolean_mask,
-                                     rmm::cuda_stream_view stream,
+std::unique_ptr<column> copy_if_else(scalar const&                    lhs,
+                                     column_view const&               rhs,
+                                     column_view const&               boolean_mask,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(boolean_mask.size() == rhs.size(),
@@ -246,10 +246,10 @@ std::unique_ptr<column> copy_if_else(scalar const& lhs,
                       mr);
 }
 
-std::unique_ptr<column> copy_if_else(column_view const& lhs,
-                                     scalar const& rhs,
-                                     column_view const& boolean_mask,
-                                     rmm::cuda_stream_view stream,
+std::unique_ptr<column> copy_if_else(column_view const&               lhs,
+                                     scalar const&                    rhs,
+                                     column_view const&               boolean_mask,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(boolean_mask.size() == lhs.size(),
@@ -263,10 +263,10 @@ std::unique_ptr<column> copy_if_else(column_view const& lhs,
                       mr);
 }
 
-std::unique_ptr<column> copy_if_else(scalar const& lhs,
-                                     scalar const& rhs,
-                                     column_view const& boolean_mask,
-                                     rmm::cuda_stream_view stream,
+std::unique_ptr<column> copy_if_else(scalar const&                    lhs,
+                                     scalar const&                    rhs,
+                                     column_view const&               boolean_mask,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
 {
   return copy_if_else(lhs, rhs, !lhs.is_valid(), !rhs.is_valid(), boolean_mask, stream, mr);
@@ -274,36 +274,36 @@ std::unique_ptr<column> copy_if_else(scalar const& lhs,
 
 };  // namespace detail
 
-std::unique_ptr<column> copy_if_else(column_view const& lhs,
-                                     column_view const& rhs,
-                                     column_view const& boolean_mask,
+std::unique_ptr<column> copy_if_else(column_view const&               lhs,
+                                     column_view const&               rhs,
+                                     column_view const&               boolean_mask,
                                      rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::copy_if_else(lhs, rhs, boolean_mask, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> copy_if_else(scalar const& lhs,
-                                     column_view const& rhs,
-                                     column_view const& boolean_mask,
+std::unique_ptr<column> copy_if_else(scalar const&                    lhs,
+                                     column_view const&               rhs,
+                                     column_view const&               boolean_mask,
                                      rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::copy_if_else(lhs, rhs, boolean_mask, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> copy_if_else(column_view const& lhs,
-                                     scalar const& rhs,
-                                     column_view const& boolean_mask,
+std::unique_ptr<column> copy_if_else(column_view const&               lhs,
+                                     scalar const&                    rhs,
+                                     column_view const&               boolean_mask,
                                      rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::copy_if_else(lhs, rhs, boolean_mask, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> copy_if_else(scalar const& lhs,
-                                     scalar const& rhs,
-                                     column_view const& boolean_mask,
+std::unique_ptr<column> copy_if_else(scalar const&                    lhs,
+                                     scalar const&                    rhs,
+                                     column_view const&               boolean_mask,
                                      rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

@@ -55,15 +55,15 @@ std::string parse_backrefs(std::string const& repl, std::vector<backref_type>& b
 {
   std::string str = repl;  // make a modifiable copy
   std::smatch m;
-  std::regex ex("(\\\\\\d+)");  // this searches for backslash-number(s); example "\1"
-  std::string rtn;              // result without refs
-  size_type byte_offset = 0;
+  std::regex  ex("(\\\\\\d+)");  // this searches for backslash-number(s); example "\1"
+  std::string rtn;               // result without refs
+  size_type   byte_offset = 0;
   while (std::regex_search(str, m, ex)) {
     if (m.size() == 0) break;
     backref_type item;
-    std::string bref   = m[0];
-    size_type position = static_cast<size_type>(m.position(0));
-    size_type length   = static_cast<size_type>(bref.length());
+    std::string  bref     = m[0];
+    size_type    position = static_cast<size_type>(m.position(0));
+    size_type    length   = static_cast<size_type>(bref.length());
     byte_offset += position;
     item.first = std::atoi(bref.c_str() + 1);  // back-ref index number
     CUDF_EXPECTS(item.first > 0, "Back-reference numbers must be greater than 0");
@@ -81,10 +81,10 @@ std::string parse_backrefs(std::string const& repl, std::vector<backref_type>& b
 
 //
 std::unique_ptr<column> replace_with_backrefs(
-  strings_column_view const& strings,
-  std::string const& pattern,
-  std::string const& repl,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  std::string const&               pattern,
+  std::string const&               repl,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   auto strings_count = strings.size();
@@ -101,11 +101,11 @@ std::unique_ptr<column> replace_with_backrefs(
   auto regex_insts = d_prog.insts_counts();
 
   // parse the repl string for backref indicators
-  std::vector<backref_type> h_backrefs;
-  std::string repl_template = parse_backrefs(repl, h_backrefs);
+  std::vector<backref_type>        h_backrefs;
+  std::string                      repl_template = parse_backrefs(repl, h_backrefs);
   rmm::device_vector<backref_type> backrefs(h_backrefs);
-  string_scalar repl_scalar(repl_template);
-  string_view d_repl_template{repl_scalar.data(), repl_scalar.size()};
+  string_scalar                    repl_scalar(repl_template);
+  string_view                      d_repl_template{repl_scalar.data(), repl_scalar.size()};
 
   // copy null mask
   auto null_mask  = cudf::detail::copy_bitmask(strings.parent(), stream, mr);
@@ -143,9 +143,9 @@ std::unique_ptr<column> replace_with_backrefs(
 
 // external API
 
-std::unique_ptr<column> replace_with_backrefs(strings_column_view const& strings,
-                                              std::string const& pattern,
-                                              std::string const& repl,
+std::unique_ptr<column> replace_with_backrefs(strings_column_view const&       strings,
+                                              std::string const&               pattern,
+                                              std::string const&               repl,
                                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

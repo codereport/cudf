@@ -98,7 +98,7 @@ std::unique_ptr<cudf::column> normalize_spaces(
  */
 std::unique_ptr<cudf::column> normalize_characters(
   cudf::strings_column_view const& strings,
-  bool do_lower_case,
+  bool                             do_lower_case,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

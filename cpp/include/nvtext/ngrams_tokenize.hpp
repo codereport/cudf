@@ -78,10 +78,10 @@ namespace nvtext {
  */
 std::unique_ptr<cudf::column> ngrams_tokenize(
   cudf::strings_column_view const& strings,
-  cudf::size_type ngrams               = 2,
-  cudf::string_scalar const& delimiter = cudf::string_scalar{""},
-  cudf::string_scalar const& separator = cudf::string_scalar{"_"},
-  rmm::mr::device_memory_resource* mr  = rmm::mr::get_current_device_resource());
+  cudf::size_type                  ngrams    = 2,
+  cudf::string_scalar const&       delimiter = cudf::string_scalar{""},
+  cudf::string_scalar const&       separator = cudf::string_scalar{"_"},
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group
 }  // namespace nvtext

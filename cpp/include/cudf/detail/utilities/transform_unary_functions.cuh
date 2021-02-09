@@ -42,7 +42,7 @@ template <typename ResultType, typename Functor>
 struct null_replacing_transformer {
   using type = ResultType;
   Functor f;
-  type replacement;
+  type    replacement;
   CUDA_HOST_DEVICE_CALLABLE
   null_replacing_transformer(type null_replacement, Functor transformer)
     : f(transformer), replacement(null_replacement)
@@ -72,9 +72,9 @@ struct null_replacing_transformer {
  */
 template <typename ElementType>
 struct meanvar {
-  ElementType value;          /// the value
-  ElementType value_squared;  /// the value of squared
-  cudf::size_type count;      /// the count
+  ElementType     value;          /// the value
+  ElementType     value_squared;  /// the value of squared
+  cudf::size_type count;          /// the count
 
   CUDA_HOST_DEVICE_CALLABLE
   meanvar(ElementType _value = 0, ElementType _value_squared = 0, cudf::size_type _count = 0)

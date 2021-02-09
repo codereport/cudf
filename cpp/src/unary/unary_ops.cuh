@@ -30,9 +30,9 @@ namespace cudf {
 namespace unary {
 template <typename T, typename Tout, typename F>
 struct launcher {
-  static std::unique_ptr<cudf::column> launch(cudf::column_view const& input,
-                                              cudf::unary_operator op,
-                                              rmm::cuda_stream_view stream,
+  static std::unique_ptr<cudf::column> launch(cudf::column_view const&         input,
+                                              cudf::unary_operator             op,
+                                              rmm::cuda_stream_view            stream,
                                               rmm::mr::device_memory_resource* mr)
   {
     std::unique_ptr<cudf::column> output = [&] {

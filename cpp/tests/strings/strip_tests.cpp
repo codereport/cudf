@@ -102,9 +102,9 @@ TEST_F(StringsStripTest, EmptyStringsColumn)
 
 TEST_F(StringsStripTest, InvalidParameter)
 {
-  std::vector<const char*> h_strings{"string left intentionally blank"};
+  std::vector<const char*>           h_strings{"string left intentionally blank"};
   cudf::test::strings_column_wrapper strings(h_strings.begin(), h_strings.end());
-  auto strings_view = cudf::strings_column_view(strings);
+  auto                               strings_view = cudf::strings_column_view(strings);
   EXPECT_THROW(cudf::strings::strip(
                  strings_view, cudf::strings::strip_type::BOTH, cudf::string_scalar("", false)),
                cudf::logic_error);

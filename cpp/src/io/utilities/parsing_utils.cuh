@@ -31,37 +31,37 @@ namespace io {
  * converting CSV/json data to cuDF data type values.
  */
 struct parse_options_view {
-  char delimiter;
-  char terminator;
-  char quotechar;
-  char decimal;
-  char thousands;
-  char comment;
-  bool keepquotes;
-  bool doublequote;
-  bool dayfirst;
-  bool skipblanklines;
+  char                              delimiter;
+  char                              terminator;
+  char                              quotechar;
+  char                              decimal;
+  char                              thousands;
+  char                              comment;
+  bool                              keepquotes;
+  bool                              doublequote;
+  bool                              dayfirst;
+  bool                              skipblanklines;
   device_span<SerialTrieNode const> trie_true;
   device_span<SerialTrieNode const> trie_false;
   device_span<SerialTrieNode const> trie_na;
-  bool multi_delimiter;
+  bool                              multi_delimiter;
 };
 
 struct parse_options {
-  char delimiter;
-  char terminator;
-  char quotechar;
-  char decimal;
-  char thousands;
-  char comment;
-  bool keepquotes;
-  bool doublequote;
-  bool dayfirst;
-  bool skipblanklines;
+  char                               delimiter;
+  char                               terminator;
+  char                               quotechar;
+  char                               decimal;
+  char                               thousands;
+  char                               comment;
+  bool                               keepquotes;
+  bool                               doublequote;
+  bool                               dayfirst;
+  bool                               skipblanklines;
   rmm::device_vector<SerialTrieNode> trie_true;
   rmm::device_vector<SerialTrieNode> trie_false;
   rmm::device_vector<SerialTrieNode> trie_na;
-  bool multi_delimiter;
+  bool                               multi_delimiter;
 
   parse_options_view view()
   {
@@ -98,10 +98,10 @@ namespace gpu {
  * @return Pointer to the last character in the field, including the
  *  delimiter(s) following the field data
  */
-__device__ __inline__ char const* seek_field_end(char const* begin,
-                                                 char const* end,
+__device__ __inline__ char const* seek_field_end(char const*               begin,
+                                                 char const*               end,
                                                  parse_options_view const& opts,
-                                                 bool escape_char = false)
+                                                 bool                      escape_char = false)
 {
   bool quotation   = false;
   auto current     = begin;
@@ -202,8 +202,8 @@ __inline__ __device__ char to_lower(char const c)
 __inline__ __device__ bool is_infinity(char const* begin, char const* end)
 {
   if (*begin == '-' || *begin == '+') begin++;
-  char const* cinf = "infinity";
-  auto index       = begin;
+  char const* cinf  = "infinity";
+  auto        index = begin;
   while (index < end) {
     if (*cinf != to_lower(*index)) break;
     index++;
@@ -223,11 +223,11 @@ __inline__ __device__ bool is_infinity(char const* begin, char const* end)
  * @return The parsed and converted value
  */
 template <typename T, int base = 10>
-__inline__ __device__ T parse_numeric(const char* begin,
-                                      const char* end,
+__inline__ __device__ T parse_numeric(const char*               begin,
+                                      const char*               end,
                                       parse_options_view const& opts)
 {
-  T value{};
+  T    value{};
   bool all_digits_valid = true;
 
   // Handle negative values if necessary
@@ -320,7 +320,7 @@ __device__ __inline__ bool less_equal_than(const char* data, const char (&golden
  */
 __device__ __inline__ cudf::size_type* infer_integral_field_counter(char const* data_begin,
                                                                     char const* data_end,
-                                                                    bool is_negative,
+                                                                    bool        is_negative,
                                                                     column_type_histogram& stats)
 {
   static constexpr char uint64_max_abs[] = "18446744073709551615";
@@ -386,9 +386,9 @@ __device__ __inline__ cudf::size_type* infer_integral_field_counter(char const* 
  */
 template <class T>
 cudf::size_type find_all_from_set(const rmm::device_buffer& d_data,
-                                  const std::vector<char>& keys,
-                                  uint64_t result_offset,
-                                  T* positions);
+                                  const std::vector<char>&  keys,
+                                  uint64_t                  result_offset,
+                                  T*                        positions);
 
 /**
  * @brief Searches the input character array for each of characters in a set.
@@ -407,11 +407,11 @@ cudf::size_type find_all_from_set(const rmm::device_buffer& d_data,
  * @return cudf::size_type total number of occurrences
  */
 template <class T>
-cudf::size_type find_all_from_set(const char* h_data,
-                                  size_t h_size,
+cudf::size_type find_all_from_set(const char*              h_data,
+                                  size_t                   h_size,
                                   const std::vector<char>& keys,
-                                  uint64_t result_offset,
-                                  T* positions);
+                                  uint64_t                 result_offset,
+                                  T*                       positions);
 
 /**
  * @brief Searches the input character array for each of characters in a set
@@ -437,8 +437,8 @@ cudf::size_type count_all_from_set(const rmm::device_buffer& d_data, const std::
  *
  * @return cudf::size_type total number of occurrences
  */
-cudf::size_type count_all_from_set(const char* h_data,
-                                   size_t h_size,
+cudf::size_type count_all_from_set(const char*              h_data,
+                                   size_t                   h_size,
                                    const std::vector<char>& keys);
 
 /**
@@ -455,8 +455,8 @@ cudf::size_type count_all_from_set(const char* h_data,
  * @return string representing compression type ("gzip, "bz2", etc)
  */
 std::string infer_compression_type(
-  const compression_type& compression_arg,
-  const std::string& filename,
+  const compression_type&                                 compression_arg,
+  const std::string&                                      filename,
   const std::vector<std::pair<std::string, std::string>>& ext_to_comp_map);
 
 /**

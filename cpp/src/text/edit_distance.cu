@@ -48,7 +48,7 @@ namespace {
  */
 __device__ int32_t compute_distance(cudf::string_view const& d_str,
                                     cudf::string_view const& d_tgt,
-                                    int16_t* buffer)
+                                    int16_t*                 buffer)
 {
   auto const str_length = d_str.length();
   auto const tgt_length = d_tgt.length();
@@ -98,8 +98,8 @@ __device__ int32_t compute_distance(cudf::string_view const& d_str,
 struct edit_distance_levenshtein_algorithm {
   cudf::column_device_view d_strings;  // computing these
   cudf::column_device_view d_targets;  // against these;
-  int16_t* d_buffer;                   // compute buffer for each string
-  int32_t* d_results;                  // input is buffer offset; output is edit distance
+  int16_t*                 d_buffer;   // compute buffer for each string
+  int32_t*                 d_results;  // input is buffer offset; output is edit distance
 
   __device__ void operator()(cudf::size_type idx)
   {
@@ -116,9 +116,9 @@ struct edit_distance_levenshtein_algorithm {
 
 struct edit_distance_matrix_levenshtein_algorithm {
   cudf::column_device_view d_strings;  // computing these against itself
-  int16_t* d_buffer;                   // compute buffer for each string
-  int32_t const* d_offsets;            // locate sub-buffer for each string
-  int32_t* d_results;                  // edit distance values
+  int16_t*                 d_buffer;   // compute buffer for each string
+  int32_t const*           d_offsets;  // locate sub-buffer for each string
+  int32_t*                 d_results;  // edit distance values
 
   __device__ void operator()(cudf::size_type idx)
   {
@@ -130,9 +130,9 @@ struct edit_distance_matrix_levenshtein_algorithm {
       d_strings.is_null(row) ? cudf::string_view{} : d_strings.element<cudf::string_view>(row);
     cudf::string_view d_str2 =
       d_strings.is_null(col) ? cudf::string_view{} : d_strings.element<cudf::string_view>(col);
-    auto work_buffer       = d_buffer + d_offsets[idx - ((row + 1) * (row + 2)) / 2];
-    int32_t const distance = (row == col) ? 0 : compute_distance(d_str1, d_str2, work_buffer);
-    d_results[idx]         = distance;                // top half of matrix
+    auto          work_buffer = d_buffer + d_offsets[idx - ((row + 1) * (row + 2)) / 2];
+    int32_t const distance    = (row == col) ? 0 : compute_distance(d_str1, d_str2, work_buffer);
+    d_results[idx]            = distance;             // top half of matrix
     d_results[col * strings_count + row] = distance;  // bottom half of matrix
   }
 };
@@ -144,7 +144,7 @@ struct edit_distance_matrix_levenshtein_algorithm {
  */
 std::unique_ptr<cudf::column> edit_distance(cudf::strings_column_view const& strings,
                                             cudf::strings_column_view const& targets,
-                                            rmm::cuda_stream_view stream,
+                                            rmm::cuda_stream_view            stream,
                                             rmm::mr::device_memory_resource* mr)
 {
   cudf::size_type strings_count = strings.size();
@@ -189,7 +189,7 @@ std::unique_ptr<cudf::column> edit_distance(cudf::strings_column_view const& str
   thrust::exclusive_scan(rmm::exec_policy(stream), d_results, d_results + strings_count, d_results);
   // create the temporary compute buffer
   rmm::device_uvector<int16_t> compute_buffer(compute_size, stream);
-  auto d_buffer = compute_buffer.data();
+  auto                         d_buffer = compute_buffer.data();
 
   // compute the edit distance into the output column in-place
   // - on input, d_results is the offset to the working section of d_buffer for each row
@@ -206,7 +206,7 @@ std::unique_ptr<cudf::column> edit_distance(cudf::strings_column_view const& str
  * @copydoc nvtext::edit_distance_matrix
  */
 std::unique_ptr<cudf::column> edit_distance_matrix(cudf::strings_column_view const& strings,
-                                                   rmm::cuda_stream_view stream,
+                                                   rmm::cuda_stream_view            stream,
                                                    rmm::mr::device_memory_resource* mr)
 {
   cudf::size_type strings_count = strings.size();
@@ -223,9 +223,9 @@ std::unique_ptr<cudf::column> edit_distance_matrix(cudf::strings_column_view con
   // Calculate the size of the compute-buffer.
   // We only need memory for half the size of the output matrix since the edit distance calculation
   // is commutative -- `distance(strings[i],strings[j]) == distance(strings[j],strings[i])`
-  cudf::size_type n_upper = (strings_count * (strings_count - 1)) / 2;
+  cudf::size_type              n_upper = (strings_count * (strings_count - 1)) / 2;
   rmm::device_uvector<int32_t> offsets(n_upper, stream);
-  auto d_offsets = offsets.data();
+  auto                         d_offsets = offsets.data();
   CUDA_TRY(cudaMemsetAsync(d_offsets, 0, n_upper * sizeof(cudf::size_type), stream.value()));
   thrust::for_each_n(
     rmm::exec_policy(stream),
@@ -251,7 +251,7 @@ std::unique_ptr<cudf::column> edit_distance_matrix(cudf::strings_column_view con
   thrust::exclusive_scan(rmm::exec_policy(stream), offsets.begin(), offsets.end(), offsets.begin());
   // create the compute buffer
   rmm::device_uvector<int16_t> compute_buffer(compute_size, stream);
-  auto d_buffer = compute_buffer.data();
+  auto                         d_buffer = compute_buffer.data();
 
   // compute the edit distance into the output column
   auto results   = cudf::make_fixed_width_column(cudf::data_type{cudf::type_id::INT32},

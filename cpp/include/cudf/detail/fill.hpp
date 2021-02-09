@@ -31,10 +31,10 @@ namespace detail {
  *
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
-void fill_in_place(mutable_column_view& destination,
-                   size_type begin,
-                   size_type end,
-                   scalar const& value,
+void fill_in_place(mutable_column_view&  destination,
+                   size_type             begin,
+                   size_type             end,
+                   scalar const&         value,
                    rmm::cuda_stream_view stream = rmm::cuda_stream_default);
 
 /**
@@ -43,12 +43,12 @@ void fill_in_place(mutable_column_view& destination,
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> fill(
-  column_view const& input,
-  size_type begin,
-  size_type end,
-  scalar const& value,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  size_type                        begin,
+  size_type                        end,
+  scalar const&                    value,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace detail
 }  // namespace cudf

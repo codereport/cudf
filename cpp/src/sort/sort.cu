@@ -26,20 +26,20 @@
 
 namespace cudf {
 namespace detail {
-std::unique_ptr<column> sorted_order(table_view input,
-                                     std::vector<order> const& column_order,
-                                     std::vector<null_order> const& null_precedence,
-                                     rmm::cuda_stream_view stream,
+std::unique_ptr<column> sorted_order(table_view                       input,
+                                     std::vector<order> const&        column_order,
+                                     std::vector<null_order> const&   null_precedence,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
 {
   return sorted_order<false>(input, column_order, null_precedence, stream, mr);
 }
 
-std::unique_ptr<table> sort_by_key(table_view const& values,
-                                   table_view const& keys,
-                                   std::vector<order> const& column_order,
-                                   std::vector<null_order> const& null_precedence,
-                                   rmm::cuda_stream_view stream,
+std::unique_ptr<table> sort_by_key(table_view const&                values,
+                                   table_view const&                keys,
+                                   std::vector<order> const&        column_order,
+                                   std::vector<null_order> const&   null_precedence,
+                                   rmm::cuda_stream_view            stream,
                                    rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(values.num_rows() == keys.num_rows(),
@@ -81,10 +81,10 @@ struct inplace_column_sort_fn {
   }
 };
 
-std::unique_ptr<table> sort(table_view input,
-                            std::vector<order> const& column_order,
-                            std::vector<null_order> const& null_precedence,
-                            rmm::cuda_stream_view stream,
+std::unique_ptr<table> sort(table_view                       input,
+                            std::vector<order> const&        column_order,
+                            std::vector<null_order> const&   null_precedence,
+                            rmm::cuda_stream_view            stream,
                             rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -106,28 +106,28 @@ std::unique_ptr<table> sort(table_view input,
 
 }  // namespace detail
 
-std::unique_ptr<column> sorted_order(table_view input,
-                                     std::vector<order> const& column_order,
-                                     std::vector<null_order> const& null_precedence,
+std::unique_ptr<column> sorted_order(table_view                       input,
+                                     std::vector<order> const&        column_order,
+                                     std::vector<null_order> const&   null_precedence,
                                      rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::sorted_order(input, column_order, null_precedence, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<table> sort(table_view input,
-                            std::vector<order> const& column_order,
-                            std::vector<null_order> const& null_precedence,
+std::unique_ptr<table> sort(table_view                       input,
+                            std::vector<order> const&        column_order,
+                            std::vector<null_order> const&   null_precedence,
                             rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::sort(input, column_order, null_precedence, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<table> sort_by_key(table_view const& values,
-                                   table_view const& keys,
-                                   std::vector<order> const& column_order,
-                                   std::vector<null_order> const& null_precedence,
+std::unique_ptr<table> sort_by_key(table_view const&                values,
+                                   table_view const&                keys,
+                                   std::vector<order> const&        column_order,
+                                   std::vector<null_order> const&   null_precedence,
                                    rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

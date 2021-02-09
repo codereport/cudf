@@ -21,8 +21,8 @@
 #include <rmm/cuda_stream_view.hpp>
 #include <rmm/device_buffer.hpp>
 
-cuda_event_timer::cuda_event_timer(benchmark::State& state,
-                                   bool flush_l2_cache,
+cuda_event_timer::cuda_event_timer(benchmark::State&     state,
+                                   bool                  flush_l2_cache,
                                    rmm::cuda_stream_view stream)
   : stream(stream), p_state(&state)
 {
@@ -35,7 +35,7 @@ cuda_event_timer::cuda_event_timer(benchmark::State& state,
     CUDA_TRY(cudaDeviceGetAttribute(&l2_cache_bytes, cudaDevAttrL2CacheSize, current_device));
 
     if (l2_cache_bytes > 0) {
-      const int memset_value = 0;
+      const int          memset_value = 0;
       rmm::device_buffer l2_cache_buffer(l2_cache_bytes, stream);
       CUDA_TRY(
         cudaMemsetAsync(l2_cache_buffer.data(), memset_value, l2_cache_bytes, stream.value()));

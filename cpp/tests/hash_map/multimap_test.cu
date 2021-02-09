@@ -54,7 +54,7 @@ class MultimapTest : public cudf::test::BaseFixture {
 
   std::unique_ptr<multimap_type, std::function<void(multimap_type*)>> the_map;
 
-  const key_type unused_key     = std::numeric_limits<key_type>::max();
+  const key_type   unused_key   = std::numeric_limits<key_type>::max();
   const value_type unused_value = std::numeric_limits<value_type>::max();
 
   const size_type size;

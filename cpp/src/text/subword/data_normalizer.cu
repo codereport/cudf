@@ -121,11 +121,11 @@ __device__ bool is_head_byte(unsigned char utf8_byte) { return (utf8_byte >> 6) 
  * @return New code point value for this byte.
  */
 __device__ uint32_t extract_code_points_from_utf8(unsigned char const* strings,
-                                                  size_t const total_bytes,
-                                                  uint32_t const start_byte_for_thread)
+                                                  size_t const         total_bytes,
+                                                  uint32_t const       start_byte_for_thread)
 {
-  constexpr uint8_t max_utf8_blocks_for_char    = 4;
-  uint8_t utf8_blocks[max_utf8_blocks_for_char] = {0};
+  constexpr uint8_t max_utf8_blocks_for_char              = 4;
+  uint8_t           utf8_blocks[max_utf8_blocks_for_char] = {0};
 
   for (int i = 0; i < std::min(static_cast<size_t>(max_utf8_blocks_for_char),
                                total_bytes - start_byte_for_thread);
@@ -200,18 +200,18 @@ __device__ uint32_t extract_code_points_from_utf8(unsigned char const* strings,
  * @param[out] chars_per_thread Output number of code point values per string.
  */
 __global__ void kernel_data_normalizer(unsigned char const* strings,
-                                       size_t const total_bytes,
-                                       uint32_t const* cp_metadata,
-                                       uint64_t const* aux_table,
-                                       bool const do_lower_case,
-                                       uint32_t* code_points,
-                                       uint32_t* chars_per_thread)
+                                       size_t const         total_bytes,
+                                       uint32_t const*      cp_metadata,
+                                       uint64_t const*      aux_table,
+                                       bool const           do_lower_case,
+                                       uint32_t*            code_points,
+                                       uint32_t*            chars_per_thread)
 {
-  constexpr uint32_t init_val                     = (1 << FILTER_BIT);
-  uint32_t replacement_code_points[MAX_NEW_CHARS] = {init_val, init_val, init_val};
+  constexpr uint32_t init_val                               = (1 << FILTER_BIT);
+  uint32_t           replacement_code_points[MAX_NEW_CHARS] = {init_val, init_val, init_val};
 
   uint32_t const char_for_thread = blockDim.x * blockIdx.x + threadIdx.x;
-  uint32_t num_new_chars         = 0;
+  uint32_t       num_new_chars   = 0;
 
   if (char_for_thread < total_bytes) {
     auto const code_point = extract_code_points_from_utf8(strings, total_bytes, char_for_thread);
@@ -252,7 +252,7 @@ __global__ void kernel_data_normalizer(unsigned char const* strings,
 
   typedef cub::
     BlockStore<uint32_t, THREADS_PER_BLOCK, MAX_NEW_CHARS, cub::BLOCK_STORE_WARP_TRANSPOSE>
-      BlockStore;
+                                              BlockStore;
   __shared__ typename BlockStore::TempStorage temp_storage;
 
   // Now we perform coalesced writes back to global memory using cub.
@@ -269,9 +269,9 @@ data_normalizer::data_normalizer(rmm::cuda_stream_view stream, bool do_lower_cas
   d_aux_table   = detail::get_aux_codepoint_data(stream);
 }
 
-uvector_pair data_normalizer::normalize(char const* d_strings,
-                                        uint32_t const* d_offsets,
-                                        uint32_t num_strings,
+uvector_pair data_normalizer::normalize(char const*           d_strings,
+                                        uint32_t const*       d_offsets,
+                                        uint32_t              num_strings,
                                         rmm::cuda_stream_view stream)
 {
   if (num_strings == 0)
@@ -295,8 +295,8 @@ uvector_pair data_normalizer::normalize(char const* d_strings,
                           std::make_unique<rmm::device_uvector<uint32_t>>(0, stream));
 
   cudf::detail::grid_1d const grid{static_cast<cudf::size_type>(bytes_count), THREADS_PER_BLOCK, 1};
-  size_t const threads_on_device  = grid.num_threads_per_block * grid.num_blocks;
-  size_t const max_new_char_total = MAX_NEW_CHARS * threads_on_device;
+  size_t const                threads_on_device  = grid.num_threads_per_block * grid.num_blocks;
+  size_t const                max_new_char_total = MAX_NEW_CHARS * threads_on_device;
 
   auto d_code_points = std::make_unique<rmm::device_uvector<uint32_t>>(max_new_char_total, stream);
   rmm::device_uvector<uint32_t> d_chars_per_thread(threads_on_device, stream);

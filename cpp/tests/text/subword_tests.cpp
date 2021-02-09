@@ -44,7 +44,7 @@ struct TextSubwordTest : public cudf::test::BaseFixture {
 void create_hashed_vocab(std::string const& hash_file)
 {
   std::vector<std::pair<int, int>> coefficients(23, {65559, 0});
-  std::ofstream outfile(hash_file, std::ofstream::out);
+  std::ofstream                    outfile(hash_file, std::ofstream::out);
   outfile << "1\n0\n" << coefficients.size() << "\n";
   for (auto c : coefficients) outfile << c.first << " " << c.second << "\n";
   std::vector<uint64_t> hash_table(23, 0);
@@ -60,10 +60,10 @@ void create_hashed_vocab(std::string const& hash_file)
 
 TEST(TextSubwordTest, Tokenize)
 {
-  uint32_t nrows = 100;
-  std::vector<const char*> h_strings(nrows, "This is a test. A test this is.");
+  uint32_t                           nrows = 100;
+  std::vector<const char*>           h_strings(nrows, "This is a test. A test this is.");
   cudf::test::strings_column_wrapper strings(h_strings.begin(), h_strings.end());
-  std::string hash_file = temp_env->get_temp_filepath("hashed_vocab.txt");
+  std::string                        hash_file = temp_env->get_temp_filepath("hashed_vocab.txt");
   create_hashed_vocab(hash_file);
 
   uint32_t max_sequence_length = 16;
@@ -115,7 +115,7 @@ TEST(TextSubwordTest, TokenizeMultiRow)
 {
   std::vector<const char*> h_strings{"This is a test.", "This is a test. This is a tést."};
   cudf::test::strings_column_wrapper strings(h_strings.begin(), h_strings.end());
-  std::string hash_file = temp_env->get_temp_filepath("hashed_vocab.txt");
+  std::string                        hash_file = temp_env->get_temp_filepath("hashed_vocab.txt");
   create_hashed_vocab(hash_file);
 
   uint32_t max_sequence_length = 8;
@@ -144,7 +144,7 @@ TEST(TextSubwordTest, TokenizeMultiRow)
 TEST(TextSubwordTest, TokenizeMaxEqualsTokens)
 {
   cudf::test::strings_column_wrapper strings({"This is a test."});
-  std::string hash_file = temp_env->get_temp_filepath("hashed_vocab.txt");
+  std::string                        hash_file = temp_env->get_temp_filepath("hashed_vocab.txt");
   create_hashed_vocab(hash_file);
 
   uint32_t max_sequence_length = 5;  // five tokens in strings;
@@ -171,7 +171,7 @@ TEST(TextSubwordTest, ParameterErrors)
 {
   std::vector<const char*> h_strings{"This is a test.", "This is a test. This is a tést."};
   cudf::test::strings_column_wrapper strings(h_strings.begin(), h_strings.end());
-  std::string hash_file = temp_env->get_temp_filepath("hashed_vocab.txt");
+  std::string                        hash_file = temp_env->get_temp_filepath("hashed_vocab.txt");
   create_hashed_vocab(hash_file);
   EXPECT_THROW(nvtext::subword_tokenize(cudf::strings_column_view{strings},
                                         hash_file,
@@ -195,7 +195,7 @@ TEST(TextSubwordTest, ParameterErrors)
 TEST(TextSubwordTest, EmptyStrings)
 {
   cudf::test::strings_column_wrapper strings;
-  std::string hash_file = temp_env->get_temp_filepath("hashed_vocab.txt");
+  std::string                        hash_file = temp_env->get_temp_filepath("hashed_vocab.txt");
   create_hashed_vocab(hash_file);
   auto result = nvtext::subword_tokenize(cudf::strings_column_view{strings},
                                          hash_file,
@@ -213,7 +213,7 @@ TEST(TextSubwordTest, EmptyStrings)
 TEST(TextSubwordTest, AllNullStrings)
 {
   cudf::test::strings_column_wrapper strings({"", "", ""}, {0, 0, 0});
-  std::string hash_file = temp_env->get_temp_filepath("hashed_vocab.txt");
+  std::string                        hash_file = temp_env->get_temp_filepath("hashed_vocab.txt");
   create_hashed_vocab(hash_file);
   auto result = nvtext::subword_tokenize(cudf::strings_column_view{strings},
                                          hash_file,
@@ -235,7 +235,7 @@ TEST(TextSubwordTest, TokenizeFromVocabStruct)
 
   std::vector<const char*> h_strings{"This is a test.", "This is a test. This is a tést."};
   cudf::test::strings_column_wrapper strings(h_strings.begin(), h_strings.end());
-  auto vocab  = nvtext::load_vocabulary_file(hash_file);
+  auto                               vocab = nvtext::load_vocabulary_file(hash_file);
   auto result = nvtext::subword_tokenize(cudf::strings_column_view{strings},
                                          vocab,
                                          8,
@@ -259,6 +259,6 @@ TEST(TextSubwordTest, LoadVocabFileErrors)
 {
   std::vector<const char*> h_strings{"This is a test.", "This is a test. This is a tést."};
   cudf::test::strings_column_wrapper strings(h_strings.begin(), h_strings.end());
-  std::string hash_file = temp_env->get_temp_filepath("nothing.txt");
+  std::string                        hash_file = temp_env->get_temp_filepath("nothing.txt");
   EXPECT_THROW(nvtext::load_vocabulary_file(hash_file), cudf::logic_error);
 }

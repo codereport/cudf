@@ -34,8 +34,8 @@ namespace cudf {
 // Create a strings-type column from vector of pointer/size pairs
 std::unique_ptr<column> make_strings_column(
   const rmm::device_vector<thrust::pair<const char*, size_type>>& strings,
-  rmm::cuda_stream_view stream,
-  rmm::mr::device_memory_resource* mr)
+  rmm::cuda_stream_view                                           stream,
+  rmm::mr::device_memory_resource*                                mr)
 {
   CUDF_FUNC_RANGE();
   size_type strings_count = strings.size();
@@ -76,7 +76,7 @@ std::unique_ptr<column> make_strings_column(
     [d_strings] __device__(size_type idx) { return d_strings[idx].first != nullptr; },
     stream,
     mr);
-  auto null_count = new_nulls.second;
+  auto               null_count = new_nulls.second;
   rmm::device_buffer null_mask{0, stream, mr};
   if (null_count > 0) null_mask = std::move(new_nulls.first);
 
@@ -117,9 +117,9 @@ struct string_view_to_pair {
 
 // Create a strings-type column from vector of string_view
 std::unique_ptr<column> make_strings_column(const rmm::device_vector<string_view>& string_views,
-                                            const string_view null_placeholder,
-                                            rmm::cuda_stream_view stream,
-                                            rmm::mr::device_memory_resource* mr)
+                                            const string_view                      null_placeholder,
+                                            rmm::cuda_stream_view                  stream,
+                                            rmm::mr::device_memory_resource*       mr)
 {
   auto it_pair =
     thrust::make_transform_iterator(string_views.begin(), string_view_to_pair{null_placeholder});
@@ -129,12 +129,12 @@ std::unique_ptr<column> make_strings_column(const rmm::device_vector<string_view
 }
 
 // Create a strings-type column from device vector of chars and vector of offsets.
-std::unique_ptr<column> make_strings_column(const rmm::device_vector<char>& strings,
-                                            const rmm::device_vector<size_type>& offsets,
+std::unique_ptr<column> make_strings_column(const rmm::device_vector<char>&         strings,
+                                            const rmm::device_vector<size_type>&    offsets,
                                             const rmm::device_vector<bitmask_type>& valid_mask,
-                                            size_type null_count,
-                                            rmm::cuda_stream_view stream,
-                                            rmm::mr::device_memory_resource* mr)
+                                            size_type                               null_count,
+                                            rmm::cuda_stream_view                   stream,
+                                            rmm::mr::device_memory_resource*        mr)
 {
   CUDF_FUNC_RANGE();
   size_type num_strings = offsets.size() - 1;
@@ -186,27 +186,27 @@ std::unique_ptr<column> make_strings_column(const rmm::device_vector<char>& stri
 }
 
 // Create strings column from host vectors
-std::unique_ptr<column> make_strings_column(const std::vector<char>& strings,
-                                            const std::vector<size_type>& offsets,
+std::unique_ptr<column> make_strings_column(const std::vector<char>&         strings,
+                                            const std::vector<size_type>&    offsets,
                                             const std::vector<bitmask_type>& null_mask,
-                                            size_type null_count,
-                                            rmm::cuda_stream_view stream,
+                                            size_type                        null_count,
+                                            rmm::cuda_stream_view            stream,
                                             rmm::mr::device_memory_resource* mr)
 {
-  rmm::device_vector<char> d_strings{strings};
-  rmm::device_vector<size_type> d_offsets{offsets};
+  rmm::device_vector<char>         d_strings{strings};
+  rmm::device_vector<size_type>    d_offsets{offsets};
   rmm::device_vector<bitmask_type> d_null_mask{null_mask};
 
   return make_strings_column(d_strings, d_offsets, d_null_mask, null_count, stream, mr);
 }
 
 //
-std::unique_ptr<column> make_strings_column(size_type num_strings,
-                                            std::unique_ptr<column> offsets_column,
-                                            std::unique_ptr<column> chars_column,
-                                            size_type null_count,
-                                            rmm::device_buffer&& null_mask,
-                                            rmm::cuda_stream_view stream,
+std::unique_ptr<column> make_strings_column(size_type                        num_strings,
+                                            std::unique_ptr<column>          offsets_column,
+                                            std::unique_ptr<column>          chars_column,
+                                            size_type                        null_count,
+                                            rmm::device_buffer&&             null_mask,
+                                            rmm::cuda_stream_view            stream,
                                             rmm::mr::device_memory_resource* mr)
 {
   if (null_count > 0) CUDF_EXPECTS(null_mask.size() > 0, "Column with nulls must be nullable.");

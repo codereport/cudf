@@ -374,13 +374,13 @@ TYPED_TEST(RoundTestsFloatingPointTypes, LargeFloatingPointHalfUp)
 {
   using fw_wrapper = cudf::test::fixed_width_column_wrapper<TypeParam>;
 
-  auto transform   = [](int i) -> float { return i % 2 == 0 ? i + 0.44 : i + 0.56; };
-  auto begin       = cudf::detail::make_counting_transform_iterator(0, transform);
-  auto const input = fw_wrapper(begin, begin + 2000);
+  auto       transform = [](int i) -> float { return i % 2 == 0 ? i + 0.44 : i + 0.56; };
+  auto       begin     = cudf::detail::make_counting_transform_iterator(0, transform);
+  auto const input     = fw_wrapper(begin, begin + 2000);
 
-  auto transform2     = [](int i) { return i % 2 == 0 ? i + 0.4 : i + 0.6; };
-  auto begin2         = cudf::detail::make_counting_transform_iterator(0, transform2);
-  auto const expected = fw_wrapper(begin2, begin2 + 2000);
+  auto       transform2 = [](int i) { return i % 2 == 0 ? i + 0.4 : i + 0.6; };
+  auto       begin2     = cudf::detail::make_counting_transform_iterator(0, transform2);
+  auto const expected   = fw_wrapper(begin2, begin2 + 2000);
 
   auto const result = cudf::round(input, 1, cudf::rounding_method::HALF_UP);
 
@@ -391,13 +391,13 @@ TYPED_TEST(RoundTestsIntegerTypes, LargeIntegerHalfEven)
 {
   using fw_wrapper = cudf::test::fixed_width_column_wrapper<TypeParam>;
 
-  auto transform   = [](int i) -> float { return 10 * i + 5; };
-  auto begin       = cudf::detail::make_counting_transform_iterator(1, transform);
-  auto const input = fw_wrapper(begin, begin + 2000);
+  auto       transform = [](int i) -> float { return 10 * i + 5; };
+  auto       begin     = cudf::detail::make_counting_transform_iterator(1, transform);
+  auto const input     = fw_wrapper(begin, begin + 2000);
 
-  auto transform2     = [](int i) { return i % 2 == 0 ? 10 * i : 10 + 10 * i; };
-  auto begin2         = cudf::detail::make_counting_transform_iterator(1, transform2);
-  auto const expected = fw_wrapper(begin2, begin2 + 2000);
+  auto       transform2 = [](int i) { return i % 2 == 0 ? 10 * i : 10 + 10 * i; };
+  auto       begin2     = cudf::detail::make_counting_transform_iterator(1, transform2);
+  auto const expected   = fw_wrapper(begin2, begin2 + 2000);
 
   auto const result = cudf::round(input, -1, cudf::rounding_method::HALF_EVEN);
 

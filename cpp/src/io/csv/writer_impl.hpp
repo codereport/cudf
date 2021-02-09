@@ -54,8 +54,8 @@ class writer::impl {
    * @param options Settings for controlling behavior
    * @param mr Device memory resource to use for device memory allocation
    */
-  impl(std::unique_ptr<data_sink> sink,
-       csv_writer_options const& options,
+  impl(std::unique_ptr<data_sink>       sink,
+       csv_writer_options const&        options,
        rmm::mr::device_memory_resource* mr);
 
   /**
@@ -65,7 +65,7 @@ class writer::impl {
    * @param metadata The metadata associated with the table
    * @param stream CUDA stream used for device memory operations and kernel launches.
    */
-  void write(table_view const& table,
+  void write(table_view const&     table,
              const table_metadata* metadata = nullptr,
              rmm::cuda_stream_view stream   = rmm::cuda_stream_default);
 
@@ -76,7 +76,7 @@ class writer::impl {
    * @param metadata The metadata associated with the table
    * @param stream CUDA stream used for device memory operations and kernel launches.
    */
-  void write_chunked_begin(table_view const& table,
+  void write_chunked_begin(table_view const&     table,
                            const table_metadata* metadata = nullptr,
                            rmm::cuda_stream_view stream   = rmm::cuda_stream_default);
 
@@ -88,8 +88,8 @@ class writer::impl {
    * @param stream CUDA stream used for device memory operations and kernel launches.
    */
   void write_chunked(strings_column_view const& strings_column,
-                     const table_metadata* metadata = nullptr,
-                     rmm::cuda_stream_view stream   = rmm::cuda_stream_default);
+                     const table_metadata*      metadata = nullptr,
+                     rmm::cuda_stream_view      stream   = rmm::cuda_stream_default);
 
   /**
    * @brief Write footer of CSV format (typically, empty).
@@ -98,7 +98,7 @@ class writer::impl {
    * @param metadata The metadata associated with the table
    * @param stream CUDA stream used for device memory operations and kernel launches.
    */
-  void write_chunked_end(table_view const& table,
+  void write_chunked_end(table_view const&     table,
                          const table_metadata* metadata = nullptr,
                          rmm::cuda_stream_view stream   = rmm::cuda_stream_default)
   {
@@ -106,14 +106,14 @@ class writer::impl {
   }
 
  private:
-  std::unique_ptr<data_sink> out_sink_;
+  std::unique_ptr<data_sink>       out_sink_;
   rmm::mr::device_memory_resource* mr_ = nullptr;
-  csv_writer_options const options_;
+  csv_writer_options const         options_;
 };
 
 std::unique_ptr<column> pandas_format_durations(
-  column_view const& durations,
-  rmm::cuda_stream_view stream,
+  column_view const&               durations,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 }  // namespace csv

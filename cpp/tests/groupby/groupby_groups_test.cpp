@@ -39,7 +39,7 @@ TEST_F(groupby_group_keys_test, basic)
 
   fixed_width_column_wrapper<K> keys{1, 1, 2, 1, 2, 3};
   fixed_width_column_wrapper<K> expect_grouped_keys{1, 1, 1, 2, 2, 3};
-  std::vector<size_type> expect_group_offsets = {0, 3, 5, 6};
+  std::vector<size_type>        expect_group_offsets = {0, 3, 5, 6};
   test_groups(keys, expect_grouped_keys, expect_group_offsets);
 }
 
@@ -49,7 +49,7 @@ TEST_F(groupby_group_keys_test, empty_keys)
 
   fixed_width_column_wrapper<K> keys{};
   fixed_width_column_wrapper<K> expect_grouped_keys{};
-  std::vector<size_type> expect_group_offsets = {0};
+  std::vector<size_type>        expect_group_offsets = {0};
   test_groups(keys, expect_grouped_keys, expect_group_offsets);
 }
 
@@ -59,7 +59,7 @@ TEST_F(groupby_group_keys_test, all_null_keys)
 
   fixed_width_column_wrapper<K> keys({1, 1, 2, 3, 1, 2}, all_null());
   fixed_width_column_wrapper<K> expect_grouped_keys{};
-  std::vector<size_type> expect_group_offsets = {0};
+  std::vector<size_type>        expect_group_offsets = {0};
   test_groups(keys, expect_grouped_keys, expect_group_offsets);
 }
 
@@ -72,7 +72,7 @@ TYPED_TEST(groupby_group_keys_and_values_test, basic_with_values)
   fixed_width_column_wrapper<K> expect_grouped_keys{0, 1, 2, 3, 4, 5};
   fixed_width_column_wrapper<V> values({0, 0, 1, 1, 2, 2});
   fixed_width_column_wrapper<V> expect_grouped_values{2, 2, 1, 1, 0, 0};
-  std::vector<size_type> expect_group_offsets = {0, 1, 2, 3, 4, 5, 6};
+  std::vector<size_type>        expect_group_offsets = {0, 1, 2, 3, 4, 5, 6};
   test_groups(keys, expect_grouped_keys, expect_group_offsets, values, expect_grouped_values);
 }
 
@@ -85,7 +85,7 @@ TYPED_TEST(groupby_group_keys_and_values_test, some_nulls)
   fixed_width_column_wrapper<K> expect_grouped_keys({1, 2, 3}, all_valid());
   fixed_width_column_wrapper<V> values({1, 2, 3, 4, 5, 6});
   fixed_width_column_wrapper<V> expect_grouped_values({1, 6, 3});
-  std::vector<size_type> expect_group_offsets = {0, 1, 2, 3};
+  std::vector<size_type>        expect_group_offsets = {0, 1, 2, 3};
   test_groups(keys, expect_grouped_keys, expect_group_offsets, values, expect_grouped_values);
 }
 

@@ -49,7 +49,7 @@ namespace {
 template <bool nullable = true>
 struct permuted_row_equality_comparator {
   cudf::row_equality_comparator<nullable> _comparator;
-  cudf::size_type const* _map;
+  cudf::size_type const*                  _map;
 
   /**
    * @brief Construct a permuted_row_equality_comparator.
@@ -162,8 +162,8 @@ sort_groupby_helper::index_vector const& sort_groupby_helper::group_offsets(
 
   _group_offsets = std::make_unique<index_vector>(num_keys(stream) + 1);
 
-  auto device_input_table = table_device_view::create(_keys, stream);
-  auto sorted_order       = key_sort_order().data<size_type>();
+  auto                              device_input_table = table_device_view::create(_keys, stream);
+  auto                              sorted_order       = key_sort_order().data<size_type>();
   decltype(_group_offsets->begin()) result_end;
 
   if (has_nulls(_keys)) {
@@ -296,7 +296,7 @@ sort_groupby_helper::column_ptr sort_groupby_helper::grouped_values(
   return std::move(grouped_values_table->release()[0]);
 }
 
-std::unique_ptr<table> sort_groupby_helper::unique_keys(rmm::cuda_stream_view stream,
+std::unique_ptr<table> sort_groupby_helper::unique_keys(rmm::cuda_stream_view            stream,
                                                         rmm::mr::device_memory_resource* mr)
 {
   auto idx_data = key_sort_order().data<size_type>();
@@ -312,7 +312,7 @@ std::unique_ptr<table> sort_groupby_helper::unique_keys(rmm::cuda_stream_view st
                               mr);
 }
 
-std::unique_ptr<table> sort_groupby_helper::sorted_keys(rmm::cuda_stream_view stream,
+std::unique_ptr<table> sort_groupby_helper::sorted_keys(rmm::cuda_stream_view            stream,
                                                         rmm::mr::device_memory_resource* mr)
 {
   return cudf::detail::gather(_keys,

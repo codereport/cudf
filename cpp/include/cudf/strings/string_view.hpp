@@ -93,8 +93,8 @@ class string_view {
     CUDA_DEVICE_CALLABLE const_iterator(const string_view& str, size_type pos);
     const_iterator(const const_iterator& mit) = default;
     const_iterator(const_iterator&& mit)      = default;
-    const_iterator& operator=(const const_iterator&) = default;
-    const_iterator& operator=(const_iterator&&) = default;
+    const_iterator&      operator=(const const_iterator&) = default;
+    const_iterator&      operator=(const_iterator&&) = default;
     CUDA_DEVICE_CALLABLE const_iterator& operator++();
     CUDA_DEVICE_CALLABLE const_iterator operator++(int);
     CUDA_DEVICE_CALLABLE const_iterator& operator+=(difference_type);
@@ -103,21 +103,21 @@ class string_view {
     CUDA_DEVICE_CALLABLE const_iterator operator--(int);
     CUDA_DEVICE_CALLABLE const_iterator& operator-=(difference_type);
     CUDA_DEVICE_CALLABLE const_iterator operator-(difference_type);
-    CUDA_DEVICE_CALLABLE bool operator==(const const_iterator&) const;
-    CUDA_DEVICE_CALLABLE bool operator!=(const const_iterator&) const;
-    CUDA_DEVICE_CALLABLE bool operator<(const const_iterator&) const;
-    CUDA_DEVICE_CALLABLE bool operator<=(const const_iterator&) const;
-    CUDA_DEVICE_CALLABLE bool operator>(const const_iterator&) const;
-    CUDA_DEVICE_CALLABLE bool operator>=(const const_iterator&) const;
+    CUDA_DEVICE_CALLABLE bool           operator==(const const_iterator&) const;
+    CUDA_DEVICE_CALLABLE bool           operator!=(const const_iterator&) const;
+    CUDA_DEVICE_CALLABLE bool           operator<(const const_iterator&) const;
+    CUDA_DEVICE_CALLABLE bool           operator<=(const const_iterator&) const;
+    CUDA_DEVICE_CALLABLE bool           operator>(const const_iterator&) const;
+    CUDA_DEVICE_CALLABLE bool           operator>=(const const_iterator&) const;
     CUDA_DEVICE_CALLABLE char_utf8 operator*() const;
     CUDA_DEVICE_CALLABLE size_type position() const;
     CUDA_DEVICE_CALLABLE size_type byte_offset() const;
 
    private:
     const char* p{};
-    size_type bytes{};
-    size_type char_pos{};
-    size_type byte_pos{};
+    size_type   bytes{};
+    size_type   char_pos{};
+    size_type   byte_pos{};
   };
 
   /**
@@ -208,8 +208,8 @@ class string_view {
    * @return -1 if str is not found in this string.
    */
   CUDA_DEVICE_CALLABLE size_type find(const string_view& str,
-                                      size_type pos   = 0,
-                                      size_type count = -1) const;
+                                      size_type          pos   = 0,
+                                      size_type          count = -1) const;
   /**
    * @brief Returns the character position of the first occurrence where the
    * array str is found in this string within the character range [pos,pos+n).
@@ -222,9 +222,9 @@ class string_view {
    * @return -1 if arg string is not found in this string.
    */
   CUDA_DEVICE_CALLABLE size_type find(const char* str,
-                                      size_type bytes,
-                                      size_type pos   = 0,
-                                      size_type count = -1) const;
+                                      size_type   bytes,
+                                      size_type   pos   = 0,
+                                      size_type   count = -1) const;
   /**
    * @brief Returns the character position of the first occurrence where
    * character is found in this string within the character range [pos,pos+n).
@@ -249,8 +249,8 @@ class string_view {
    * @return -1 if arg string is not found in this string.
    */
   CUDA_DEVICE_CALLABLE size_type rfind(const string_view& str,
-                                       size_type pos   = 0,
-                                       size_type count = -1) const;
+                                       size_type          pos   = 0,
+                                       size_type          count = -1) const;
   /**
    * @brief Returns the character position of the last occurrence where the
    * array str is found in this string within the character range [pos,pos+n).
@@ -263,9 +263,9 @@ class string_view {
    * @return -1 if arg string is not found in this string.
    */
   CUDA_DEVICE_CALLABLE size_type rfind(const char* str,
-                                       size_type bytes,
-                                       size_type pos   = 0,
-                                       size_type count = -1) const;
+                                       size_type   bytes,
+                                       size_type   pos   = 0,
+                                       size_type   count = -1) const;
   /**
    * @brief Returns the character position of the last occurrence where
    * character is found in this string within the character range [pos,pos+n).
@@ -313,10 +313,10 @@ class string_view {
   string_view& operator=(string_view&&) = default;
 
  private:
-  const char* _data{};           ///< Pointer to device memory contain char array for this string
-  size_type _bytes{};            ///< Number of bytes in _data for this string
-  mutable size_type _length{};   ///< Number of characters in this string (computed)
-  mutable int8_t _char_width{};  ///< Number of bytes per character if uniform width (computed)
+  const char*       _data{};        ///< Pointer to device memory contain char array for this string
+  size_type         _bytes{};       ///< Number of bytes in _data for this string
+  mutable size_type _length{};      ///< Number of characters in this string (computed)
+  mutable int8_t    _char_width{};  ///< Number of bytes per character if uniform width (computed)
 
   /**
    * @brief Return the character position of the given byte offset.

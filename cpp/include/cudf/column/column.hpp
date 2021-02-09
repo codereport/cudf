@@ -67,8 +67,8 @@ class column {
    * @param stream CUDA stream used for device memory operations.
    * @param mr Device memory resource to use for all device memory allocations
    */
-  column(column const& other,
-         rmm::cuda_stream_view stream,
+  column(column const&                    other,
+         rmm::cuda_stream_view            stream,
          rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
   /**
@@ -97,12 +97,12 @@ class column {
    * @param children Optional, vector of child columns
    */
   template <typename B1, typename B2 = rmm::device_buffer>
-  column(data_type dtype,
-         size_type size,
-         B1&& data,
-         B2&& null_mask                                  = {},
-         size_type null_count                            = UNKNOWN_NULL_COUNT,
-         std::vector<std::unique_ptr<column>>&& children = {})
+  column(data_type                              dtype,
+         size_type                              size,
+         B1&&                                   data,
+         B2&&                                   null_mask  = {},
+         size_type                              null_count = UNKNOWN_NULL_COUNT,
+         std::vector<std::unique_ptr<column>>&& children   = {})
     : _type{dtype},
       _size{size},
       _data{std::forward<B1>(data)},
@@ -122,9 +122,9 @@ class column {
    * @param stream CUDA stream used for device memory operations.
    * @param mr Device memory resource to use for all device memory allocations
    */
-  explicit column(column_view view,
-                  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-                  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  explicit column(column_view                      view,
+                  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+                  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
   /**
    * @brief Returns the column's logical element type
@@ -160,7 +160,7 @@ class column {
    * computed on the first invocation of `null_count()`.
    */
   void set_null_mask(rmm::device_buffer&& new_null_mask,
-                     size_type new_null_count = UNKNOWN_NULL_COUNT);
+                     size_type            new_null_count = UNKNOWN_NULL_COUNT);
 
   /**
    * @brief Sets the column's null value indicator bitmask to `new_null_mask`.
@@ -176,7 +176,7 @@ class column {
    * computed on the first invocation of `null_count()`.
    */
   void set_null_mask(rmm::device_buffer const& new_null_mask,
-                     size_type new_null_count = UNKNOWN_NULL_COUNT);
+                     size_type                 new_null_count = UNKNOWN_NULL_COUNT);
 
   /**
    * @brief Updates the count of null elements.
@@ -240,8 +240,8 @@ class column {
    * Returned by `column::release()`.
    */
   struct contents {
-    std::unique_ptr<rmm::device_buffer> data;
-    std::unique_ptr<rmm::device_buffer> null_mask;
+    std::unique_ptr<rmm::device_buffer>  data;
+    std::unique_ptr<rmm::device_buffer>  null_mask;
     std::vector<std::unique_ptr<column>> children;
   };
 
@@ -311,12 +311,12 @@ class column {
   operator mutable_column_view() { return this->mutable_view(); };
 
  private:
-  cudf::data_type _type{type_id::EMPTY};  ///< Logical type of elements in the column
-  cudf::size_type _size{};                ///< The number of elements in the column
-  rmm::device_buffer _data{};             ///< Dense, contiguous, type erased device memory
-                                          ///< buffer containing the column elements
-  rmm::device_buffer _null_mask{};        ///< Bitmask used to represent null values.
-                                          ///< May be empty if `null_count() == 0`
+  cudf::data_type    _type{type_id::EMPTY};  ///< Logical type of elements in the column
+  cudf::size_type    _size{};                ///< The number of elements in the column
+  rmm::device_buffer _data{};                ///< Dense, contiguous, type erased device memory
+                                             ///< buffer containing the column elements
+  rmm::device_buffer _null_mask{};           ///< Bitmask used to represent null values.
+                                             ///< May be empty if `null_count() == 0`
   mutable cudf::size_type _null_count{UNKNOWN_NULL_COUNT};  ///< The number of null elements
   std::vector<std::unique_ptr<column>> _children{};         ///< Depending on element type, child
                                                             ///< columns may contain additional data

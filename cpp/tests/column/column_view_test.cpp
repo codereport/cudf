@@ -72,8 +72,8 @@ void do_logical_cast(cudf::column_view const& column_view, Iterator begin, Itera
              std::is_same<FromType, rep_type_t<ToType>>::value) {
     // Cast integer to timestamp or vice versa
     cudf::data_type type{cudf::type_to_id<ToType>()};
-    auto output  = cudf::logical_cast(column_view, type);
-    auto output1 = cudf::logical_cast(mutable_column_view, type);
+    auto            output  = cudf::logical_cast(column_view, type);
+    auto            output1 = cudf::logical_cast(mutable_column_view, type);
     cudf::test::fixed_width_column_wrapper<ToType, cudf::size_type> expected(begin, end);
     cudf::test::expect_columns_equal(output, expected);
     cudf::test::expect_columns_equal(output1, expected);

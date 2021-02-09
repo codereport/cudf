@@ -48,17 +48,17 @@ enum class Dir { FORWARD, BACKWARD };
  * or the end of the string.
  */
 struct token_counter_fn {
-  column_device_view const d_strings;  // strings to split
-  string_view const d_delimiter;       // delimiter for split
-  size_type const max_tokens = std::numeric_limits<size_type>::max();
+  column_device_view const d_strings;    // strings to split
+  string_view const        d_delimiter;  // delimiter for split
+  size_type const          max_tokens = std::numeric_limits<size_type>::max();
 
   __device__ size_type operator()(size_type idx) const
   {
     if (d_strings.is_null(idx)) { return 0; }
 
-    auto const d_str      = d_strings.element<string_view>(idx);
-    size_type token_count = 0;
-    size_type start_pos   = 0;
+    auto const d_str       = d_strings.element<string_view>(idx);
+    size_type  token_count = 0;
+    size_type  start_pos   = 0;
     while (token_count < max_tokens - 1) {
       auto const delimiter_pos = d_str.find(d_delimiter, start_pos);
       if (delimiter_pos < 0) break;
@@ -74,15 +74,15 @@ struct token_counter_fn {
  */
 template <Dir dir>
 struct token_reader_fn {
-  column_device_view const d_strings;  // strings to split
-  string_view const d_delimiter;       // delimiter for split
-  int32_t* d_token_offsets{};          // for locating tokens in d_tokens
-  string_index_pair* d_tokens{};
+  column_device_view const d_strings;          // strings to split
+  string_view const        d_delimiter;        // delimiter for split
+  int32_t*                 d_token_offsets{};  // for locating tokens in d_tokens
+  string_index_pair*       d_tokens{};
 
   __device__ string_index_pair resolve_token(string_view const& d_str,
-                                             size_type start_pos,
-                                             size_type end_pos,
-                                             size_type delimiter_pos) const
+                                             size_type          start_pos,
+                                             size_type          end_pos,
+                                             size_type          delimiter_pos) const
   {
     if (dir == Dir::FORWARD) {
       auto const byte_offset = d_str.byte_offset(start_pos);
@@ -101,7 +101,7 @@ struct token_reader_fn {
 
     auto const token_offset = d_token_offsets[idx];
     auto const token_count  = d_token_offsets[idx + 1] - token_offset;
-    auto d_result           = d_tokens + token_offset;
+    auto       d_result     = d_tokens + token_offset;
     auto const d_str        = d_strings.element<string_view>(idx);
     if (d_str.empty()) {
       // Pandas str.split("") for non-whitespace delimiter is an empty string
@@ -143,16 +143,16 @@ struct token_reader_fn {
  */
 struct whitespace_token_counter_fn {
   column_device_view const d_strings;  // strings to split
-  size_type const max_tokens = std::numeric_limits<size_type>::max();
+  size_type const          max_tokens = std::numeric_limits<size_type>::max();
 
   __device__ size_type operator()(size_type idx) const
   {
     if (d_strings.is_null(idx)) { return 0; }
 
-    auto const d_str        = d_strings.element<string_view>(idx);
-    size_type token_count   = 0;
-    auto spaces             = true;
-    auto reached_max_tokens = false;
+    auto const d_str              = d_strings.element<string_view>(idx);
+    size_type  token_count        = 0;
+    auto       spaces             = true;
+    auto       reached_max_tokens = false;
     for (auto ch : d_str) {
       if (spaces != (ch <= ' ')) {
         if (!spaces) {
@@ -178,9 +178,9 @@ struct whitespace_token_counter_fn {
 template <Dir dir>
 struct whitespace_token_reader_fn {
   column_device_view const d_strings;  // strings to split
-  size_type const max_tokens{};
-  int32_t* d_token_offsets{};
-  string_index_pair* d_tokens{};
+  size_type const          max_tokens{};
+  int32_t*                 d_token_offsets{};
+  string_index_pair*       d_tokens{};
 
   __device__ void operator()(size_type idx)
   {
@@ -189,10 +189,10 @@ struct whitespace_token_reader_fn {
     if (token_count == 0) { return; }
     auto d_result = d_tokens + token_offset;
 
-    auto const d_str = d_strings.element<string_view>(idx);
+    auto const                  d_str = d_strings.element<string_view>(idx);
     whitespace_string_tokenizer tokenizer(d_str, dir != Dir::FORWARD);
-    size_type token_idx = 0;
-    position_pair token{0, 0};
+    size_type                   token_idx = 0;
+    position_pair               token{0, 0};
     if (dir == Dir::FORWARD) {
       while (tokenizer.next_token() && (token_idx < token_count)) {
         token = tokenizer.get_token();
@@ -221,10 +221,10 @@ struct whitespace_token_reader_fn {
 
 // The output is one list item per string
 template <typename TokenCounter, typename TokenReader>
-std::unique_ptr<column> split_record_fn(strings_column_view const& strings,
-                                        TokenCounter counter,
-                                        TokenReader reader,
-                                        rmm::cuda_stream_view stream,
+std::unique_ptr<column> split_record_fn(strings_column_view const&       strings,
+                                        TokenCounter                     counter,
+                                        TokenReader                      reader,
+                                        rmm::cuda_stream_view            stream,
                                         rmm::mr::device_memory_resource* mr)
 {
   // create offsets column by counting the number of tokens per string
@@ -260,11 +260,11 @@ std::unique_ptr<column> split_record_fn(strings_column_view const& strings,
 
 template <Dir dir>
 std::unique_ptr<column> split_record(
-  strings_column_view const& strings,
-  string_scalar const& delimiter      = string_scalar(""),
-  size_type maxsplit                  = -1,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  strings_column_view const&       strings,
+  string_scalar const&             delimiter = string_scalar(""),
+  size_type                        maxsplit  = -1,
+  rmm::cuda_stream_view            stream    = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(delimiter.is_valid(), "Parameter delimiter must be valid");
 
@@ -292,9 +292,9 @@ std::unique_ptr<column> split_record(
 
 // external APIs
 
-std::unique_ptr<column> split_record(strings_column_view const& strings,
-                                     string_scalar const& delimiter,
-                                     size_type maxsplit,
+std::unique_ptr<column> split_record(strings_column_view const&       strings,
+                                     string_scalar const&             delimiter,
+                                     size_type                        maxsplit,
                                      rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -302,9 +302,9 @@ std::unique_ptr<column> split_record(strings_column_view const& strings,
     strings, delimiter, maxsplit, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> rsplit_record(strings_column_view const& strings,
-                                      string_scalar const& delimiter,
-                                      size_type maxsplit,
+std::unique_ptr<column> rsplit_record(strings_column_view const&       strings,
+                                      string_scalar const&             delimiter,
+                                      size_type                        maxsplit,
                                       rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

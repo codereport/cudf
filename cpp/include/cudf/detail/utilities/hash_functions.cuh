@@ -149,27 +149,27 @@ void CUDA_DEVICE_CALLABLE uint32ToLowercaseHexString(uint32_t num, char* destina
 
 struct MD5ListHasher {
   template <typename T, std::enable_if_t<is_chrono<T>()>* = nullptr>
-  void __device__ operator()(column_device_view data_col,
-                             size_type offset_begin,
-                             size_type offset_end,
+  void __device__ operator()(column_device_view     data_col,
+                             size_type              offset_begin,
+                             size_type              offset_end,
                              md5_intermediate_data* hash_state) const
   {
     release_assert(false && "MD5 Unsupported chrono type column");
   }
 
   template <typename T, std::enable_if_t<!is_fixed_width<T>()>* = nullptr>
-  void __device__ operator()(column_device_view data_col,
-                             size_type offset_begin,
-                             size_type offset_end,
+  void __device__ operator()(column_device_view     data_col,
+                             size_type              offset_begin,
+                             size_type              offset_end,
                              md5_intermediate_data* hash_state) const
   {
     release_assert(false && "MD5 Unsupported non-fixed-width type column");
   }
 
   template <typename T, std::enable_if_t<is_floating_point<T>()>* = nullptr>
-  void __device__ operator()(column_device_view data_col,
-                             size_type offset_begin,
-                             size_type offset_end,
+  void __device__ operator()(column_device_view     data_col,
+                             size_type              offset_begin,
+                             size_type              offset_end,
                              md5_intermediate_data* hash_state) const
   {
     for (int i = offset_begin; i < offset_end; i++) {
@@ -182,9 +182,9 @@ struct MD5ListHasher {
   template <
     typename T,
     std::enable_if_t<is_fixed_width<T>() && !is_floating_point<T>() && !is_chrono<T>()>* = nullptr>
-  void CUDA_DEVICE_CALLABLE operator()(column_device_view data_col,
-                                       size_type offset_begin,
-                                       size_type offset_end,
+  void CUDA_DEVICE_CALLABLE operator()(column_device_view     data_col,
+                                       size_type              offset_begin,
+                                       size_type              offset_end,
                                        md5_intermediate_data* hash_state) const
   {
     for (int i = offset_begin; i < offset_end; i++) {
@@ -195,14 +195,14 @@ struct MD5ListHasher {
 
 template <>
 void CUDA_DEVICE_CALLABLE
-MD5ListHasher::operator()<string_view>(column_device_view data_col,
-                                       size_type offset_begin,
-                                       size_type offset_end,
+MD5ListHasher::operator()<string_view>(column_device_view     data_col,
+                                       size_type              offset_begin,
+                                       size_type              offset_end,
                                        md5_intermediate_data* hash_state) const
 {
   for (int i = offset_begin; i < offset_end; i++) {
     if (!data_col.is_null(i)) {
-      string_view key     = data_col.element<string_view>(i);
+      string_view    key  = data_col.element<string_view>(i);
       uint32_t const len  = static_cast<uint32_t>(key.size_bytes());
       uint8_t const* data = reinterpret_cast<uint8_t const*>(key.data());
 
@@ -269,24 +269,24 @@ struct MD5Hash {
   }
 
   template <typename T, std::enable_if_t<is_chrono<T>()>* = nullptr>
-  void __device__ operator()(column_device_view col,
-                             size_type row_index,
+  void __device__ operator()(column_device_view     col,
+                             size_type              row_index,
                              md5_intermediate_data* hash_state) const
   {
     release_assert(false && "MD5 Unsupported chrono type column");
   }
 
   template <typename T, std::enable_if_t<!is_fixed_width<T>()>* = nullptr>
-  void __device__ operator()(column_device_view col,
-                             size_type row_index,
+  void __device__ operator()(column_device_view     col,
+                             size_type              row_index,
                              md5_intermediate_data* hash_state) const
   {
     release_assert(false && "MD5 Unsupported non-fixed-width type column");
   }
 
   template <typename T, std::enable_if_t<is_floating_point<T>()>* = nullptr>
-  void __device__ operator()(column_device_view col,
-                             size_type row_index,
+  void __device__ operator()(column_device_view     col,
+                             size_type              row_index,
                              md5_intermediate_data* hash_state) const
   {
     md5_process(normalize_nans_and_zeros_helper<T>(col.element<T>(row_index)), hash_state);
@@ -295,8 +295,8 @@ struct MD5Hash {
   template <
     typename T,
     std::enable_if_t<is_fixed_width<T>() && !is_floating_point<T>() && !is_chrono<T>()>* = nullptr>
-  void CUDA_DEVICE_CALLABLE operator()(column_device_view col,
-                                       size_type row_index,
+  void CUDA_DEVICE_CALLABLE operator()(column_device_view     col,
+                                       size_type              row_index,
                                        md5_intermediate_data* hash_state) const
   {
     md5_process(col.element<T>(row_index), hash_state);
@@ -304,11 +304,11 @@ struct MD5Hash {
 };
 
 template <>
-void CUDA_DEVICE_CALLABLE MD5Hash::operator()<string_view>(column_device_view col,
-                                                           size_type row_index,
+void CUDA_DEVICE_CALLABLE MD5Hash::operator()<string_view>(column_device_view     col,
+                                                           size_type              row_index,
                                                            md5_intermediate_data* hash_state) const
 {
-  string_view key     = col.element<string_view>(row_index);
+  string_view    key  = col.element<string_view>(row_index);
   uint32_t const len  = static_cast<uint32_t>(key.size_bytes());
   uint8_t const* data = reinterpret_cast<uint8_t const*>(key.data());
 
@@ -334,8 +334,8 @@ void CUDA_DEVICE_CALLABLE MD5Hash::operator()<string_view>(column_device_view co
 }
 
 template <>
-void CUDA_DEVICE_CALLABLE MD5Hash::operator()<list_view>(column_device_view col,
-                                                         size_type row_index,
+void CUDA_DEVICE_CALLABLE MD5Hash::operator()<list_view>(column_device_view     col,
+                                                         size_type              row_index,
                                                          md5_intermediate_data* hash_state) const
 {
   static constexpr size_type offsets_column_index{0};
@@ -427,11 +427,11 @@ struct MurmurHash3_32 {
   template <typename TKey>
   result_type CUDA_DEVICE_CALLABLE compute(TKey const& key) const
   {
-    constexpr int len         = sizeof(argument_type);
-    uint8_t const* const data = reinterpret_cast<uint8_t const*>(&key);
-    constexpr int nblocks     = len / 4;
+    constexpr int        len     = sizeof(argument_type);
+    uint8_t const* const data    = reinterpret_cast<uint8_t const*>(&key);
+    constexpr int        nblocks = len / 4;
 
-    uint32_t h1           = m_seed;
+    uint32_t           h1 = m_seed;
     constexpr uint32_t c1 = 0xcc9e2d51;
     constexpr uint32_t c2 = 0x1b873593;
     //----------
@@ -449,7 +449,7 @@ struct MurmurHash3_32 {
     //----------
     // tail
     uint8_t const* tail = reinterpret_cast<uint8_t const*>(data + nblocks * 4);
-    uint32_t k1         = 0;
+    uint32_t       k1   = 0;
     switch (len & 3) {
       case 3: k1 ^= tail[2] << 16;
       case 2: k1 ^= tail[1] << 8;
@@ -484,13 +484,13 @@ template <>
 hash_value_type CUDA_DEVICE_CALLABLE
 MurmurHash3_32<cudf::string_view>::operator()(cudf::string_view const& key) const
 {
-  auto const len        = key.size_bytes();
-  uint8_t const* data   = reinterpret_cast<uint8_t const*>(key.data());
-  int const nblocks     = len / 4;
-  result_type h1        = m_seed;
-  constexpr uint32_t c1 = 0xcc9e2d51;
-  constexpr uint32_t c2 = 0x1b873593;
-  auto getblock32       = [] __device__(uint32_t const* p, int i) -> uint32_t {
+  auto const         len        = key.size_bytes();
+  uint8_t const*     data       = reinterpret_cast<uint8_t const*>(key.data());
+  int const          nblocks    = len / 4;
+  result_type        h1         = m_seed;
+  constexpr uint32_t c1         = 0xcc9e2d51;
+  constexpr uint32_t c2         = 0x1b873593;
+  auto               getblock32 = [] __device__(uint32_t const* p, int i) -> uint32_t {
     // Individual byte reads for unaligned accesses (very likely)
     auto q = (uint8_t const*)(p + i);
     return q[0] | (q[1] << 8) | (q[2] << 16) | (q[3] << 24);
@@ -511,7 +511,7 @@ MurmurHash3_32<cudf::string_view>::operator()(cudf::string_view const& key) cons
   //----------
   // tail
   uint8_t const* tail = reinterpret_cast<uint8_t const*>(data + nblocks * 4);
-  uint32_t k1         = 0;
+  uint32_t       k1   = 0;
   switch (len & 3) {
     case 3: k1 ^= tail[2] << 16;
     case 2: k1 ^= tail[1] << 8;
@@ -583,11 +583,11 @@ struct SparkMurmurHash3_32 {
   template <typename TKey>
   result_type CUDA_DEVICE_CALLABLE compute(TKey const& key) const
   {
-    constexpr int len        = sizeof(TKey);
-    int8_t const* const data = reinterpret_cast<int8_t const*>(&key);
-    constexpr int nblocks    = len / 4;
+    constexpr int       len     = sizeof(TKey);
+    int8_t const* const data    = reinterpret_cast<int8_t const*>(&key);
+    constexpr int       nblocks = len / 4;
 
-    uint32_t h1           = m_seed;
+    uint32_t           h1 = m_seed;
     constexpr uint32_t c1 = 0xcc9e2d51;
     constexpr uint32_t c2 = 0x1b873593;
     //----------
@@ -637,13 +637,13 @@ template <>
 hash_value_type CUDA_DEVICE_CALLABLE
 SparkMurmurHash3_32<cudf::string_view>::operator()(cudf::string_view const& key) const
 {
-  auto const len        = key.size_bytes();
-  int8_t const* data    = reinterpret_cast<int8_t const*>(key.data());
-  int const nblocks     = len / 4;
-  result_type h1        = m_seed;
-  constexpr uint32_t c1 = 0xcc9e2d51;
-  constexpr uint32_t c2 = 0x1b873593;
-  auto getblock32       = [] __device__(uint32_t const* p, int i) -> uint32_t {
+  auto const         len        = key.size_bytes();
+  int8_t const*      data       = reinterpret_cast<int8_t const*>(key.data());
+  int const          nblocks    = len / 4;
+  result_type        h1         = m_seed;
+  constexpr uint32_t c1         = 0xcc9e2d51;
+  constexpr uint32_t c2         = 0x1b873593;
+  auto               getblock32 = [] __device__(uint32_t const* p, int i) -> uint32_t {
     // Individual byte reads for unaligned accesses (very likely)
     auto q = (const uint8_t*)(p + i);
     return q[0] | (q[1] << 8) | (q[2] << 16) | (q[3] << 24);
@@ -722,7 +722,7 @@ struct IdentityHash {
 
   template <typename return_type = result_type>
   CUDA_HOST_DEVICE_CALLABLE std::enable_if_t<!std::is_arithmetic<Key>::value, return_type>
-  operator()(Key const& key) const
+                            operator()(Key const& key) const
   {
     release_assert(false && "IdentityHash does not support this data type");
     return 0;
@@ -730,7 +730,7 @@ struct IdentityHash {
 
   template <typename return_type = result_type>
   CUDA_HOST_DEVICE_CALLABLE std::enable_if_t<std::is_arithmetic<Key>::value, return_type>
-  operator()(Key const& key) const
+                            operator()(Key const& key) const
   {
     return static_cast<result_type>(key);
   }

@@ -75,9 +75,9 @@ class cudfJitCache {
    * @return  Pair of string kernel identifier and compiled kernel object
    */
   named_prog<jitify::experimental::KernelInstantiation> getKernelInstantiation(
-    std::string const& kern_name,
+    std::string const&                               kern_name,
     named_prog<jitify::experimental::Program> const& program,
-    std::vector<std::string> const& arguments);
+    std::vector<std::string> const&                  arguments);
 
   /**
    * @brief Get the Jitify preprocessed Program object
@@ -94,10 +94,10 @@ class cudfJitCache {
    * @return named_prog<jitify::experimental::Program>
    */
   named_prog<jitify::experimental::Program> getProgram(
-    std::string const& prog_file_name,
-    std::string const& cuda_source                         = "",
-    std::vector<std::string> const& given_headers          = {},
-    std::vector<std::string> const& given_options          = {},
+    std::string const&                       prog_file_name,
+    std::string const&                       cuda_source   = "",
+    std::vector<std::string> const&          given_headers = {},
+    std::vector<std::string> const&          given_options = {},
     jitify::experimental::file_callback_type file_callback = nullptr);
 
  private:
@@ -105,7 +105,7 @@ class cudfJitCache {
   using umap_str_shptr = std::unordered_map<std::string, std::shared_ptr<Tv>>;
 
   std::unordered_map<CUcontext, umap_str_shptr<jitify::experimental::KernelInstantiation>>
-    kernel_inst_context_map;
+                                                kernel_inst_context_map;
   umap_str_shptr<jitify::experimental::Program> program_map;
 
   /*
@@ -127,8 +127,8 @@ class cudfJitCache {
   class cacheFile {
    private:
     std::string _file_name;
-    bool successful_read  = false;
-    bool successful_write = false;
+    bool        successful_read  = false;
+    bool        successful_write = false;
 
    public:
     cacheFile(std::string file_name);
@@ -172,13 +172,13 @@ class cudfJitCache {
     if (it != map.end()) {
       return std::make_pair(name, it->second);
     } else {  // Find file cached T object
-      bool successful_read = false;
+      bool        successful_read = false;
       std::string serialized;
 #if defined(JITIFY_USE_CACHE)
       boost::filesystem::path cache_dir = getCacheDir();
       if (not cache_dir.empty()) {
         boost::filesystem::path file_name = cache_dir / name;
-        cacheFile file{file_name.string()};
+        cacheFile               file{file_name.string()};
         serialized      = file.read();
         successful_read = file.is_read_successful();
       }
@@ -189,7 +189,7 @@ class cudfJitCache {
 #if defined(JITIFY_USE_CACHE)
         if (not cache_dir.empty()) {
           boost::filesystem::path file_name = cache_dir / name;
-          cacheFile file{file_name.string()};
+          cacheFile               file{file_name.string()};
           file.write(serialized);
         }
 #endif

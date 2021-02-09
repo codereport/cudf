@@ -41,13 +41,13 @@ namespace {
  */
 std::vector<char32_t> string_to_char32_vector(std::string const& pattern)
 {
-  size_type size  = static_cast<size_type>(pattern.size());
-  size_type count = std::count_if(pattern.cbegin(), pattern.cend(), [](char ch) {
+  size_type             size  = static_cast<size_type>(pattern.size());
+  size_type             count = std::count_if(pattern.cbegin(), pattern.cend(), [](char ch) {
     return is_begin_utf8_char(static_cast<uint8_t>(ch));
   });
   std::vector<char32_t> result(count + 1);
-  char32_t* output_ptr  = result.data();
-  const char* input_ptr = pattern.data();
+  char32_t*             output_ptr = result.data();
+  const char*           input_ptr  = pattern.data();
   for (size_type idx = 0; idx < size; ++idx) {
     char_utf8 output_character = 0;
     size_type ch_width         = to_char_utf8(input_ptr, output_character);
@@ -76,9 +76,9 @@ reprog_device::reprog_device(reprog& prog)
 
 // Create instance of the reprog that can be passed into a device kernel
 std::unique_ptr<reprog_device, std::function<void(reprog_device*)>> reprog_device::create(
-  std::string const& pattern,
-  uint8_t const* codepoint_flags,
-  int32_t strings_count,
+  std::string const&    pattern,
+  uint8_t const*        codepoint_flags,
+  int32_t               strings_count,
   rmm::cuda_stream_view stream)
 {
   std::vector<char32_t> pattern32 = string_to_char32_vector(pattern);
@@ -107,9 +107,9 @@ std::unique_ptr<reprog_device, std::function<void(reprog_device*)>> reprog_devic
 
   // allocate memory to store prog data
   std::vector<u_char> h_buffer(memsize);
-  u_char* h_ptr  = h_buffer.data();  // running pointer
-  auto* d_buffer = new rmm::device_buffer(memsize, stream);
-  u_char* d_ptr  = reinterpret_cast<u_char*>(d_buffer->data());  // running device pointer
+  u_char*             h_ptr    = h_buffer.data();  // running pointer
+  auto*               d_buffer = new rmm::device_buffer(memsize, stream);
+  u_char* d_ptr = reinterpret_cast<u_char*>(d_buffer->data());  // running device pointer
   // put everything into a flat host buffer first
   reprog_device* d_prog = new reprog_device(h_prog);
   // copy the instructions array first (fixed-size structs)
@@ -132,7 +132,7 @@ std::unique_ptr<reprog_device, std::function<void(reprog_device*)>> reprog_devic
   u_char* d_end = d_ptr + (classes_count * sizeof(reclass_device));
   // place each class and append the variable length data
   for (int32_t idx = 0; idx < classes_count; ++idx) {
-    reclass& h_class = h_prog.class_at(idx);
+    reclass&       h_class = h_prog.class_at(idx);
     reclass_device d_class;
     d_class.builtins = h_class.builtins;
     d_class.count    = h_class.literals.size() / 2;

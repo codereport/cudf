@@ -44,13 +44,13 @@ using backref_type = thrust::pair<size_type, size_type>;
  */
 template <size_t stack_size>
 struct backrefs_fn {
-  column_device_view const d_strings;
-  reprog_device prog;
-  string_view const d_repl;  // string replacement template
+  column_device_view const                   d_strings;
+  reprog_device                              prog;
+  string_view const                          d_repl;  // string replacement template
   rmm::device_vector<backref_type>::iterator backrefs_begin;
   rmm::device_vector<backref_type>::iterator backrefs_end;
-  int32_t* d_offsets{};
-  char* d_chars{};
+  int32_t*                                   d_offsets{};
+  char*                                      d_chars{};
 
   __device__ void operator()(size_type idx)
   {
@@ -61,14 +61,14 @@ struct backrefs_fn {
     u_char data1[stack_size];
     u_char data2[stack_size];
     prog.set_stack_mem(data1, data2);
-    auto const d_str  = d_strings.element<string_view>(idx);
-    auto const nchars = d_str.length();      // number of characters in input string
-    auto nbytes       = d_str.size_bytes();  // number of bytes in input string
-    auto in_ptr       = d_str.data();
-    auto out_ptr      = d_chars ? (d_chars + d_offsets[idx]) : nullptr;
-    size_type lpos    = 0;       // last byte position processed in d_str
-    size_type begin   = 0;       // first character position matching regex
-    size_type end     = nchars;  // last character position (exclusive)
+    auto const d_str   = d_strings.element<string_view>(idx);
+    auto const nchars  = d_str.length();      // number of characters in input string
+    auto       nbytes  = d_str.size_bytes();  // number of bytes in input string
+    auto       in_ptr  = d_str.data();
+    auto       out_ptr = d_chars ? (d_chars + d_offsets[idx]) : nullptr;
+    size_type  lpos    = 0;       // last byte position processed in d_str
+    size_type  begin   = 0;       // first character position matching regex
+    size_type  end     = nchars;  // last character position (exclusive)
     // copy input to output replacing strings as we go
     while (prog.find(idx, d_str, begin, end) > 0)  // inits the begin/end vars
     {
@@ -76,8 +76,8 @@ struct backrefs_fn {
       auto epos = d_str.byte_offset(end);             // character position values
       nbytes += d_repl.size_bytes() - (epos - spos);  // compute new size
       if (out_ptr) out_ptr = copy_and_increment(out_ptr, in_ptr + lpos, spos - lpos);
-      size_type lpos_template = 0;              // last end pos of replace template
-      auto const repl_ptr     = d_repl.data();  // replace template pattern
+      size_type  lpos_template = 0;              // last end pos of replace template
+      auto const repl_ptr      = d_repl.data();  // replace template pattern
       thrust::for_each(
         thrust::seq, backrefs_begin, backrefs_end, [&] __device__(backref_type backref) {
           if (out_ptr) {
@@ -114,21 +114,21 @@ struct backrefs_fn {
 
 using children_pair = std::pair<std::unique_ptr<column>, std::unique_ptr<column>>;
 
-children_pair replace_with_backrefs_medium(column_device_view const& d_strings,
-                                           reprog_device& d_prog,
-                                           string_view const& d_repl_template,
+children_pair replace_with_backrefs_medium(column_device_view const&         d_strings,
+                                           reprog_device&                    d_prog,
+                                           string_view const&                d_repl_template,
                                            rmm::device_vector<backref_type>& backrefs,
-                                           size_type null_count,
-                                           rmm::cuda_stream_view stream,
-                                           rmm::mr::device_memory_resource* mr);
+                                           size_type                         null_count,
+                                           rmm::cuda_stream_view             stream,
+                                           rmm::mr::device_memory_resource*  mr);
 
-children_pair replace_with_backrefs_large(column_device_view const& d_strings,
-                                          reprog_device& d_prog,
-                                          string_view const& d_repl_template,
+children_pair replace_with_backrefs_large(column_device_view const&         d_strings,
+                                          reprog_device&                    d_prog,
+                                          string_view const&                d_repl_template,
                                           rmm::device_vector<backref_type>& backrefs,
-                                          size_type null_count,
-                                          rmm::cuda_stream_view stream,
-                                          rmm::mr::device_memory_resource* mr);
+                                          size_type                         null_count,
+                                          rmm::cuda_stream_view             stream,
+                                          rmm::mr::device_memory_resource*  mr);
 
 }  // namespace detail
 }  // namespace strings

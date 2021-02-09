@@ -49,9 +49,9 @@ struct dispatch_compute_indices {
   template <typename Element>
   typename std::enable_if_t<cudf::is_relationally_comparable<Element, Element>(),
                             std::unique_ptr<column>>
-  operator()(dictionary_column_view const& input,
-             column_view const& new_keys,
-             rmm::cuda_stream_view stream,
+  operator()(dictionary_column_view const&    input,
+             column_view const&               new_keys,
+             rmm::cuda_stream_view            stream,
              rmm::mr::device_memory_resource* mr)
   {
     auto dictionary_view = column_device_view::create(input.parent(), stream);
@@ -88,9 +88,9 @@ struct dispatch_compute_indices {
   template <typename Element>
   typename std::enable_if_t<!cudf::is_relationally_comparable<Element, Element>(),
                             std::unique_ptr<column>>
-  operator()(dictionary_column_view const& input,
-             column_view const& new_keys,
-             rmm::cuda_stream_view stream,
+  operator()(dictionary_column_view const&    input,
+             column_view const&               new_keys,
+             rmm::cuda_stream_view            stream,
              rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("list_view dictionary set_keys not supported yet");
@@ -101,9 +101,9 @@ struct dispatch_compute_indices {
 
 //
 std::unique_ptr<column> set_keys(
-  dictionary_column_view const& dictionary_column,
-  column_view const& new_keys,
-  rmm::cuda_stream_view stream,
+  dictionary_column_view const&    dictionary_column,
+  column_view const&               new_keys,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(!new_keys.has_nulls(), "keys parameter must not have nulls");
@@ -153,13 +153,13 @@ std::unique_ptr<column> set_keys(
 }
 
 std::vector<std::unique_ptr<column>> match_dictionaries(std::vector<dictionary_column_view> input,
-                                                        rmm::cuda_stream_view stream,
-                                                        rmm::mr::device_memory_resource* mr)
+                                                        rmm::cuda_stream_view               stream,
+                                                        rmm::mr::device_memory_resource*    mr)
 {
   std::vector<column_view> keys(input.size());
   std::transform(input.begin(), input.end(), keys.begin(), [](auto& col) { return col.keys(); });
-  auto new_keys  = cudf::detail::concatenate(keys, stream);
-  auto keys_view = new_keys->view();
+  auto                                 new_keys  = cudf::detail::concatenate(keys, stream);
+  auto                                 keys_view = new_keys->view();
   std::vector<std::unique_ptr<column>> result(input.size());
   std::transform(input.begin(), input.end(), result.begin(), [keys_view, mr, stream](auto& col) {
     return set_keys(col, keys_view, stream, mr);
@@ -180,7 +180,7 @@ std::pair<std::vector<std::unique_ptr<column>>, std::vector<table_view>> match_d
   // Once a dictionary column is found, all the corresponding column_views in the
   // other table_views are matched. The matched column_views then replace the originals.
   std::vector<std::unique_ptr<column>> dictionary_columns;
-  auto first_table = tables.front();
+  auto                                 first_table = tables.front();
   for (size_type col_idx = 0; col_idx < first_table.num_columns(); ++col_idx) {
     auto col = first_table.column(col_idx);
     if (col.type().id() == type_id::DICTIONARY32) {
@@ -215,8 +215,8 @@ std::pair<std::vector<std::unique_ptr<column>>, std::vector<table_view>> match_d
 
 // external API
 
-std::unique_ptr<column> set_keys(dictionary_column_view const& dictionary_column,
-                                 column_view const& keys,
+std::unique_ptr<column> set_keys(dictionary_column_view const&    dictionary_column,
+                                 column_view const&               keys,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

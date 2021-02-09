@@ -42,9 +42,9 @@ namespace detail {
  * @return New column with concatenated results.
  */
 std::unique_ptr<column> concatenate(
-  std::vector<column_view> const& columns,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  std::vector<column_view> const&  columns,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace detail
 }  // namespace lists

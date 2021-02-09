@@ -42,7 +42,7 @@ struct IteratorTest : public cudf::test::BaseFixture {
   template <typename InputIterator, typename T_output>
   void iterator_test_cub(T_output expected, InputIterator d_in, int num_items)
   {
-    T_output init = cudf::test::make_type_param_scalar<T_output>(0);
+    T_output                        init = cudf::test::make_type_param_scalar<T_output>(0);
     thrust::device_vector<T_output> dev_result(1, init);
 
     // Get temporary storage size
@@ -73,8 +73,8 @@ struct IteratorTest : public cudf::test::BaseFixture {
   // iterator test case which uses thrust
   template <typename InputIterator, typename T_output>
   void iterator_test_thrust(thrust::host_vector<T_output>& expected,
-                            InputIterator d_in,
-                            int num_items)
+                            InputIterator                  d_in,
+                            int                            num_items)
   {
     InputIterator d_in_last = d_in + num_items;
     EXPECT_EQ(thrust::distance(d_in, d_in_last), num_items);
@@ -108,9 +108,9 @@ struct IteratorTest : public cudf::test::BaseFixture {
   }
 
   template <typename T_output>
-  void evaluate(T_output expected,
+  void evaluate(T_output                         expected,
                 thrust::device_vector<T_output>& dev_result,
-                const char* msg = nullptr)
+                const char*                      msg = nullptr)
   {
     thrust::host_vector<T_output> hos_result(dev_result);
 
@@ -122,7 +122,7 @@ struct IteratorTest : public cudf::test::BaseFixture {
   }
 
   template <typename T_output>
-  void values_equal_test(thrust::host_vector<T_output>& expected,
+  void values_equal_test(thrust::host_vector<T_output>&  expected,
                          const cudf::column_device_view& col)
   {
     if (col.nullable()) {

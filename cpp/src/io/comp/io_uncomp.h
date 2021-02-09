@@ -46,10 +46,10 @@ std::vector<char> get_uncompressed_data(host_span<char const> data, std::string 
 
 class HostDecompressor {
  public:
-  virtual size_t Decompress(uint8_t* dstBytes,
-                            size_t dstLen,
+  virtual size_t Decompress(uint8_t*       dstBytes,
+                            size_t         dstLen,
                             uint8_t const* srcBytes,
-                            size_t srcLen) = 0;
+                            size_t         srcLen) = 0;
   virtual ~HostDecompressor() {}
 
  public:

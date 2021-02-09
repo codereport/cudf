@@ -85,8 +85,8 @@ std::unique_ptr<cudf::column> replace_tokens(
   cudf::strings_column_view const& strings,
   cudf::strings_column_view const& targets,
   cudf::strings_column_view const& replacements,
-  cudf::string_scalar const& delimiter = cudf::string_scalar{""},
-  rmm::mr::device_memory_resource* mr  = rmm::mr::get_current_device_resource());
+  cudf::string_scalar const&       delimiter = cudf::string_scalar{""},
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Removes tokens whose lengths are less than a specified number of characters.
@@ -130,10 +130,10 @@ std::unique_ptr<cudf::column> replace_tokens(
  */
 std::unique_ptr<cudf::column> filter_tokens(
   cudf::strings_column_view const& strings,
-  cudf::size_type min_token_length,
-  cudf::string_scalar const& replacement = cudf::string_scalar{""},
-  cudf::string_scalar const& delimiter   = cudf::string_scalar{""},
-  rmm::mr::device_memory_resource* mr    = rmm::mr::get_current_device_resource());
+  cudf::size_type                  min_token_length,
+  cudf::string_scalar const&       replacement = cudf::string_scalar{""},
+  cudf::string_scalar const&       delimiter   = cudf::string_scalar{""},
+  rmm::mr::device_memory_resource* mr          = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group
 }  // namespace nvtext

@@ -73,11 +73,11 @@ __device__ inline char* copy_string(char* buffer, const string_view& d_string)
  */
 template <typename SizeAndExecuteFunction>
 auto make_strings_children(
-  SizeAndExecuteFunction size_and_exec_fn,
-  size_type strings_count,
-  size_type null_count,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  SizeAndExecuteFunction           size_and_exec_fn,
+  size_type                        strings_count,
+  size_type                        null_count,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   auto offsets_column = make_numeric_column(
     data_type{type_id::INT32}, strings_count + 1, mask_state::UNALLOCATED, stream, mr);

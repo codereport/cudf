@@ -48,8 +48,8 @@ namespace detail {
  * @return        New column with concatenated results.
  */
 std::unique_ptr<column> concatenate(
-  std::vector<column_view> const& columns,
-  rmm::cuda_stream_view stream,
+  std::vector<column_view> const&  columns,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 }  // namespace detail

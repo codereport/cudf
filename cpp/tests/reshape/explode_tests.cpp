@@ -35,7 +35,7 @@ TYPED_TEST_CASE(ExplodeTypedTest, cudf::test::FixedPointTypes);
 
 TEST_F(ExplodeTest, Empty)
 {
-  lists_column_wrapper<int32_t> a{};
+  lists_column_wrapper<int32_t>       a{};
   fixed_width_column_wrapper<int32_t> b{};
 
   cudf::table_view t({a, b});
@@ -44,7 +44,7 @@ TEST_F(ExplodeTest, Empty)
 
   fixed_width_column_wrapper<int32_t> expected_a{};
   fixed_width_column_wrapper<int32_t> expected_b{};
-  cudf::table_view expected({expected_a, expected_b});
+  cudf::table_view                    expected({expected_a, expected_b});
 
   CUDF_TEST_EXPECT_TABLES_EQUAL(ret->view(), expected);
 }
@@ -69,14 +69,14 @@ TEST_F(ExplodeTest, Basics)
   */
 
   fixed_width_column_wrapper<int32_t> a{100, 200, 300};
-  lists_column_wrapper<int32_t> b{lists_column_wrapper<int32_t>{1, 2, 7},
+  lists_column_wrapper<int32_t>       b{lists_column_wrapper<int32_t>{1, 2, 7},
                                   lists_column_wrapper<int32_t>{5, 6},
                                   lists_column_wrapper<int32_t>{0, 3}};
-  strings_column_wrapper c{"string0", "string1", "string2"};
+  strings_column_wrapper              c{"string0", "string1", "string2"};
 
   fixed_width_column_wrapper<int32_t> expected_a{100, 100, 100, 200, 200, 300, 300};
   fixed_width_column_wrapper<int32_t> expected_b{1, 2, 7, 5, 6, 0, 3};
-  strings_column_wrapper expected_c{
+  strings_column_wrapper              expected_c{
     "string0", "string0", "string0", "string1", "string1", "string2", "string2"};
 
   cudf::table_view t({a, b, c});
@@ -100,7 +100,7 @@ TEST_F(ExplodeTest, SingleNull)
   auto first_invalid =
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i == 0 ? false : true; });
 
-  lists_column_wrapper<int32_t> a({lists_column_wrapper<int32_t>{1, 2, 7},
+  lists_column_wrapper<int32_t>       a({lists_column_wrapper<int32_t>{1, 2, 7},
                                    lists_column_wrapper<int32_t>{5, 6},
                                    lists_column_wrapper<int32_t>{},
                                    lists_column_wrapper<int32_t>{0, 3}},
@@ -132,7 +132,7 @@ TEST_F(ExplodeTest, Nulls)
   auto always_valid =
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
-  lists_column_wrapper<int32_t> a({lists_column_wrapper<int32_t>{1, 2, 7},
+  lists_column_wrapper<int32_t>       a({lists_column_wrapper<int32_t>{1, 2, 7},
                                    lists_column_wrapper<int32_t>{5, 6},
                                    lists_column_wrapper<int32_t>{0, 3}},
                                   valids);
@@ -162,7 +162,7 @@ TEST_F(ExplodeTest, NullsInList)
   auto valids = cudf::detail::make_counting_transform_iterator(
     0, [](auto i) { return i % 2 == 0 ? true : false; });
 
-  lists_column_wrapper<int32_t> a{lists_column_wrapper<int32_t>({1, 2, 7}, valids),
+  lists_column_wrapper<int32_t>       a{lists_column_wrapper<int32_t>({1, 2, 7}, valids),
                                   lists_column_wrapper<int32_t>({5, 6, 0, 9}, valids),
                                   lists_column_wrapper<int32_t>{},
                                   lists_column_wrapper<int32_t>({0, 3, 8}, valids)};
@@ -199,7 +199,7 @@ TEST_F(ExplodeTest, Nested)
                                   lists_column_wrapper<int32_t>{2, 1}}};
   fixed_width_column_wrapper<int32_t> b{100, 200, 300};
 
-  lists_column_wrapper<int32_t> expected_a{lists_column_wrapper<int32_t>{1, 2},
+  lists_column_wrapper<int32_t>       expected_a{lists_column_wrapper<int32_t>{1, 2},
                                            lists_column_wrapper<int32_t>{7, 6, 5},
                                            lists_column_wrapper<int32_t>{5, 6},
                                            lists_column_wrapper<int32_t>{0, 3},
@@ -240,7 +240,7 @@ TEST_F(ExplodeTest, NestedNulls)
     valids);
   fixed_width_column_wrapper<int32_t> b({100, 200, 300}, valids);
 
-  lists_column_wrapper<int32_t> expected_a{lists_column_wrapper<int32_t>{1, 2},
+  lists_column_wrapper<int32_t>       expected_a{lists_column_wrapper<int32_t>{1, 2},
                                            lists_column_wrapper<int32_t>{7, 6, 5},
                                            lists_column_wrapper<int32_t>{0, 3},
                                            lists_column_wrapper<int32_t>{5},
@@ -276,7 +276,7 @@ TEST_F(ExplodeTest, NullsInNested)
                                    lists_column_wrapper<int32_t>({2, 1}, valids)}});
   fixed_width_column_wrapper<int32_t> b({100, 200, 300});
 
-  lists_column_wrapper<int32_t> expected_a{lists_column_wrapper<int32_t>({1, 2}, valids),
+  lists_column_wrapper<int32_t>       expected_a{lists_column_wrapper<int32_t>({1, 2}, valids),
                                            lists_column_wrapper<int32_t>{7, 6, 5},
                                            lists_column_wrapper<int32_t>{5, 6},
                                            lists_column_wrapper<int32_t>{0, 3},
@@ -348,18 +348,18 @@ TEST_F(ExplodeTest, NestedStructs)
                                    lists_column_wrapper<int32_t>{5},
                                    lists_column_wrapper<int32_t>({2, 1}, valids)}});
   fixed_width_column_wrapper<int32_t> b1({100, 200, 300});
-  strings_column_wrapper b2{"100", "200", "300"};
-  structs_column_wrapper b({b1, b2});
+  strings_column_wrapper              b2{"100", "200", "300"};
+  structs_column_wrapper              b({b1, b2});
 
-  lists_column_wrapper<int32_t> expected_a{lists_column_wrapper<int32_t>({1, 2}, valids),
+  lists_column_wrapper<int32_t>       expected_a{lists_column_wrapper<int32_t>({1, 2}, valids),
                                            lists_column_wrapper<int32_t>{7, 6, 5},
                                            lists_column_wrapper<int32_t>{5, 6},
                                            lists_column_wrapper<int32_t>{0, 3},
                                            lists_column_wrapper<int32_t>{5},
                                            lists_column_wrapper<int32_t>({2, 1}, valids)};
   fixed_width_column_wrapper<int32_t> expected_b1{100, 100, 200, 300, 300, 300};
-  strings_column_wrapper expected_b2{"100", "100", "200", "300", "300", "300"};
-  structs_column_wrapper expected_b({expected_b1, expected_b2});
+  strings_column_wrapper              expected_b2{"100", "100", "200", "300", "300", "300"};
+  structs_column_wrapper              expected_b({expected_b1, expected_b2});
 
   cudf::table_view t({a, b});
   cudf::table_view expected({expected_a, expected_b});
@@ -383,8 +383,8 @@ TYPED_TEST(ExplodeTypedTest, ListOfStructs)
   auto numeric_col =
     fixed_width_column_wrapper<TypeParam, int32_t>{{70, 75, 50, 55, 35, 45, 25, 30, 15, 20}};
   strings_column_wrapper string_col{"70", "75", "50", "55", "35", "45", "25", "30", "15", "20"};
-  auto struct_col = structs_column_wrapper{{numeric_col, string_col}}.release();
-  auto a          = cudf::make_lists_column(5,
+  auto                   struct_col = structs_column_wrapper{{numeric_col, string_col}}.release();
+  auto                   a          = cudf::make_lists_column(5,
                                    fixed_width_column_wrapper<int32_t>{0, 2, 4, 6, 8, 10}.release(),
                                    std::move(struct_col),
                                    cudf::UNKNOWN_NULL_COUNT,
@@ -393,7 +393,7 @@ TYPED_TEST(ExplodeTypedTest, ListOfStructs)
   fixed_width_column_wrapper<int32_t> b{100, 200, 300, 400, 500};
 
   cudf::table_view t({a->view(), b});
-  auto ret = cudf::explode(t, 0);
+  auto             ret = cudf::explode(t, 0);
 
   auto expected_numeric_col =
     fixed_width_column_wrapper<TypeParam, int32_t>{{70, 75, 50, 55, 35, 45, 25, 30, 15, 20}};
@@ -438,7 +438,7 @@ TEST_F(ExplodeTest, SlicedList)
                                    lists_column_wrapper<int32_t>{9, 8}}});
   fixed_width_column_wrapper<int32_t> b({100, 200, 300, 400, 500});
 
-  lists_column_wrapper<int32_t> expected_a{lists_column_wrapper<int32_t>{0, 3},
+  lists_column_wrapper<int32_t>       expected_a{lists_column_wrapper<int32_t>{0, 3},
                                            lists_column_wrapper<int32_t>{5},
                                            lists_column_wrapper<int32_t>({2, 1}, valids),
                                            lists_column_wrapper<int32_t>{8, 3},
@@ -447,7 +447,7 @@ TEST_F(ExplodeTest, SlicedList)
   fixed_width_column_wrapper<int32_t> expected_b{300, 300, 300, 400, 400, 400};
 
   cudf::table_view t({a, b});
-  auto sliced_t = cudf::slice(t, {2, 4});
+  auto             sliced_t = cudf::slice(t, {2, 4});
   cudf::table_view expected({expected_a, expected_b});
 
   auto ret = cudf::explode(sliced_t[0], 0);

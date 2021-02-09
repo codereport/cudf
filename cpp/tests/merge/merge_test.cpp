@@ -44,11 +44,11 @@ TYPED_TEST(MergeTest_, MergeIsZeroWhenShouldNotBeZero)
 {
   using columnFactoryT = cudf::test::fixed_width_column_wrapper<TypeParam, int32_t>;
 
-  columnFactoryT leftColWrap1({1, 2, 3, 4, 5});
+  columnFactoryT                                    leftColWrap1({1, 2, 3, 4, 5});
   cudf::test::fixed_width_column_wrapper<TypeParam> rightColWrap1{};
 
   std::vector<cudf::size_type> key_cols{0};
-  std::vector<cudf::order> column_order;
+  std::vector<cudf::order>     column_order;
   column_order.push_back(cudf::order::ASCENDING);
   std::vector<cudf::null_order> null_precedence(column_order.size(), cudf::null_order::AFTER);
 
@@ -71,8 +71,8 @@ TYPED_TEST(MergeTest_, MismatchedNumColumns)
   columnFactoryT rightColWrap1({0, 1, 2, 3});
   columnFactoryT rightColWrap2({0, 1, 2, 3});
 
-  std::vector<cudf::size_type> key_cols{0};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING};
+  std::vector<cudf::size_type>  key_cols{0};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   cudf::table_view left_view{{leftColWrap1}};
@@ -85,10 +85,10 @@ TYPED_TEST(MergeTest_, MismatchedNumColumns)
 TYPED_TEST(MergeTest_, MismatchedColumnDypes)
 {
   cudf::test::fixed_width_column_wrapper<int32_t> leftColWrap1{{0, 1, 2, 3}};
-  cudf::test::fixed_width_column_wrapper<double> rightColWrap1{{0, 1, 2, 3}};
+  cudf::test::fixed_width_column_wrapper<double>  rightColWrap1{{0, 1, 2, 3}};
 
-  std::vector<cudf::size_type> key_cols{0};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING};
+  std::vector<cudf::size_type>  key_cols{0};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   cudf::table_view left_view{{leftColWrap1}};
@@ -105,8 +105,8 @@ TYPED_TEST(MergeTest_, EmptyKeyColumns)
   columnFactoryT leftColWrap1({0, 1, 2, 3});
   columnFactoryT rightColWrap1({0, 1, 2, 3});
 
-  std::vector<cudf::size_type> key_cols{};  // empty! this should trigger exception
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING};
+  std::vector<cudf::size_type>  key_cols{};  // empty! this should trigger exception
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   cudf::table_view left_view{{leftColWrap1}};
@@ -125,7 +125,7 @@ TYPED_TEST(MergeTest_, TooManyKeyColumns)
 
   std::vector<cudf::size_type> key_cols{
     0, 1};  // more keys than columns: this should trigger exception
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   cudf::table_view left_view{{leftColWrap1}};
@@ -142,8 +142,8 @@ TYPED_TEST(MergeTest_, EmptyOrderTypes)
   columnFactoryT leftColWrap1{0, 1, 2, 3};
   columnFactoryT rightColWrap1{0, 1, 2, 3};
 
-  std::vector<cudf::size_type> key_cols{0};
-  std::vector<cudf::order> column_order{};  // empty! this should trigger exception
+  std::vector<cudf::size_type>  key_cols{0};
+  std::vector<cudf::order>      column_order{};  // empty! this should trigger exception
   std::vector<cudf::null_order> null_precedence{};
 
   cudf::table_view left_view{{leftColWrap1}};
@@ -161,7 +161,7 @@ TYPED_TEST(MergeTest_, TooManyOrderTypes)
   columnFactoryT rightColWrap1{0, 1, 2, 3};
 
   std::vector<cudf::size_type> key_cols{0};
-  std::vector<cudf::order> column_order{
+  std::vector<cudf::order>     column_order{
     cudf::order::ASCENDING,
     cudf::order::DESCENDING};  // more order types than columns: this should trigger exception
   std::vector<cudf::null_order> null_precedence{};
@@ -185,8 +185,8 @@ TYPED_TEST(MergeTest_, MismatchedKeyColumnsAndOrderTypes)
   cudf::table_view left_view{{leftColWrap1, leftColWrap2}};
   cudf::table_view right_view{{rightColWrap1, rightColWrap2}};
 
-  std::vector<cudf::size_type> key_cols{0, 1};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING};
+  std::vector<cudf::size_type>  key_cols{0, 1};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   EXPECT_THROW(cudf::merge({left_view, right_view}, key_cols, column_order, null_precedence),
@@ -208,8 +208,8 @@ TYPED_TEST(MergeTest_, SingleTableInput)
   cudf::test::fixed_width_column_wrapper<TypeParam, typename decltype(sequence)::value_type>
     colWrap1(sequence, sequence + inputRows);
 
-  std::vector<cudf::size_type> key_cols{0};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING};
+  std::vector<cudf::size_type>  key_cols{0};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   cudf::table_view left_view{{colWrap1}};
@@ -228,8 +228,8 @@ TYPED_TEST(MergeTest_, MergeTwoEmptyTables)
 {
   using columnFactoryT = cudf::test::fixed_width_column_wrapper<TypeParam>;
 
-  std::vector<cudf::size_type> key_cols{0};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING};
+  std::vector<cudf::size_type>  key_cols{0};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   columnFactoryT leftColWrap1{};
@@ -253,12 +253,12 @@ TYPED_TEST(MergeTest_, MergeWithEmptyColumn)
 
   auto sequence = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i; });
   cudf::test::fixed_width_column_wrapper<TypeParam, typename decltype(sequence)::value_type>
-    leftColWrap1(sequence, sequence + inputRows);
+                 leftColWrap1(sequence, sequence + inputRows);
   columnFactoryT rightColWrap1{};  // wrapper of empty column <- this might require a (sequence,
                                    // sequence) generator
 
-  std::vector<cudf::size_type> key_cols{0};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING};
+  std::vector<cudf::size_type>  key_cols{0};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   cudf::table_view left_view{{leftColWrap1}};
@@ -270,7 +270,7 @@ TYPED_TEST(MergeTest_, MergeWithEmptyColumn)
 
   cudf::column_view const& a_left_tbl_cview{static_cast<cudf::column_view const&>(leftColWrap1)};
   cudf::column_view const& a_right_tbl_cview{static_cast<cudf::column_view const&>(rightColWrap1)};
-  const cudf::size_type outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
+  const cudf::size_type    outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
 
   cudf::test::fixed_width_column_wrapper<TypeParam, typename decltype(sequence)::value_type>
     expectedDataWrap1(
@@ -325,8 +325,8 @@ TYPED_TEST(MergeTest_, Merge1KeyColumns)
   cudf::table_view left_view{{leftColWrap1, leftColWrap2}};
   cudf::table_view right_view{{rightColWrap1, rightColWrap2}};
 
-  std::vector<cudf::size_type> key_cols{0};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING};
+  std::vector<cudf::size_type>  key_cols{0};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   std::unique_ptr<cudf::table> p_outputTable;
@@ -335,7 +335,7 @@ TYPED_TEST(MergeTest_, Merge1KeyColumns)
 
   cudf::column_view const& a_left_tbl_cview{static_cast<cudf::column_view const&>(leftColWrap1)};
   cudf::column_view const& a_right_tbl_cview{static_cast<cudf::column_view const&>(rightColWrap1)};
-  const cudf::size_type outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
+  const cudf::size_type    outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
 
   auto seq_out1 = cudf::detail::make_counting_transform_iterator(0, [outputRows](auto row) {
     if (cudf::type_to_id<TypeParam>() == cudf::type_id::BOOL8) {
@@ -403,8 +403,8 @@ TYPED_TEST(MergeTest_, Merge2KeyColumns)
   cudf::table_view left_view{{leftColWrap1, leftColWrap2}};
   cudf::table_view right_view{{rightColWrap1, rightColWrap2}};
 
-  std::vector<cudf::size_type> key_cols{0, 1};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING, cudf::order::DESCENDING};
+  std::vector<cudf::size_type>  key_cols{0, 1};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING, cudf::order::DESCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   std::unique_ptr<cudf::table> p_outputTable;
@@ -413,7 +413,7 @@ TYPED_TEST(MergeTest_, Merge2KeyColumns)
 
   cudf::column_view const& a_left_tbl_cview{static_cast<cudf::column_view const&>(leftColWrap1)};
   cudf::column_view const& a_right_tbl_cview{static_cast<cudf::column_view const&>(rightColWrap1)};
-  const cudf::size_type outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
+  const cudf::size_type    outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
 
   auto seq_out1 = cudf::detail::make_counting_transform_iterator(0, [outputRows](auto row) {
     if (cudf::type_to_id<TypeParam>() == cudf::type_id::BOOL8) {
@@ -474,7 +474,7 @@ TYPED_TEST(MergeTest_, Merge1KeyNullColumns)
                   valid_sequence1);  // <- recycle valid_seq1, confirmed okay...
 
   std::vector<cudf::size_type> key_cols{0};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING};
+  std::vector<cudf::order>     column_order{cudf::order::ASCENDING};
 
   /*Note: default behavior semantics for null_precedence has changed
    *      wrt legacy code:
@@ -500,8 +500,8 @@ TYPED_TEST(MergeTest_, Merge1KeyNullColumns)
 
   cudf::column_view const& a_left_tbl_cview{static_cast<cudf::column_view const&>(leftColWrap1)};
   cudf::column_view const& a_right_tbl_cview{static_cast<cudf::column_view const&>(rightColWrap1)};
-  const cudf::size_type outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
-  const cudf::size_type column1TotalNulls =
+  const cudf::size_type    outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
+  const cudf::size_type    column1TotalNulls =
     a_left_tbl_cview.null_count() + a_right_tbl_cview.null_count();
 
   // data: 0 1 2 3 4 5 6 7 | valid: 1 1 1 1 1 1 0 0
@@ -574,8 +574,8 @@ TYPED_TEST(MergeTest_, Merge2KeyNullColumns)
   cudf::table_view left_view{{leftColWrap1, leftColWrap2}};
   cudf::table_view right_view{{rightColWrap1, rightColWrap2}};
 
-  std::vector<cudf::size_type> key_cols{0, 1};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING, cudf::order::DESCENDING};
+  std::vector<cudf::size_type>  key_cols{0, 1};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING, cudf::order::DESCENDING};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::AFTER, cudf::null_order::AFTER};
 
   std::unique_ptr<cudf::table> p_outputTable;
@@ -584,7 +584,7 @@ TYPED_TEST(MergeTest_, Merge2KeyNullColumns)
 
   cudf::column_view const& a_left_tbl_cview{static_cast<cudf::column_view const&>(leftColWrap1)};
   cudf::column_view const& a_right_tbl_cview{static_cast<cudf::column_view const&>(rightColWrap1)};
-  const cudf::size_type outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
+  const cudf::size_type    outputRows = a_left_tbl_cview.size() + a_right_tbl_cview.size();
 
   // data: 0 0 1 1 2 2 3 3 | valid: 1 1 1 1 1 1 1 1
   auto seq_out1 = cudf::detail::make_counting_transform_iterator(0, [outputRows](auto row) {
@@ -649,14 +649,14 @@ TYPED_TEST(MergeTest_, NMerge1KeyColumns)
   using PairT1 =
     cudf::test::fixed_width_column_wrapper<TypeParam, typename decltype(sequence1)::value_type>;
   std::vector<std::pair<PairT0, PairT1>> facts{};
-  std::vector<cudf::table_view> tables{};
+  std::vector<cudf::table_view>          tables{};
   for (int i = 0; i < num_tables; ++i) {
     facts.emplace_back(std::make_pair(PairT0(sequence0, sequence0 + inputRows),
                                       PairT1(sequence1, sequence1 + inputRows)));
     tables.push_back(cudf::table_view{{facts.back().first, facts.back().second}});
   }
-  std::vector<cudf::size_type> key_cols{0};
-  std::vector<cudf::order> column_order{cudf::order::ASCENDING};
+  std::vector<cudf::size_type>  key_cols{0};
+  std::vector<cudf::order>      column_order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   std::unique_ptr<cudf::table> p_outputTable;
@@ -697,24 +697,24 @@ class MergeTest : public cudf::test::BaseFixture {
 
 TEST_F(MergeTest, KeysWithNulls)
 {
-  cudf::size_type nrows = 13200;  // Ensures that thrust::merge uses more than one tile/block
-  auto data_iter        = thrust::make_counting_iterator<int32_t>(0);
-  auto valids1          = cudf::detail::make_counting_transform_iterator(
+  cudf::size_type nrows     = 13200;  // Ensures that thrust::merge uses more than one tile/block
+  auto            data_iter = thrust::make_counting_iterator<int32_t>(0);
+  auto            valids1   = cudf::detail::make_counting_transform_iterator(
     0, [](auto row) { return (row % 10 == 0) ? false : true; });
   cudf::test::fixed_width_column_wrapper<int32_t> data1(data_iter, data_iter + nrows, valids1);
   auto valids2 = cudf::detail::make_counting_transform_iterator(
     0, [](auto row) { return (row % 15 == 0) ? false : true; });
   cudf::test::fixed_width_column_wrapper<int32_t> data2(data_iter, data_iter + nrows, valids2);
-  auto all_data = cudf::concatenate({data1, data2});
+  auto                                            all_data = cudf::concatenate({data1, data2});
 
-  std::vector<cudf::order> column_orders{cudf::order::ASCENDING, cudf::order::DESCENDING};
+  std::vector<cudf::order>      column_orders{cudf::order::ASCENDING, cudf::order::DESCENDING};
   std::vector<cudf::null_order> null_precedences{cudf::null_order::AFTER, cudf::null_order::BEFORE};
 
   for (auto co : column_orders)
     for (auto np : null_precedences) {
-      std::vector<cudf::order> column_order{co};
+      std::vector<cudf::order>      column_order{co};
       std::vector<cudf::null_order> null_precedence{np};
-      auto sorted1 =
+      auto                          sorted1 =
         cudf::sort(cudf::table_view({data1}), column_order, null_precedence)->release();
       auto col1 = sorted1.front()->view();
       auto sorted2 =

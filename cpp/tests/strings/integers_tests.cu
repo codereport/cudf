@@ -51,9 +51,9 @@ TEST_F(StringsConvertTest, ToInteger)
 
 TEST_F(StringsConvertTest, FromInteger)
 {
-  int32_t minint = std::numeric_limits<int32_t>::min();
-  int32_t maxint = std::numeric_limits<int32_t>::max();
-  std::vector<int32_t> h_integers{100, 987654321, 0, 0, -12761, 0, 5, -4, maxint, minint};
+  int32_t                  minint = std::numeric_limits<int32_t>::min();
+  int32_t                  maxint = std::numeric_limits<int32_t>::max();
+  std::vector<int32_t>     h_integers{100, 987654321, 0, 0, -12761, 0, 5, -4, maxint, minint};
   std::vector<const char*> h_expected{
     "100", "987654321", nullptr, "0", "-12761", "0", "5", "-4", "2147483647", "-2147483648"};
 
@@ -75,7 +75,7 @@ TEST_F(StringsConvertTest, FromInteger)
 TEST_F(StringsConvertTest, ZeroSizeStringsColumn)
 {
   cudf::column_view zero_size_column(cudf::data_type{cudf::type_id::INT32}, 0, nullptr, nullptr, 0);
-  auto results = cudf::strings::from_integers(zero_size_column);
+  auto              results = cudf::strings::from_integers(zero_size_column);
   cudf::test::expect_strings_empty(results->view());
 }
 
@@ -123,7 +123,7 @@ TYPED_TEST(StringsIntegerConvertTest, FromToInteger)
   auto results_strings = cudf::strings::from_integers(integers->view());
 
   thrust::host_vector<TypeParam> h_integers(d_integers);
-  std::vector<std::string> h_strings;
+  std::vector<std::string>       h_strings;
   for (auto itr = h_integers.begin(); itr != h_integers.end(); ++itr)
     h_strings.push_back(std::to_string(*itr));
 
@@ -202,7 +202,7 @@ TEST_F(StringsConvertTest, HexToInteger)
 
 TEST_F(StringsConvertTest, IsHex)
 {
-  std::vector<const char*> h_strings{"",
+  std::vector<const char*>           h_strings{"",
                                      "1234",
                                      nullptr,
                                      "98BEEF",

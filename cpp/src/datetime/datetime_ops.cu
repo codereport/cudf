@@ -130,7 +130,7 @@ struct extract_day_num_of_year {
 // Apply the functor for every element/row in the input column to create the output column
 template <typename TransformFunctor, typename OutputColT>
 struct launch_functor {
-  column_view input;
+  column_view         input;
   mutable_column_view output;
 
   launch_functor(column_view inp, mutable_column_view out) : input(inp), output(out) {}
@@ -156,8 +156,8 @@ struct launch_functor {
 
 // Create an output column by applying the functor to every element from the input column
 template <typename TransformFunctor, cudf::type_id OutputColCudfT>
-std::unique_ptr<column> apply_datetime_op(column_view const& column,
-                                          rmm::cuda_stream_view stream,
+std::unique_ptr<column> apply_datetime_op(column_view const&               column,
+                                          rmm::cuda_stream_view            stream,
                                           rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(is_timestamp(column.type()), "Column type should be timestamp");
@@ -183,8 +183,8 @@ std::unique_ptr<column> apply_datetime_op(column_view const& column,
 }
 
 struct add_calendrical_months_functor {
-  column_view timestamp_column;
-  column_view months_column;
+  column_view         timestamp_column;
+  column_view         months_column;
   mutable_column_view output;
 
   add_calendrical_months_functor(column_view tsc, column_view mc, mutable_column_view out)
@@ -195,13 +195,13 @@ struct add_calendrical_months_functor {
   // std chrono implementation is copied here due to nvcc bug 2909685
   // https://howardhinnant.github.io/date_algorithms.html#days_from_civil
   static CUDA_DEVICE_CALLABLE timestamp_D
-  compute_sys_days(cuda::std::chrono::year_month_day const& ymd)
+                              compute_sys_days(cuda::std::chrono::year_month_day const& ymd)
   {
-    const int yr = static_cast<int>(ymd.year()) - (ymd.month() <= cuda::std::chrono::month{2});
+    const int      yr = static_cast<int>(ymd.year()) - (ymd.month() <= cuda::std::chrono::month{2});
     const unsigned mth = static_cast<unsigned>(ymd.month());
     const unsigned dy  = static_cast<unsigned>(ymd.day());
 
-    const int era      = (yr >= 0 ? yr : yr - 399) / 400;
+    const int      era = (yr >= 0 ? yr : yr - 399) / 400;
     const unsigned yoe = static_cast<unsigned>(yr - era * 400);                // [0, 399]
     const unsigned doy = (153 * (mth + (mth > 2 ? -3 : 9)) + 2) / 5 + dy - 1;  // [0, 365]
     const unsigned doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;                // [0, 146096]
@@ -250,9 +250,9 @@ struct add_calendrical_months_functor {
   }
 };
 
-std::unique_ptr<column> add_calendrical_months(column_view const& timestamp_column,
-                                               column_view const& months_column,
-                                               rmm::cuda_stream_view stream,
+std::unique_ptr<column> add_calendrical_months(column_view const&               timestamp_column,
+                                               column_view const&               months_column,
+                                               rmm::cuda_stream_view            stream,
                                                rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(is_timestamp(timestamp_column.type()), "Column type should be timestamp");
@@ -288,7 +288,7 @@ std::unique_ptr<column> extract_year(column_view const& column, rmm::mr::device_
     cudf::type_id::INT16>(column, 0, mr);
 }
 
-std::unique_ptr<column> extract_month(column_view const& column,
+std::unique_ptr<column> extract_month(column_view const&               column,
                                       rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -306,7 +306,7 @@ std::unique_ptr<column> extract_day(column_view const& column, rmm::mr::device_m
     cudf::type_id::INT16>(column, 0, mr);
 }
 
-std::unique_ptr<column> extract_weekday(column_view const& column,
+std::unique_ptr<column> extract_weekday(column_view const&               column,
                                         rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -323,7 +323,7 @@ std::unique_ptr<column> extract_hour(column_view const& column, rmm::mr::device_
     cudf::type_id::INT16>(column, 0, mr);
 }
 
-std::unique_ptr<column> extract_minute(column_view const& column,
+std::unique_ptr<column> extract_minute(column_view const&               column,
                                        rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -332,7 +332,7 @@ std::unique_ptr<column> extract_minute(column_view const& column,
     cudf::type_id::INT16>(column, 0, mr);
 }
 
-std::unique_ptr<column> extract_second(column_view const& column,
+std::unique_ptr<column> extract_second(column_view const&               column,
                                        rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -341,7 +341,7 @@ std::unique_ptr<column> extract_second(column_view const& column,
     cudf::type_id::INT16>(column, 0, mr);
 }
 
-std::unique_ptr<column> last_day_of_month(column_view const& column,
+std::unique_ptr<column> last_day_of_month(column_view const&               column,
                                           rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

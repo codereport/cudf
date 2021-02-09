@@ -51,7 +51,7 @@ TEST_F(ReplaceErrorTest, TypeMismatch)
 {
   cudf::test::fixed_width_column_wrapper<int32_t> input_column{{7, 5, 6, 3, 1, 2, 8, 4},
                                                                {0, 0, 1, 1, 1, 1, 1, 1}};
-  cudf::test::fixed_width_column_wrapper<float> values_to_replace_column{
+  cudf::test::fixed_width_column_wrapper<float>   values_to_replace_column{
     {10, 11, 12, 13, 14, 15, 16, 17}};
 
   EXPECT_THROW(cudf::replace_nulls(input_column, values_to_replace_column, mr()),
@@ -63,7 +63,7 @@ TEST_F(ReplaceErrorTest, TypeMismatchScalar)
 {
   cudf::test::fixed_width_column_wrapper<int32_t> input_column{{7, 5, 6, 3, 1, 2, 8, 4},
                                                                {0, 0, 1, 1, 1, 1, 1, 1}};
-  cudf::numeric_scalar<float> replacement(1);
+  cudf::numeric_scalar<float>                     replacement(1);
 
   EXPECT_THROW(cudf::replace_nulls(input_column, replacement, mr()), cudf::logic_error);
 }
@@ -73,9 +73,9 @@ struct ReplaceNullsStringsTest : public cudf::test::BaseFixture {
 
 TEST_F(ReplaceNullsStringsTest, SimpleReplace)
 {
-  std::vector<std::string> input{"", "", "", "", "", "", "", ""};
+  std::vector<std::string>      input{"", "", "", "", "", "", "", ""};
   std::vector<cudf::valid_type> input_v{0, 0, 0, 0, 0, 0, 0, 0};
-  std::vector<std::string> replacement{"a", "b", "c", "d", "e", "f", "g", "h"};
+  std::vector<std::string>      replacement{"a", "b", "c", "d", "e", "f", "g", "h"};
   std::vector<cudf::valid_type> replacement_v{1, 1, 1, 1, 1, 1, 1, 1};
 
   cudf::test::strings_column_wrapper input_w{input.begin(), input.end(), input_v.begin()};
@@ -92,9 +92,9 @@ TEST_F(ReplaceNullsStringsTest, SimpleReplace)
 
 TEST_F(ReplaceNullsStringsTest, ReplaceWithNulls)
 {
-  std::vector<std::string> input{"", "", "", "", "", "", "", ""};
+  std::vector<std::string>      input{"", "", "", "", "", "", "", ""};
   std::vector<cudf::valid_type> input_v{0, 0, 0, 0, 0, 0, 0, 0};
-  std::vector<std::string> replacement{"", "", "c", "d", "e", "f", "g", "h"};
+  std::vector<std::string>      replacement{"", "", "c", "d", "e", "f", "g", "h"};
   std::vector<cudf::valid_type> replacement_v{0, 0, 1, 1, 1, 1, 1, 1};
 
   cudf::test::strings_column_wrapper input_w{input.begin(), input.end(), input_v.begin()};
@@ -111,9 +111,9 @@ TEST_F(ReplaceNullsStringsTest, ReplaceWithNulls)
 
 TEST_F(ReplaceNullsStringsTest, ReplaceWithAllNulls)
 {
-  std::vector<std::string> input{"", "", "", "", "", "", "", ""};
+  std::vector<std::string>      input{"", "", "", "", "", "", "", ""};
   std::vector<cudf::valid_type> input_v{0, 0, 0, 0, 0, 0, 0, 0};
-  std::vector<std::string> replacement{"", "", "", "", "", "", "", ""};
+  std::vector<std::string>      replacement{"", "", "", "", "", "", "", ""};
   std::vector<cudf::valid_type> replacement_v{0, 0, 0, 0, 0, 0, 0, 0};
 
   cudf::test::strings_column_wrapper input_w{input.begin(), input.end(), input_v.begin()};
@@ -129,9 +129,9 @@ TEST_F(ReplaceNullsStringsTest, ReplaceWithAllNulls)
 
 TEST_F(ReplaceNullsStringsTest, ReplaceWithAllEmpty)
 {
-  std::vector<std::string> input{"", "", "", "", "", "", "", ""};
+  std::vector<std::string>      input{"", "", "", "", "", "", "", ""};
   std::vector<cudf::valid_type> input_v{0, 0, 0, 0, 0, 0, 0, 0};
-  std::vector<std::string> replacement{"", "", "", "", "", "", "", ""};
+  std::vector<std::string>      replacement{"", "", "", "", "", "", "", ""};
   std::vector<cudf::valid_type> replacement_v{1, 1, 1, 1, 1, 1, 1, 1};
 
   cudf::test::strings_column_wrapper input_w{input.begin(), input.end(), input_v.begin()};
@@ -147,9 +147,9 @@ TEST_F(ReplaceNullsStringsTest, ReplaceWithAllEmpty)
 
 TEST_F(ReplaceNullsStringsTest, ReplaceNone)
 {
-  std::vector<std::string> input{"a", "b", "c", "d", "e", "f", "g", "h"};
+  std::vector<std::string>      input{"a", "b", "c", "d", "e", "f", "g", "h"};
   std::vector<cudf::valid_type> input_v{1, 1, 1, 1, 1, 1, 1, 1};
-  std::vector<std::string> replacement{"z", "a", "c", "d", "e", "f", "g", "h"};
+  std::vector<std::string>      replacement{"z", "a", "c", "d", "e", "f", "g", "h"};
   std::vector<cudf::valid_type> replacement_v{0, 0, 1, 1, 1, 1, 1, 1};
 
   cudf::test::strings_column_wrapper input_w{input.begin(), input.end(), input_v.begin()};
@@ -165,7 +165,7 @@ TEST_F(ReplaceNullsStringsTest, ReplaceNone)
 
 TEST_F(ReplaceNullsStringsTest, SimpleReplaceScalar)
 {
-  std::vector<std::string> input{"", "", "", "", "", "", "", ""};
+  std::vector<std::string>      input{"", "", "", "", "", "", "", ""};
   std::vector<cudf::valid_type> input_v{0, 0, 0, 0, 0, 0, 0, 0};
   std::unique_ptr<cudf::scalar> repl = cudf::make_string_scalar("rep", 0, mr());
   repl->set_valid(true, 0);
@@ -255,7 +255,7 @@ void ReplaceNullsColumn(cudf::test::fixed_width_column_wrapper<T> input,
 
 template <typename T>
 void ReplaceNullsScalar(cudf::test::fixed_width_column_wrapper<T> input,
-                        cudf::scalar const& replacement_value,
+                        cudf::scalar const&                       replacement_value,
                         cudf::test::fixed_width_column_wrapper<T> expected)
 {
   std::unique_ptr<cudf::column> result;
@@ -268,7 +268,7 @@ TYPED_TEST(ReplaceNullsTest, ReplaceColumn)
   std::vector<TypeParam> inputColumn =
     cudf::test::make_type_param_vector<TypeParam>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
   std::vector<cudf::valid_type> inputValid{0, 0, 0, 0, 0, 1, 1, 1, 1, 1};
-  std::vector<TypeParam> replacementColumn =
+  std::vector<TypeParam>        replacementColumn =
     cudf::test::make_type_param_vector<TypeParam>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
 
   ReplaceNullsColumn<TypeParam>(cudf::test::fixed_width_column_wrapper<TypeParam>(
@@ -291,7 +291,7 @@ TYPED_TEST(ReplaceNullsTest, ReplaceScalar)
   std::vector<TypeParam> inputColumn =
     cudf::test::make_type_param_vector<TypeParam>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
   std::vector<cudf::valid_type> inputValid{0, 0, 0, 0, 0, 1, 1, 1, 1, 1};
-  std::vector<TypeParam> expectedColumn =
+  std::vector<TypeParam>        expectedColumn =
     cudf::test::make_type_param_vector<TypeParam>({1, 1, 1, 1, 1, 5, 6, 7, 8, 9});
   cudf::numeric_scalar<TypeParam> replacement(1);
 
@@ -365,7 +365,7 @@ TYPED_TEST_CASE(ReplaceNullsPolicyTest, test_types);
 template <typename T>
 void TestReplaceNullsWithPolicy(cudf::test::fixed_width_column_wrapper<T> input,
                                 cudf::test::fixed_width_column_wrapper<T> expected,
-                                cudf::replace_policy policy)
+                                cudf::replace_policy                      policy)
 {
   auto result = cudf::replace_nulls(input, policy);
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*result, expected);
@@ -444,13 +444,13 @@ TEST_F(ReplaceDictionaryTest, ReplaceNulls)
 {
   cudf::test::strings_column_wrapper input_w({"c", "", "", "a", "d", "d", "", ""},
                                              {1, 0, 0, 1, 1, 1, 0, 0});
-  auto input = cudf::dictionary::encode(input_w);
+  auto                               input = cudf::dictionary::encode(input_w);
   cudf::test::strings_column_wrapper replacement_w({"c", "c", "", "a", "d", "d", "b", ""},
                                                    {1, 1, 0, 1, 1, 1, 1, 0});
-  auto replacement = cudf::dictionary::encode(replacement_w);
+  auto                               replacement = cudf::dictionary::encode(replacement_w);
   cudf::test::strings_column_wrapper expected_w({"c", "c", "", "a", "d", "d", "b", ""},
                                                 {1, 1, 0, 1, 1, 1, 1, 0});
-  auto expected = cudf::dictionary::encode(expected_w);
+  auto                               expected = cudf::dictionary::encode(expected_w);
 
   auto result = cudf::replace_nulls(input->view(), replacement->view());
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*result, expected->view());
@@ -460,9 +460,9 @@ TEST_F(ReplaceDictionaryTest, ReplaceNullsWithScalar)
 {
   cudf::test::strings_column_wrapper input_w({"c", "", "", "a", "d", "d", "", ""},
                                              {1, 0, 0, 1, 1, 1, 0, 0});
-  auto input = cudf::dictionary::encode(input_w);
+  auto                               input = cudf::dictionary::encode(input_w);
   cudf::test::strings_column_wrapper expected_w({"c", "b", "b", "a", "d", "d", "b", "b"});
-  auto expected = cudf::dictionary::encode(expected_w);
+  auto                               expected = cudf::dictionary::encode(expected_w);
 
   auto result = cudf::replace_nulls(input->view(), cudf::string_scalar("b"));
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*result, expected->view());
@@ -471,7 +471,7 @@ TEST_F(ReplaceDictionaryTest, ReplaceNullsWithScalar)
 TEST_F(ReplaceDictionaryTest, ReplaceNullsError)
 {
   cudf::test::fixed_width_column_wrapper<int32_t> input_w({1, 1, 2, 2}, {1, 0, 0, 1});
-  auto input = cudf::dictionary::encode(input_w);
+  auto                                            input = cudf::dictionary::encode(input_w);
   cudf::test::fixed_width_column_wrapper<int64_t> replacement_w({1, 2, 3, 4});
   auto replacement = cudf::dictionary::encode(replacement_w);
 
@@ -479,7 +479,7 @@ TEST_F(ReplaceDictionaryTest, ReplaceNullsError)
   EXPECT_THROW(cudf::replace_nulls(input->view(), cudf::string_scalar("x")), cudf::logic_error);
 
   cudf::test::fixed_width_column_wrapper<int64_t> input_one_w({1}, {0});
-  auto input_one  = cudf::dictionary::encode(input_one_w);
+  auto                                            input_one = cudf::dictionary::encode(input_one_w);
   auto dict_input = cudf::dictionary_column_view(input_one->view());
   auto dict_repl  = cudf::dictionary_column_view(replacement->view());
   EXPECT_THROW(cudf::dictionary::detail::replace_nulls(dict_input, dict_repl), cudf::logic_error);
@@ -497,7 +497,7 @@ TEST_F(ReplaceDictionaryTest, ReplaceNullsEmpty)
 TEST_F(ReplaceDictionaryTest, ReplaceNullsNoNulls)
 {
   cudf::test::fixed_width_column_wrapper<int8_t> input_w({1, 1, 1});
-  auto input      = cudf::dictionary::encode(input_w);
+  auto                                           input = cudf::dictionary::encode(input_w);
   auto dict_input = cudf::dictionary_column_view(input->view());
   auto result     = cudf::dictionary::detail::replace_nulls(dict_input, dict_input);
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(result->view(), input->view());
@@ -514,7 +514,7 @@ TEST_F(ReplaceNullsPolicyDictionaryTest, PrecedingFill)
 {
   cudf::test::strings_column_wrapper input_w({"head", "", "", "mid1", "mid2", "tail", "", ""},
                                              {1, 0, 0, 1, 1, 1, 0, 0});
-  auto input = cudf::dictionary::encode(input_w);
+  auto                               input = cudf::dictionary::encode(input_w);
 
   cudf::test::strings_column_wrapper expected_w(
     {"head", "head", "head", "mid1", "mid2", "tail", "tail", "tail"}, cudf::test::all_valid());
@@ -529,7 +529,7 @@ TEST_F(ReplaceNullsPolicyDictionaryTest, FollowingFill)
 {
   cudf::test::strings_column_wrapper input_w({"head", "", "", "mid1", "mid2", "", "", "tail"},
                                              {1, 0, 0, 1, 1, 0, 0, 1});
-  auto input = cudf::dictionary::encode(input_w);
+  auto                               input = cudf::dictionary::encode(input_w);
 
   cudf::test::strings_column_wrapper expected_w(
     {"head", "mid1", "mid1", "mid1", "mid2", "tail", "tail", "tail"}, cudf::test::all_valid());
@@ -544,7 +544,7 @@ TEST_F(ReplaceNullsPolicyDictionaryTest, PrecedingFillLeadingNulls)
 {
   cudf::test::strings_column_wrapper input_w({"", "", "", "mid1", "mid2", "", "", "tail"},
                                              {0, 0, 0, 1, 1, 0, 0, 1});
-  auto input = cudf::dictionary::encode(input_w);
+  auto                               input = cudf::dictionary::encode(input_w);
 
   cudf::test::strings_column_wrapper expected_w(
     {"", "", "", "mid1", "mid2", "mid2", "mid2", "tail"}, {0, 0, 0, 1, 1, 1, 1, 1});
@@ -559,11 +559,11 @@ TEST_F(ReplaceNullsPolicyDictionaryTest, FollowingFillTrailingNulls)
 {
   cudf::test::strings_column_wrapper input_w({"head", "", "", "mid", "tail", "", "", ""},
                                              {1, 0, 0, 1, 1, 0, 0, 0});
-  auto input = cudf::dictionary::encode(input_w);
+  auto                               input = cudf::dictionary::encode(input_w);
 
   cudf::test::strings_column_wrapper expected_w({"head", "mid", "mid", "mid", "tail", "", "", ""},
                                                 {1, 1, 1, 1, 1, 0, 0, 0});
-  auto expected = cudf::dictionary::encode(expected_w);
+  auto                               expected = cudf::dictionary::encode(expected_w);
 
   auto result = cudf::replace_nulls(*input, cudf::replace_policy::FOLLOWING);
 

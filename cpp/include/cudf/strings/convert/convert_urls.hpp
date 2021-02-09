@@ -42,7 +42,7 @@ namespace strings {
  * @return New strings column.
  */
 std::unique_ptr<column> url_encode(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -63,7 +63,7 @@ std::unique_ptr<column> url_encode(
  * @return New strings column.
  */
 std::unique_ptr<column> url_decode(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group

@@ -42,7 +42,7 @@ TYPED_TEST(GatherTest, IdentityTest)
 
   auto data = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i; });
   cudf::test::fixed_width_column_wrapper<TypeParam> source_column(data, data + source_size);
-  cudf::test::fixed_width_column_wrapper<int32_t> gather_map(data, data + source_size);
+  cudf::test::fixed_width_column_wrapper<int32_t>   gather_map(data, data + source_size);
 
   cudf::table_view source_table({source_column});
 
@@ -64,7 +64,7 @@ TYPED_TEST(GatherTest, ReverseIdentityTest)
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return source_size - 1 - i; });
 
   cudf::test::fixed_width_column_wrapper<TypeParam> source_column(data, data + source_size);
-  cudf::test::fixed_width_column_wrapper<int32_t> gather_map(reversed_data,
+  cudf::test::fixed_width_column_wrapper<int32_t>   gather_map(reversed_data,
                                                              reversed_data + source_size);
 
   cudf::table_view source_table({source_column});
@@ -180,7 +180,7 @@ TYPED_TEST(GatherTest, MultiColReverseIdentityTest)
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return source_size - 1 - i; });
 
   std::vector<cudf::test::fixed_width_column_wrapper<TypeParam>> source_column_wrappers;
-  std::vector<cudf::column_view> source_columns;
+  std::vector<cudf::column_view>                                 source_columns;
 
   for (int i = 0; i < n_cols; ++i) {
     source_column_wrappers.push_back(
@@ -215,7 +215,7 @@ TYPED_TEST(GatherTest, MultiColNulls)
   auto validity = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i % 2; });
 
   std::vector<cudf::test::fixed_width_column_wrapper<TypeParam>> source_column_wrappers;
-  std::vector<cudf::column_view> source_columns;
+  std::vector<cudf::column_view>                                 source_columns;
 
   for (int i = 0; i < n_cols; ++i) {
     source_column_wrappers.push_back(

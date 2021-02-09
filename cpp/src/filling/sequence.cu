@@ -58,10 +58,10 @@ struct sequence_functor {
   template <
     typename T,
     typename std::enable_if_t<cudf::is_numeric<T>() and not cudf::is_boolean<T>()>* = nullptr>
-  std::unique_ptr<column> operator()(size_type size,
-                                     scalar const& init,
-                                     scalar const& step,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(size_type                        size,
+                                     scalar const&                    init,
+                                     scalar const&                    step,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     auto result = make_fixed_width_column(init.type(), size, mask_state::UNALLOCATED, stream, mr);
@@ -86,10 +86,10 @@ struct sequence_functor {
   template <
     typename T,
     typename std::enable_if_t<not cudf::is_numeric<T>() or cudf::is_boolean<T>()>* = nullptr>
-  std::unique_ptr<column> operator()(size_type size,
-                                     scalar const& init,
-                                     scalar const& step,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(size_type                        size,
+                                     scalar const&                    init,
+                                     scalar const&                    step,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("Unsupported sequence scalar type");
@@ -98,9 +98,9 @@ struct sequence_functor {
   template <
     typename T,
     typename std::enable_if_t<cudf::is_numeric<T>() and not cudf::is_boolean<T>()>* = nullptr>
-  std::unique_ptr<column> operator()(size_type size,
-                                     scalar const& init,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(size_type                        size,
+                                     scalar const&                    init,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     auto result = make_fixed_width_column(init.type(), size, mask_state::UNALLOCATED, stream, mr);
@@ -123,9 +123,9 @@ struct sequence_functor {
   template <
     typename T,
     typename std::enable_if_t<not cudf::is_numeric<T>() or cudf::is_boolean<T>()>* = nullptr>
-  std::unique_ptr<column> operator()(size_type size,
-                                     scalar const& init,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(size_type                        size,
+                                     scalar const&                    init,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("Unsupported sequence scalar type");
@@ -134,10 +134,10 @@ struct sequence_functor {
 
 }  // anonymous namespace
 
-std::unique_ptr<column> sequence(size_type size,
-                                 scalar const& init,
-                                 scalar const& step,
-                                 rmm::cuda_stream_view stream,
+std::unique_ptr<column> sequence(size_type                        size,
+                                 scalar const&                    init,
+                                 scalar const&                    step,
+                                 rmm::cuda_stream_view            stream,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(init.type() == step.type(), "init and step must be of the same type.");
@@ -148,9 +148,9 @@ std::unique_ptr<column> sequence(size_type size,
 }
 
 std::unique_ptr<column> sequence(
-  size_type size,
-  scalar const& init,
-  rmm::cuda_stream_view stream,
+  size_type                        size,
+  scalar const&                    init,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(size >= 0, "size must be >= 0");
@@ -161,16 +161,16 @@ std::unique_ptr<column> sequence(
 
 }  // namespace detail
 
-std::unique_ptr<column> sequence(size_type size,
-                                 scalar const& init,
-                                 scalar const& step,
+std::unique_ptr<column> sequence(size_type                        size,
+                                 scalar const&                    init,
+                                 scalar const&                    step,
                                  rmm::mr::device_memory_resource* mr)
 {
   return detail::sequence(size, init, step, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> sequence(size_type size,
-                                 scalar const& init,
+std::unique_ptr<column> sequence(size_type                        size,
+                                 scalar const&                    init,
                                  rmm::mr::device_memory_resource* mr)
 {
   return detail::sequence(size, init, rmm::cuda_stream_default, mr);

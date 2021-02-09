@@ -60,9 +60,9 @@ struct unique_copy_fn {
    */
   __device__ bool operator()(size_type i)
   {
-    size_type boundary = 0;
-    size_type offset   = 1;
-    auto keep_option   = duplicate_keep_option::KEEP_LAST;
+    size_type boundary    = 0;
+    size_type offset      = 1;
+    auto      keep_option = duplicate_keep_option::KEEP_LAST;
     do {
       if ((keep != keep_option) && (i != boundary) && comp(iter[i], iter[i - offset])) {
         return false;
@@ -74,10 +74,10 @@ struct unique_copy_fn {
     return true;
   }
 
-  InputIterator iter;
+  InputIterator               iter;
   duplicate_keep_option const keep;
-  BinaryPredicate comp;
-  size_type const last_index;
+  BinaryPredicate             comp;
+  size_type const             last_index;
 };
 
 }  // namespace
@@ -91,12 +91,12 @@ struct unique_copy_fn {
  * @return End of the range to which the elements are copied.
  */
 template <typename InputIterator, typename OutputIterator, typename BinaryPredicate>
-OutputIterator unique_copy(InputIterator first,
-                           InputIterator last,
-                           OutputIterator output,
-                           BinaryPredicate comp,
+OutputIterator unique_copy(InputIterator               first,
+                           InputIterator               last,
+                           OutputIterator              output,
+                           BinaryPredicate             comp,
                            duplicate_keep_option const keep,
-                           rmm::cuda_stream_view stream)
+                           rmm::cuda_stream_view       stream)
 {
   size_type const last_index = thrust::distance(first, last) - 1;
   return thrust::copy_if(
@@ -129,11 +129,11 @@ OutputIterator unique_copy(InputIterator first,
  * @return column_view column_view of unique row index as per specified `keep`, this is actually
  * slice of `unique_indices`.
  */
-column_view get_unique_ordered_indices(cudf::table_view const& keys,
+column_view get_unique_ordered_indices(cudf::table_view const&    keys,
                                        cudf::mutable_column_view& unique_indices,
-                                       duplicate_keep_option keep,
-                                       null_equality nulls_equal,
-                                       rmm::cuda_stream_view stream)
+                                       duplicate_keep_option      keep,
+                                       null_equality              nulls_equal,
+                                       rmm::cuda_stream_view      stream)
 {
   // sort only indices
   auto sorted_indices = sorted_order(keys,
@@ -176,11 +176,11 @@ column_view get_unique_ordered_indices(cudf::table_view const& keys,
   }
 }
 
-std::unique_ptr<table> drop_duplicates(table_view const& input,
-                                       std::vector<size_type> const& keys,
-                                       duplicate_keep_option keep,
-                                       null_equality nulls_equal,
-                                       rmm::cuda_stream_view stream,
+std::unique_ptr<table> drop_duplicates(table_view const&                input,
+                                       std::vector<size_type> const&    keys,
+                                       duplicate_keep_option            keep,
+                                       null_equality                    nulls_equal,
+                                       rmm::cuda_stream_view            stream,
                                        rmm::mr::device_memory_resource* mr)
 {
   if (0 == input.num_rows() || 0 == input.num_columns() || 0 == keys.size()) {
@@ -209,10 +209,10 @@ std::unique_ptr<table> drop_duplicates(table_view const& input,
 
 }  // namespace detail
 
-std::unique_ptr<table> drop_duplicates(table_view const& input,
-                                       std::vector<size_type> const& keys,
-                                       duplicate_keep_option const keep,
-                                       null_equality nulls_equal,
+std::unique_ptr<table> drop_duplicates(table_view const&                input,
+                                       std::vector<size_type> const&    keys,
+                                       duplicate_keep_option const      keep,
+                                       null_equality                    nulls_equal,
                                        rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

@@ -31,15 +31,15 @@ constexpr int hash_bits = 12;
  * @brief snappy compressor state
  */
 struct snap_state_s {
-  const uint8_t *src;                 ///< Ptr to uncompressed data
-  uint32_t src_len;                   ///< Uncompressed data length
-  uint8_t *dst_base;                  ///< Base ptr to output compressed data
-  uint8_t *dst;                       ///< Current ptr to uncompressed data
-  uint8_t *end;                       ///< End of uncompressed data buffer
-  volatile uint32_t literal_length;   ///< Number of literal bytes
-  volatile uint32_t copy_length;      ///< Number of copy bytes
-  volatile uint32_t copy_distance;    ///< Distance for copy bytes
-  uint16_t hash_map[1 << hash_bits];  ///< Low 16-bit offset from hash
+  const uint8_t *   src;                       ///< Ptr to uncompressed data
+  uint32_t          src_len;                   ///< Uncompressed data length
+  uint8_t *         dst_base;                  ///< Base ptr to output compressed data
+  uint8_t *         dst;                       ///< Current ptr to uncompressed data
+  uint8_t *         end;                       ///< End of uncompressed data buffer
+  volatile uint32_t literal_length;            ///< Number of literal bytes
+  volatile uint32_t copy_length;               ///< Number of copy bytes
+  volatile uint32_t copy_distance;             ///< Distance for copy bytes
+  uint16_t          hash_map[1 << hash_bits];  ///< Low 16-bit offset from hash
 };
 
 /**
@@ -55,9 +55,9 @@ static inline __device__ uint32_t snap_hash(uint32_t v)
  */
 static inline __device__ uint32_t fetch4(const uint8_t *src)
 {
-  uint32_t src_align    = 3 & reinterpret_cast<uintptr_t>(src);
-  const uint32_t *src32 = reinterpret_cast<const uint32_t *>(src - src_align);
-  uint32_t v            = src32[0];
+  uint32_t        src_align = 3 & reinterpret_cast<uintptr_t>(src);
+  const uint32_t *src32     = reinterpret_cast<const uint32_t *>(src - src_align);
+  uint32_t        v         = src32[0];
   return (src_align) ? __funnelshift_r(v, src32[1], src_align * 8) : v;
 }
 
@@ -178,21 +178,21 @@ static inline __device__ uint32_t HashMatchAny(uint32_t v, uint32_t t)
  *
  * @return Number of bytes before first match (literal length)
  */
-static __device__ uint32_t FindFourByteMatch(snap_state_s *s,
+static __device__ uint32_t FindFourByteMatch(snap_state_s * s,
                                              const uint8_t *src,
-                                             uint32_t pos0,
-                                             uint32_t t)
+                                             uint32_t       pos0,
+                                             uint32_t       t)
 {
   constexpr int max_literal_length = 256;
   // Matches encoder limit as described in snappy format description
   constexpr int max_copy_distance = 32768;
-  uint32_t len                    = s->src_len;
-  uint32_t pos                    = pos0;
-  uint32_t maxpos                 = pos0 + max_literal_length - 31;
-  uint32_t match_mask, literal_cnt;
+  uint32_t      len               = s->src_len;
+  uint32_t      pos               = pos0;
+  uint32_t      maxpos            = pos0 + max_literal_length - 31;
+  uint32_t      match_mask, literal_cnt;
   if (t == 0) { s->copy_length = 0; }
   do {
-    bool valid4               = (pos + t + 4 <= len);
+    bool     valid4           = (pos + t + 4 <= len);
     uint32_t data32           = (valid4) ? fetch4(src + pos + t) : 0;
     uint32_t hash             = (valid4) ? snap_hash(data32) : 0;
     uint32_t local_match      = HashMatchAny(hash, t);
@@ -235,8 +235,8 @@ static __device__ uint32_t FindFourByteMatch(snap_state_s *s,
 /// @brief Returns the number of matching bytes for two byte sequences up to 63 bytes
 static __device__ uint32_t Match60(const uint8_t *src1,
                                    const uint8_t *src2,
-                                   uint32_t len,
-                                   uint32_t t)
+                                   uint32_t       len,
+                                   uint32_t       t)
 {
   uint32_t mismatch = ballot(t >= len || src1[t] != src2[t]);
   if (mismatch == 0) {
@@ -263,20 +263,20 @@ extern "C" __global__ void __launch_bounds__(128)
   __shared__ __align__(16) snap_state_s state_g;
 
   snap_state_s *const s = &state_g;
-  uint32_t t            = threadIdx.x;
-  uint32_t pos;
-  const uint8_t *src;
+  uint32_t            t = threadIdx.x;
+  uint32_t            pos;
+  const uint8_t *     src;
 
   if (!t) {
-    const uint8_t *src = static_cast<const uint8_t *>(inputs[blockIdx.x].srcDevice);
-    uint32_t src_len   = static_cast<uint32_t>(inputs[blockIdx.x].srcSize);
-    uint8_t *dst       = static_cast<uint8_t *>(inputs[blockIdx.x].dstDevice);
-    uint32_t dst_len   = static_cast<uint32_t>(inputs[blockIdx.x].dstSize);
-    uint8_t *end       = dst + dst_len;
-    s->src             = src;
-    s->src_len         = src_len;
-    s->dst_base        = dst;
-    s->end             = end;
+    const uint8_t *src     = static_cast<const uint8_t *>(inputs[blockIdx.x].srcDevice);
+    uint32_t       src_len = static_cast<uint32_t>(inputs[blockIdx.x].srcSize);
+    uint8_t *      dst     = static_cast<uint8_t *>(inputs[blockIdx.x].dstDevice);
+    uint32_t       dst_len = static_cast<uint32_t>(inputs[blockIdx.x].dstSize);
+    uint8_t *      end     = dst + dst_len;
+    s->src                 = src;
+    s->src_len             = src_len;
+    s->dst_base            = dst;
+    s->end                 = end;
     while (src_len > 0x7f) {
       if (dst < end) { dst[0] = src_len | 0x80; }
       dst++;
@@ -341,9 +341,9 @@ extern "C" __global__ void __launch_bounds__(128)
   }
 }
 
-cudaError_t __host__ gpu_snap(gpu_inflate_input_s *inputs,
+cudaError_t __host__ gpu_snap(gpu_inflate_input_s * inputs,
                               gpu_inflate_status_s *outputs,
-                              int count,
+                              int                   count,
                               rmm::cuda_stream_view stream)
 {
   dim3 dim_block(128, 1);  // 4 warps per stream, 1 stream per block

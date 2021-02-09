@@ -72,7 +72,7 @@ template <bool has_nulls = true>
 struct tagged_element_relational_comparator {
   __host__ __device__ tagged_element_relational_comparator(column_device_view lhs,
                                                            column_device_view rhs,
-                                                           null_order null_precedence)
+                                                           null_order         null_precedence)
     : lhs{lhs}, rhs{rhs}, null_precedence{null_precedence}
   {
   }
@@ -99,7 +99,7 @@ struct tagged_element_relational_comparator {
  private:
   column_device_view lhs;
   column_device_view rhs;
-  null_order null_precedence;
+  null_order         null_precedence;
 };
 
 /**
@@ -109,7 +109,7 @@ template <bool has_nulls = true>
 struct row_lexicographic_tagged_comparator {
   row_lexicographic_tagged_comparator(table_device_view lhs,
                                       table_device_view rhs,
-                                      order const* column_order         = nullptr,
+                                      order const*      column_order    = nullptr,
                                       null_order const* null_precedence = nullptr)
     : _lhs{lhs}, _rhs{rhs}, _column_order{column_order}, _null_precedence{null_precedence}
   {
@@ -142,7 +142,7 @@ struct row_lexicographic_tagged_comparator {
   table_device_view _lhs;
   table_device_view _rhs;
   null_order const* _null_precedence{};
-  order const* _column_order{};
+  order const*      _column_order{};
 };
 
 }  // namespace detail

@@ -43,7 +43,7 @@ namespace strings {
  * @return Column of strings capitalized from the input column.
  */
 std::unique_ptr<column> capitalize(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -67,7 +67,7 @@ std::unique_ptr<column> capitalize(
  * @return Column of title strings.
  */
 std::unique_ptr<column> title(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group

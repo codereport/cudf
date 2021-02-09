@@ -43,7 +43,7 @@ namespace datetime {
  * @throw cudf::logic_error if input column datatype is not TIMESTAMP
  */
 std::unique_ptr<cudf::column> extract_year(
-  cudf::column_view const& column,
+  cudf::column_view const&         column,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -56,7 +56,7 @@ std::unique_ptr<cudf::column> extract_year(
  * @throw cudf::logic_error if input column datatype is not TIMESTAMP
  */
 std::unique_ptr<cudf::column> extract_month(
-  cudf::column_view const& column,
+  cudf::column_view const&         column,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -69,7 +69,7 @@ std::unique_ptr<cudf::column> extract_month(
  * @throw cudf::logic_error if input column datatype is not TIMESTAMP
  */
 std::unique_ptr<cudf::column> extract_day(
-  cudf::column_view const& column,
+  cudf::column_view const&         column,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -82,7 +82,7 @@ std::unique_ptr<cudf::column> extract_day(
  * @throw cudf::logic_error if input column datatype is not TIMESTAMP
  */
 std::unique_ptr<cudf::column> extract_weekday(
-  cudf::column_view const& column,
+  cudf::column_view const&         column,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -95,7 +95,7 @@ std::unique_ptr<cudf::column> extract_weekday(
  * @throw cudf::logic_error if input column datatype is not TIMESTAMP
  */
 std::unique_ptr<cudf::column> extract_hour(
-  cudf::column_view const& column,
+  cudf::column_view const&         column,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -108,7 +108,7 @@ std::unique_ptr<cudf::column> extract_hour(
  * @throw cudf::logic_error if input column datatype is not TIMESTAMP
  */
 std::unique_ptr<cudf::column> extract_minute(
-  cudf::column_view const& column,
+  cudf::column_view const&         column,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -121,7 +121,7 @@ std::unique_ptr<cudf::column> extract_minute(
  * @throw cudf::logic_error if input column datatype is not TIMESTAMP
  */
 std::unique_ptr<cudf::column> extract_second(
-  cudf::column_view const& column,
+  cudf::column_view const&         column,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group
@@ -141,7 +141,7 @@ std::unique_ptr<cudf::column> extract_second(
  * @throw cudf::logic_error if input column datatype is not TIMESTAMP
  */
 std::unique_ptr<cudf::column> last_day_of_month(
-  cudf::column_view const& column,
+  cudf::column_view const&         column,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -154,7 +154,7 @@ std::unique_ptr<cudf::column> last_day_of_month(
  * @throw cudf::logic_error if input column datatype is not a TIMESTAMP
  */
 std::unique_ptr<cudf::column> day_of_year(
-  cudf::column_view const& column,
+  cudf::column_view const&         column,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -186,8 +186,8 @@ std::unique_ptr<cudf::column> day_of_year(
  * @throw cudf::logic_error if `timestamps` column size is not equal to `months` column size.
  */
 std::unique_ptr<cudf::column> add_calendrical_months(
-  cudf::column_view const& timestamps,
-  cudf::column_view const& months,
+  cudf::column_view const&         timestamps,
+  cudf::column_view const&         months,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 /** @} */  // end of group
 }  // namespace datetime

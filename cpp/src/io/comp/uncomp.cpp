@@ -107,21 +107,21 @@ struct bz2_file_header_s {
 
 struct gz_archive_s {
   const gz_file_header_s *fhdr;
-  uint16_t hcrc16;  // header crc16 if present
-  uint16_t xlen;
-  const uint8_t *fxtra;      // xlen bytes (optional)
-  const uint8_t *fname;      // zero-terminated original filename if present
-  const uint8_t *fcomment;   // zero-terminated comment if present
-  const uint8_t *comp_data;  // compressed data
-  size_t comp_len;           // Compressed data length
-  uint32_t crc32;            // CRC32 of uncompressed data
-  uint32_t isize;            // Input size modulo 2^32
+  uint16_t                hcrc16;  // header crc16 if present
+  uint16_t                xlen;
+  const uint8_t *         fxtra;      // xlen bytes (optional)
+  const uint8_t *         fname;      // zero-terminated original filename if present
+  const uint8_t *         fcomment;   // zero-terminated comment if present
+  const uint8_t *         comp_data;  // compressed data
+  size_t                  comp_len;   // Compressed data length
+  uint32_t                crc32;      // CRC32 of uncompressed data
+  uint32_t                isize;      // Input size modulo 2^32
 };
 
 struct zip_archive_s {
-  const zip_eocd_s *eocd;    // end of central directory
+  const zip_eocd_s * eocd;   // end of central directory
   const zip64_eocdl *eocdl;  // end of central dir locator (optional)
-  const zip_cdfh_s *cdfh;    // start of central directory file headers
+  const zip_cdfh_s * cdfh;   // start of central directory file headers
 };
 
 bool ParseGZArchive(gz_archive_s *dst, const uint8_t *raw, size_t len)
@@ -150,7 +150,7 @@ bool ParseGZArchive(gz_archive_s *dst, const uint8_t *raw, size_t len)
     len -= xlen;
   }
   if (fhdr->flags & GZIPHeaderFlag::fname) {
-    size_t l = 0;
+    size_t  l = 0;
     uint8_t c;
     do {
       if (l >= len) return false;
@@ -162,7 +162,7 @@ bool ParseGZArchive(gz_archive_s *dst, const uint8_t *raw, size_t len)
     len -= l;
   }
   if (fhdr->flags & GZIPHeaderFlag::fcomment) {
-    size_t l = 0;
+    size_t  l = 0;
     uint8_t c;
     do {
       if (l >= len) return false;
@@ -217,7 +217,7 @@ bool OpenZipArchive(zip_archive_s *dst, const uint8_t *raw, size_t len)
 
 int cpu_inflate(uint8_t *uncomp_data, size_t *destLen, const uint8_t *comp_data, size_t comp_len)
 {
-  int zerr;
+  int      zerr;
   z_stream strm;
 
   memset(&strm, 0, sizeof(strm));
@@ -250,7 +250,7 @@ int cpu_inflate(uint8_t *uncomp_data, size_t *destLen, const uint8_t *comp_data,
  */
 int cpu_inflate_vector(std::vector<char> &dst, const uint8_t *comp_data, size_t comp_len)
 {
-  int zerr;
+  int      zerr;
   z_stream strm;
 
   memset(&strm, 0, sizeof(strm));
@@ -293,10 +293,10 @@ int cpu_inflate_vector(std::vector<char> &dst, const uint8_t *comp_data, size_t 
  */
 std::vector<char> io_uncompress_single_h2d(const void *src, size_t src_size, int stream_type)
 {
-  const uint8_t *raw       = static_cast<const uint8_t *>(src);
-  const uint8_t *comp_data = nullptr;
-  size_t comp_len          = 0;
-  size_t uncomp_len        = 0;
+  const uint8_t *raw        = static_cast<const uint8_t *>(src);
+  const uint8_t *comp_data  = nullptr;
+  size_t         comp_len   = 0;
+  size_t         uncomp_len = 0;
 
   CUDF_EXPECTS(src != nullptr, "Decompression: Source cannot be nullptr");
   CUDF_EXPECTS(src_size != 0, "Decompression: Source size cannot be 0");
@@ -327,8 +327,8 @@ std::vector<char> io_uncompress_single_h2d(const void *src, size_t src_size, int
           }
           // For now, only accept with non-zero file sizes and DEFLATE
           if (cdfh->comp_method == 8 && cdfh->comp_size > 0 && cdfh->uncomp_size > 0) {
-            size_t lfh_ofs       = cdfh->hdr_ofs;
-            const zip_lfh_s *lfh = reinterpret_cast<const zip_lfh_s *>(raw + lfh_ofs);
+            size_t           lfh_ofs = cdfh->hdr_ofs;
+            const zip_lfh_s *lfh     = reinterpret_cast<const zip_lfh_s *>(raw + lfh_ofs);
             if (lfh_ofs + sizeof(zip_lfh_s) <= src_size && lfh->sig == 0x04034b50 &&
                 lfh_ofs + sizeof(zip_lfh_s) + lfh->fname_len + lfh->extra_len <= src_size) {
               if (lfh->comp_method == 8 && lfh->comp_size > 0 && lfh->uncomp_size > 0) {
@@ -383,9 +383,9 @@ std::vector<char> io_uncompress_single_h2d(const void *src, size_t src_size, int
     return dst;
   }
   if (stream_type == IO_UNCOMP_STREAM_TYPE_BZIP2) {
-    size_t src_ofs = 0;
-    size_t dst_ofs = 0;
-    int bz_err     = 0;
+    size_t            src_ofs = 0;
+    size_t            dst_ofs = 0;
+    int               bz_err  = 0;
     std::vector<char> dst(uncomp_len);
     do {
       size_t dst_len = uncomp_len - dst_ofs;
@@ -420,7 +420,7 @@ std::vector<char> io_uncompress_single_h2d(const void *src, size_t src_size, int
  * @return Vector containing the output uncompressed data
  */
 std::vector<char> get_uncompressed_data(host_span<char const> const data,
-                                        std::string const &compression)
+                                        std::string const &         compression)
 {
   int comp_type = IO_UNCOMP_STREAM_TYPE_INFER;
   if (compression == "gzip")
@@ -441,10 +441,10 @@ std::vector<char> get_uncompressed_data(host_span<char const> const data,
 class HostDecompressor_ZLIB : public HostDecompressor {
  public:
   HostDecompressor_ZLIB(bool gz_hdr_) : gz_hdr(gz_hdr_) {}
-  size_t Decompress(uint8_t *dstBytes,
-                    size_t dstLen,
+  size_t Decompress(uint8_t *      dstBytes,
+                    size_t         dstLen,
                     const uint8_t *srcBytes,
-                    size_t srcLen) override
+                    size_t         srcLen) override
   {
     if (gz_hdr) {
       gz_archive_s gz;
@@ -469,12 +469,12 @@ class HostDecompressor_ZLIB : public HostDecompressor {
 class HostDecompressor_SNAPPY : public HostDecompressor {
  public:
   HostDecompressor_SNAPPY() {}
-  size_t Decompress(uint8_t *dstBytes,
-                    size_t dstLen,
+  size_t Decompress(uint8_t *      dstBytes,
+                    size_t         dstLen,
                     const uint8_t *srcBytes,
-                    size_t srcLen) override
+                    size_t         srcLen) override
   {
-    uint32_t uncompressed_size, bytes_left, dst_pos;
+    uint32_t       uncompressed_size, bytes_left, dst_pos;
     const uint8_t *cur = srcBytes;
     const uint8_t *end = srcBytes + srcLen;
 

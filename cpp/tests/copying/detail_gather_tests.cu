@@ -40,7 +40,7 @@ TYPED_TEST_CASE(GatherTest, cudf::test::NumericTypes);
 // to cudf::detail::gather -- device_vector and raw pointers.
 TYPED_TEST(GatherTest, GatherDetailDeviceVectorTest)
 {
-  constexpr cudf::size_type source_size{1000};
+  constexpr cudf::size_type           source_size{1000};
   rmm::device_vector<cudf::size_type> gather_map(source_size);
   thrust::sequence(thrust::device, gather_map.begin(), gather_map.end());
 
@@ -80,12 +80,12 @@ TYPED_TEST(GatherTest, GatherDetailInvalidIndexTest)
 
   auto data = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i; });
   cudf::test::fixed_width_column_wrapper<TypeParam> source_column(data, data + source_size);
-  auto gather_map_data =
+  auto                                              gather_map_data =
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return (i % 2) ? -1 : i; });
   cudf::test::fixed_width_column_wrapper<int32_t> gather_map(gather_map_data,
                                                              gather_map_data + (source_size * 2));
 
-  cudf::table_view source_table({source_column});
+  cudf::table_view             source_table({source_column});
   std::unique_ptr<cudf::table> result =
     cudf::detail::gather(source_table,
                          gather_map,

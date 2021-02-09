@@ -36,13 +36,13 @@ TEST_F(DropNANsTest, MixedNANsAndNull)
   cudf::test::fixed_width_column_wrapper<float> col1{
     {F(1.0), F(2.0), F(NAN), F(NAN), F(5.0), F(6.0)}, {1, 1, 0, 1, 1, 0}};
   cudf::test::fixed_width_column_wrapper<int32_t> col2{{10, 40, 70, 5, 2, 10}, {1, 1, 0, 1, 1, 0}};
-  cudf::test::fixed_width_column_wrapper<double> col3{{D(NAN), 40.0, 70.0, 5.0, 2.0, 10.0},
+  cudf::test::fixed_width_column_wrapper<double>  col3{{D(NAN), 40.0, 70.0, 5.0, 2.0, 10.0},
                                                       {1, 1, 0, 1, 1, 0}};
-  cudf::table_view input{{col1, col2, col3}};
-  std::vector<cudf::size_type> keys{0, 2};
-  cudf::test::fixed_width_column_wrapper<float> col1_expected{{2.0, 3.0, 5.0, 6.0}, {1, 0, 1, 0}};
+  cudf::table_view                                input{{col1, col2, col3}};
+  std::vector<cudf::size_type>                    keys{0, 2};
+  cudf::test::fixed_width_column_wrapper<float>   col1_expected{{2.0, 3.0, 5.0, 6.0}, {1, 0, 1, 0}};
   cudf::test::fixed_width_column_wrapper<int32_t> col2_expected{{40, 70, 2, 10}, {1, 0, 1, 0}};
-  cudf::test::fixed_width_column_wrapper<double> col3_expected{{40.0, 70.0, 2.0, 10.0},
+  cudf::test::fixed_width_column_wrapper<double>  col3_expected{{40.0, 70.0, 2.0, 10.0},
                                                                {1, 0, 1, 0}};
   cudf::table_view expected{{col1_expected, col2_expected, col3_expected}};
 
@@ -53,12 +53,12 @@ TEST_F(DropNANsTest, MixedNANsAndNull)
 
 TEST_F(DropNANsTest, NoNANs)
 {
-  cudf::test::fixed_width_column_wrapper<float> col1{{1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+  cudf::test::fixed_width_column_wrapper<float>   col1{{1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
                                                      {1, 1, 0, 1, 1, 1}};
   cudf::test::fixed_width_column_wrapper<int32_t> col2{{10, 40, 70, 5, 2, 10}, {1, 1, 1, 1, 0, 1}};
-  cudf::test::fixed_width_column_wrapper<double> col3{{10, 40, 70, 5, 2, 10}, {1, 1, 0, 1, 1, 1}};
-  cudf::table_view input{{col1, col2, col3}};
-  std::vector<cudf::size_type> keys{0, 2};
+  cudf::test::fixed_width_column_wrapper<double>  col3{{10, 40, 70, 5, 2, 10}, {1, 1, 0, 1, 1, 1}};
+  cudf::table_view                                input{{col1, col2, col3}};
+  std::vector<cudf::size_type>                    keys{0, 2};
 
   auto got = cudf::drop_nans(input, keys);
 
@@ -72,15 +72,15 @@ TEST_F(DropNANsTest, MixedWithThreshold)
   cudf::test::fixed_width_column_wrapper<float> col1{
     {F(1.0), F(2.0), F(NAN), F(NAN), F(5.0), F(6.0)}, {1, 1, 0, 1, 1, 0}};
   cudf::test::fixed_width_column_wrapper<int32_t> col2{{10, 40, 70, 5, 2, 10}, {1, 1, 0, 1, 1, 0}};
-  cudf::test::fixed_width_column_wrapper<double> col3{{D(NAN), 40.0, 70.0, D(NAN), 2.0, 10.0},
+  cudf::test::fixed_width_column_wrapper<double>  col3{{D(NAN), 40.0, 70.0, D(NAN), 2.0, 10.0},
                                                       {1, 1, 0, 1, 1, 0}};
-  cudf::table_view input{{col1, col2, col3}};
-  std::vector<cudf::size_type> keys{0, 2};
-  cudf::test::fixed_width_column_wrapper<float> col1_expected{{1.0, 2.0, 3.0, 5.0, 6.0},
+  cudf::table_view                                input{{col1, col2, col3}};
+  std::vector<cudf::size_type>                    keys{0, 2};
+  cudf::test::fixed_width_column_wrapper<float>   col1_expected{{1.0, 2.0, 3.0, 5.0, 6.0},
                                                               {1, 1, 0, 1, 0}};
   cudf::test::fixed_width_column_wrapper<int32_t> col2_expected{{10, 40, 70, 2, 10},
                                                                 {1, 1, 0, 1, 0}};
-  cudf::test::fixed_width_column_wrapper<double> col3_expected{{D(NAN), 40.0, 70.0, 2.0, 10.0},
+  cudf::test::fixed_width_column_wrapper<double>  col3_expected{{D(NAN), 40.0, 70.0, 2.0, 10.0},
                                                                {1, 1, 0, 1, 0}};
   cudf::table_view expected{{col1_expected, col2_expected, col3_expected}};
 
@@ -91,8 +91,8 @@ TEST_F(DropNANsTest, MixedWithThreshold)
 
 TEST_F(DropNANsTest, EmptyTable)
 {
-  cudf::table_view input{std::vector<cudf::column_view>()};
-  cudf::table_view expected{std::vector<cudf::column_view>()};
+  cudf::table_view             input{std::vector<cudf::column_view>()};
+  cudf::table_view             expected{std::vector<cudf::column_view>()};
   std::vector<cudf::size_type> keys{};
 
   auto got = cudf::drop_nans(input, keys);
@@ -102,14 +102,14 @@ TEST_F(DropNANsTest, EmptyTable)
 
 TEST_F(DropNANsTest, EmptyColumns)
 {
-  cudf::test::fixed_width_column_wrapper<float> col1{};
+  cudf::test::fixed_width_column_wrapper<float>   col1{};
   cudf::test::fixed_width_column_wrapper<int32_t> col2{};
-  cudf::test::fixed_width_column_wrapper<double> col3{};
-  cudf::table_view input{{col1, col2, col3}};
-  std::vector<cudf::size_type> keys{0, 2};
-  cudf::test::fixed_width_column_wrapper<float> col1_expected{};
+  cudf::test::fixed_width_column_wrapper<double>  col3{};
+  cudf::table_view                                input{{col1, col2, col3}};
+  std::vector<cudf::size_type>                    keys{0, 2};
+  cudf::test::fixed_width_column_wrapper<float>   col1_expected{};
   cudf::test::fixed_width_column_wrapper<int32_t> col2_expected{};
-  cudf::test::fixed_width_column_wrapper<double> col3_expected{};
+  cudf::test::fixed_width_column_wrapper<double>  col3_expected{};
   cudf::table_view expected{{col1_expected, col2_expected, col3_expected}};
 
   auto got = cudf::drop_nans(input, keys);
@@ -122,7 +122,7 @@ TEST_F(DropNANsTest, EmptyKeys)
   using F = float;
   cudf::test::fixed_width_column_wrapper<float> col1{
     {F(1.0), F(2.0), F(NAN), F(NAN), F(5.0), F(6.0)}, {1, 1, 0, 1, 1, 0}};
-  cudf::table_view input{{col1}};
+  cudf::table_view             input{{col1}};
   std::vector<cudf::size_type> keys{};
 
   auto got = cudf::drop_nans(input, keys);
@@ -131,10 +131,10 @@ TEST_F(DropNANsTest, EmptyKeys)
 
 TEST_F(DropNANsTest, NonFloatingKey)
 {
-  cudf::test::fixed_width_column_wrapper<float> col1{{1.0}};
+  cudf::test::fixed_width_column_wrapper<float>   col1{{1.0}};
   cudf::test::fixed_width_column_wrapper<int32_t> col2{2};
-  cudf::test::fixed_width_column_wrapper<double> col3{{3.0}};
-  cudf::table_view input{{col1, col2, col3}};
-  std::vector<cudf::size_type> keys{0, 1};
+  cudf::test::fixed_width_column_wrapper<double>  col3{{3.0}};
+  cudf::table_view                                input{{col1, col2, col3}};
+  std::vector<cudf::size_type>                    keys{0, 1};
   EXPECT_THROW(cudf::drop_nans(input, keys), cudf::logic_error);
 }

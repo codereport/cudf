@@ -48,8 +48,8 @@ enum class replace_policy : bool { PRECEDING, FOLLOWING };
  * `replacement`.
  */
 std::unique_ptr<column> replace_nulls(
-  column_view const& input,
-  column_view const& replacement,
+  column_view const&               input,
+  column_view const&               replacement,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -65,8 +65,8 @@ std::unique_ptr<column> replace_nulls(
  * @returns Copy of `input` with null values replaced by `replacement`.
  */
 std::unique_ptr<column> replace_nulls(
-  column_view const& input,
-  scalar const& replacement,
+  column_view const&               input,
+  scalar const&                    replacement,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -82,8 +82,8 @@ std::unique_ptr<column> replace_nulls(
  * @returns Copy of `input` with null values replaced based on `replace_policy`.
  */
 std::unique_ptr<column> replace_nulls(
-  column_view const& input,
-  replace_policy const& replace_policy,
+  column_view const&               input,
+  replace_policy const&            replace_policy,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -108,8 +108,8 @@ std::unique_ptr<column> replace_nulls(
  * `replacement`.
  */
 std::unique_ptr<column> replace_nans(
-  column_view const& input,
-  column_view const& replacement,
+  column_view const&               input,
+  column_view const&               replacement,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -133,8 +133,8 @@ std::unique_ptr<column> replace_nans(
  * @return A copy of `input` with the NaN values replaced by `replacement`.
  */
 std::unique_ptr<column> replace_nans(
-  column_view const& input,
-  scalar const& replacement,
+  column_view const&               input,
+  scalar const&                    replacement,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -149,9 +149,9 @@ std::unique_ptr<column> replace_nans(
  * @returns Copy of `input_col` with specified values replaced.
  */
 std::unique_ptr<column> find_and_replace_all(
-  column_view const& input_col,
-  column_view const& values_to_replace,
-  column_view const& replacement_values,
+  column_view const&               input_col,
+  column_view const&               values_to_replace,
+  column_view const&               replacement_values,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -200,11 +200,11 @@ std::unique_ptr<column> find_and_replace_all(
  * @return Returns a clamped column as per `lo` and `hi` boundaries
  */
 std::unique_ptr<column> clamp(
-  column_view const& input,
-  scalar const& lo,
-  scalar const& lo_replace,
-  scalar const& hi,
-  scalar const& hi_replace,
+  column_view const&               input,
+  scalar const&                    lo,
+  scalar const&                    lo_replace,
+  scalar const&                    hi,
+  scalar const&                    hi_replace,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -246,9 +246,9 @@ std::unique_ptr<column> clamp(
  * @return Returns a clamped column as per `lo` and `hi` boundaries
  */
 std::unique_ptr<column> clamp(
-  column_view const& input,
-  scalar const& lo,
-  scalar const& hi,
+  column_view const&               input,
+  scalar const&                    lo,
+  scalar const&                    hi,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -266,7 +266,7 @@ std::unique_ptr<column> clamp(
  * @returns new column with the modified data
  */
 std::unique_ptr<column> normalize_nans_and_zeros(
-  column_view const& input,
+  column_view const&               input,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**

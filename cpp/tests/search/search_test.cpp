@@ -36,7 +36,7 @@ TEST_F(SearchTest, empty_table)
 
   fixed_width_column_wrapper<element_type> column{};
   fixed_width_column_wrapper<element_type> values{0, 7, 10, 11, 30, 32, 40, 47, 50, 90};
-  fixed_width_column_wrapper<size_type> expect{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  fixed_width_column_wrapper<size_type>    expect{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   std::unique_ptr<cudf::column> result{};
 
@@ -54,7 +54,7 @@ TEST_F(SearchTest, empty_values)
 
   fixed_width_column_wrapper<element_type> column{10, 20, 30, 40, 50};
   fixed_width_column_wrapper<element_type> values{};
-  fixed_width_column_wrapper<size_type> expect{};
+  fixed_width_column_wrapper<size_type>    expect{};
 
   std::unique_ptr<cudf::column> result{};
 
@@ -72,7 +72,7 @@ TEST_F(SearchTest, non_null_column__find_first)
 
   fixed_width_column_wrapper<element_type> column{10, 20, 30, 40, 50};
   fixed_width_column_wrapper<element_type> values{0, 7, 10, 11, 30, 32, 40, 47, 50, 90};
-  fixed_width_column_wrapper<size_type> expect{0, 0, 0, 1, 2, 3, 3, 4, 4, 5};
+  fixed_width_column_wrapper<size_type>    expect{0, 0, 0, 1, 2, 3, 3, 4, 4, 5};
 
   std::unique_ptr<cudf::column> result{};
 
@@ -90,7 +90,7 @@ TEST_F(SearchTest, non_null_column__find_last)
 
   fixed_width_column_wrapper<element_type> column{10, 20, 30, 40, 50};
   fixed_width_column_wrapper<element_type> values{0, 7, 10, 11, 30, 32, 40, 47, 50, 90};
-  fixed_width_column_wrapper<size_type> expect{0, 0, 1, 1, 3, 3, 4, 4, 5, 5};
+  fixed_width_column_wrapper<size_type>    expect{0, 0, 1, 1, 3, 3, 4, 4, 5, 5};
 
   std::unique_ptr<cudf::column> result{};
 
@@ -108,7 +108,7 @@ TEST_F(SearchTest, non_null_column_desc__find_first)
 
   fixed_width_column_wrapper<element_type> column{50, 40, 30, 20, 10};
   fixed_width_column_wrapper<element_type> values{0, 7, 10, 11, 30, 32, 40, 47, 50, 90};
-  fixed_width_column_wrapper<size_type> expect{5, 5, 4, 4, 2, 2, 1, 1, 0, 0};
+  fixed_width_column_wrapper<size_type>    expect{5, 5, 4, 4, 2, 2, 1, 1, 0, 0};
 
   std::unique_ptr<cudf::column> result{};
 
@@ -126,7 +126,7 @@ TEST_F(SearchTest, non_null_column_desc__find_last)
 
   fixed_width_column_wrapper<element_type> column{50, 40, 30, 20, 10};
   fixed_width_column_wrapper<element_type> values{0, 7, 10, 11, 30, 32, 40, 47, 50, 90};
-  fixed_width_column_wrapper<size_type> expect{5, 5, 5, 4, 3, 2, 2, 1, 1, 0};
+  fixed_width_column_wrapper<size_type>    expect{5, 5, 5, 4, 3, 2, 2, 1, 1, 0};
 
   std::unique_ptr<cudf::column> result{};
 
@@ -188,7 +188,7 @@ TEST_F(SearchTest, nullable_column__find_last__nulls_as_largest)
                                                   {1, 1, 1, 1, 1, 0, 0}};
   fixed_width_column_wrapper<element_type> values{{8, 10, 11, 30, 32, 40, 47, 50, 90, 8},
                                                   {1, 1, 1, 1, 1, 1, 1, 1, 1, 0}};
-  fixed_width_column_wrapper<size_type> expect{0, 1, 1, 3, 3, 4, 4, 5, 5, 7};
+  fixed_width_column_wrapper<size_type>    expect{0, 1, 1, 3, 3, 4, 4, 5, 5, 7};
 
   std::unique_ptr<cudf::column> result{};
 
@@ -208,7 +208,7 @@ TEST_F(SearchTest, nullable_column__find_first__nulls_as_largest)
                                                   {1, 1, 1, 1, 1, 0, 0}};
   fixed_width_column_wrapper<element_type> values{{8, 10, 11, 30, 32, 40, 47, 50, 90, 8},
                                                   {1, 1, 1, 1, 1, 1, 1, 1, 1, 0}};
-  fixed_width_column_wrapper<size_type> expect{0, 0, 1, 2, 3, 3, 4, 4, 5, 5};
+  fixed_width_column_wrapper<size_type>    expect{0, 0, 1, 2, 3, 3, 4, 4, 5, 5};
 
   std::unique_ptr<cudf::column> result{};
 
@@ -223,8 +223,8 @@ TEST_F(SearchTest, nullable_column__find_first__nulls_as_largest)
 TEST_F(SearchTest, table__find_first)
 {
   fixed_width_column_wrapper<int32_t> column_0{10, 20, 20, 20, 20, 20, 50};
-  fixed_width_column_wrapper<float> column_1{5.0, .5, .5, .7, .7, .7, .7};
-  fixed_width_column_wrapper<int8_t> column_2{90, 77, 78, 61, 62, 63, 41};
+  fixed_width_column_wrapper<float>   column_1{5.0, .5, .5, .7, .7, .7, .7};
+  fixed_width_column_wrapper<int8_t>  column_2{90, 77, 78, 61, 62, 63, 41};
 
   fixed_width_column_wrapper<int32_t> values_0{0,  0,  0,  0,  10, 10, 10, 10, 10,
                                                10, 10, 10, 11, 20, 20, 20, 20, 20,
@@ -266,8 +266,8 @@ TEST_F(SearchTest, table__find_first)
 TEST_F(SearchTest, table__find_last)
 {
   fixed_width_column_wrapper<int32_t> column_0{10, 20, 20, 20, 20, 20, 50};
-  fixed_width_column_wrapper<float> column_1{5.0, .5, .5, .7, .7, .7, .7};
-  fixed_width_column_wrapper<int8_t> column_2{90, 77, 78, 61, 62, 63, 41};
+  fixed_width_column_wrapper<float>   column_1{5.0, .5, .5, .7, .7, .7, .7};
+  fixed_width_column_wrapper<int8_t>  column_2{90, 77, 78, 61, 62, 63, 41};
 
   fixed_width_column_wrapper<int32_t> values_0{0,  0,  0,  0,  10, 10, 10, 10, 10,
                                                10, 10, 10, 11, 20, 20, 20, 20, 20,
@@ -309,8 +309,8 @@ TEST_F(SearchTest, table__find_last)
 TEST_F(SearchTest, table_partial_desc__find_first)
 {
   fixed_width_column_wrapper<int32_t> column_0{50, 20, 20, 20, 20, 20, 10};
-  fixed_width_column_wrapper<float> column_1{.7, .5, .5, .7, .7, .7, 5.0};
-  fixed_width_column_wrapper<int8_t> column_2{41, 78, 77, 63, 62, 61, 90};
+  fixed_width_column_wrapper<float>   column_1{.7, .5, .5, .7, .7, .7, 5.0};
+  fixed_width_column_wrapper<int8_t>  column_2{41, 78, 77, 63, 62, 61, 90};
 
   fixed_width_column_wrapper<int32_t> values_0{0,  0,  0,  0,  10, 10, 10, 10, 10,
                                                10, 10, 10, 11, 20, 20, 20, 20, 20,
@@ -352,8 +352,8 @@ TEST_F(SearchTest, table_partial_desc__find_first)
 TEST_F(SearchTest, table_partial_desc__find_last)
 {
   fixed_width_column_wrapper<int32_t> column_0{50, 20, 20, 20, 20, 20, 10};
-  fixed_width_column_wrapper<float> column_1{.7, .5, .5, .7, .7, .7, 5.0};
-  fixed_width_column_wrapper<int8_t> column_2{41, 78, 77, 63, 62, 61, 90};
+  fixed_width_column_wrapper<float>   column_1{.7, .5, .5, .7, .7, .7, 5.0};
+  fixed_width_column_wrapper<int8_t>  column_2{41, 78, 77, 63, 62, 61, 90};
 
   fixed_width_column_wrapper<int32_t> values_0{0,  0,  0,  0,  10, 10, 10, 10, 10,
                                                10, 10, 10, 11, 20, 20, 20, 20, 20,
@@ -396,14 +396,14 @@ TEST_F(SearchTest, table__find_first__nulls_as_smallest)
 {
   fixed_width_column_wrapper<int32_t> column_0{{30, 10, 10, 20, 20, 20, 20, 20, 20, 20, 50},
                                                {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
-  fixed_width_column_wrapper<float> column_1{{.5, 6.0, 5.0, .5, .5, .5, .5, .7, .7, .7, .7},
+  fixed_width_column_wrapper<float>   column_1{{.5, 6.0, 5.0, .5, .5, .5, .5, .7, .7, .7, .7},
                                              {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
-  fixed_width_column_wrapper<int8_t> column_2{{50, 95, 90, 79, 76, 77, 78, 61, 62, 63, 41},
+  fixed_width_column_wrapper<int8_t>  column_2{{50, 95, 90, 79, 76, 77, 78, 61, 62, 63, 41},
                                               {1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1}};
 
   fixed_width_column_wrapper<int32_t> values_0{{10, 40, 20}, {1, 0, 1}};
-  fixed_width_column_wrapper<float> values_1{{6., .5, .5}, {0, 1, 1}};
-  fixed_width_column_wrapper<int8_t> values_2{{95, 50, 77}, {1, 1, 0}};
+  fixed_width_column_wrapper<float>   values_1{{6., .5, .5}, {0, 1, 1}};
+  fixed_width_column_wrapper<int8_t>  values_2{{95, 50, 77}, {1, 1, 0}};
 
   fixed_width_column_wrapper<size_type> expect{1, 0, 3};
 
@@ -437,14 +437,14 @@ TEST_F(SearchTest, table__find_last__nulls_as_smallest)
 {
   fixed_width_column_wrapper<int32_t> column_0{{30, 10, 10, 20, 20, 20, 20, 20, 20, 20, 50},
                                                {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
-  fixed_width_column_wrapper<float> column_1{{.5, 6.0, 5.0, .5, .5, .5, .5, .7, .7, .7, .7},
+  fixed_width_column_wrapper<float>   column_1{{.5, 6.0, 5.0, .5, .5, .5, .5, .7, .7, .7, .7},
                                              {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
-  fixed_width_column_wrapper<int8_t> column_2{{50, 90, 95, 79, 76, 77, 78, 61, 62, 63, 41},
+  fixed_width_column_wrapper<int8_t>  column_2{{50, 90, 95, 79, 76, 77, 78, 61, 62, 63, 41},
                                               {1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1}};
 
   fixed_width_column_wrapper<int32_t> values_0{{10, 40, 20}, {1, 0, 1}};
-  fixed_width_column_wrapper<float> values_1{{6., .5, .5}, {0, 1, 1}};
-  fixed_width_column_wrapper<int8_t> values_2{{95, 50, 77}, {1, 1, 0}};
+  fixed_width_column_wrapper<float>   values_1{{6., .5, .5}, {0, 1, 1}};
+  fixed_width_column_wrapper<int8_t>  values_2{{95, 50, 77}, {1, 1, 0}};
 
   fixed_width_column_wrapper<size_type> expect{2, 1, 5};
 
@@ -478,14 +478,14 @@ TEST_F(SearchTest, table__find_first__nulls_as_largest)
 {
   fixed_width_column_wrapper<int32_t> column_0{{10, 10, 20, 20, 20, 20, 20, 20, 20, 50, 30},
                                                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0}};
-  fixed_width_column_wrapper<float> column_1{{5.0, 6.0, .5, .5, .5, .5, .7, .7, .7, .7, .5},
+  fixed_width_column_wrapper<float>   column_1{{5.0, 6.0, .5, .5, .5, .5, .7, .7, .7, .7, .5},
                                              {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
-  fixed_width_column_wrapper<int8_t> column_2{{90, 95, 77, 78, 79, 76, 61, 62, 63, 41, 50},
+  fixed_width_column_wrapper<int8_t>  column_2{{90, 95, 77, 78, 79, 76, 61, 62, 63, 41, 50},
                                               {1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1}};
 
   fixed_width_column_wrapper<int32_t> values_0{{10, 40, 20}, {1, 0, 1}};
-  fixed_width_column_wrapper<float> values_1{{6., .5, .5}, {0, 1, 1}};
-  fixed_width_column_wrapper<int8_t> values_2{{95, 50, 77}, {1, 1, 0}};
+  fixed_width_column_wrapper<float>   values_1{{6., .5, .5}, {0, 1, 1}};
+  fixed_width_column_wrapper<int8_t>  values_2{{95, 50, 77}, {1, 1, 0}};
 
   fixed_width_column_wrapper<size_type> expect{1, 10, 4};
 
@@ -519,14 +519,14 @@ TEST_F(SearchTest, table__find_last__nulls_as_largest)
 {
   fixed_width_column_wrapper<int32_t> column_0{{10, 10, 20, 20, 20, 20, 20, 20, 20, 50, 30},
                                                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0}};
-  fixed_width_column_wrapper<float> column_1{{5.0, 6.0, .5, .5, .5, .5, .7, .7, .7, .7, .5},
+  fixed_width_column_wrapper<float>   column_1{{5.0, 6.0, .5, .5, .5, .5, .7, .7, .7, .7, .5},
                                              {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
-  fixed_width_column_wrapper<int8_t> column_2{{90, 95, 77, 78, 79, 76, 61, 62, 63, 41, 50},
+  fixed_width_column_wrapper<int8_t>  column_2{{90, 95, 77, 78, 79, 76, 61, 62, 63, 41, 50},
                                               {1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1}};
 
   fixed_width_column_wrapper<int32_t> values_0{{10, 40, 20}, {1, 0, 1}};
-  fixed_width_column_wrapper<float> values_1{{6., .5, .5}, {0, 1, 1}};
-  fixed_width_column_wrapper<int8_t> values_2{{95, 50, 77}, {1, 1, 0}};
+  fixed_width_column_wrapper<float>   values_1{{6., .5, .5}, {0, 1, 1}};
+  fixed_width_column_wrapper<int8_t>  values_2{{95, 50, 77}, {1, 1, 0}};
 
   fixed_width_column_wrapper<size_type> expect{2, 11, 6};
 
@@ -563,7 +563,7 @@ TEST_F(SearchTest, contains_true)
   bool result        = false;
 
   fixed_width_column_wrapper<element_type> column{0, 1, 17, 19, 23, 29, 71};
-  numeric_scalar<element_type> scalar{23};
+  numeric_scalar<element_type>             scalar{23};
 
   result = cudf::contains(column, scalar);
 
@@ -577,7 +577,7 @@ TEST_F(SearchTest, contains_false)
   bool result        = false;
 
   fixed_width_column_wrapper<element_type> column{0, 1, 17, 19, 23, 29, 71};
-  numeric_scalar<element_type> scalar{24};
+  numeric_scalar<element_type>             scalar{24};
 
   result = cudf::contains(column, scalar);
 
@@ -591,7 +591,7 @@ TEST_F(SearchTest, contains_empty_value)
   bool result        = false;
 
   fixed_width_column_wrapper<element_type> column{0, 1, 17, 19, 23, 29, 71};
-  numeric_scalar<element_type> scalar{23, false};
+  numeric_scalar<element_type>             scalar{23, false};
 
   result = cudf::contains(column, scalar);
 
@@ -605,7 +605,7 @@ TEST_F(SearchTest, contains_empty_column)
   bool result        = false;
 
   fixed_width_column_wrapper<element_type> column{};
-  numeric_scalar<element_type> scalar{24};
+  numeric_scalar<element_type>             scalar{24};
 
   result = cudf::contains(column, scalar);
 
@@ -620,7 +620,7 @@ TEST_F(SearchTest, contains_nullable_column_true)
 
   fixed_width_column_wrapper<element_type> column{{0, 1, 17, 19, 23, 29, 71},
                                                   {0, 0, 1, 1, 1, 1, 1}};
-  numeric_scalar<element_type> scalar{23};
+  numeric_scalar<element_type>             scalar{23};
 
   result = cudf::contains(column, scalar);
 
@@ -635,7 +635,7 @@ TEST_F(SearchTest, contains_nullable_column_false)
 
   fixed_width_column_wrapper<element_type> column{{0, 1, 17, 19, 23, 29, 71},
                                                   {0, 0, 1, 1, 0, 1, 1}};
-  numeric_scalar<element_type> scalar{23};
+  numeric_scalar<element_type>             scalar{23};
 
   result = cudf::contains(column, scalar);
 
@@ -1507,7 +1507,7 @@ TEST_F(SearchTest, table__find_last__nulls_as_largest_string)
 TEST_F(SearchTest, contains_true_string)
 {
   std::vector<const char *> h_col_strings{"00", "01", "17", "19", "23", "29", "71"};
-  string_scalar scalar{"23"};
+  string_scalar             scalar{"23"};
 
   cudf::test::strings_column_wrapper column(
     h_col_strings.begin(),
@@ -1526,7 +1526,7 @@ TEST_F(SearchTest, contains_true_string)
 TEST_F(SearchTest, contains_false_string)
 {
   std::vector<const char *> h_col_strings{"0", "1", "17", "19", "23", "29", "71"};
-  string_scalar scalar{"24"};
+  string_scalar             scalar{"24"};
 
   cudf::test::strings_column_wrapper column(
     h_col_strings.begin(),
@@ -1545,7 +1545,7 @@ TEST_F(SearchTest, contains_false_string)
 TEST_F(SearchTest, contains_empty_value_string)
 {
   std::vector<const char *> h_col_strings{"0", "1", "17", "19", "23", "29", "71"};
-  string_scalar scalar{"23", false};
+  string_scalar             scalar{"23", false};
 
   cudf::test::strings_column_wrapper column(
     h_col_strings.begin(),
@@ -1564,7 +1564,7 @@ TEST_F(SearchTest, contains_empty_value_string)
 TEST_F(SearchTest, contains_empty_column_string)
 {
   std::vector<const char *> h_col_strings{};
-  string_scalar scalar{"24"};
+  string_scalar             scalar{"24"};
 
   cudf::test::strings_column_wrapper column(
     h_col_strings.begin(),
@@ -1583,7 +1583,7 @@ TEST_F(SearchTest, contains_empty_column_string)
 TEST_F(SearchTest, contains_nullable_column_true_string)
 {
   std::vector<const char *> h_col_strings{nullptr, nullptr, "17", "19", "23", "29", "71"};
-  string_scalar scalar{"23"};
+  string_scalar             scalar{"23"};
 
   cudf::test::strings_column_wrapper column(
     h_col_strings.begin(),
@@ -1602,7 +1602,7 @@ TEST_F(SearchTest, contains_nullable_column_true_string)
 TEST_F(SearchTest, contains_nullable_column_false_string)
 {
   std::vector<const char *> h_col_strings{nullptr, nullptr, "17", "19", nullptr, "29", "71"};
-  string_scalar scalar{"23"};
+  string_scalar             scalar{"23"};
 
   cudf::test::strings_column_wrapper column(
     h_col_strings.begin(),
@@ -1625,7 +1625,7 @@ TEST_F(SearchTest, search_dictionary)
   cudf::test::dictionary_column_wrapper<std::string> values(
     {"", "08", "10", "11", "30", "32", "90"}, {0, 1, 1, 1, 1, 1, 1});
 
-  auto result = cudf::upper_bound({cudf::table_view{{input}}},
+  auto                                  result = cudf::upper_bound({cudf::table_view{{input}}},
                                   {cudf::table_view{{values}}},
                                   {cudf::order::ASCENDING},
                                   {cudf::null_order::BEFORE});
@@ -1644,16 +1644,16 @@ TEST_F(SearchTest, search_table_dictionary)
 {
   fixed_width_column_wrapper<int32_t> column_0{{10, 10, 20, 20, 20, 20, 20, 20, 20, 50, 30},
                                                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0}};
-  fixed_width_column_wrapper<float> column_1{{5.0, 6.0, .5, .5, .5, .5, .7, .7, .7, .7, .5},
+  fixed_width_column_wrapper<float>   column_1{{5.0, 6.0, .5, .5, .5, .5, .7, .7, .7, .7, .5},
                                              {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
   cudf::test::dictionary_column_wrapper<int16_t> column_2{
     {90, 95, 77, 78, 79, 76, 61, 62, 63, 41, 50}, {1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1}};
   cudf::table_view input({column_0, column_1, column_2});
 
-  fixed_width_column_wrapper<int32_t> values_0{{10, 40, 20}, {1, 0, 1}};
-  fixed_width_column_wrapper<float> values_1{{6., .5, .5}, {0, 1, 1}};
+  fixed_width_column_wrapper<int32_t>            values_0{{10, 40, 20}, {1, 0, 1}};
+  fixed_width_column_wrapper<float>              values_1{{6., .5, .5}, {0, 1, 1}};
   cudf::test::dictionary_column_wrapper<int16_t> values_2{{95, 50, 77}, {1, 1, 0}};
-  cudf::table_view values({values_0, values_1, values_2});
+  cudf::table_view                               values({values_0, values_1, values_2});
 
   std::vector<cudf::order> order_flags{
     {cudf::order::ASCENDING, cudf::order::ASCENDING, cudf::order::DESCENDING}};
@@ -1677,8 +1677,8 @@ TEST_F(SearchTest, contains_dictionary)
   EXPECT_FALSE(cudf::contains(column, string_scalar{"28"}));
 
   cudf::test::dictionary_column_wrapper<std::string> needles({"00", "17", "23", "27"});
-  fixed_width_column_wrapper<bool> expect{1, 1, 1, 1, 1, 1, 0};
-  auto result = cudf::contains(column, needles);
+  fixed_width_column_wrapper<bool>                   expect{1, 1, 1, 1, 1, 1, 0};
+  auto                                               result = cudf::contains(column, needles);
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*result, expect);
 }
 
@@ -1691,7 +1691,7 @@ TEST_F(SearchTest, contains_nullable_dictionary)
 
   cudf::test::dictionary_column_wrapper<int64_t> needles({0, 17, 23, 27});
   fixed_width_column_wrapper<bool> expect({1, 0, 1, 1, 1, 1, 0}, {1, 0, 1, 1, 1, 1, 1});
-  auto result = cudf::contains(column, needles);
+  auto                             result = cudf::contains(column, needles);
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*result, expect);
 }
 

@@ -49,9 +49,9 @@ namespace {
  * @brief Function that translates ORC data kind to cuDF type enum
  */
 constexpr type_id to_type_id(const orc::SchemaType &schema,
-                             bool use_np_dtypes,
-                             type_id timestamp_type_id,
-                             bool decimals_as_float64)
+                             bool                   use_np_dtypes,
+                             type_id                timestamp_type_id,
+                             bool                   decimals_as_float64)
 {
   switch (schema.kind) {
     case orc::BOOLEAN: return type_id::BOOL8;
@@ -138,7 +138,7 @@ struct orc_stream_info {
   {
   }
   uint64_t offset;      // offset in file
-  size_t dst_pos;       // offset in memory relative to start of compressed stripe data
+  size_t   dst_pos;     // offset in memory relative to start of compressed stripe data
   uint32_t length;      // length in file
   uint32_t gdf_idx;     // column index
   uint32_t stripe_idx;  // stripe index
@@ -147,20 +147,20 @@ struct orc_stream_info {
 /**
  * @brief Function that populates column descriptors stream/chunk
  */
-size_t gather_stream_info(const size_t stripe_index,
-                          const orc::StripeInformation *stripeinfo,
-                          const orc::StripeFooter *stripefooter,
-                          const std::vector<int> &orc2gdf,
-                          const std::vector<int> &gdf2orc,
-                          const std::vector<orc::SchemaType> types,
-                          bool use_index,
-                          size_t *num_dictionary_entries,
+size_t gather_stream_info(const size_t                        stripe_index,
+                          const orc::StripeInformation *      stripeinfo,
+                          const orc::StripeFooter *           stripefooter,
+                          const std::vector<int> &            orc2gdf,
+                          const std::vector<int> &            gdf2orc,
+                          const std::vector<orc::SchemaType>  types,
+                          bool                                use_index,
+                          size_t *                            num_dictionary_entries,
                           hostdevice_vector<gpu::ColumnDesc> &chunks,
-                          std::vector<orc_stream_info> &stream_info)
+                          std::vector<orc_stream_info> &      stream_info)
 {
   const auto num_columns = gdf2orc.size();
-  uint64_t src_offset    = 0;
-  uint64_t dst_offset    = 0;
+  uint64_t   src_offset  = 0;
+  uint64_t   dst_offset  = 0;
   for (const auto &stream : stripefooter->streams) {
     if (stream.column >= orc2gdf.size()) {
       dst_offset += stream.length;
@@ -190,7 +190,7 @@ size_t gather_stream_info(const size_t stripe_index,
     if (col != -1) {
       if (src_offset >= stripeinfo->indexLength || use_index) {
         // NOTE: skip_count field is temporarily used to track index ordering
-        auto &chunk = chunks[stripe_index * num_columns + col];
+        auto &     chunk = chunks[stripe_index * num_columns + col];
         const auto idx =
           get_index_type_and_pos(stream.kind, chunk.skip_count, col == orc2gdf[stream.column]);
         if (idx.first < gpu::CI_NUM_STREAMS) {
@@ -218,14 +218,14 @@ size_t gather_stream_info(const size_t stripe_index,
 }  // namespace
 
 rmm::device_buffer reader::impl::decompress_stripe_data(
-  hostdevice_vector<gpu::ColumnDesc> &chunks,
+  hostdevice_vector<gpu::ColumnDesc> &   chunks,
   const std::vector<rmm::device_buffer> &stripe_data,
-  const OrcDecompressor *decompressor,
-  std::vector<orc_stream_info> &stream_info,
-  size_t num_stripes,
-  rmm::device_vector<gpu::RowGroup> &row_groups,
-  size_t row_index_stride,
-  rmm::cuda_stream_view stream)
+  const OrcDecompressor *                decompressor,
+  std::vector<orc_stream_info> &         stream_info,
+  size_t                                 num_stripes,
+  rmm::device_vector<gpu::RowGroup> &    row_groups,
+  size_t                                 row_index_stride,
+  rmm::cuda_stream_view                  stream)
 {
   // Parse the columns' compressed info
   hostdevice_vector<gpu::CompressedStreamInfo> compinfo(0, stream_info.size(), stream);
@@ -253,13 +253,13 @@ rmm::device_buffer reader::impl::decompress_stripe_data(
   }
   CUDF_EXPECTS(total_decomp_size > 0, "No decompressible data found");
 
-  rmm::device_buffer decomp_data(total_decomp_size, stream);
-  rmm::device_vector<gpu_inflate_input_s> inflate_in(num_compressed_blocks +
+  rmm::device_buffer                       decomp_data(total_decomp_size, stream);
+  rmm::device_vector<gpu_inflate_input_s>  inflate_in(num_compressed_blocks +
                                                      num_uncompressed_blocks);
   rmm::device_vector<gpu_inflate_status_s> inflate_out(num_compressed_blocks);
 
   // Parse again to populate the decompression input/output buffers
-  size_t decomp_offset      = 0;
+  size_t   decomp_offset    = 0;
   uint32_t start_pos        = 0;
   uint32_t start_pos_uncomp = (uint32_t)num_compressed_blocks;
   for (size_t i = 0; i < compinfo.size(); ++i) {
@@ -337,15 +337,15 @@ rmm::device_buffer reader::impl::decompress_stripe_data(
   return decomp_data;
 }
 
-void reader::impl::decode_stream_data(hostdevice_vector<gpu::ColumnDesc> &chunks,
-                                      size_t num_dicts,
-                                      size_t skip_rows,
-                                      size_t num_rows,
-                                      timezone_table const &tz_table,
+void reader::impl::decode_stream_data(hostdevice_vector<gpu::ColumnDesc> &     chunks,
+                                      size_t                                   num_dicts,
+                                      size_t                                   skip_rows,
+                                      size_t                                   num_rows,
+                                      timezone_table const &                   tz_table,
                                       const rmm::device_vector<gpu::RowGroup> &row_groups,
-                                      size_t row_index_stride,
-                                      std::vector<column_buffer> &out_buffers,
-                                      rmm::cuda_stream_view stream)
+                                      size_t                                   row_index_stride,
+                                      std::vector<column_buffer> &             out_buffers,
+                                      rmm::cuda_stream_view                    stream)
 {
   const auto num_columns = out_buffers.size();
   const auto num_stripes = chunks.size() / out_buffers.size();
@@ -390,8 +390,8 @@ void reader::impl::decode_stream_data(hostdevice_vector<gpu::ColumnDesc> &chunks
   }
 }
 
-reader::impl::impl(std::unique_ptr<datasource> source,
-                   orc_reader_options const &options,
+reader::impl::impl(std::unique_ptr<datasource>      source,
+                   orc_reader_options const &       options,
                    rmm::mr::device_memory_resource *mr)
   : _mr(mr), _source(std::move(source))
 {
@@ -417,13 +417,13 @@ reader::impl::impl(std::unique_ptr<datasource> source,
   _decimals_as_int_scale = options.get_forced_decimals_scale();
 }
 
-table_with_metadata reader::impl::read(size_type skip_rows,
-                                       size_type num_rows,
+table_with_metadata reader::impl::read(size_type                     skip_rows,
+                                       size_type                     num_rows,
                                        const std::vector<size_type> &stripes,
-                                       rmm::cuda_stream_view stream)
+                                       rmm::cuda_stream_view         stream)
 {
   std::vector<std::unique_ptr<column>> out_columns;
-  table_metadata out_metadata;
+  table_metadata                       out_metadata;
 
   // Select only stripes required (aka row groups)
   const auto selected_stripes = _metadata->select_stripes(stripes, skip_rows, num_rows);
@@ -450,8 +450,8 @@ table_with_metadata reader::impl::read(size_type skip_rows,
                    std::back_inserter(out_columns),
                    [](auto const &dtype) { return make_empty_column(dtype); });
   } else {
-    const auto num_columns = _selected_columns.size();
-    const auto num_chunks  = selected_stripes.size() * num_columns;
+    const auto                         num_columns = _selected_columns.size();
+    const auto                         num_chunks  = selected_stripes.size() * num_columns;
     hostdevice_vector<gpu::ColumnDesc> chunks(num_chunks, stream);
     memset(chunks.host_ptr(), 0, chunks.memory_size());
 
@@ -478,7 +478,7 @@ table_with_metadata reader::impl::read(size_type skip_rows,
       const auto stripe_info   = selected_stripes[i].first;
       const auto stripe_footer = selected_stripes[i].second;
 
-      auto stream_count          = stream_info.size();
+      auto       stream_count    = stream_info.size();
       const auto total_data_size = gather_stream_info(i,
                                                       stripe_info,
                                                       stripe_footer,
@@ -498,7 +498,7 @@ table_with_metadata reader::impl::read(size_type skip_rows,
       while (stream_count < stream_info.size()) {
         const auto d_dst  = dst_base + stream_info[stream_count].dst_pos;
         const auto offset = stream_info[stream_count].offset;
-        auto len          = stream_info[stream_count].length;
+        auto       len    = stream_info[stream_count].length;
         stream_count++;
 
         while (stream_count < stream_info.size() &&
@@ -624,8 +624,8 @@ table_with_metadata reader::impl::read(size_type skip_rows,
 }
 
 // Forward to implementation
-reader::reader(std::vector<std::string> const &filepaths,
-               orc_reader_options const &options,
+reader::reader(std::vector<std::string> const & filepaths,
+               orc_reader_options const &       options,
                rmm::mr::device_memory_resource *mr)
 {
   CUDF_EXPECTS(filepaths.size() == 1, "Only a single source is currently supported.");
@@ -634,8 +634,8 @@ reader::reader(std::vector<std::string> const &filepaths,
 
 // Forward to implementation
 reader::reader(std::vector<std::unique_ptr<cudf::io::datasource>> &&sources,
-               orc_reader_options const &options,
-               rmm::mr::device_memory_resource *mr)
+               orc_reader_options const &                           options,
+               rmm::mr::device_memory_resource *                    mr)
 {
   CUDF_EXPECTS(sources.size() == 1, "Only a single source is currently supported.");
   _impl = std::make_unique<impl>(std::move(sources[0]), options, mr);

@@ -84,9 +84,9 @@ bool CompactProtocolReader::skip_struct_field(int t, int depth)
 template <int index>
 struct FunctionSwitchImpl {
   template <typename... Operator>
-  static inline bool run(CompactProtocolReader *cpr,
-                         int field_type,
-                         const int &field,
+  static inline bool run(CompactProtocolReader *  cpr,
+                         int                      field_type,
+                         const int &              field,
                          std::tuple<Operator...> &ops)
   {
     if (field == std::get<index>(ops).field()) {
@@ -100,9 +100,9 @@ struct FunctionSwitchImpl {
 template <>
 struct FunctionSwitchImpl<0> {
   template <typename... Operator>
-  static inline bool run(CompactProtocolReader *cpr,
-                         int field_type,
-                         const int &field,
+  static inline bool run(CompactProtocolReader *  cpr,
+                         int                      field_type,
+                         const int &              field,
                          std::tuple<Operator...> &ops)
   {
     if (field == std::get<0>(ops).field()) {
@@ -118,7 +118,7 @@ template <typename... Operator>
 inline bool function_builder(CompactProtocolReader *cpr, std::tuple<Operator...> &op)
 {
   constexpr int index = std::tuple_size<std::tuple<Operator...>>::value - 1;
-  int field           = 0;
+  int           field = 0;
   while (true) {
     int const current_byte = cpr->getb();
     if (!current_byte) break;

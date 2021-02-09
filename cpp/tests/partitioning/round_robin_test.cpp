@@ -656,8 +656,8 @@ TYPED_TEST(RoundRobinTest, RoundRobinSinglePartition)
 
   cudf::table_view rr_view{{rrColWrap1, rrColWrap2}};
 
-  cudf::size_type num_partitions  = 1;
-  cudf::size_type start_partition = 0;
+  cudf::size_type                                                       num_partitions  = 1;
+  cudf::size_type                                                       start_partition = 0;
   std::pair<std::unique_ptr<cudf::table>, std::vector<cudf::size_type>> result;
   EXPECT_NO_THROW(result = cudf::round_robin_partition(rr_view, num_partitions, start_partition));
 

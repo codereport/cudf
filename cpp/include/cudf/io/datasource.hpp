@@ -66,8 +66,8 @@ class datasource {
    * @param[in] size Bytes from the offset; use zero for entire file (the default is zero)
    */
   static std::unique_ptr<datasource> create(const std::string& filepath,
-                                            size_t offset = 0,
-                                            size_t size   = 0);
+                                            size_t             offset = 0,
+                                            size_t             size   = 0);
 
   /**
    * @brief Creates a source from a memory buffer.
@@ -209,7 +209,7 @@ class datasource {
 
    private:
     uint8_t* const _data;
-    size_t const _size;
+    size_t const   _size;
   };
 };
 
@@ -229,7 +229,7 @@ class arrow_io_source : public datasource {
       : arrow_buffer(arrow_buffer)
     {
     }
-    size_t size() const override { return arrow_buffer->size(); }
+    size_t         size() const override { return arrow_buffer->size(); }
     const uint8_t* data() const override { return arrow_buffer->data(); }
   };
 

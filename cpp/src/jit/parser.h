@@ -196,9 +196,9 @@ class ptx_parser {
    * @param pointer_arg_list_ A list of the parameters that are pointers.
    * @return The resulting code
    */
-  ptx_parser(const std::string& ptx_,
-             const std::string& function_name_,
-             const std::string& output_arg_type_,
+  ptx_parser(const std::string&   ptx_,
+             const std::string&   function_name_,
+             const std::string&   output_arg_type_,
              const std::set<int>& pointer_arg_list_);
 
   // parse the source!!!
@@ -217,9 +217,9 @@ class ptx_parser {
  * @param pointer_arg_list A list of the parameters that are pointers.
  * @return The output CUDA device function
  */
-inline std::string parse_single_function_ptx(const std::string& src,
-                                             const std::string& function_name,
-                                             const std::string& output_arg_type,
+inline std::string parse_single_function_ptx(const std::string&   src,
+                                             const std::string&   function_name,
+                                             const std::string&   output_arg_type,
                                              const std::set<int>& pointer_arg_list = {0})
 {
   ptx_parser instance(src, function_name, output_arg_type, pointer_arg_list);

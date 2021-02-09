@@ -135,16 +135,16 @@ TEST_F(ClampEmptyCaseTest, EmptyInput)
 
 template <class T>
 struct ClampTestNumeric : public cudf::test::BaseFixture {
-  std::unique_ptr<cudf::column> run_clamp(std::vector<T> input,
+  std::unique_ptr<cudf::column> run_clamp(std::vector<T>               input,
                                           std::vector<cudf::size_type> input_validity,
-                                          T lo,
-                                          bool lo_validity,
-                                          T hi,
-                                          bool hi_validity,
-                                          T lo_replace,
-                                          bool lo_replace_validity,
-                                          T hi_replace,
-                                          bool hi_replace_validity)
+                                          T                            lo,
+                                          bool                         lo_validity,
+                                          T                            hi,
+                                          bool                         hi_validity,
+                                          T                            lo_replace,
+                                          bool                         lo_replace_validity,
+                                          T                            hi_replace,
+                                          bool                         hi_replace_validity)
   {
     using ScalarType = cudf::scalar_type_t<T>;
     std::unique_ptr<cudf::scalar> lo_scalar{nullptr};
@@ -210,8 +210,8 @@ TYPED_TEST(ClampTestNumeric, WithNoNull)
 {
   using T = TypeParam;
 
-  T lo(cudf::test::make_type_param_scalar<T>(2));
-  T hi(cudf::test::make_type_param_scalar<T>(8));
+  T    lo(cudf::test::make_type_param_scalar<T>(2));
+  T    hi(cudf::test::make_type_param_scalar<T>(8));
   auto input = cudf::test::make_type_param_vector<T>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
 
   auto got = this->run_clamp(input, {}, lo, true, hi, true, lo, true, hi, true);
@@ -225,8 +225,8 @@ TYPED_TEST(ClampTestNumeric, LowerNull)
 {
   using T = TypeParam;
 
-  T lo(cudf::test::make_type_param_scalar<T>(2));
-  T hi(cudf::test::make_type_param_scalar<T>(8));
+  T    lo(cudf::test::make_type_param_scalar<T>(2));
+  T    hi(cudf::test::make_type_param_scalar<T>(8));
   auto input = cudf::test::make_type_param_vector<T>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
 
   auto got = this->run_clamp(input, {}, lo, false, hi, true, lo, false, hi, true);
@@ -240,8 +240,8 @@ TYPED_TEST(ClampTestNumeric, UpperNull)
 {
   using T = TypeParam;
 
-  T lo(cudf::test::make_type_param_scalar<T>(2));
-  T hi(cudf::test::make_type_param_scalar<T>(8));
+  T    lo(cudf::test::make_type_param_scalar<T>(2));
+  T    hi(cudf::test::make_type_param_scalar<T>(8));
   auto input = cudf::test::make_type_param_vector<T>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
 
   auto got = this->run_clamp(input, {}, lo, true, hi, false, lo, true, hi, false);
@@ -255,8 +255,8 @@ TYPED_TEST(ClampTestNumeric, InputNull)
 {
   using T = TypeParam;
 
-  T lo(cudf::test::make_type_param_scalar<T>(2));
-  T hi(cudf::test::make_type_param_scalar<T>(8));
+  T    lo(cudf::test::make_type_param_scalar<T>(2));
+  T    hi(cudf::test::make_type_param_scalar<T>(8));
   auto input = cudf::test::make_type_param_vector<T>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
   std::vector<cudf::size_type> input_validity({0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0});
 
@@ -272,10 +272,10 @@ TYPED_TEST(ClampTestNumeric, InputNulliWithReplace)
 {
   using T = TypeParam;
 
-  T lo(cudf::test::make_type_param_scalar<T>(2));
-  T hi(cudf::test::make_type_param_scalar<T>(8));
-  T lo_replace(cudf::test::make_type_param_scalar<T>(16));
-  T hi_replace(cudf::test::make_type_param_scalar<T>(32));
+  T    lo(cudf::test::make_type_param_scalar<T>(2));
+  T    hi(cudf::test::make_type_param_scalar<T>(8));
+  T    lo_replace(cudf::test::make_type_param_scalar<T>(16));
+  T    hi_replace(cudf::test::make_type_param_scalar<T>(32));
   auto input = cudf::test::make_type_param_vector<T>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
   std::vector<cudf::size_type> input_validity({0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0});
 
@@ -311,7 +311,7 @@ TYPED_TEST(ClampFloatTest, WithNANandNoNull)
   static_cast<ScalarType*>(hi_scalar.get())->set_value(6.0);
   static_cast<ScalarType*>(hi_scalar.get())->set_valid(true);
 
-  auto got = cudf::clamp(input, *lo_scalar, *hi_scalar);
+  auto                                      got = cudf::clamp(input, *lo_scalar, *hi_scalar);
   cudf::test::fixed_width_column_wrapper<T> expected(
     {T(6.0), T(6.0), T(NAN), T(3.0), T(4.0), T(5.0), T(2.0), T(NAN), T(2.0), T(6.0)});
 
@@ -336,7 +336,7 @@ TYPED_TEST(ClampFloatTest, WithNANandNull)
   static_cast<ScalarType*>(hi_scalar.get())->set_value(6.0);
   static_cast<ScalarType*>(hi_scalar.get())->set_valid(true);
 
-  auto got = cudf::clamp(input, *lo_scalar, *hi_scalar);
+  auto                                      got = cudf::clamp(input, *lo_scalar, *hi_scalar);
   cudf::test::fixed_width_column_wrapper<T> expected(
     {T(6.0), T(6.0), T(NAN), T(3.0), T(4.0), T(5.0), T(2.0), T(NAN), T(2.0), T(6.0)},
     {1, 1, 1, 0, 1, 1, 1, 0, 1, 1});
@@ -384,7 +384,7 @@ struct ClampStringTest : public cudf::test::BaseFixture {
 TEST_F(ClampStringTest, WithNullableColumn)
 {
   std::vector<std::string> strings{"A", "b", "c", "D", "e", "F", "G", "H", "i", "j", "B"};
-  std::vector<bool> valids{1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1};
+  std::vector<bool>        valids{1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1};
 
   cudf::test::strings_column_wrapper input(strings.begin(), strings.end(), valids.begin());
 
@@ -426,7 +426,7 @@ TEST_F(ClampStringTest, WithNonNullableColumn)
 TEST_F(ClampStringTest, WithNullableColumnNullLow)
 {
   std::vector<std::string> strings{"A", "b", "c", "D", "e", "F", "G", "H", "i", "j", "B"};
-  std::vector<bool> valids{1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1};
+  std::vector<bool>        valids{1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1};
 
   cudf::test::strings_column_wrapper input(strings.begin(), strings.end(), valids.begin());
 
@@ -448,7 +448,7 @@ TEST_F(ClampStringTest, WithNullableColumnNullLow)
 TEST_F(ClampStringTest, WithNullableColumnNullHigh)
 {
   std::vector<std::string> strings{"A", "b", "c", "D", "e", "F", "G", "H", "i", "j", "B"};
-  std::vector<bool> valids{1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1};
+  std::vector<bool>        valids{1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1};
 
   cudf::test::strings_column_wrapper input(strings.begin(), strings.end(), valids.begin());
 
@@ -470,7 +470,7 @@ TEST_F(ClampStringTest, WithNullableColumnNullHigh)
 TEST_F(ClampStringTest, WithNullableColumnBothLoAndHiNull)
 {
   std::vector<std::string> strings{"A", "b", "c", "D", "e", "F", "G", "H", "i", "j", "B"};
-  std::vector<bool> valids{1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1};
+  std::vector<bool>        valids{1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1};
 
   cudf::test::strings_column_wrapper input(strings.begin(), strings.end(), valids.begin());
 
@@ -487,7 +487,7 @@ TEST_F(ClampStringTest, WithNullableColumnBothLoAndHiNull)
 TEST_F(ClampStringTest, WithReplaceString)
 {
   std::vector<std::string> strings{"A", "b", "c", "D", "e", "F", "G", "H", "i", "j", "B"};
-  std::vector<bool> valids{1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1};
+  std::vector<bool>        valids{1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1};
 
   cudf::test::strings_column_wrapper input(strings.begin(), strings.end(), valids.begin());
 
@@ -517,7 +517,7 @@ TEST_F(ClampDictionaryTest, WithNullableColumn)
 {
   cudf::test::strings_column_wrapper input_s({"a", "b", "c", "d", "", "d", "c", "b", "a"},
                                              {1, 1, 1, 1, 0, 1, 1, 1, 1});
-  auto input = cudf::dictionary::encode(input_s);
+  auto                               input = cudf::dictionary::encode(input_s);
 
   auto results = cudf::clamp(input->view(), cudf::string_scalar("b"), cudf::string_scalar("c"));
   auto decoded = cudf::dictionary::decode(results->view());
@@ -530,7 +530,7 @@ TEST_F(ClampDictionaryTest, WithNullableColumn)
 TEST_F(ClampDictionaryTest, WithNonNullableColumn)
 {
   cudf::test::fixed_width_column_wrapper<int8_t> input_s({3, 3, 1, 1, 2, 2, 4, 4});
-  auto input = cudf::dictionary::encode(input_s);
+  auto                                           input = cudf::dictionary::encode(input_s);
 
   auto results =
     cudf::clamp(input->view(), cudf::numeric_scalar<int8_t>(2), cudf::numeric_scalar<int8_t>(3));
@@ -544,7 +544,7 @@ TEST_F(ClampDictionaryTest, NullLowHi)
 {
   cudf::test::fixed_width_column_wrapper<int16_t> input_s({200, 100, 0, 300, 300, 400, 100, 200, 0},
                                                           {1, 1, 0, 1, 1, 1, 1, 1, 0});
-  auto input = cudf::dictionary::encode(input_s);
+  auto                                            input = cudf::dictionary::encode(input_s);
   {
     auto results = cudf::clamp(
       input->view(), cudf::numeric_scalar<int16_t>(0, false), cudf::numeric_scalar<int16_t>(300));
@@ -573,7 +573,7 @@ TEST_F(ClampDictionaryTest, WithReplace)
 {
   cudf::test::fixed_width_column_wrapper<int64_t> input_s({1, 2, 3, 4, 0, 4, 3, 2, 1},
                                                           {1, 1, 1, 1, 0, 1, 1, 1, 1});
-  auto input = cudf::dictionary::encode(input_s);
+  auto                                            input = cudf::dictionary::encode(input_s);
 
   auto results = cudf::clamp(input->view(),
                              cudf::numeric_scalar<int64_t>(2),
@@ -621,9 +621,9 @@ TYPED_TEST(FixedPointTest, LargeTest)
   auto const lo    = cudf::make_fixed_point_scalar<decimalXX>(1000, scale);
   auto const hi    = cudf::make_fixed_point_scalar<decimalXX>(2000, scale);
 
-  auto begin          = thrust::make_counting_iterator(-1000);
-  auto clamp          = [](int e) { return e < 1000 ? 1000 : e > 2000 ? 2000 : e; };
-  auto begin2         = cudf::detail::make_counting_transform_iterator(-1000, clamp);
+  auto       begin    = thrust::make_counting_iterator(-1000);
+  auto       clamp    = [](int e) { return e < 1000 ? 1000 : e > 2000 ? 2000 : e; };
+  auto       begin2   = cudf::detail::make_counting_transform_iterator(-1000, clamp);
   auto const input    = fp_wrapper{begin, begin + 5000, scale};
   auto const expected = fp_wrapper{begin2, begin2 + 5000, scale};
   auto const result   = cudf::clamp(input, *lo, *hi);

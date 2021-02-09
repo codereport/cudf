@@ -58,8 +58,8 @@ class reader::impl {
    * @param options Settings for controlling reading behavior
    * @param mr Device memory resource to use for device memory allocation
    */
-  explicit impl(std::unique_ptr<datasource> source,
-                orc_reader_options const &options,
+  explicit impl(std::unique_ptr<datasource>      source,
+                orc_reader_options const &       options,
                 rmm::mr::device_memory_resource *mr);
 
   /**
@@ -72,10 +72,10 @@ class reader::impl {
    *
    * @return The set of columns along with metadata
    */
-  table_with_metadata read(size_type skip_rows,
-                           size_type num_rows,
+  table_with_metadata read(size_type                     skip_rows,
+                           size_type                     num_rows,
                            const std::vector<size_type> &stripes,
-                           rmm::cuda_stream_view stream);
+                           rmm::cuda_stream_view         stream);
 
  private:
   /**
@@ -92,14 +92,14 @@ class reader::impl {
    *
    * @return Device buffer to decompressed page data
    */
-  rmm::device_buffer decompress_stripe_data(hostdevice_vector<gpu::ColumnDesc> &chunks,
+  rmm::device_buffer decompress_stripe_data(hostdevice_vector<gpu::ColumnDesc> &   chunks,
                                             const std::vector<rmm::device_buffer> &stripe_data,
-                                            const OrcDecompressor *decompressor,
-                                            std::vector<orc_stream_info> &stream_info,
-                                            size_t num_stripes,
-                                            rmm::device_vector<gpu::RowGroup> &row_groups,
-                                            size_t row_index_stride,
-                                            rmm::cuda_stream_view stream);
+                                            const OrcDecompressor *                decompressor,
+                                            std::vector<orc_stream_info> &         stream_info,
+                                            size_t                                 num_stripes,
+                                            rmm::device_vector<gpu::RowGroup> &    row_groups,
+                                            size_t                                 row_index_stride,
+                                            rmm::cuda_stream_view                  stream);
 
   /**
    * @brief Converts the stripe column data and outputs to columns
@@ -114,28 +114,28 @@ class reader::impl {
    * @param out_buffers Output columns' device buffers
    * @param stream CUDA stream used for device memory operations and kernel launches.
    */
-  void decode_stream_data(hostdevice_vector<gpu::ColumnDesc> &chunks,
-                          size_t num_dicts,
-                          size_t skip_rows,
-                          size_t num_rows,
-                          timezone_table const &tz_table,
+  void decode_stream_data(hostdevice_vector<gpu::ColumnDesc> &     chunks,
+                          size_t                                   num_dicts,
+                          size_t                                   skip_rows,
+                          size_t                                   num_rows,
+                          timezone_table const &                   tz_table,
                           const rmm::device_vector<gpu::RowGroup> &row_groups,
-                          size_t row_index_stride,
-                          std::vector<column_buffer> &out_buffers,
-                          rmm::cuda_stream_view stream);
+                          size_t                                   row_index_stride,
+                          std::vector<column_buffer> &             out_buffers,
+                          rmm::cuda_stream_view                    stream);
 
  private:
-  rmm::mr::device_memory_resource *_mr = nullptr;
-  std::unique_ptr<datasource> _source;
+  rmm::mr::device_memory_resource *        _mr = nullptr;
+  std::unique_ptr<datasource>              _source;
   std::unique_ptr<cudf::io::orc::metadata> _metadata;
 
   std::vector<int> _selected_columns;
-  bool _use_index                  = true;
-  bool _use_np_dtypes              = true;
-  bool _has_timestamp_column       = false;
-  bool _decimals_as_float64        = true;
-  size_type _decimals_as_int_scale = -1;
-  data_type _timestamp_type{type_id::EMPTY};
+  bool             _use_index             = true;
+  bool             _use_np_dtypes         = true;
+  bool             _has_timestamp_column  = false;
+  bool             _decimals_as_float64   = true;
+  size_type        _decimals_as_int_scale = -1;
+  data_type        _timestamp_type{type_id::EMPTY};
 };
 
 }  // namespace orc

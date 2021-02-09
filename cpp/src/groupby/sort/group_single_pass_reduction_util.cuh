@@ -52,11 +52,11 @@ struct reduce_functor {
 
   template <typename T>
   std::enable_if_t<is_supported<T>(), std::unique_ptr<column>> operator()(
-    column_view const& values,
-    size_type num_groups,
+    column_view const&                         values,
+    size_type                                  num_groups,
     rmm::device_vector<cudf::size_type> const& group_labels,
-    rmm::cuda_stream_view stream,
-    rmm::mr::device_memory_resource* mr)
+    rmm::cuda_stream_view                      stream,
+    rmm::mr::device_memory_resource*           mr)
   {
     using DeviceType = device_storage_type_t<T>;
     using OpType     = cudf::detail::corresponding_operator_t<K>;

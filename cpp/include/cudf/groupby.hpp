@@ -52,7 +52,7 @@ class sort_groupby_helper;
  * `values.size()` column must equal `keys.num_rows()`.
  */
 struct aggregation_request {
-  column_view values;                                      ///< The elements to aggregate
+  column_view                               values;        ///< The elements to aggregate
   std::vector<std::unique_ptr<aggregation>> aggregations;  ///< Desired aggregations
 };
 
@@ -103,10 +103,10 @@ class groupby {
    * of null values in each column. Else, ignored. If empty, assumes all columns
    * use `null_order::BEFORE`. Ignored if `keys_are_sorted == false`.
    */
-  explicit groupby(table_view const& keys,
-                   null_policy null_handling                      = null_policy::EXCLUDE,
-                   sorted keys_are_sorted                         = sorted::NO,
-                   std::vector<order> const& column_order         = {},
+  explicit groupby(table_view const&              keys,
+                   null_policy                    null_handling   = null_policy::EXCLUDE,
+                   sorted                         keys_are_sorted = sorted::NO,
+                   std::vector<order> const&      column_order    = {},
                    std::vector<null_order> const& null_precedence = {});
 
   /**
@@ -164,7 +164,7 @@ class groupby {
    */
   std::pair<std::unique_ptr<table>, std::vector<aggregation_result>> aggregate(
     std::vector<aggregation_request> const& requests,
-    rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+    rmm::mr::device_memory_resource*        mr = rmm::mr::get_current_device_resource());
 
   /**
    * @brief The grouped data corresponding to a groupby operation on a set of values.
@@ -192,14 +192,14 @@ class groupby {
    * returned groups
    * @return A `groups` object representing grouped keys and values
    */
-  groups get_groups(cudf::table_view values             = {},
+  groups get_groups(cudf::table_view                 values = {},
                     rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
  private:
-  table_view _keys;                                      ///< Keys that determine grouping
+  table_view  _keys;                                     ///< Keys that determine grouping
   null_policy _include_null_keys{null_policy::EXCLUDE};  ///< Include rows in keys
                                                          ///< with NULLs
-  sorted _keys_are_sorted{sorted::NO};                   ///< Whether or not the keys are sorted
+  sorted             _keys_are_sorted{sorted::NO};       ///< Whether or not the keys are sorted
   std::vector<order> _column_order{};                    ///< If keys are sorted, indicates
                                                          ///< the order of each column
   std::vector<null_order> _null_precedence{};            ///< If keys are sorted,
@@ -223,14 +223,14 @@ class groupby {
    */
   std::pair<std::unique_ptr<table>, std::vector<aggregation_result>> dispatch_aggregation(
     std::vector<aggregation_request> const& requests,
-    rmm::cuda_stream_view stream,
-    rmm::mr::device_memory_resource* mr);
+    rmm::cuda_stream_view                   stream,
+    rmm::mr::device_memory_resource*        mr);
 
   // Sort-based groupby
   std::pair<std::unique_ptr<table>, std::vector<aggregation_result>> sort_aggregate(
     std::vector<aggregation_request> const& requests,
-    rmm::cuda_stream_view stream,
-    rmm::mr::device_memory_resource* mr);
+    rmm::cuda_stream_view                   stream,
+    rmm::mr::device_memory_resource*        mr);
 };
 /** @} */
 }  // namespace groupby

@@ -57,8 +57,8 @@ struct row_output {
    */
   template <typename Element>
   __device__ void resolve_output(detail::device_data_reference device_data_reference,
-                                 cudf::size_type row_index,
-                                 Element result) const;
+                                 cudf::size_type               row_index,
+                                 Element                       result) const;
 
  private:
   row_evaluator const& evaluator;
@@ -71,8 +71,8 @@ struct unary_row_output : public row_output {
   template <
     ast_operator op,
     std::enable_if_t<detail::is_valid_unary_op<detail::operator_functor<op>, Input>>* = nullptr>
-  __device__ void operator()(cudf::size_type row_index,
-                             Input input,
+  __device__ void operator()(cudf::size_type               row_index,
+                             Input                         input,
                              detail::device_data_reference output) const
   {
     using OperatorFunctor = detail::operator_functor<op>;
@@ -83,8 +83,8 @@ struct unary_row_output : public row_output {
   template <
     ast_operator op,
     std::enable_if_t<!detail::is_valid_unary_op<detail::operator_functor<op>, Input>>* = nullptr>
-  __device__ void operator()(cudf::size_type row_index,
-                             Input input,
+  __device__ void operator()(cudf::size_type               row_index,
+                             Input                         input,
                              detail::device_data_reference output) const
   {
     release_assert(false && "Invalid unary dispatch operator for the provided input.");
@@ -98,9 +98,9 @@ struct binary_row_output : public row_output {
   template <
     ast_operator op,
     std::enable_if_t<detail::is_valid_binary_op<detail::operator_functor<op>, LHS, RHS>>* = nullptr>
-  __device__ void operator()(cudf::size_type row_index,
-                             LHS lhs,
-                             RHS rhs,
+  __device__ void operator()(cudf::size_type               row_index,
+                             LHS                           lhs,
+                             RHS                           rhs,
                              detail::device_data_reference output) const
   {
     using OperatorFunctor = detail::operator_functor<op>;
@@ -111,9 +111,9 @@ struct binary_row_output : public row_output {
   template <ast_operator op,
             std::enable_if_t<!detail::is_valid_binary_op<detail::operator_functor<op>, LHS, RHS>>* =
               nullptr>
-  __device__ void operator()(cudf::size_type row_index,
-                             LHS lhs,
-                             RHS rhs,
+  __device__ void operator()(cudf::size_type               row_index,
+                             LHS                           lhs,
+                             RHS                           rhs,
                              detail::device_data_reference output) const
   {
     release_assert(false && "Invalid binary dispatch operator for the provided input.");
@@ -144,9 +144,9 @@ struct row_evaluator {
    * storing intermediates.
    * @param output_column The output column where results are stored.
    */
-  __device__ row_evaluator(table_device_view const& table,
+  __device__ row_evaluator(table_device_view const&                                 table,
                            const cudf::detail::fixed_width_scalar_device_view_base* literals,
-                           std::int64_t* thread_intermediate_storage,
+                           std::int64_t*               thread_intermediate_storage,
                            mutable_column_device_view* output_column)
     : table(table),
       literals(literals),
@@ -169,7 +169,7 @@ struct row_evaluator {
    */
   template <typename Element>
   __device__ Element resolve_input(detail::device_data_reference device_data_reference,
-                                   cudf::size_type row_index) const
+                                   cudf::size_type               row_index) const
   {
     auto const data_index = device_data_reference.data_index;
     auto const ref_type   = device_data_reference.reference_type;
@@ -181,7 +181,7 @@ struct row_evaluator {
       // Using memcpy instead of reinterpret_cast<Element*> for safe type aliasing
       // Using a temporary variable ensures that the compiler knows the result is aligned
       std::int64_t intermediate = thread_intermediate_storage[data_index];
-      Element tmp;
+      Element      tmp;
       memcpy(&tmp, &intermediate, sizeof(Element));
       return tmp;
     }
@@ -197,10 +197,10 @@ struct row_evaluator {
    * @param output Output data reference.
    */
   template <typename Input>
-  __device__ void operator()(cudf::size_type row_index,
+  __device__ void operator()(cudf::size_type               row_index,
                              detail::device_data_reference input,
                              detail::device_data_reference output,
-                             ast_operator op) const
+                             ast_operator                  op) const
   {
     auto const typed_input = resolve_input<Input>(input, row_index);
     ast_operator_dispatcher(op, unary_row_output<Input>(*this), row_index, typed_input, output);
@@ -218,11 +218,11 @@ struct row_evaluator {
    * @param output Output data reference.
    */
   template <typename LHS, typename RHS>
-  __device__ void operator()(cudf::size_type row_index,
+  __device__ void operator()(cudf::size_type               row_index,
                              detail::device_data_reference lhs,
                              detail::device_data_reference rhs,
                              detail::device_data_reference output,
-                             ast_operator op) const
+                             ast_operator                  op) const
   {
     auto const typed_lhs = resolve_input<LHS>(lhs, row_index);
     auto const typed_rhs = resolve_input<RHS>(rhs, row_index);
@@ -234,7 +234,7 @@ struct row_evaluator {
             typename LHS,
             typename RHS,
             std::enable_if_t<!detail::is_valid_binary_op<OperatorFunctor, LHS, RHS>>* = nullptr>
-  __device__ void operator()(cudf::size_type row_index,
+  __device__ void operator()(cudf::size_type               row_index,
                              detail::device_data_reference lhs,
                              detail::device_data_reference rhs,
                              detail::device_data_reference output) const
@@ -243,16 +243,16 @@ struct row_evaluator {
   }
 
  private:
-  table_device_view const& table;
+  table_device_view const&                                 table;
   const cudf::detail::fixed_width_scalar_device_view_base* literals;
-  std::int64_t* thread_intermediate_storage;
-  mutable_column_device_view* output_column;
+  std::int64_t*                                            thread_intermediate_storage;
+  mutable_column_device_view*                              output_column;
 };
 
 template <typename Element>
 __device__ void row_output::resolve_output(detail::device_data_reference device_data_reference,
-                                           cudf::size_type row_index,
-                                           Element result) const
+                                           cudf::size_type               row_index,
+                                           Element                       result) const
 {
   auto const ref_type = device_data_reference.reference_type;
   if (ref_type == detail::device_data_reference_type::COLUMN) {
@@ -278,12 +278,12 @@ __device__ void row_output::resolve_output(detail::device_data_reference device_
  * @param num_operators Number of operators.
  * @param row_index Row index of data column(s).
  */
-__device__ void evaluate_row_expression(detail::row_evaluator const& evaluator,
+__device__ void evaluate_row_expression(detail::row_evaluator const&         evaluator,
                                         const detail::device_data_reference* data_references,
-                                        const ast_operator* operators,
+                                        const ast_operator*                  operators,
                                         const cudf::size_type* operator_source_indices,
-                                        cudf::size_type num_operators,
-                                        cudf::size_type row_index)
+                                        cudf::size_type        num_operators,
+                                        cudf::size_type        row_index)
 {
   auto operator_source_index = cudf::size_type(0);
   for (cudf::size_type operator_index(0); operator_index < num_operators; operator_index++) {
@@ -332,9 +332,9 @@ struct ast_plan {
 
   buffer_type get_host_data_buffer() const
   {
-    auto const total_size = std::accumulate(sizes.cbegin(), sizes.cend(), 0);
-    auto host_data_buffer = std::make_unique<char[]>(total_size);
-    auto const offsets    = get_offsets();
+    auto const total_size       = std::accumulate(sizes.cbegin(), sizes.cend(), 0);
+    auto       host_data_buffer = std::make_unique<char[]>(total_size);
+    auto const offsets          = get_offsets();
     for (unsigned int i = 0; i < data_pointers.size(); ++i) {
       std::memcpy(host_data_buffer.get() + offsets[i], data_pointers[i], sizes[i]);
     }
@@ -352,7 +352,7 @@ struct ast_plan {
 
  private:
   std::vector<cudf::size_type> sizes;
-  std::vector<const void*> data_pointers;
+  std::vector<const void*>     data_pointers;
 };
 
 /**
@@ -368,9 +368,9 @@ struct ast_plan {
  * @return std::unique_ptr<column> Output column.
  */
 std::unique_ptr<column> compute_column(
-  table_view const table,
-  expression const& expr,
-  rmm::cuda_stream_view stream,
+  table_view const                 table,
+  expression const&                expr,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 }  // namespace detail
 

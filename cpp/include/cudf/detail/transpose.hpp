@@ -28,9 +28,9 @@ namespace detail {
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::pair<std::unique_ptr<column>, table_view> transpose(
-  table_view const& input,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  table_view const&                input,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace detail
 }  // namespace cudf

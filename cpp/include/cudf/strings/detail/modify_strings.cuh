@@ -54,17 +54,17 @@ namespace detail {
  * @return modified strings column
  */
 template <typename device_probe_functor, typename device_execute_functor, typename... Types>
-std::unique_ptr<column> modify_strings(strings_column_view const& strings,
-                                       rmm::cuda_stream_view stream,
+std::unique_ptr<column> modify_strings(strings_column_view const&       strings,
+                                       rmm::cuda_stream_view            stream,
                                        rmm::mr::device_memory_resource* mr,
                                        Types&&... args)
 {
   auto strings_count = strings.size();
   if (strings_count == 0) return detail::make_empty_strings_column(stream, mr);
 
-  auto strings_column  = column_device_view::create(strings.parent(), stream);
-  auto d_column        = *strings_column;
-  size_type null_count = strings.null_count();
+  auto      strings_column = column_device_view::create(strings.parent(), stream);
+  auto      d_column       = *strings_column;
+  size_type null_count     = strings.null_count();
 
   // copy null mask
   rmm::device_buffer null_mask = cudf::detail::copy_bitmask(strings.parent(), stream, mr);
@@ -83,7 +83,7 @@ std::unique_ptr<column> modify_strings(strings_column_view const& strings,
 
   // build the chars column -- convert characters based on case_flag parameter
   size_type bytes = thrust::device_pointer_cast(d_new_offsets)[strings_count];
-  auto chars_column =
+  auto      chars_column =
     strings::detail::create_chars_child_column(strings_count, null_count, bytes, stream, mr);
   auto chars_view = chars_column->mutable_view();
   auto d_chars    = chars_view.data<char>();

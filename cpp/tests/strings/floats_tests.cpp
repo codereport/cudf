@@ -29,7 +29,7 @@ struct StringsConvertTest : public cudf::test::BaseFixture {
 
 TEST_F(StringsConvertTest, ToFloats32)
 {
-  std::vector<const char*> h_strings{"1234",
+  std::vector<const char*>           h_strings{"1234",
                                      nullptr,
                                      "-876",
                                      "543.2",
@@ -51,8 +51,8 @@ TEST_F(StringsConvertTest, ToFloats32)
     h_strings.end(),
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; }));
 
-  float nanval = std::numeric_limits<float>::quiet_NaN();
-  float infval = std::numeric_limits<float>::infinity();
+  float              nanval = std::numeric_limits<float>::quiet_NaN();
+  float              infval = std::numeric_limits<float>::infinity();
   std::vector<float> h_expected{1234.0,
                                 0,
                                 -876.0,
@@ -83,7 +83,7 @@ TEST_F(StringsConvertTest, ToFloats32)
 
 TEST_F(StringsConvertTest, FromFloats32)
 {
-  std::vector<float> h_floats{100,
+  std::vector<float>       h_floats{100,
                               654321.25,
                               -12761.125,
                               0,
@@ -112,7 +112,7 @@ TEST_F(StringsConvertTest, FromFloats32)
 
 TEST_F(StringsConvertTest, ToFloats64)
 {
-  std::vector<const char*> h_strings{"1234",
+  std::vector<const char*>           h_strings{"1234",
                                      nullptr,
                                      "-876",
                                      "543.2",
@@ -134,8 +134,8 @@ TEST_F(StringsConvertTest, ToFloats64)
     h_strings.end(),
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; }));
 
-  double nanval = std::numeric_limits<double>::quiet_NaN();
-  double infval = std::numeric_limits<double>::infinity();
+  double              nanval = std::numeric_limits<double>::quiet_NaN();
+  double              infval = std::numeric_limits<double>::infinity();
   std::vector<double> h_expected{1234.0,
                                  0,
                                  -876.0,
@@ -166,7 +166,7 @@ TEST_F(StringsConvertTest, ToFloats64)
 
 TEST_F(StringsConvertTest, FromFloats64)
 {
-  std::vector<double> h_floats{100,
+  std::vector<double>      h_floats{100,
                                654321.25,
                                -12761.125,
                                0,

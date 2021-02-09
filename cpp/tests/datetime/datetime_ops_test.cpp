@@ -44,7 +44,7 @@ TYPED_TEST(NonTimestampTest, TestThrowsOnNonTimestamp)
   using namespace cuda::std::chrono;
 
   cudf::data_type dtype{cudf::type_to_id<T>()};
-  cudf::column col{dtype, 0, rmm::device_buffer{0}};
+  cudf::column    col{dtype, 0, rmm::device_buffer{0}};
 
   EXPECT_THROW(extract_year(col), cudf::logic_error);
   EXPECT_THROW(extract_month(col), cudf::logic_error);

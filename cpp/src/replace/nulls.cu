@@ -52,10 +52,10 @@ static constexpr int BLOCK_SIZE = 256;
 template <int phase, bool replacement_has_nulls>
 __global__ void replace_nulls_strings(cudf::column_device_view input,
                                       cudf::column_device_view replacement,
-                                      cudf::bitmask_type* output_valid,
-                                      cudf::size_type* offsets,
-                                      char* chars,
-                                      cudf::size_type* valid_counter)
+                                      cudf::bitmask_type*      output_valid,
+                                      cudf::size_type*         offsets,
+                                      char*                    chars,
+                                      cudf::size_type*         valid_counter)
 {
   cudf::size_type nrows = input.size();
   cudf::size_type i     = blockIdx.x * blockDim.x + threadIdx.x;
@@ -63,7 +63,7 @@ __global__ void replace_nulls_strings(cudf::column_device_view input,
   uint32_t active_mask = 0xffffffff;
   active_mask          = __ballot_sync(active_mask, i < nrows);
   auto const lane_id{threadIdx.x % cudf::detail::warp_size};
-  uint32_t valid_sum{0};
+  uint32_t   valid_sum{0};
 
   while (i < nrows) {
     bool input_is_valid  = input.is_valid_nocheck(i);
@@ -104,10 +104,10 @@ __global__ void replace_nulls_strings(cudf::column_device_view input,
 }
 
 template <typename Type, bool replacement_has_nulls>
-__global__ void replace_nulls(cudf::column_device_view input,
-                              cudf::column_device_view replacement,
+__global__ void replace_nulls(cudf::column_device_view         input,
+                              cudf::column_device_view         replacement,
                               cudf::mutable_column_device_view output,
-                              cudf::size_type* output_valid_count)
+                              cudf::size_type*                 output_valid_count)
 {
   cudf::size_type nrows = input.size();
   cudf::size_type i     = blockIdx.x * blockDim.x + threadIdx.x;
@@ -115,7 +115,7 @@ __global__ void replace_nulls(cudf::column_device_view input,
   uint32_t active_mask = 0xffffffff;
   active_mask          = __ballot_sync(active_mask, i < nrows);
   auto const lane_id{threadIdx.x % cudf::detail::warp_size};
-  uint32_t valid_sum{0};
+  uint32_t   valid_sum{0};
 
   while (i < nrows) {
     bool input_is_valid  = input.is_valid_nocheck(i);
@@ -154,12 +154,12 @@ __global__ void replace_nulls(cudf::column_device_view input,
  */
 struct replace_nulls_column_kernel_forwarder {
   template <typename col_type, std::enable_if_t<cudf::is_fixed_width<col_type>()>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& input,
-                                           cudf::column_view const& replacement,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         input,
+                                           cudf::column_view const&         replacement,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
-    cudf::size_type nrows = input.size();
+    cudf::size_type       nrows = input.size();
     cudf::detail::grid_1d grid{nrows, BLOCK_SIZE};
 
     auto output =
@@ -180,7 +180,7 @@ struct replace_nulls_column_kernel_forwarder {
     auto device_replacement = cudf::column_device_view::create(replacement);
 
     rmm::device_scalar<cudf::size_type> valid_counter(0, stream);
-    cudf::size_type* valid_count = valid_counter.data();
+    cudf::size_type*                    valid_count = valid_counter.data();
 
     replace<<<grid.num_blocks, BLOCK_SIZE, 0, stream.value()>>>(
       *device_in, *device_replacement, *device_out, valid_count);
@@ -193,9 +193,9 @@ struct replace_nulls_column_kernel_forwarder {
   }
 
   template <typename col_type, std::enable_if_t<not cudf::is_fixed_width<col_type>()>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& input,
-                                           cudf::column_view const& replacement,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         input,
+                                           cudf::column_view const&         replacement,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("No specialization exists for the given type.");
@@ -204,13 +204,13 @@ struct replace_nulls_column_kernel_forwarder {
 
 template <>
 std::unique_ptr<cudf::column> replace_nulls_column_kernel_forwarder::operator()<cudf::string_view>(
-  cudf::column_view const& input,
-  cudf::column_view const& replacement,
-  rmm::cuda_stream_view stream,
+  cudf::column_view const&         input,
+  cudf::column_view const&         replacement,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr)
 {
   rmm::device_scalar<cudf::size_type> valid_counter(0, stream);
-  cudf::size_type* valid_count = valid_counter.data();
+  cudf::size_type*                    valid_count = valid_counter.data();
 
   auto replace_first  = replace_nulls_strings<0, false>;
   auto replace_second = replace_nulls_strings<1, false>;
@@ -249,7 +249,7 @@ std::unique_ptr<cudf::column> replace_nulls_column_kernel_forwarder::operator()<
     &size, offsets_view.end<int32_t>() - 1, sizeof(int32_t), cudaMemcpyDefault, stream.value()));
 
   // Allocate chars array and output null mask
-  cudf::size_type null_count = input.size() - valid_counter.value(stream);
+  cudf::size_type               null_count = input.size() - valid_counter.value(stream);
   std::unique_ptr<cudf::column> output_chars =
     cudf::strings::detail::create_chars_child_column(input.size(), null_count, size, stream, mr);
 
@@ -274,9 +274,9 @@ std::unique_ptr<cudf::column> replace_nulls_column_kernel_forwarder::operator()<
 
 template <>
 std::unique_ptr<cudf::column> replace_nulls_column_kernel_forwarder::operator()<cudf::dictionary32>(
-  cudf::column_view const& input,
-  cudf::column_view const& replacement,
-  rmm::cuda_stream_view stream,
+  cudf::column_view const&         input,
+  cudf::column_view const&         replacement,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr)
 {
   cudf::dictionary_column_view dict_input(input);
@@ -298,9 +298,9 @@ struct replace_nulls_functor {
 struct replace_nulls_scalar_kernel_forwarder {
   template <typename col_type,
             typename std::enable_if_t<cudf::is_fixed_width<col_type>()>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& input,
-                                           cudf::scalar const& replacement,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         input,
+                                           cudf::scalar const&              replacement,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     CUDF_EXPECTS(input.type() == replacement.type(), "Data type mismatch");
@@ -324,9 +324,9 @@ struct replace_nulls_scalar_kernel_forwarder {
   }
 
   template <typename col_type, std::enable_if_t<not cudf::is_fixed_width<col_type>()>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& input,
-                                           cudf::scalar const& replacement,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         input,
+                                           cudf::scalar const&              replacement,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("No specialization exists for the given type.");
@@ -335,22 +335,22 @@ struct replace_nulls_scalar_kernel_forwarder {
 
 template <>
 std::unique_ptr<cudf::column> replace_nulls_scalar_kernel_forwarder::operator()<cudf::string_view>(
-  cudf::column_view const& input,
-  cudf::scalar const& replacement,
-  rmm::cuda_stream_view stream,
+  cudf::column_view const&         input,
+  cudf::scalar const&              replacement,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(input.type() == replacement.type(), "Data type mismatch");
-  cudf::strings_column_view input_s(input);
+  cudf::strings_column_view  input_s(input);
   const cudf::string_scalar& repl = static_cast<const cudf::string_scalar&>(replacement);
   return cudf::strings::detail::replace_nulls(input_s, repl, stream, mr);
 }
 
 template <>
 std::unique_ptr<cudf::column> replace_nulls_scalar_kernel_forwarder::operator()<cudf::dictionary32>(
-  cudf::column_view const& input,
-  cudf::scalar const& replacement,
-  rmm::cuda_stream_view stream,
+  cudf::column_view const&         input,
+  cudf::scalar const&              replacement,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr)
 {
   cudf::dictionary_column_view dict_input(input);
@@ -377,9 +377,9 @@ struct replace_policy_functor {
  * @brief Function used by replace_nulls policy
  */
 
-std::unique_ptr<cudf::column> replace_nulls_policy_impl(cudf::column_view const& input,
+std::unique_ptr<cudf::column> replace_nulls_policy_impl(cudf::column_view const&    input,
                                                         cudf::replace_policy const& replace_policy,
-                                                        rmm::cuda_stream_view stream,
+                                                        rmm::cuda_stream_view       stream,
                                                         rmm::mr::device_memory_resource* mr)
 {
   auto device_in = cudf::column_device_view::create(input);
@@ -388,7 +388,7 @@ std::unique_ptr<cudf::column> replace_nulls_policy_impl(cudf::column_view const&
   auto in_begin  = thrust::make_zip_iterator(thrust::make_tuple(index, valid_it));
 
   rmm::device_uvector<cudf::size_type> gather_map(input.size(), stream);
-  auto gm_begin = thrust::make_zip_iterator(
+  auto                                 gm_begin = thrust::make_zip_iterator(
     thrust::make_tuple(gather_map.begin(), thrust::make_discard_iterator()));
 
   auto func = replace_policy_functor();
@@ -415,9 +415,9 @@ std::unique_ptr<cudf::column> replace_nulls_policy_impl(cudf::column_view const&
 
 namespace cudf {
 namespace detail {
-std::unique_ptr<cudf::column> replace_nulls(cudf::column_view const& input,
-                                            cudf::column_view const& replacement,
-                                            rmm::cuda_stream_view stream,
+std::unique_ptr<cudf::column> replace_nulls(cudf::column_view const&         input,
+                                            cudf::column_view const&         replacement,
+                                            rmm::cuda_stream_view            stream,
                                             rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(input.type() == replacement.type(), "Data type mismatch");
@@ -431,9 +431,9 @@ std::unique_ptr<cudf::column> replace_nulls(cudf::column_view const& input,
     input.type(), replace_nulls_column_kernel_forwarder{}, input, replacement, stream, mr);
 }
 
-std::unique_ptr<cudf::column> replace_nulls(cudf::column_view const& input,
-                                            cudf::scalar const& replacement,
-                                            rmm::cuda_stream_view stream,
+std::unique_ptr<cudf::column> replace_nulls(cudf::column_view const&         input,
+                                            cudf::scalar const&              replacement,
+                                            rmm::cuda_stream_view            stream,
                                             rmm::mr::device_memory_resource* mr)
 {
   if (input.is_empty()) { return cudf::empty_like(input); }
@@ -446,9 +446,9 @@ std::unique_ptr<cudf::column> replace_nulls(cudf::column_view const& input,
     input.type(), replace_nulls_scalar_kernel_forwarder{}, input, replacement, stream, mr);
 }
 
-std::unique_ptr<cudf::column> replace_nulls(cudf::column_view const& input,
-                                            cudf::replace_policy const& replace_policy,
-                                            rmm::cuda_stream_view stream,
+std::unique_ptr<cudf::column> replace_nulls(cudf::column_view const&         input,
+                                            cudf::replace_policy const&      replace_policy,
+                                            rmm::cuda_stream_view            stream,
                                             rmm::mr::device_memory_resource* mr)
 {
   if (input.is_empty()) { return cudf::empty_like(input); }
@@ -460,24 +460,24 @@ std::unique_ptr<cudf::column> replace_nulls(cudf::column_view const& input,
 
 }  // namespace detail
 
-std::unique_ptr<cudf::column> replace_nulls(cudf::column_view const& input,
-                                            cudf::column_view const& replacement,
+std::unique_ptr<cudf::column> replace_nulls(cudf::column_view const&         input,
+                                            cudf::column_view const&         replacement,
                                             rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return cudf::detail::replace_nulls(input, replacement, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<cudf::column> replace_nulls(cudf::column_view const& input,
-                                            cudf::scalar const& replacement,
+std::unique_ptr<cudf::column> replace_nulls(cudf::column_view const&         input,
+                                            cudf::scalar const&              replacement,
                                             rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return cudf::detail::replace_nulls(input, replacement, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<cudf::column> replace_nulls(column_view const& input,
-                                            replace_policy const& replace_policy,
+std::unique_ptr<cudf::column> replace_nulls(column_view const&               input,
+                                            replace_policy const&            replace_policy,
                                             rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

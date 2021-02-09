@@ -31,9 +31,9 @@ namespace cudf {
 namespace strings {
 namespace detail {
 std::unique_ptr<column> find_multiple(
-  strings_column_view const& strings,
-  strings_column_view const& targets,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  strings_column_view const&       targets,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   auto strings_count = strings.size();
@@ -76,8 +76,8 @@ std::unique_ptr<column> find_multiple(
 }  // namespace detail
 
 // external API
-std::unique_ptr<column> find_multiple(strings_column_view const& strings,
-                                      strings_column_view const& targets,
+std::unique_ptr<column> find_multiple(strings_column_view const&       strings,
+                                      strings_column_view const&       targets,
                                       rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

@@ -28,11 +28,11 @@
 namespace cudf {
 namespace detail {
 
-std::unique_ptr<table> gather(table_view const& source_table,
-                              column_view const& gather_map,
-                              out_of_bounds_policy bounds_policy,
-                              negative_index_policy neg_indices,
-                              rmm::cuda_stream_view stream,
+std::unique_ptr<table> gather(table_view const&                source_table,
+                              column_view const&               gather_map,
+                              out_of_bounds_policy             bounds_policy,
+                              negative_index_policy            neg_indices,
+                              rmm::cuda_stream_view            stream,
                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(gather_map.has_nulls() == false, "gather_map contains nulls");
@@ -42,8 +42,8 @@ std::unique_ptr<table> gather(table_view const& source_table,
   auto map_end   = map_begin + gather_map.size();
 
   if (neg_indices == negative_index_policy::ALLOWED) {
-    cudf::size_type n_rows = source_table.num_rows();
-    auto idx_converter     = [n_rows] __device__(size_type in) {
+    cudf::size_type n_rows        = source_table.num_rows();
+    auto            idx_converter = [n_rows] __device__(size_type in) {
       return ((in % n_rows) + n_rows) % n_rows;
     };
     return gather(source_table,
@@ -58,9 +58,9 @@ std::unique_ptr<table> gather(table_view const& source_table,
 
 }  // namespace detail
 
-std::unique_ptr<table> gather(table_view const& source_table,
-                              column_view const& gather_map,
-                              out_of_bounds_policy bounds_policy,
+std::unique_ptr<table> gather(table_view const&                source_table,
+                              column_view const&               gather_map,
+                              out_of_bounds_policy             bounds_policy,
                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

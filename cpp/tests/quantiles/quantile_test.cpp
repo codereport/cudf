@@ -38,7 +38,7 @@ namespace {
 struct q_res {
   q_res(double value, bool is_valid = true) : is_valid(is_valid), value(value) {}
 
-  bool is_valid;
+  bool   is_valid;
   double value;
 };
 
@@ -68,17 +68,17 @@ struct q_expect {
   }
 
   double quantile;
-  q_res higher;
-  q_res lower;
-  q_res linear;
-  q_res midpoint;
-  q_res nearest;
+  q_res  higher;
+  q_res  lower;
+  q_res  linear;
+  q_res  midpoint;
+  q_res  nearest;
 };
 
 template <typename T>
 struct test_case {
-  fixed_width_column_wrapper<T> column;
-  vector<q_expect> expectations;
+  fixed_width_column_wrapper<T>               column;
+  vector<q_expect>                            expectations;
   fixed_width_column_wrapper<cudf::size_type> ordered_indices;
 };
 
@@ -87,8 +87,8 @@ struct test_case {
 template <typename T>
 test_case<T> interpolate_center()
 {
-  auto low     = std::numeric_limits<T>::lowest();
-  auto max     = std::numeric_limits<T>::max();
+  auto   low   = std::numeric_limits<T>::lowest();
+  auto   max   = std::numeric_limits<T>::max();
   double mid_d = [] {
     if (std::is_floating_point<T>::value) return 0.0;
     if (std::is_signed<T>::value) return -0.5;
@@ -125,8 +125,8 @@ test_case<bool> interpolate_center()
 template <typename T>
 test_case<T> interpolate_extrema_high()
 {
-  T max        = std::numeric_limits<T>::max();
-  T low        = max - 2;
+  T    max     = std::numeric_limits<T>::max();
+  T    low     = max - 2;
   auto low_d   = static_cast<double>(low);
   auto max_d   = static_cast<double>(max);
   auto exact_d = static_cast<double>(max - 1);
@@ -145,9 +145,9 @@ test_case<bool> interpolate_extrema_high<bool>()
 template <typename T>
 test_case<T> interpolate_extrema_low()
 {
-  T lowest     = std::numeric_limits<T>::lowest();
-  T a          = lowest;
-  T b          = lowest + 2;
+  T    lowest  = std::numeric_limits<T>::lowest();
+  T    a       = lowest;
+  T    b       = lowest + 2;
   auto a_d     = static_cast<double>(a);
   auto b_d     = static_cast<double>(b);
   auto exact_d = static_cast<double>(a + 1);
@@ -258,10 +258,10 @@ std::enable_if_t<std::is_same<T, double>::value, test_case<T>> some_invalid()
 template <typename T>
 std::enable_if_t<std::is_same<T, float>::value, test_case<T>> some_invalid()
 {
-  T high     = 0.16;
-  T low      = -1.024;
-  double mid = -0.43200002610683441;
-  double lin = -0.43200002610683441;
+  T      high = 0.16;
+  T      low  = -1.024;
+  double mid  = -0.43200002610683441;
+  double lin  = -0.43200002610683441;
   return test_case<T>{fixed_width_column_wrapper<T>(
                         {T(6.8), high, T(3.4), T(4.17), T(2.13), T(1.11), low, T(0.8), T(5.7)},
                         {0, 1, 0, 0, 0, 0, 1, 0, 0}),
@@ -453,7 +453,7 @@ struct QuantileDictionaryTest : public BaseFixture {
 
 TEST_F(QuantileDictionaryTest, TestValid)
 {
-  dictionary_column_wrapper<int32_t> col{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  dictionary_column_wrapper<int32_t>  col{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   fixed_width_column_wrapper<int32_t> indices{0, 2, 4, 6, 8, 1, 3, 5, 7, 9};
 
   auto result = cudf::quantile(col, {0.5}, cudf::interpolation::LINEAR);

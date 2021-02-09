@@ -37,9 +37,9 @@ namespace detail {
  * @param stream CUDA stream used for device memory operations and kernel launches
  */
 std::unique_ptr<cudf::table> cross_join(
-  cudf::table_view const& left,
-  cudf::table_view const& right,
-  rmm::cuda_stream_view stream,
+  cudf::table_view const&          left,
+  cudf::table_view const&          right,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(0 != left.num_columns(), "Left table is empty");
@@ -72,8 +72,8 @@ std::unique_ptr<cudf::table> cross_join(
 }
 }  // namespace detail
 
-std::unique_ptr<cudf::table> cross_join(cudf::table_view const& left,
-                                        cudf::table_view const& right,
+std::unique_ptr<cudf::table> cross_join(cudf::table_view const&          left,
+                                        cudf::table_view const&          right,
                                         rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

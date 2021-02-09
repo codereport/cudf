@@ -31,10 +31,10 @@ namespace detail {
  * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> replace_nulls(
-  column_view const& input,
-  cudf::column_view const& replacement,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  cudf::column_view const&         replacement,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::replace_nulls(column_view const&, scalar const&,
@@ -43,10 +43,10 @@ std::unique_ptr<column> replace_nulls(
  * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> replace_nulls(
-  column_view const& input,
-  scalar const& replacement,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  scalar const&                    replacement,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::replace_nulls(column_view const&, replace_policy const&,
@@ -55,10 +55,10 @@ std::unique_ptr<column> replace_nulls(
  * @param[in] stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> replace_nulls(
-  column_view const& input,
-  replace_policy const& replace_policy,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  replace_policy const&            replace_policy,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::replace_nans(column_view const&, column_view const&,
@@ -67,10 +67,10 @@ std::unique_ptr<column> replace_nulls(
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> replace_nans(
-  column_view const& input,
-  column_view const& replacement,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  column_view const&               replacement,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::replace_nans(column_view const&, scalar const&,
@@ -79,10 +79,10 @@ std::unique_ptr<column> replace_nans(
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> replace_nans(
-  column_view const& input,
-  scalar const& replacement,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  scalar const&                    replacement,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::find_and_replace_all
@@ -90,11 +90,11 @@ std::unique_ptr<column> replace_nans(
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> find_and_replace_all(
-  column_view const& input_col,
-  column_view const& values_to_replace,
-  column_view const& replacement_values,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input_col,
+  column_view const&               values_to_replace,
+  column_view const&               replacement_values,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace detail
 }  // namespace cudf

@@ -27,11 +27,11 @@ struct ReplaceTest : public cudf::test::BaseFixture {
 template <typename T>
 void normalize_nans_and_zeros_test_internal(
   cudf::test::fixed_width_column_wrapper<T> const& test_data_in,
-  cudf::column_view const& test_data_comp)
+  cudf::column_view const&                         test_data_comp)
 {
   // mutable overload
   {
-    cudf::column test_data(test_data_in);
+    cudf::column              test_data(test_data_in);
     cudf::mutable_column_view mutable_view = test_data;
     cudf::normalize_nans_and_zeros(mutable_view);
 
@@ -42,7 +42,7 @@ void normalize_nans_and_zeros_test_internal(
 
   // returned column overload
   {
-    cudf::column test_data(test_data_in);
+    cudf::column      test_data(test_data_in);
     cudf::column_view view = test_data;
 
     auto out      = cudf::normalize_nans_and_zeros(view);

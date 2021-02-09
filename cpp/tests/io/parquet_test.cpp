@@ -53,8 +53,8 @@ auto const temp_env = static_cast<cudf::test::TempDirTestEnvironment*>(
 template <typename T, typename Elements>
 std::unique_ptr<cudf::table> create_fixed_table(cudf::size_type num_columns,
                                                 cudf::size_type num_rows,
-                                                bool include_validity,
-                                                Elements elements)
+                                                bool            include_validity,
+                                                Elements        elements)
 {
   auto valids = cudf::detail::make_counting_transform_iterator(
     0, [](auto i) { return i % 2 == 0 ? true : false; });
@@ -82,7 +82,7 @@ std::unique_ptr<cudf::table> create_fixed_table(cudf::size_type num_columns,
 template <typename T>
 std::unique_ptr<cudf::table> create_random_fixed_table(cudf::size_type num_columns,
                                                        cudf::size_type num_rows,
-                                                       bool include_validity)
+                                                       bool            include_validity)
 {
   auto rand_elements =
     cudf::detail::make_counting_transform_iterator(0, [](T i) { return rand(); });
@@ -93,7 +93,7 @@ template <typename T>
 std::unique_ptr<cudf::table> create_compressible_fixed_table(cudf::size_type num_columns,
                                                              cudf::size_type num_rows,
                                                              cudf::size_type period,
-                                                             bool include_validity)
+                                                             bool            include_validity)
 {
   auto compressible_elements =
     cudf::detail::make_counting_transform_iterator(0, [period](T i) { return i / period; });
@@ -159,8 +159,8 @@ inline auto random_values(size_t size)
                                                    std::uniform_real_distribution<T1>,
                                                    std::uniform_int_distribution<T1>>>;
 
-  static constexpr auto seed = 0xf00d;
-  static std::mt19937 engine{seed};
+  static constexpr auto       seed = 0xf00d;
+  static std::mt19937         engine{seed};
   static uniform_distribution dist{};
   std::generate_n(values.begin(), size, [&]() { return T{dist(engine)}; });
 
@@ -175,7 +175,7 @@ TYPED_TEST(ParquetWriterNumericTypeTest, SingleColumn)
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return TypeParam(i); });
   auto validity = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
-  constexpr auto num_rows = 100;
+  constexpr auto            num_rows = 100;
   column_wrapper<TypeParam> col(sequence, sequence + num_rows, validity);
 
   std::vector<std::unique_ptr<column>> cols;
@@ -183,7 +183,7 @@ TYPED_TEST(ParquetWriterNumericTypeTest, SingleColumn)
   auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(1, expected->num_columns());
 
-  auto filepath = temp_env->get_temp_filepath("SingleColumn.parquet");
+  auto                            filepath = temp_env->get_temp_filepath("SingleColumn.parquet");
   cudf_io::parquet_writer_options out_opts =
     cudf_io::parquet_writer_options::builder(cudf_io::sink_info{filepath}, expected->view());
   cudf_io::write_parquet(out_opts);
@@ -201,7 +201,7 @@ TYPED_TEST(ParquetWriterNumericTypeTest, SingleColumnWithNulls)
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return TypeParam(i); });
   auto validity = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return (i % 2); });
 
-  constexpr auto num_rows = 100;
+  constexpr auto            num_rows = 100;
   column_wrapper<TypeParam> col(sequence, sequence + num_rows, validity);
 
   std::vector<std::unique_ptr<column>> cols;
@@ -227,7 +227,7 @@ TYPED_TEST(ParquetWriterChronoTypeTest, Chronos)
     0, [](auto i) { return ((std::rand() / 10000) * 1000); });
   auto validity = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
-  constexpr auto num_rows = 100;
+  constexpr auto                                                     num_rows = 100;
   column_wrapper<TypeParam, typename decltype(sequence)::value_type> col(
     sequence, sequence + num_rows, validity);
 
@@ -236,7 +236,7 @@ TYPED_TEST(ParquetWriterChronoTypeTest, Chronos)
   auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(1, expected->num_columns());
 
-  auto filepath = temp_env->get_temp_filepath("Chronos.parquet");
+  auto                            filepath = temp_env->get_temp_filepath("Chronos.parquet");
   cudf_io::parquet_writer_options out_opts =
     cudf_io::parquet_writer_options::builder(cudf_io::sink_info{filepath}, expected->view());
   cudf_io::write_parquet(out_opts);
@@ -256,7 +256,7 @@ TYPED_TEST(ParquetWriterChronoTypeTest, ChronosWithNulls)
   auto validity =
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return (i > 30) && (i < 60); });
 
-  constexpr auto num_rows = 100;
+  constexpr auto                                                     num_rows = 100;
   column_wrapper<TypeParam, typename decltype(sequence)::value_type> col(
     sequence, sequence + num_rows, validity);
 
@@ -300,11 +300,11 @@ TEST_F(ParquetWriterTest, MultiColumn)
 
   // column_wrapper<bool> col0{
   //    col0_data.begin(), col0_data.end(), validity};
-  column_wrapper<int8_t> col1{col1_data.begin(), col1_data.end(), validity};
-  column_wrapper<int16_t> col2{col2_data.begin(), col2_data.end(), validity};
-  column_wrapper<int32_t> col3{col3_data.begin(), col3_data.end(), validity};
-  column_wrapper<float> col4{col4_data.begin(), col4_data.end(), validity};
-  column_wrapper<double> col5{col5_data.begin(), col5_data.end(), validity};
+  column_wrapper<int8_t>             col1{col1_data.begin(), col1_data.end(), validity};
+  column_wrapper<int16_t>            col2{col2_data.begin(), col2_data.end(), validity};
+  column_wrapper<int32_t>            col3{col3_data.begin(), col3_data.end(), validity};
+  column_wrapper<float>              col4{col4_data.begin(), col4_data.end(), validity};
+  column_wrapper<double>             col5{col5_data.begin(), col5_data.end(), validity};
   column_wrapper<numeric::decimal32> col6{col6_data, col6_data + num_rows, validity};
   column_wrapper<numeric::decimal64> col7{col7_data, col7_data + num_rows, validity};
 
@@ -330,7 +330,7 @@ TEST_F(ParquetWriterTest, MultiColumn)
   auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(7, expected->num_columns());
 
-  auto filepath = temp_env->get_temp_filepath("MultiColumn.parquet");
+  auto                            filepath = temp_env->get_temp_filepath("MultiColumn.parquet");
   cudf_io::parquet_writer_options out_opts =
     cudf_io::parquet_writer_options::builder(cudf_io::sink_info{filepath}, expected->view())
       .metadata(&expected_metadata);
@@ -382,11 +382,11 @@ TEST_F(ParquetWriterTest, MultiColumnWithNulls)
 
   // column_wrapper<bool> col0{
   //    col0_data.begin(), col0_data.end(), col0_mask};
-  column_wrapper<int8_t> col1{col1_data.begin(), col1_data.end(), col1_mask};
-  column_wrapper<int16_t> col2{col2_data.begin(), col2_data.end(), col2_mask};
-  column_wrapper<int32_t> col3{col3_data.begin(), col3_data.end(), col3_mask};
-  column_wrapper<float> col4{col4_data.begin(), col4_data.end(), col4_mask};
-  column_wrapper<double> col5{col5_data.begin(), col5_data.end(), col5_mask};
+  column_wrapper<int8_t>             col1{col1_data.begin(), col1_data.end(), col1_mask};
+  column_wrapper<int16_t>            col2{col2_data.begin(), col2_data.end(), col2_mask};
+  column_wrapper<int32_t>            col3{col3_data.begin(), col3_data.end(), col3_mask};
+  column_wrapper<float>              col4{col4_data.begin(), col4_data.end(), col4_mask};
+  column_wrapper<double>             col5{col5_data.begin(), col5_data.end(), col5_mask};
   column_wrapper<numeric::decimal32> col6{col6_data, col6_data + num_rows, col6_mask};
   column_wrapper<numeric::decimal64> col7{col7_data, col7_data + num_rows, col7_mask};
 
@@ -439,9 +439,9 @@ TEST_F(ParquetWriterTest, Strings)
   auto seq_col2 = random_values<float>(num_rows);
   auto validity = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
-  column_wrapper<int> col0{seq_col0.begin(), seq_col0.end(), validity};
+  column_wrapper<int>               col0{seq_col0.begin(), seq_col0.end(), validity};
   column_wrapper<cudf::string_view> col1{strings.begin(), strings.end()};
-  column_wrapper<float> col2{seq_col2.begin(), seq_col2.end(), validity};
+  column_wrapper<float>             col2{seq_col2.begin(), seq_col2.end(), validity};
 
   cudf_io::table_metadata expected_metadata;
   expected_metadata.column_names.emplace_back("col_other");
@@ -455,7 +455,7 @@ TEST_F(ParquetWriterTest, Strings)
   auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(3, expected->num_columns());
 
-  auto filepath = temp_env->get_temp_filepath("Strings.parquet");
+  auto                            filepath = temp_env->get_temp_filepath("Strings.parquet");
   cudf_io::parquet_writer_options out_opts =
     cudf_io::parquet_writer_options::builder(cudf_io::sink_info{filepath}, expected->view())
       .metadata(&expected_metadata);
@@ -481,9 +481,9 @@ TEST_F(ParquetWriterTest, SlicedTable)
   auto seq_col2 = random_values<float>(num_rows);
   auto validity = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
-  column_wrapper<int> col0{seq_col0.begin(), seq_col0.end(), validity};
+  column_wrapper<int>               col0{seq_col0.begin(), seq_col0.end(), validity};
   column_wrapper<cudf::string_view> col1{strings.begin(), strings.end()};
-  column_wrapper<float> col2{seq_col2.begin(), seq_col2.end(), validity};
+  column_wrapper<float>             col2{seq_col2.begin(), seq_col2.end(), validity};
 
   using lcw = cudf::test::lists_column_wrapper<uint64_t>;
   lcw col3{{9, 8}, {7, 6, 5}, {}, {4}, {3, 2, 1, 0}, {20, 21, 22, 23, 24}, {}, {66, 666}};
@@ -498,7 +498,7 @@ TEST_F(ParquetWriterTest, SlicedTable)
   // [NULL, [], NULL, [[]]]
   auto valids  = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i % 2; });
   auto valids2 = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i != 3; });
-  lcw col4{{
+  lcw  col4{{
              {{{{1, 2, 3, 4}, valids}}, {{{5, 6, 7}, valids}, {8, 9}}},
              {{{{10, 11}, {12}}, {{13}, {14, 15, 16}}, {{17, 18}}}, valids},
              {{lcw{lcw{}}, lcw{}, lcw{}, lcw{lcw{}}}, valids},
@@ -521,7 +521,7 @@ TEST_F(ParquetWriterTest, SlicedTable)
 
   auto expected_slice = cudf::slice(expected, {2, static_cast<cudf::size_type>(num_rows) - 1});
 
-  auto filepath = temp_env->get_temp_filepath("SlicedTable.parquet");
+  auto                            filepath = temp_env->get_temp_filepath("SlicedTable.parquet");
   cudf_io::parquet_writer_options out_opts =
     cudf_io::parquet_writer_options::builder(cudf_io::sink_info{filepath}, expected_slice)
       .metadata(&expected_metadata);
@@ -644,11 +644,11 @@ TEST_F(ParquetWriterTest, MultiIndex)
   auto col5_data = random_values<double>(num_rows);
   auto validity  = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
-  column_wrapper<int8_t> col1{col1_data.begin(), col1_data.end(), validity};
+  column_wrapper<int8_t>  col1{col1_data.begin(), col1_data.end(), validity};
   column_wrapper<int16_t> col2{col2_data.begin(), col2_data.end(), validity};
   column_wrapper<int32_t> col3{col3_data.begin(), col3_data.end(), validity};
-  column_wrapper<float> col4{col4_data.begin(), col4_data.end(), validity};
-  column_wrapper<double> col5{col5_data.begin(), col5_data.end(), validity};
+  column_wrapper<float>   col4{col4_data.begin(), col4_data.end(), validity};
+  column_wrapper<double>  col5{col5_data.begin(), col5_data.end(), validity};
 
   cudf_io::table_metadata expected_metadata;
   expected_metadata.column_names.emplace_back("int8s");
@@ -668,7 +668,7 @@ TEST_F(ParquetWriterTest, MultiIndex)
   auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(5, expected->num_columns());
 
-  auto filepath = temp_env->get_temp_filepath("MultiIndex.parquet");
+  auto                            filepath = temp_env->get_temp_filepath("MultiIndex.parquet");
   cudf_io::parquet_writer_options out_opts =
     cudf_io::parquet_writer_options::builder(cudf_io::sink_info{filepath}, expected->view())
       .metadata(&expected_metadata);
@@ -687,8 +687,8 @@ TEST_F(ParquetWriterTest, MultiIndex)
 TEST_F(ParquetWriterTest, HostBuffer)
 {
   constexpr auto num_rows = 100 << 10;
-  const auto seq_col      = random_values<int>(num_rows);
-  const auto validity =
+  const auto     seq_col  = random_values<int>(num_rows);
+  const auto     validity =
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
   column_wrapper<int> col{seq_col.begin(), seq_col.end(), validity};
 
@@ -700,7 +700,7 @@ TEST_F(ParquetWriterTest, HostBuffer)
   const auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(1, expected->num_columns());
 
-  std::vector<char> out_buffer;
+  std::vector<char>               out_buffer;
   cudf_io::parquet_writer_options out_opts =
     cudf_io::parquet_writer_options::builder(cudf_io::sink_info(&out_buffer), expected->view())
       .metadata(&expected_metadata);
@@ -718,7 +718,7 @@ TEST_F(ParquetWriterTest, NonNullable)
   srand(31337);
   auto expected = create_random_fixed_table<int>(9, 9, false);
 
-  auto filepath = temp_env->get_temp_filepath("NonNullable.parquet");
+  auto                            filepath = temp_env->get_temp_filepath("NonNullable.parquet");
   cudf_io::parquet_writer_options args =
     cudf_io::parquet_writer_options::builder(cudf_io::sink_info{filepath}, *expected);
   cudf_io::write_parquet(args);
@@ -768,7 +768,7 @@ class custom_test_data_sink : public cudf::io::data_sink {
 
 TEST_F(ParquetWriterTest, CustomDataSink)
 {
-  auto filepath = temp_env->get_temp_filepath("CustomDataSink.parquet");
+  auto                  filepath = temp_env->get_temp_filepath("CustomDataSink.parquet");
   custom_test_data_sink custom_sink(filepath);
 
   namespace cudf_io = cudf::io;
@@ -806,7 +806,7 @@ TEST_F(ParquetWriterTest, CustomDataSink)
 
 TEST_F(ParquetWriterTest, DeviceWriteLargeishFile)
 {
-  auto filepath = temp_env->get_temp_filepath("DeviceWriteLargeishFile.parquet");
+  auto                  filepath = temp_env->get_temp_filepath("DeviceWriteLargeishFile.parquet");
   custom_test_data_sink custom_sink(filepath);
 
   namespace cudf_io = cudf::io;
@@ -842,15 +842,15 @@ TEST_F(ParquetWriterTest, MultipleMismatchedSources)
 {
   auto const int5file = create_parquet_file<int>(5);
   {
-    auto const float5file = create_parquet_file<float>(5);
-    std::vector<std::string> files{int5file, float5file};
+    auto const                            float5file = create_parquet_file<float>(5);
+    std::vector<std::string>              files{int5file, float5file};
     cudf_io::parquet_reader_options const read_opts =
       cudf_io::parquet_reader_options::builder(cudf_io::source_info{files});
     EXPECT_THROW(cudf_io::read_parquet(read_opts), cudf::logic_error);
   }
   {
-    auto const int10file = create_parquet_file<int>(10);
-    std::vector<std::string> files{int5file, int10file};
+    auto const                            int10file = create_parquet_file<int>(10);
+    std::vector<std::string>              files{int5file, int10file};
     cudf_io::parquet_reader_options const read_opts =
       cudf_io::parquet_reader_options::builder(cudf_io::source_info{files});
     EXPECT_THROW(cudf_io::read_parquet(read_opts), cudf::logic_error);
@@ -861,11 +861,11 @@ TEST_F(ParquetWriterTest, Slice)
 {
   auto col =
     cudf::test::fixed_width_column_wrapper<int>{{1, 2, 3, 4, 5}, {true, true, true, false, true}};
-  std::vector<cudf::size_type> indices{2, 5};
+  std::vector<cudf::size_type>   indices{2, 5};
   std::vector<cudf::column_view> result = cudf::slice(col, indices);
-  cudf::table_view tbl{result};
+  cudf::table_view               tbl{result};
 
-  auto filepath = temp_env->get_temp_filepath("Slice.parquet");
+  auto                            filepath = temp_env->get_temp_filepath("Slice.parquet");
   cudf_io::parquet_writer_options out_opts =
     cudf_io::parquet_writer_options::builder(cudf_io::sink_info{filepath}, tbl);
   cudf_io::write_parquet(out_opts);
@@ -939,8 +939,8 @@ TEST_F(ParquetChunkedWriterTest, ManyTables)
 {
   srand(31337);
   std::vector<std::unique_ptr<table>> tables;
-  std::vector<table_view> table_views;
-  constexpr int num_tables = 96;
+  std::vector<table_view>             table_views;
+  constexpr int                       num_tables = 96;
   for (int idx = 0; idx < num_tables; idx++) {
     auto tbl = create_random_fixed_table<int>(16, 64, true);
     table_views.push_back(*tbl);
@@ -970,13 +970,13 @@ TEST_F(ParquetChunkedWriterTest, Strings)
 {
   std::vector<std::unique_ptr<cudf::column>> cols;
 
-  bool mask1[] = {1, 1, 0, 1, 1, 1, 1};
+  bool                     mask1[] = {1, 1, 0, 1, 1, 1, 1};
   std::vector<const char*> h_strings1{"four", "score", "and", "seven", "years", "ago", "abcdefgh"};
   cudf::test::strings_column_wrapper strings1(h_strings1.begin(), h_strings1.end(), mask1);
   cols.push_back(strings1.release());
   cudf::table tbl1(std::move(cols));
 
-  bool mask2[] = {0, 1, 1, 1, 1, 1, 1};
+  bool                     mask2[] = {0, 1, 1, 1, 1, 1, 1};
   std::vector<const char*> h_strings2{"ooooo", "ppppppp", "fff", "j", "cccc", "bbb", "zzzzzzzzzzz"};
   cudf::test::strings_column_wrapper strings2(h_strings2.begin(), h_strings2.end(), mask2);
   cols.push_back(strings2.release());
@@ -1032,8 +1032,8 @@ TEST_F(ParquetChunkedWriterTest, ListColumn)
   // COL2 (non-nested columns to test proper schema construction)
   size_t num_rows_tbl0 = static_cast<cudf::column_view>(col0_tbl0).size();
   size_t num_rows_tbl1 = static_cast<cudf::column_view>(col0_tbl1).size();
-  auto seq_col0        = random_values<int>(num_rows_tbl0);
-  auto seq_col1        = random_values<int>(num_rows_tbl1);
+  auto   seq_col0      = random_values<int>(num_rows_tbl0);
+  auto   seq_col1      = random_values<int>(num_rows_tbl1);
 
   column_wrapper<int> col2_tbl0{seq_col0.begin(), seq_col0.end(), valids};
   column_wrapper<int> col2_tbl1{seq_col1.begin(), seq_col1.end(), valids2};
@@ -1136,8 +1136,8 @@ TEST_F(ParquetChunkedWriterTest, MismatchedStructureList)
 
   // COL2 (non-nested columns to test proper schema construction)
   size_t num_rows = static_cast<cudf::column_view>(col00).size();
-  auto seq_col0   = random_values<int>(num_rows);
-  auto seq_col1   = random_values<int>(num_rows);
+  auto   seq_col0 = random_values<int>(num_rows);
+  auto   seq_col1 = random_values<int>(num_rows);
 
   column_wrapper<int> col10{seq_col0.begin(), seq_col0.end(), valids};
   column_wrapper<int> col11{seq_col1.begin(), seq_col1.end(), valids2};
@@ -1233,8 +1233,8 @@ TEST_F(ParquetChunkedWriterTest, ForcedNullabilityList)
 
   // COL1 (non-nested columns to test proper schema construction)
   size_t num_rows = static_cast<cudf::column_view>(col00).size();
-  auto seq_col0   = random_values<int>(num_rows);
-  auto seq_col1   = random_values<int>(num_rows);
+  auto   seq_col0 = random_values<int>(num_rows);
+  auto   seq_col1 = random_values<int>(num_rows);
 
   column_wrapper<int> col10{seq_col0.begin(), seq_col0.end(), valids};
   column_wrapper<int> col11{seq_col1.begin(), seq_col1.end(), valids2};
@@ -1331,8 +1331,8 @@ TEST_F(ParquetChunkedWriterTest, ReadRowGroupsError)
 TEST_F(ParquetChunkedWriterTest, DecimalWrite)
 {
   constexpr cudf::size_type num_rows = 500;
-  auto seq_col0                      = random_values<int32_t>(num_rows);
-  auto seq_col1                      = random_values<int64_t>(num_rows);
+  auto                      seq_col0 = random_values<int32_t>(num_rows);
+  auto                      seq_col1 = random_values<int64_t>(num_rows);
 
   auto valids =
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i % 2 == 0; });
@@ -1390,7 +1390,7 @@ TYPED_TEST(ParquetChunkedWriterNumericTypeTest, UnalignedSize)
 
   using T = TypeParam;
 
-  int num_els = 31;
+  int                                        num_els = 31;
   std::vector<std::unique_ptr<cudf::column>> cols;
 
   bool mask[] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1437,7 +1437,7 @@ TYPED_TEST(ParquetChunkedWriterNumericTypeTest, UnalignedSize2)
 
   using T = TypeParam;
 
-  int num_els = 33;
+  int                                        num_els = 33;
   std::vector<std::unique_ptr<cudf::column>> cols;
 
   bool mask[] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1656,7 +1656,7 @@ TEST_F(ParquetReaderTest, UserBounds)
     srand(31337);
     auto expected = create_random_fixed_table<int>(4, 4, false);
 
-    auto filepath = temp_env->get_temp_filepath("TooManyRows.parquet");
+    auto                            filepath = temp_env->get_temp_filepath("TooManyRows.parquet");
     cudf_io::parquet_writer_options args =
       cudf_io::parquet_writer_options::builder(cudf_io::sink_info{filepath}, *expected);
     cudf_io::write_parquet(args);
@@ -1676,7 +1676,7 @@ TEST_F(ParquetReaderTest, UserBounds)
     srand(31337);
     auto expected = create_random_fixed_table<int>(4, 4, false);
 
-    auto filepath = temp_env->get_temp_filepath("PastBounds.parquet");
+    auto                            filepath = temp_env->get_temp_filepath("PastBounds.parquet");
     cudf_io::parquet_writer_options args =
       cudf_io::parquet_writer_options::builder(cudf_io::sink_info{filepath}, *expected);
     cudf_io::write_parquet(args);
@@ -1698,7 +1698,7 @@ TEST_F(ParquetReaderTest, UserBounds)
     srand(31337);
     auto expected = create_random_fixed_table<int>(4, 4, false);
 
-    auto filepath = temp_env->get_temp_filepath("ZeroRows.parquet");
+    auto                            filepath = temp_env->get_temp_filepath("ZeroRows.parquet");
     cudf_io::parquet_writer_options args =
       cudf_io::parquet_writer_options::builder(cudf_io::sink_info{filepath}, *expected);
     cudf_io::write_parquet(args);
@@ -1742,8 +1742,8 @@ TEST_F(ParquetReaderTest, ReorderedColumns)
     auto a = cudf::test::strings_column_wrapper{{"a", "", "c"}, {true, false, true}};
     auto b = cudf::test::fixed_width_column_wrapper<int>{1, 2, 3};
 
-    cudf::table_view tbl{{a, b}};
-    auto filepath = temp_env->get_temp_filepath("ReorderedColumns.parquet");
+    cudf::table_view        tbl{{a, b}};
+    auto                    filepath = temp_env->get_temp_filepath("ReorderedColumns.parquet");
     cudf_io::table_metadata md;
     md.column_names.push_back("a");
     md.column_names.push_back("b");
@@ -1764,8 +1764,8 @@ TEST_F(ParquetReaderTest, ReorderedColumns)
     auto a = cudf::test::fixed_width_column_wrapper<int>{1, 2, 3};
     auto b = cudf::test::strings_column_wrapper{{"a", "", "c"}, {true, false, true}};
 
-    cudf::table_view tbl{{a, b}};
-    auto filepath = temp_env->get_temp_filepath("ReorderedColumns2.parquet");
+    cudf::table_view        tbl{{a, b}};
+    auto                    filepath = temp_env->get_temp_filepath("ReorderedColumns2.parquet");
     cudf_io::table_metadata md;
     md.column_names.push_back("a");
     md.column_names.push_back("b");
@@ -1789,8 +1789,8 @@ TEST_F(ParquetReaderTest, ReorderedColumns)
                                                        {false, true, true, true, true, false}};
   auto d = cudf::test::strings_column_wrapper{"ducks", "sheep", "cows", "fish", "birds", "ants"};
 
-  cudf::table_view tbl{{a, b, c, d}};
-  auto filepath = temp_env->get_temp_filepath("ReorderedColumns3.parquet");
+  cudf::table_view        tbl{{a, b, c, d}};
+  auto                    filepath = temp_env->get_temp_filepath("ReorderedColumns3.parquet");
   cudf_io::table_metadata md;
   md.column_names.push_back("a");
   md.column_names.push_back("b");

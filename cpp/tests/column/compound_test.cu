@@ -49,11 +49,11 @@ struct checker_for_level2 {
   {
     bool bcheck = true;
     for (int i = 0; i < 2 && bcheck; ++i) {
-      auto child   = d_column.child(i);
-      int32_t val1 = child.child(0).template element<int32_t>(idx);
-      int32_t val2 = child.child(1).template element<int32_t>(idx);
-      int32_t val3 = child.child(2).template element<int32_t>(idx);
-      bcheck       = ((val1 + 100) == val2) && ((val2 + 100) == val3);
+      auto    child = d_column.child(i);
+      int32_t val1  = child.child(0).template element<int32_t>(idx);
+      int32_t val2  = child.child(1).template element<int32_t>(idx);
+      int32_t val3  = child.child(2).template element<int32_t>(idx);
+      bcheck        = ((val1 + 100) == val2) && ((val2 + 100) == val3);
     }
     return bcheck;
   }
@@ -64,11 +64,11 @@ TEST_F(CompoundColumnTest, ChildrenLevel1)
   thrust::device_vector<int32_t> data(1000);
   thrust::sequence(thrust::device, data.begin(), data.end(), 1);
 
-  auto null_mask = cudf::create_null_mask(100, cudf::mask_state::UNALLOCATED);
+  auto               null_mask = cudf::create_null_mask(100, cudf::mask_state::UNALLOCATED);
   rmm::device_buffer data1(data.data().get() + 100, 100 * sizeof(int32_t));
   rmm::device_buffer data2(data.data().get() + 200, 100 * sizeof(int32_t));
   rmm::device_buffer data3(data.data().get() + 300, 100 * sizeof(int32_t));
-  auto child1 =
+  auto               child1 =
     std::make_unique<cudf::column>(cudf::data_type{cudf::type_id::INT32}, 100, data1, null_mask, 0);
   auto child2 =
     std::make_unique<cudf::column>(cudf::data_type{cudf::type_id::INT32}, 200, data2, null_mask, 0);
@@ -108,14 +108,14 @@ TEST_F(CompoundColumnTest, ChildrenLevel2)
   thrust::device_vector<int32_t> data(1000);
   thrust::sequence(thrust::device, data.begin(), data.end(), 1);
 
-  auto null_mask = cudf::create_null_mask(100, cudf::mask_state::UNALLOCATED);
+  auto               null_mask = cudf::create_null_mask(100, cudf::mask_state::UNALLOCATED);
   rmm::device_buffer data11(data.data().get() + 100, 100 * sizeof(int32_t));
   rmm::device_buffer data12(data.data().get() + 200, 100 * sizeof(int32_t));
   rmm::device_buffer data13(data.data().get() + 300, 100 * sizeof(int32_t));
   rmm::device_buffer data21(data.data().get() + 400, 100 * sizeof(int32_t));
   rmm::device_buffer data22(data.data().get() + 500, 100 * sizeof(int32_t));
   rmm::device_buffer data23(data.data().get() + 600, 100 * sizeof(int32_t));
-  auto gchild11 = std::make_unique<cudf::column>(
+  auto               gchild11 = std::make_unique<cudf::column>(
     cudf::data_type{cudf::type_id::INT32}, 100, data11, null_mask, 0);
   auto gchild12 = std::make_unique<cudf::column>(
     cudf::data_type{cudf::type_id::INT32}, 200, data12, null_mask, 0);

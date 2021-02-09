@@ -26,9 +26,9 @@
 //                 The divisor used in calculations is N - ddof, where N
 //                 represents the number of elements.
 
-std::unique_ptr<cudf::scalar> cudf::reduction::variance(column_view const& col,
+std::unique_ptr<cudf::scalar> cudf::reduction::variance(column_view const&    col,
                                                         cudf::data_type const output_dtype,
-                                                        cudf::size_type ddof,
+                                                        cudf::size_type       ddof,
                                                         rmm::cuda_stream_view stream,
                                                         rmm::mr::device_memory_resource* mr)
 {

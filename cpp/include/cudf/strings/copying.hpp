@@ -48,12 +48,12 @@ namespace detail {
  * @return New strings column of size (end-start)/step.
  */
 std::unique_ptr<cudf::column> copy_slice(
-  strings_column_view const& strings,
-  size_type start,
-  size_type end                       = -1,
-  size_type step                      = 1,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  strings_column_view const&       strings,
+  size_type                        start,
+  size_type                        end    = -1,
+  size_type                        step   = 1,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace detail
 }  // namespace strings

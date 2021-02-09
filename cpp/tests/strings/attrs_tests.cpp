@@ -31,7 +31,7 @@ struct StringsAttributesTest : public cudf::test::BaseFixture {
 
 TEST_F(StringsAttributesTest, CodePoints)
 {
-  std::vector<const char*> h_strings{"eee", "bb", nullptr, "", "aa", "bbb", "ééé"};
+  std::vector<const char*>           h_strings{"eee", "bb", nullptr, "", "aa", "bbb", "ééé"};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),
@@ -51,7 +51,7 @@ TEST_F(StringsAttributesTest, ZeroSizeStringsColumn)
 {
   cudf::column_view zero_size_strings_column(
     cudf::data_type{cudf::type_id::STRING}, 0, nullptr, nullptr, 0);
-  auto strings_view = cudf::strings_column_view(zero_size_strings_column);
+  auto              strings_view = cudf::strings_column_view(zero_size_strings_column);
   cudf::column_view expected_column(cudf::data_type{cudf::type_id::INT32}, 0, nullptr, nullptr, 0);
 
   auto results = cudf::strings::count_bytes(strings_view);
@@ -73,7 +73,7 @@ TEST_F(StringsAttributesTest, StringsLengths)
   auto strings_view = cudf::strings_column_view(strings);
 
   {
-    auto results = cudf::strings::count_characters(strings_view);
+    auto                 results = cudf::strings::count_characters(strings_view);
     std::vector<int32_t> h_expected{3, 2, 0, 0, 2, 3, 24};
     cudf::test::fixed_width_column_wrapper<int32_t> expected(
       h_expected.begin(),
@@ -83,7 +83,7 @@ TEST_F(StringsAttributesTest, StringsLengths)
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, expected);
   }
   {
-    auto results = cudf::strings::count_bytes(strings_view);
+    auto                 results = cudf::strings::count_bytes(strings_view);
     std::vector<int32_t> h_expected{3, 2, 0, 0, 2, 6, 24};
     cudf::test::fixed_width_column_wrapper<int32_t> expected(
       h_expected.begin(),

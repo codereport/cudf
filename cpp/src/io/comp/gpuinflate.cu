@@ -90,7 +90,7 @@ struct xwarp_s {
   int32_t batch_len[batch_count];  //< Length of each batch - <0:end, 0:not ready, >0:symbol count
   union {
     uint32_t symqueue[batch_count * batch_size];
-    uint8_t symqueue8[batch_count * batch_size * 4];
+    uint8_t  symqueue8[batch_count * batch_size * 4];
   } u;
 };
 
@@ -103,8 +103,8 @@ constexpr int prefetch_size      = (1 << log2_prefetch_size);
 /// @brief Prefetcher state
 struct prefetch_queue_s {
   const uint8_t *cur_p;  ///< Prefetch location
-  int run;               ///< prefetcher will exit when run=0
-  uint8_t pref_data[prefetch_size];
+  int            run;    ///< prefetcher will exit when run=0
+  uint8_t        pref_data[prefetch_size];
 };
 
 template <typename T>
@@ -127,12 +127,12 @@ struct inflate_state_s {
   uint8_t *cur;  ///< input buffer
   uint8_t *end;  ///< end of input buffer
 
-  uint2 bitbuf;     ///< bit buffer (64-bit)
+  uint2    bitbuf;  ///< bit buffer (64-bit)
   uint32_t bitpos;  ///< position in bit buffer
 
-  int32_t err;              ///< Error status
-  int btype;                ///< current block type
-  int blast;                ///< last block
+  int32_t  err;             ///< Error status
+  int      btype;           ///< current block type
+  int      blast;           ///< last block
   uint32_t stored_blk_len;  ///< length of stored (uncompressed) block
 
   uint16_t first_slow_len;  ///< first code not in fast LUT
@@ -152,7 +152,7 @@ struct inflate_state_s {
 
   union {
     scratch_arr scratch;
-    lut_arr lut;
+    lut_arr     lut;
   } u;
 };
 
@@ -228,7 +228,7 @@ __device__ int decode(inflate_state_s *s, const int16_t *counts, const int16_t *
   unsigned int code;   // len bits being decoded
   unsigned int first;  // first code of length len
   unsigned int count;  // number of codes of length len
-  uint32_t next32r = __brev(nextbits32(s));
+  uint32_t     next32r = __brev(nextbits32(s));
 
   first = 0;
   for (len = 1; len <= max_bits; len++) {
@@ -281,9 +281,9 @@ __device__ int decode(inflate_state_s *s, const int16_t *counts, const int16_t *
 __device__ int construct(
   inflate_state_s *s, int16_t *counts, int16_t *symbols, const int16_t *length, int n)
 {
-  int symbol;  // current symbol when stepping through length[]
-  int len;     // current length when stepping through counts[]
-  int left;    // number of possible codes left of current length
+  int      symbol;  // current symbol when stepping through length[]
+  int      len;     // current length when stepping through counts[]
+  int      left;    // number of possible codes left of current length
   int16_t *offs = s->u.scratch.offs;
 
   // count number of codes of each length
@@ -320,9 +320,9 @@ static const __device__ __constant__ uint8_t g_code_order[19 + 1] = {
 /// Dynamic block (custom huffman tables)
 __device__ int init_dynamic(inflate_state_s *s)
 {
-  int nlen, ndist, ncode; /* number of lengths in descriptor */
-  int index;              /* index of lengths[] */
-  int err;                /* construct() return value */
+  int      nlen, ndist, ncode; /* number of lengths in descriptor */
+  int      index;              /* index of lengths[] */
+  int      err;                /* construct() return value */
   int16_t *lengths = s->u.scratch.lengths;
 
   // get number of lengths in each table, check lengths
@@ -407,7 +407,7 @@ __device__ int init_dynamic(inflate_state_s *s)
 __device__ int init_fixed(inflate_state_s *s)
 {
   int16_t *lengths = s->u.scratch.lengths;
-  int symbol;
+  int      symbol;
 
   // literal/length table
   for (symbol = 0; symbol < 144; symbol++) lengths[symbol] = 8;
@@ -486,11 +486,11 @@ static const __device__ __constant__ uint16_t g_lens[29] = {  // Size base for l
   3,  4,  5,  6,  7,  8,  9,  10, 11,  13,  15,  17,  19,  23, 27,
   31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258};
 static const __device__ __constant__ uint16_t
-  g_lext[29] = {  // Extra bits for length codes 257..285
+                                     g_lext[29] = {  // Extra bits for length codes 257..285
     0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0};
 
 static const __device__ __constant__ uint16_t
-  g_dists[30] = {  // Offset base for distance codes 0..29
+                                     g_dists[30] = {  // Offset base for distance codes 0..29
     1,   2,   3,   4,   5,   7,    9,    13,   17,   25,   33,   49,   65,    97,    129,
     193, 257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577};
 static const __device__ __constant__ uint16_t g_dext[30] = {  // Extra bits for distance codes 0..29
@@ -500,11 +500,11 @@ static const __device__ __constant__ uint16_t g_dext[30] = {  // Extra bits for 
 __device__ void decode_symbols(inflate_state_s *s)
 {
   uint32_t bitpos = s->bitpos;
-  uint2 bitbuf    = s->bitbuf;
+  uint2    bitbuf = s->bitbuf;
   uint8_t *cur    = s->cur;
   uint8_t *end    = s->end;
-  int32_t batch   = 0;
-  int32_t sym, batch_len;
+  int32_t  batch  = 0;
+  int32_t  sym, batch_len;
 
   do {
     volatile uint32_t *b = &s->x.u.symqueue[batch * batch_size];
@@ -546,10 +546,10 @@ __device__ void decode_symbols(inflate_state_s *s)
         sym = ((sym >> 5) & 0x3ff) + ((next32 >> (sym >> 24)) & ((sym >> 16) & 0x1f));
       } else {
         // Slow length path
-        uint32_t next32r       = __brev(next32);
+        uint32_t       next32r = __brev(next32);
         const int16_t *symbols = &s->lensym[s->index_slow_len];
-        unsigned int first     = s->first_slow_len;
-        int lext;
+        unsigned int   first   = s->first_slow_len;
+        int            lext;
 #pragma unroll 1
         for (len = log2_len_lut + 1; len <= max_bits; len++) {
           unsigned int code  = (next32r >> (32 - len)) - first;
@@ -601,9 +601,9 @@ __device__ void decode_symbols(inflate_state_s *s)
           sym |= (dist + bfe(next32, len, dext)) << 16;
           len += dext;
         } else {
-          uint32_t next32r       = __brev(next32);
+          uint32_t       next32r = __brev(next32);
           const int16_t *symbols = &s->distsym[s->index_slow_dist];
-          unsigned int first     = s->first_slow_dist;
+          unsigned int   first   = s->first_slow_dist;
 #pragma unroll 1
           for (len = log2_dist_lut + 1; len <= max_bits; len++) {
             unsigned int code  = (next32r >> (32 - len)) - first;
@@ -682,9 +682,9 @@ __device__ void init_length_lut(inflate_state_s *s, int t)
   for (uint32_t bits = t; bits < (1 << log2_len_lut); bits += blockDim.x) {
     const int16_t *cnt     = s->lencnt;
     const int16_t *symbols = s->lensym;
-    int sym                = -10 << 5;
-    unsigned int first     = 0;
-    unsigned int rbits     = __brev(bits) >> (32 - log2_len_lut);
+    int            sym     = -10 << 5;
+    unsigned int   first   = 0;
+    unsigned int   rbits   = __brev(bits) >> (32 - log2_len_lut);
     for (unsigned int len = 1; len <= log2_len_lut; len++) {
       unsigned int code  = (rbits >> (log2_len_lut - len)) - first;
       unsigned int count = cnt[len];
@@ -705,9 +705,9 @@ __device__ void init_length_lut(inflate_state_s *s, int t)
     lut[bits] = sym;
   }
   if (!t) {
-    unsigned int first = 0;
-    unsigned int index = 0;
-    const int16_t *cnt = s->lencnt;
+    unsigned int   first = 0;
+    unsigned int   index = 0;
+    const int16_t *cnt   = s->lencnt;
     for (unsigned int len = 1; len <= log2_len_lut; len++) {
       unsigned int count = cnt[len];
       index += count;
@@ -730,9 +730,9 @@ __device__ void init_distance_lut(inflate_state_s *s, int t)
   for (uint32_t bits = t; bits < (1 << log2_dist_lut); bits += blockDim.x) {
     const int16_t *cnt     = s->distcnt;
     const int16_t *symbols = s->distsym;
-    int sym                = 0;
-    unsigned int first     = 0;
-    unsigned int rbits     = __brev(bits) >> (32 - log2_dist_lut);
+    int            sym     = 0;
+    unsigned int   first   = 0;
+    unsigned int   rbits   = __brev(bits) >> (32 - log2_dist_lut);
     for (unsigned int len = 1; len <= log2_dist_lut; len++) {
       unsigned int code  = (rbits >> (log2_dist_lut - len)) - first;
       unsigned int count = cnt[len];
@@ -750,9 +750,9 @@ __device__ void init_distance_lut(inflate_state_s *s, int t)
     lut[bits] = sym;
   }
   if (!t) {
-    unsigned int first = 0;
-    unsigned int index = 0;
-    const int16_t *cnt = s->distcnt;
+    unsigned int   first = 0;
+    unsigned int   index = 0;
+    const int16_t *cnt   = s->distcnt;
     for (unsigned int len = 1; len <= log2_dist_lut; len++) {
       unsigned int count = cnt[len];
       index += count;
@@ -767,16 +767,16 @@ __device__ void init_distance_lut(inflate_state_s *s, int t)
 /// @brief WARP1: process symbols and output uncompressed stream
 __device__ void process_symbols(inflate_state_s *s, int t)
 {
-  uint8_t *out           = s->out;
+  uint8_t *      out     = s->out;
   const uint8_t *outend  = s->outend;
   const uint8_t *outbase = s->outbase;
-  int batch              = 0;
+  int            batch   = 0;
 
   do {
     volatile uint32_t *b = &s->x.u.symqueue[batch * batch_size];
-    int batch_len, pos;
-    int32_t symt;
-    uint32_t lit_mask;
+    int                batch_len, pos;
+    int32_t            symt;
+    uint32_t           lit_mask;
 
     if (t == 0) {
       while ((batch_len = s->x.batch_len[batch]) == 0) { nanosleep(100); }
@@ -802,7 +802,7 @@ __device__ void process_symbols(inflate_state_s *s, int t)
       dist   = symbol >> 16;
       for (int i = t; i < len; i += 32) {
         const uint8_t *src = out + ((i >= dist) ? (i % dist) : i) - dist;
-        uint8_t b          = (src < outbase) ? 0 : *src;
+        uint8_t        b   = (src < outbase) ? 0 : *src;
         if (out + i < outend) { out[i] = b; }
       }
       out += len;
@@ -868,13 +868,13 @@ __device__ int init_stored(inflate_state_s *s)
 /// Copy bytes from stored block to destination
 __device__ void copy_stored(inflate_state_s *s, int t)
 {
-  int len         = s->stored_blk_len;
+  int      len    = s->stored_blk_len;
   uint8_t *cur    = s->cur + (s->bitpos >> 3);
   uint8_t *out    = s->out;
   uint8_t *outend = s->outend;
   uint8_t *cur4;
-  int slow_bytes = min(len, (int)((16 - (size_t)out) & 0xf));
-  int fast_bytes, bitpos;
+  int      slow_bytes = min(len, (int)((16 - (size_t)out) & 0xf));
+  int      fast_bytes, bitpos;
 
   // Slow copy until output is 16B aligned
   if (slow_bytes) {
@@ -950,7 +950,7 @@ __device__ void prefetch_warp(volatile inflate_state_s *s, int t)
   const uint8_t *end   = s->end;
   while (shuffle((t == 0) ? s->pref.run : 0)) {
     int32_t cur_lo = (int32_t)(size_t)cur_p;
-    int do_pref =
+    int     do_pref =
       shuffle((t == 0) ? (cur_lo - *(volatile int32_t *)&s->cur < prefetch_size - 32 * 4 - 4) : 0);
     if (do_pref) {
       const uint8_t *p             = cur_p + 4 * t;
@@ -1029,13 +1029,13 @@ __global__ void __launch_bounds__(block_size)
 {
   __shared__ __align__(16) inflate_state_s state_g;
 
-  int t                  = threadIdx.x;
-  int z                  = blockIdx.x;
+  int              t     = threadIdx.x;
+  int              z     = blockIdx.x;
   inflate_state_s *state = &state_g;
 
   if (!t) {
-    uint8_t *p      = const_cast<uint8_t *>(static_cast<uint8_t const *>(inputs[z].srcDevice));
-    size_t src_size = inputs[z].srcSize;
+    uint8_t *p        = const_cast<uint8_t *>(static_cast<uint8_t const *>(inputs[z].srcDevice));
+    size_t   src_size = inputs[z].srcSize;
     uint32_t prefix_bytes;
     // Parse header if needed
     state->err = 0;
@@ -1147,14 +1147,14 @@ __global__ void __launch_bounds__(block_size)
 __global__ void __launch_bounds__(1024) copy_uncompressed_kernel(gpu_inflate_input_s *inputs)
 {
   __shared__ const uint8_t *volatile src_g;
-  __shared__ uint8_t *volatile dst_g;
-  __shared__ uint32_t volatile copy_len_g;
+  __shared__       uint8_t *volatile dst_g;
+  __shared__       uint32_t volatile copy_len_g;
 
-  uint32_t t = threadIdx.x;
-  uint32_t z = blockIdx.x;
+  uint32_t       t = threadIdx.x;
+  uint32_t       z = blockIdx.x;
   const uint8_t *src;
-  uint8_t *dst;
-  uint32_t len, src_align_bytes, src_align_bits, dst_align_bytes;
+  uint8_t *      dst;
+  uint32_t       len, src_align_bytes, src_align_bits, dst_align_bytes;
 
   if (!t) {
     src        = static_cast<const uint8_t *>(inputs[z].srcDevice);
@@ -1180,8 +1180,8 @@ __global__ void __launch_bounds__(1024) copy_uncompressed_kernel(gpu_inflate_inp
   src_align_bytes = (uint32_t)(3 & reinterpret_cast<uintptr_t>(src));
   src_align_bits  = src_align_bytes << 3;
   while (len >= 32) {
-    const uint32_t *src32 = reinterpret_cast<const uint32_t *>(src - src_align_bytes);
-    uint32_t copy_cnt     = min(len >> 2, 1024);
+    const uint32_t *src32    = reinterpret_cast<const uint32_t *>(src - src_align_bytes);
+    uint32_t        copy_cnt = min(len >> 2, 1024);
     if (t < copy_cnt) {
       uint32_t v = src32[t];
       if (src_align_bits != 0) { v = __funnelshift_r(v, src32[t + 1], src_align_bits); }
@@ -1194,10 +1194,10 @@ __global__ void __launch_bounds__(1024) copy_uncompressed_kernel(gpu_inflate_inp
   if (t < len) { dst[t] = src[t]; }
 }
 
-cudaError_t __host__ gpuinflate(gpu_inflate_input_s *inputs,
+cudaError_t __host__ gpuinflate(gpu_inflate_input_s * inputs,
                                 gpu_inflate_status_s *outputs,
-                                int count,
-                                int parse_hdr,
+                                int                   count,
+                                int                   parse_hdr,
                                 rmm::cuda_stream_view stream)
 {
   constexpr int block_size = 128;  // Threads per block
@@ -1208,8 +1208,8 @@ cudaError_t __host__ gpuinflate(gpu_inflate_input_s *inputs,
   return cudaSuccess;
 }
 
-cudaError_t __host__ gpu_copy_uncompressed_blocks(gpu_inflate_input_s *inputs,
-                                                  int count,
+cudaError_t __host__ gpu_copy_uncompressed_blocks(gpu_inflate_input_s * inputs,
+                                                  int                   count,
                                                   rmm::cuda_stream_view stream)
 {
   if (count > 0) { copy_uncompressed_kernel<<<count, 1024, 0, stream.value()>>>(inputs); }

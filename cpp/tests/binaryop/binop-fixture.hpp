@@ -44,7 +44,7 @@ struct BinaryOperationTest : public cudf::test::BaseFixture {
   auto make_validity_iter()
   {
     cudf::test::UniformRandomGenerator<uint8_t> rand_gen(r_min, r_max);
-    uint8_t mod_base = rand_gen.generate();
+    uint8_t                                     mod_base = rand_gen.generate();
     return cudf::detail::make_counting_transform_iterator(
       0, [mod_base](auto row) { return (row % mod_base) > 0; });
   }
@@ -53,8 +53,8 @@ struct BinaryOperationTest : public cudf::test::BaseFixture {
   auto make_random_wrapped_column(size_type size)
   {
     cudf::test::UniformRandomGenerator<T> rand_gen(r_min, r_max);
-    auto data_iter     = make_data_iter(rand_gen);
-    auto validity_iter = make_validity_iter();
+    auto                                  data_iter     = make_data_iter(rand_gen);
+    auto                                  validity_iter = make_validity_iter();
 
     return cudf::test::fixed_width_column_wrapper<T>(data_iter, data_iter + size, validity_iter);
   }

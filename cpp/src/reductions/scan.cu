@@ -57,20 +57,20 @@ struct ScanDispatcher {
 
   // for arithmetic types
   template <typename T, std::enable_if_t<std::is_arithmetic<T>::value, T>* = nullptr>
-  auto exclusive_scan(const column_view& input_view,
-                      null_policy null_handling,
-                      rmm::cuda_stream_view stream,
+  auto exclusive_scan(const column_view&               input_view,
+                      null_policy                      null_handling,
+                      rmm::cuda_stream_view            stream,
                       rmm::mr::device_memory_resource* mr)
   {
     const size_type size = input_view.size();
-    auto output_column =
+    auto            output_column =
       detail::allocate_like(input_view, size, mask_allocation_policy::NEVER, stream, mr);
     if (null_handling == null_policy::EXCLUDE) {
       output_column->set_null_mask(detail::copy_bitmask(input_view, stream, mr),
                                    input_view.null_count());
     }
-    mutable_column_view output = output_column->mutable_view();
-    auto d_input               = column_device_view::create(input_view, stream);
+    mutable_column_view output  = output_column->mutable_view();
+    auto                d_input = column_device_view::create(input_view, stream);
 
     if (input_view.has_nulls()) {
       auto input = make_null_replacement_iterator(*d_input, Op::template identity<T>());
@@ -96,16 +96,16 @@ struct ScanDispatcher {
 
   // for string type
   template <typename T, std::enable_if_t<is_string_supported<T>(), T>* = nullptr>
-  std::unique_ptr<column> exclusive_scan(const column_view& input_view,
-                                         null_policy null_handling,
-                                         rmm::cuda_stream_view stream,
+  std::unique_ptr<column> exclusive_scan(const column_view&               input_view,
+                                         null_policy                      null_handling,
+                                         rmm::cuda_stream_view            stream,
                                          rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("String types supports only inclusive min/max for `cudf::scan`");
   }
 
-  rmm::device_buffer mask_inclusive_scan(const column_view& input_view,
-                                         rmm::cuda_stream_view stream,
+  rmm::device_buffer mask_inclusive_scan(const column_view&               input_view,
+                                         rmm::cuda_stream_view            stream,
                                          rmm::mr::device_memory_resource* mr)
   {
     rmm::device_buffer mask =
@@ -125,13 +125,13 @@ struct ScanDispatcher {
 
   // for arithmetic types
   template <typename T, std::enable_if_t<std::is_arithmetic<T>::value, T>* = nullptr>
-  auto inclusive_scan(const column_view& input_view,
-                      null_policy null_handling,
-                      rmm::cuda_stream_view stream,
+  auto inclusive_scan(const column_view&               input_view,
+                      null_policy                      null_handling,
+                      rmm::cuda_stream_view            stream,
                       rmm::mr::device_memory_resource* mr)
   {
     const size_type size = input_view.size();
-    auto output_column =
+    auto            output_column =
       detail::allocate_like(input_view, size, mask_allocation_policy::NEVER, stream, mr);
     if (null_handling == null_policy::EXCLUDE) {
       output_column->set_null_mask(detail::copy_bitmask(input_view, stream, mr),
@@ -143,8 +143,8 @@ struct ScanDispatcher {
       }
     }
 
-    auto d_input               = column_device_view::create(input_view, stream);
-    mutable_column_view output = output_column->mutable_view();
+    auto                d_input = column_device_view::create(input_view, stream);
+    mutable_column_view output  = output_column->mutable_view();
 
     if (input_view.has_nulls()) {
       auto input = make_null_replacement_iterator(*d_input, Op::template identity<T>());
@@ -160,12 +160,12 @@ struct ScanDispatcher {
 
   // for string type
   template <typename T, std::enable_if_t<is_string_supported<T>(), T>* = nullptr>
-  std::unique_ptr<column> inclusive_scan(const column_view& input_view,
-                                         null_policy null_handling,
-                                         rmm::cuda_stream_view stream,
+  std::unique_ptr<column> inclusive_scan(const column_view&               input_view,
+                                         null_policy                      null_handling,
+                                         rmm::cuda_stream_view            stream,
                                          rmm::mr::device_memory_resource* mr)
   {
-    const size_type size = input_view.size();
+    const size_type       size = input_view.size();
     rmm::device_vector<T> result(size);
 
     auto d_input = column_device_view::create(input_view, stream);
@@ -207,10 +207,10 @@ struct ScanDispatcher {
    * @tparam T type of input column
    */
   template <typename T, typename std::enable_if_t<is_supported<T>(), T>* = nullptr>
-  std::unique_ptr<column> operator()(const column_view& input,
-                                     scan_type inclusive,
-                                     null_policy null_handling,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(const column_view&               input,
+                                     scan_type                        inclusive,
+                                     null_policy                      null_handling,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     auto output = [&] {
@@ -229,10 +229,10 @@ struct ScanDispatcher {
   }
 
   template <typename T, typename std::enable_if_t<!is_supported<T>(), T>* = nullptr>
-  std::unique_ptr<column> operator()(const column_view& input,
-                                     scan_type inclusive,
-                                     null_policy null_handling,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(const column_view&               input,
+                                     scan_type                        inclusive,
+                                     null_policy                      null_handling,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("Non-arithmetic types not supported for `cudf::scan`");
@@ -240,12 +240,12 @@ struct ScanDispatcher {
 };
 
 std::unique_ptr<column> scan(
-  const column_view& input,
+  const column_view&                  input,
   std::unique_ptr<aggregation> const& agg,
-  scan_type inclusive,
-  null_policy null_handling,
-  rmm::cuda_stream_view stream,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  scan_type                           inclusive,
+  null_policy                         null_handling,
+  rmm::cuda_stream_view               stream,
+  rmm::mr::device_memory_resource*    mr = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(
     is_numeric(input.type()) || is_compound(input.type()) || is_fixed_point(input.type()),
@@ -292,11 +292,11 @@ std::unique_ptr<column> scan(
 }
 }  // namespace detail
 
-std::unique_ptr<column> scan(const column_view& input,
+std::unique_ptr<column> scan(const column_view&                  input,
                              std::unique_ptr<aggregation> const& agg,
-                             scan_type inclusive,
-                             null_policy null_handling,
-                             rmm::mr::device_memory_resource* mr)
+                             scan_type                           inclusive,
+                             null_policy                         null_handling,
+                             rmm::mr::device_memory_resource*    mr)
 {
   CUDF_FUNC_RANGE();
   return detail::scan(input, agg, inclusive, null_handling, rmm::cuda_stream_default, mr);

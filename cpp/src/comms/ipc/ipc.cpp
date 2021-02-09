@@ -2,7 +2,7 @@
 #include <cudf/ipc.hpp>
 
 CudaMessageReader::CudaMessageReader(arrow::cuda::CudaBufferReader* stream,
-                                     arrow::io::BufferReader* schema)
+                                     arrow::io::BufferReader*       schema)
   : stream_(stream), host_schema_reader_(schema){};
 
 arrow::Result<std::unique_ptr<arrow::ipc::Message>> CudaMessageReader::ReadNextMessage()

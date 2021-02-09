@@ -30,7 +30,7 @@ struct TextTokenizeTest : public cudf::test::BaseFixture {
 
 TEST_F(TextTokenizeTest, Tokenize)
 {
-  std::vector<const char*> h_strings{"the fox jumped over the dog",
+  std::vector<const char*>           h_strings{"the fox jumped over the dog",
                                      "the dog chased  the cat",
                                      " the cat chased the mouse ",
                                      nullptr,
@@ -61,7 +61,7 @@ TEST_F(TextTokenizeTest, Tokenize)
 
 TEST_F(TextTokenizeTest, TokenizeMulti)
 {
-  std::vector<const char*> h_strings{"the fox jumped over the dog",
+  std::vector<const char*>           h_strings{"the fox jumped over the dog",
                                      "the dog chased  the cat",
                                      "the cat chased the mouse ",
                                      nullptr,
@@ -75,7 +75,7 @@ TEST_F(TextTokenizeTest, TokenizeMulti)
   cudf::strings_column_view strings_view(strings);
 
   cudf::test::strings_column_wrapper delimiters{"the ", "over "};
-  cudf::strings_column_view delimiters_view(delimiters);
+  cudf::strings_column_view          delimiters_view(delimiters);
 
   auto results = nvtext::tokenize(strings_view, delimiters_view);
 
@@ -90,17 +90,17 @@ TEST_F(TextTokenizeTest, TokenizeMulti)
 TEST_F(TextTokenizeTest, TokenizeErrorTest)
 {
   cudf::test::strings_column_wrapper strings{"this column intentionally left blank"};
-  cudf::strings_column_view strings_view(strings);
+  cudf::strings_column_view          strings_view(strings);
 
   {
     cudf::test::strings_column_wrapper delimiters;  // empty delimiters
-    cudf::strings_column_view delimiters_view(delimiters);
+    cudf::strings_column_view          delimiters_view(delimiters);
     EXPECT_THROW(nvtext::tokenize(strings_view, delimiters_view), cudf::logic_error);
     EXPECT_THROW(nvtext::count_tokens(strings_view, delimiters_view), cudf::logic_error);
   }
   {
     cudf::test::strings_column_wrapper delimiters({"", ""}, {0, 0});  // null delimiters
-    cudf::strings_column_view delimiters_view(delimiters);
+    cudf::strings_column_view          delimiters_view(delimiters);
     EXPECT_THROW(nvtext::tokenize(strings_view, delimiters_view), cudf::logic_error);
     EXPECT_THROW(nvtext::count_tokens(strings_view, delimiters_view), cudf::logic_error);
   }
@@ -108,7 +108,7 @@ TEST_F(TextTokenizeTest, TokenizeErrorTest)
 
 TEST_F(TextTokenizeTest, CharacterTokenize)
 {
-  std::vector<const char*> h_strings{"the mousé ate the cheese", nullptr, ""};
+  std::vector<const char*>           h_strings{"the mousé ate the cheese", nullptr, ""};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),
@@ -125,8 +125,8 @@ TEST_F(TextTokenizeTest, CharacterTokenize)
 TEST_F(TextTokenizeTest, TokenizeEmptyTest)
 {
   auto strings = cudf::make_empty_column(cudf::data_type{cudf::type_id::STRING});
-  cudf::test::strings_column_wrapper all_empty({"", "", ""});
-  cudf::test::strings_column_wrapper all_null({"", "", ""}, {0, 0, 0});
+  cudf::test::strings_column_wrapper              all_empty({"", "", ""});
+  cudf::test::strings_column_wrapper              all_null({"", "", ""}, {0, 0, 0});
   cudf::test::fixed_width_column_wrapper<int32_t> expected({0, 0, 0});
 
   auto results = nvtext::tokenize(cudf::strings_column_view(strings->view()));
@@ -168,7 +168,7 @@ TEST_F(TextTokenizeTest, Detokenize)
   {
     cudf::test::fixed_width_column_wrapper<int16_t> rows{0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
                                                          1, 2, 2, 2, 2, 2, 3, 3, 3, 0};
-    auto results =
+    auto                                            results =
       nvtext::detokenize(cudf::strings_column_view(strings), rows, cudf::string_scalar("_"));
     cudf::test::strings_column_wrapper expected{"the_fox_jumped_over_the_dog_cheese",
                                                 "the_dog_chased_the_cat",
@@ -181,7 +181,7 @@ TEST_F(TextTokenizeTest, Detokenize)
 TEST_F(TextTokenizeTest, DetokenizeErrors)
 {
   cudf::test::strings_column_wrapper strings{"this column intentionally left blank"};
-  cudf::strings_column_view strings_view(strings);
+  cudf::strings_column_view          strings_view(strings);
 
   cudf::test::fixed_width_column_wrapper<int32_t> one({0});
   cudf::test::fixed_width_column_wrapper<int32_t> none;

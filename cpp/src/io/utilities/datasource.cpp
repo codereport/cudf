@@ -41,12 +41,12 @@ class memory_mapped_source : public datasource {
   };
 
   class memory_mapped_buffer : public buffer {
-    size_t _size   = 0;
+    size_t   _size = 0;
     uint8_t *_data = nullptr;
 
    public:
     memory_mapped_buffer(uint8_t *data, size_t size) : _size(size), _data(data) {}
-    size_t size() const override { return _size; }
+    size_t         size() const override { return _size; }
     const uint8_t *data() const override { return _data; }
   };
 
@@ -120,7 +120,7 @@ class memory_mapped_source : public datasource {
 
  private:
   size_t file_size_  = 0;
-  void *map_addr_    = nullptr;
+  void * map_addr_   = nullptr;
   size_t map_size_   = 0;
   size_t map_offset_ = 0;
 };
@@ -165,8 +165,8 @@ class user_datasource_wrapper : public datasource {
 };
 
 std::unique_ptr<datasource> datasource::create(const std::string &filepath,
-                                               size_t offset,
-                                               size_t size)
+                                               size_t             offset,
+                                               size_t             size)
 {
   // Use our own memory mapping implementation for direct file reads
   return std::make_unique<memory_mapped_source>(filepath.c_str(), offset, size);

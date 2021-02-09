@@ -40,9 +40,9 @@ struct tile_functor {
 }  // anonymous namespace
 
 namespace detail {
-std::unique_ptr<table> tile(const table_view &in,
-                            size_type count,
-                            rmm::cuda_stream_view stream,
+std::unique_ptr<table> tile(const table_view &               in,
+                            size_type                        count,
+                            rmm::cuda_stream_view            stream,
                             rmm::mr::device_memory_resource *mr)
 {
   CUDF_EXPECTS(count >= 0, "Count cannot be negative");
@@ -59,8 +59,8 @@ std::unique_ptr<table> tile(const table_view &in,
 }
 }  // namespace detail
 
-std::unique_ptr<table> tile(const table_view &in,
-                            size_type count,
+std::unique_ptr<table> tile(const table_view &               in,
+                            size_type                        count,
                             rmm::mr::device_memory_resource *mr)
 {
   CUDF_FUNC_RANGE();

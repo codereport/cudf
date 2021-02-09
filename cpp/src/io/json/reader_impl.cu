@@ -84,7 +84,7 @@ constexpr size_t calculate_max_row_size(int num_columns = 0) noexcept
  */
 std::unique_ptr<table> aggregate_keys_info(std::unique_ptr<table> info)
 {
-  auto const info_view = info->view();
+  auto const                                info_view = info->view();
   std::vector<groupby::aggregation_request> requests;
   requests.emplace_back(groupby::aggregation_request{info_view.column(0)});
   requests.back().aggregations.emplace_back(make_min_aggregation());
@@ -110,10 +110,10 @@ std::unique_ptr<table> aggregate_keys_info(std::unique_ptr<table> info)
 /**
  * @brief Initializes the (key hash -> column index) hash map.
  */
-col_map_ptr_type create_col_names_hash_map(column_view column_name_hashes,
+col_map_ptr_type create_col_names_hash_map(column_view           column_name_hashes,
                                            rmm::cuda_stream_view stream)
 {
-  auto key_col_map{col_map_type::create(column_name_hashes.size(), stream)};
+  auto       key_col_map{col_map_type::create(column_name_hashes.size(), stream)};
   auto const column_data = column_name_hashes.data<uint32_t>();
   thrust::for_each_n(rmm::exec_policy(stream),
                      thrust::make_counting_iterator<size_type>(0),
@@ -136,10 +136,10 @@ col_map_ptr_type create_col_names_hash_map(column_view column_name_hashes,
  *
  * @return std::unique_ptr<table> cudf table with three columns (offsets, lenghts, hashes)
  */
-std::unique_ptr<table> create_json_keys_info_table(const parse_options_view &options,
-                                                   device_span<char const> const data,
+std::unique_ptr<table> create_json_keys_info_table(const parse_options_view &        options,
+                                                   device_span<char const> const     data,
                                                    device_span<uint64_t const> const row_offsets,
-                                                   rmm::cuda_stream_view stream)
+                                                   rmm::cuda_stream_view             stream)
 {
   // Count keys
   rmm::device_scalar<unsigned long long int> key_counter(0, stream);
@@ -147,13 +147,13 @@ std::unique_ptr<table> create_json_keys_info_table(const parse_options_view &opt
     options, data, row_offsets, key_counter.data(), {}, stream);
 
   // Allocate columns to store hash value, length, and offset of each JSON object key in the input
-  auto const num_keys = key_counter.value();
+  auto const                           num_keys = key_counter.value();
   std::vector<std::unique_ptr<column>> info_columns;
   info_columns.emplace_back(make_numeric_column(data_type(type_id::UINT64), num_keys));
   info_columns.emplace_back(make_numeric_column(data_type(type_id::UINT16), num_keys));
   info_columns.emplace_back(make_numeric_column(data_type(type_id::UINT32), num_keys));
   // Create a table out of these columns to pass them around more easily
-  auto info_table           = std::make_unique<table>(std::move(info_columns));
+  auto       info_table     = std::make_unique<table>(std::move(info_columns));
   auto const info_table_mdv = mutable_table_device_view::create(info_table->mutable_view(), stream);
 
   // Reset the key counter - now used for indexing
@@ -167,11 +167,11 @@ std::unique_ptr<table> create_json_keys_info_table(const parse_options_view &opt
 /**
  * @brief Extract the keys from the JSON file the name offsets/lengths.
  */
-std::vector<std::string> create_key_strings(char const *h_data,
-                                            table_view sorted_info,
+std::vector<std::string> create_key_strings(char const *          h_data,
+                                            table_view            sorted_info,
                                             rmm::cuda_stream_view stream)
 {
-  auto const num_cols = sorted_info.num_rows();
+  auto const            num_cols = sorted_info.num_rows();
   std::vector<uint64_t> h_offsets(num_cols);
   cudaMemcpyAsync(h_offsets.data(),
                   sorted_info.column(0).data<uint64_t>(),
@@ -333,7 +333,7 @@ void reader::impl::set_record_starts(rmm::cuda_stream_view stream)
   auto filtered_count = prefilter_count;
   if (allow_newlines_in_strings_) {
     thrust::host_vector<uint64_t> h_rec_starts = rec_starts_;
-    bool quotation                             = false;
+    bool                          quotation    = false;
     for (cudf::size_type i = 1; i < prefilter_count; ++i) {
       if (uncomp_data_[h_rec_starts[i] - 1] == '\"') {
         quotation       = !quotation;
@@ -442,8 +442,8 @@ void reader::impl::set_column_names(rmm::cuda_stream_view stream)
     metadata_.column_names = keys_desc.first;
     set_column_map(std::move(keys_desc.second));
   } else {
-    int cols_found = 0;
-    bool quotation = false;
+    int  cols_found = 0;
+    bool quotation  = false;
     for (size_t pos = 0; pos < first_row.size(); ++pos) {
       // Flip the quotation flag if current character is a quotechar
       if (first_row[pos] == opts_.quotechar) {
@@ -571,8 +571,8 @@ table_with_metadata reader::impl::convert_data_to_table(rmm::cuda_stream_view st
     out_buffers.emplace_back(dtypes_[col], num_records, true, stream, mr_);
   }
 
-  thrust::host_vector<data_type> h_dtypes(num_columns);
-  thrust::host_vector<void *> h_data(num_columns);
+  thrust::host_vector<data_type>      h_dtypes(num_columns);
+  thrust::host_vector<void *>         h_data(num_columns);
   thrust::host_vector<bitmask_type *> h_valid(num_columns);
 
   for (size_t i = 0; i < num_columns; ++i) {
@@ -581,10 +581,10 @@ table_with_metadata reader::impl::convert_data_to_table(rmm::cuda_stream_view st
     h_valid[i]  = out_buffers[i].null_mask();
   }
 
-  rmm::device_vector<data_type> d_dtypes           = h_dtypes;
-  rmm::device_vector<void *> d_data                = h_data;
-  rmm::device_vector<cudf::bitmask_type *> d_valid = h_valid;
-  rmm::device_vector<cudf::size_type> d_valid_counts(num_columns, 0);
+  rmm::device_vector<data_type>            d_dtypes = h_dtypes;
+  rmm::device_vector<void *>               d_data   = h_data;
+  rmm::device_vector<cudf::bitmask_type *> d_valid  = h_valid;
+  rmm::device_vector<cudf::size_type>      d_valid_counts(num_columns, 0);
 
   cudf::io::json::gpu::convert_json_to_columns(
     opts_.view(),
@@ -624,9 +624,9 @@ table_with_metadata reader::impl::convert_data_to_table(rmm::cuda_stream_view st
   return table_with_metadata{std::make_unique<table>(std::move(out_columns)), metadata_};
 }
 
-reader::impl::impl(std::unique_ptr<datasource> source,
-                   std::string filepath,
-                   json_reader_options const &options,
+reader::impl::impl(std::unique_ptr<datasource>      source,
+                   std::string                      filepath,
+                   json_reader_options const &      options,
                    rmm::mr::device_memory_resource *mr)
   : options_(options), mr_(mr), source_(std::move(source)), filepath_(filepath)
 {
@@ -649,7 +649,7 @@ reader::impl::impl(std::unique_ptr<datasource> source,
  * @return Table and its metadata
  */
 table_with_metadata reader::impl::read(json_reader_options const &options,
-                                       rmm::cuda_stream_view stream)
+                                       rmm::cuda_stream_view      stream)
 {
   auto range_offset = options.get_byte_range_offset();
   auto range_size   = options.get_byte_range_size();
@@ -677,8 +677,8 @@ table_with_metadata reader::impl::read(json_reader_options const &options,
 }
 
 // Forward to implementation
-reader::reader(std::vector<std::string> const &filepaths,
-               json_reader_options const &options,
+reader::reader(std::vector<std::string> const & filepaths,
+               json_reader_options const &      options,
                rmm::mr::device_memory_resource *mr)
 {
   CUDF_EXPECTS(filepaths.size() == 1, "Only a single source is currently supported.");
@@ -689,8 +689,8 @@ reader::reader(std::vector<std::string> const &filepaths,
 
 // Forward to implementation
 reader::reader(std::vector<std::unique_ptr<cudf::io::datasource>> &&sources,
-               json_reader_options const &options,
-               rmm::mr::device_memory_resource *mr)
+               json_reader_options const &                          options,
+               rmm::mr::device_memory_resource *                    mr)
 {
   CUDF_EXPECTS(sources.size() == 1, "Only a single source is currently supported.");
   _impl = std::make_unique<impl>(std::move(sources[0]), "", options, mr);

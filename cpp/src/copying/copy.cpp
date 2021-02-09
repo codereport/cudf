@@ -50,10 +50,10 @@ inline mask_state should_allocate_mask(mask_allocation_policy mask_alloc, bool m
  * Creates an uninitialized new column of the specified size and same type as
  * the `input`. Supports only fixed-width types.
  */
-std::unique_ptr<column> allocate_like(column_view const& input,
-                                      size_type size,
-                                      mask_allocation_policy mask_alloc,
-                                      rmm::cuda_stream_view stream,
+std::unique_ptr<column> allocate_like(column_view const&               input,
+                                      size_type                        size,
+                                      mask_allocation_policy           mask_alloc,
+                                      rmm::cuda_stream_view            stream,
                                       rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -104,17 +104,17 @@ std::unique_ptr<table> empty_like(table_view const& input_table)
   return std::make_unique<table>(std::move(columns));
 }
 
-std::unique_ptr<column> allocate_like(column_view const& input,
-                                      mask_allocation_policy mask_alloc,
+std::unique_ptr<column> allocate_like(column_view const&               input,
+                                      mask_allocation_policy           mask_alloc,
                                       rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::allocate_like(input, input.size(), mask_alloc, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> allocate_like(column_view const& input,
-                                      size_type size,
-                                      mask_allocation_policy mask_alloc,
+std::unique_ptr<column> allocate_like(column_view const&               input,
+                                      size_type                        size,
+                                      mask_allocation_policy           mask_alloc,
                                       rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

@@ -176,8 +176,8 @@ TYPED_TEST_CASE(IsSortedTest, ComparableTypes);
 
 TYPED_TEST(IsSortedTest, NoColumns)
 {
-  cudf::table_view in{std::vector<cudf::table_view>{}};
-  std::vector<cudf::order> order{};
+  cudf::table_view              in{std::vector<cudf::table_view>{}};
+  std::vector<cudf::order>      order{};
   std::vector<cudf::null_order> null_precedence{};
 
   auto actual = cudf::is_sorted(in, order, null_precedence);
@@ -196,8 +196,8 @@ TYPED_TEST(IsSortedTest, NoRows)
     auto col1 = testdata::empty<T>();
     auto col2 = testdata::empty<T>();
 
-    cudf::table_view in{{col1, col2}};
-    std::vector<cudf::order> order{cudf::order::ASCENDING, cudf::order::DESCENDING};
+    cudf::table_view              in{{col1, col2}};
+    std::vector<cudf::order>      order{cudf::order::ASCENDING, cudf::order::DESCENDING};
     std::vector<cudf::null_order> null_precedence{};
 
     auto actual = cudf::is_sorted(in, order, null_precedence);
@@ -210,9 +210,9 @@ TYPED_TEST(IsSortedTest, Ascending)
 {
   using T = TypeParam;
 
-  auto col1 = testdata::ascending<T>();
-  cudf::table_view in{{col1}};
-  std::vector<cudf::order> order{cudf::order::ASCENDING};
+  auto                          col1 = testdata::ascending<T>();
+  cudf::table_view              in{{col1}};
+  std::vector<cudf::order>      order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   auto actual = cudf::is_sorted(in, order, null_precedence);
@@ -224,9 +224,9 @@ TYPED_TEST(IsSortedTest, AscendingFalse)
 {
   using T = TypeParam;
 
-  auto col1 = testdata::descending<T>();
-  cudf::table_view in{{col1}};
-  std::vector<cudf::order> order{cudf::order::ASCENDING};
+  auto                          col1 = testdata::descending<T>();
+  cudf::table_view              in{{col1}};
+  std::vector<cudf::order>      order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   auto actual = cudf::is_sorted(in, order, {});
@@ -240,8 +240,8 @@ TYPED_TEST(IsSortedTest, Descending)
 
   auto col1 = testdata::descending<T>();
 
-  cudf::table_view in{{col1}};
-  std::vector<cudf::order> order{cudf::order::DESCENDING};
+  cudf::table_view              in{{col1}};
+  std::vector<cudf::order>      order{cudf::order::DESCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   auto actual = cudf::is_sorted(in, order, null_precedence);
@@ -255,8 +255,8 @@ TYPED_TEST(IsSortedTest, DescendingFalse)
 
   auto col1 = testdata::ascending<T>();
 
-  cudf::table_view in{{col1}};
-  std::vector<cudf::order> order{cudf::order::DESCENDING};
+  cudf::table_view              in{{col1}};
+  std::vector<cudf::order>      order{cudf::order::DESCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   auto actual = cudf::is_sorted(in, order, null_precedence);
@@ -270,8 +270,8 @@ TYPED_TEST(IsSortedTest, NullsAfter)
 
   auto col1 = testdata::nulls_after<T>();
 
-  cudf::table_view in{{col1}};
-  std::vector<cudf::order> order{};
+  cudf::table_view              in{{col1}};
+  std::vector<cudf::order>      order{};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::AFTER};
 
   auto actual = cudf::is_sorted(in, order, null_precedence);
@@ -285,8 +285,8 @@ TYPED_TEST(IsSortedTest, NullsAfterFalse)
 
   auto col1 = testdata::nulls_before<T>();
 
-  cudf::table_view in{{col1}};
-  std::vector<cudf::order> order{};
+  cudf::table_view              in{{col1}};
+  std::vector<cudf::order>      order{};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::AFTER};
 
   auto actual = cudf::is_sorted(in, order, null_precedence);
@@ -300,8 +300,8 @@ TYPED_TEST(IsSortedTest, NullsBefore)
 
   auto col1 = testdata::nulls_before<T>();
 
-  cudf::table_view in{{col1}};
-  std::vector<cudf::order> order{};
+  cudf::table_view              in{{col1}};
+  std::vector<cudf::order>      order{};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::BEFORE};
 
   auto actual = cudf::is_sorted(in, order, null_precedence);
@@ -315,8 +315,8 @@ TYPED_TEST(IsSortedTest, NullsBeforeFalse)
 
   auto col1 = testdata::nulls_after<T>();
 
-  cudf::table_view in{{col1}};
-  std::vector<cudf::order> order{};
+  cudf::table_view              in{{col1}};
+  std::vector<cudf::order>      order{};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::BEFORE};
 
   auto actual = cudf::is_sorted(in, order, null_precedence);
@@ -331,8 +331,8 @@ TYPED_TEST(IsSortedTest, OrderArgsTooFew)
   auto col1 = testdata::ascending<T>();
   auto col2 = testdata::ascending<T>();
 
-  cudf::table_view in{{col1, col2}};
-  std::vector<cudf::order> order{cudf::order::ASCENDING};
+  cudf::table_view              in{{col1, col2}};
+  std::vector<cudf::order>      order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   EXPECT_THROW(cudf::is_sorted(in, order, null_precedence), cudf::logic_error);
@@ -344,8 +344,8 @@ TYPED_TEST(IsSortedTest, OrderArgsTooMany)
 
   auto col1 = testdata::ascending<T>();
 
-  cudf::table_view in{{col1}};
-  std::vector<cudf::order> order{cudf::order::ASCENDING, cudf::order::ASCENDING};
+  cudf::table_view              in{{col1}};
+  std::vector<cudf::order>      order{cudf::order::ASCENDING, cudf::order::ASCENDING};
   std::vector<cudf::null_order> null_precedence{};
 
   EXPECT_THROW(cudf::is_sorted(in, order, null_precedence), cudf::logic_error);
@@ -358,8 +358,8 @@ TYPED_TEST(IsSortedTest, NullOrderArgsTooFew)
   auto col1 = testdata::nulls_before<T>();
   auto col2 = testdata::nulls_before<T>();
 
-  cudf::table_view in{{col1, col2}};
-  std::vector<cudf::order> order{};
+  cudf::table_view              in{{col1, col2}};
+  std::vector<cudf::order>      order{};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::BEFORE};
 
   EXPECT_THROW(cudf::is_sorted(in, order, null_precedence), cudf::logic_error);
@@ -371,8 +371,8 @@ TYPED_TEST(IsSortedTest, NullOrderArgsTooMany)
 
   auto col1 = testdata::nulls_before<T>();
 
-  cudf::table_view in{{col1}};
-  std::vector<cudf::order> order{};
+  cudf::table_view              in{{col1}};
+  std::vector<cudf::order>      order{};
   std::vector<cudf::null_order> null_precedence{cudf::null_order::BEFORE, cudf::null_order::BEFORE};
 
   EXPECT_THROW(cudf::is_sorted(in, order, null_precedence), cudf::logic_error);

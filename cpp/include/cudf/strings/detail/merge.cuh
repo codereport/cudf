@@ -45,11 +45,11 @@ namespace detail {
  * @return New strings column.
  */
 template <typename index_type, typename row_order_iterator>
-std::unique_ptr<column> merge(strings_column_view const& lhs,
-                              strings_column_view const& rhs,
-                              row_order_iterator begin,
-                              row_order_iterator end,
-                              rmm::cuda_stream_view stream,
+std::unique_ptr<column> merge(strings_column_view const&       lhs,
+                              strings_column_view const&       rhs,
+                              row_order_iterator               begin,
+                              row_order_iterator               end,
+                              rmm::cuda_stream_view            stream,
                               rmm::mr::device_memory_resource* mr)
 {
   using cudf::detail::side;
@@ -63,7 +63,7 @@ std::unique_ptr<column> merge(strings_column_view const& lhs,
 
   // caller will set the null mask
   rmm::device_buffer null_mask{0, stream, mr};
-  size_type null_count = lhs.null_count() + rhs.null_count();
+  size_type          null_count = lhs.null_count() + rhs.null_count();
   if (null_count > 0)
     null_mask = cudf::detail::create_null_mask(strings_count, mask_state::ALL_VALID, stream, mr);
 
@@ -83,7 +83,7 @@ std::unique_ptr<column> merge(strings_column_view const& lhs,
 
   // create the chars column
   size_type bytes = thrust::device_pointer_cast(d_offsets)[strings_count];
-  auto chars_column =
+  auto      chars_column =
     strings::detail::create_chars_child_column(strings_count, null_count, bytes, stream, mr);
   // merge the strings
   auto d_chars = chars_column->mutable_view().template data<char>();
@@ -92,8 +92,8 @@ std::unique_ptr<column> merge(strings_column_view const& lhs,
                      strings_count,
                      [d_lhs, d_rhs, begin, d_offsets, d_chars] __device__(size_type idx) {
                        index_type index_pair = begin[idx];
-                       auto side             = thrust::get<0>(index_pair);
-                       auto index            = thrust::get<1>(index_pair);
+                       auto       side       = thrust::get<0>(index_pair);
+                       auto       index      = thrust::get<1>(index_pair);
                        if (side == side::LEFT ? d_lhs.is_null(index) : d_rhs.is_null(index)) return;
                        auto d_str = side == side::LEFT ? d_lhs.element<string_view>(index)
                                                        : d_rhs.element<string_view>(index);

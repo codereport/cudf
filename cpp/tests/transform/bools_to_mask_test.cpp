@@ -43,7 +43,7 @@ struct MaskToNullTest : public cudf::test::BaseFixture {
     cudf::test::fixed_width_column_wrapper<int32_t> expected(
       sample, sample + input.size(), input.begin());
 
-    auto got_mask = cudf::bools_to_mask(input_column);
+    auto         got_mask = cudf::bools_to_mask(input_column);
     cudf::column got_column(expected);
     got_column.set_null_mask(std::move(*(got_mask.first)));
 
@@ -58,7 +58,7 @@ struct MaskToNullTest : public cudf::test::BaseFixture {
     cudf::test::fixed_width_column_wrapper<int32_t> expected(
       sample, sample + input.size(), input.begin());
 
-    auto got_mask = cudf::bools_to_mask(input_column);
+    auto         got_mask = cudf::bools_to_mask(input_column);
     cudf::column got_column(expected);
     got_column.set_null_mask(std::move(*(got_mask.first)));
 

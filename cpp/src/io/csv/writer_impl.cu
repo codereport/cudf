@@ -74,7 +74,7 @@ struct predicate_special_chars {
     //
     constexpr char const* quote_str   = "\"";
     constexpr char const* newline_str = "\n";
-    constexpr size_type len1byte{1};
+    constexpr size_type   len1byte{1};
 
     if ((str_view.find(quote_str, len1byte) >= 0) || (str_view.find(newline_str, len1byte) >= 0) ||
         (str_view.find(delimiter_) >= 0)) {
@@ -115,14 +115,14 @@ struct probe_special_chars {
   }
 
  private:
-  column_device_view const d_column_;
+  column_device_view const      d_column_;
   predicate_special_chars const predicate_;
 };
 
 struct modify_special_chars {
-  modify_special_chars(column_device_view const d_column,
-                       int32_t const* d_offsets,
-                       char* d_chars,
+  modify_special_chars(column_device_view const       d_column,
+                       int32_t const*                 d_offsets,
+                       char*                          d_chars,
                        predicate_special_chars const& predicate)
     : d_column_(d_column), d_offsets_(d_offsets), d_chars_(d_chars), predicate_(predicate)
   {
@@ -136,14 +136,14 @@ struct modify_special_chars {
       return 0;  // null string, so no-op
     }
 
-    string_view d_str        = d_column_.template element<string_view>(idx);
-    size_type str_size_bytes = d_str.size_bytes();
+    string_view d_str          = d_column_.template element<string_view>(idx);
+    size_type   str_size_bytes = d_str.size_bytes();
 
     char* d_buffer = get_output_ptr(idx);
     // assert( d_buffer != nullptr );
 
     if (predicate_(d_str)) {
-      constexpr char const quote_char   = '\"';
+      constexpr char const  quote_char  = '\"';
       constexpr char const* quote_str   = "\"";
       constexpr char const* str_2quotes = "\"\"";
 
@@ -185,9 +185,9 @@ struct modify_special_chars {
   }
 
  private:
-  column_device_view const d_column_;
-  int32_t const* d_offsets_;
-  char* d_chars_;
+  column_device_view const      d_column_;
+  int32_t const*                d_offsets_;
+  char*                         d_chars_;
   predicate_special_chars const predicate_;
 };
 
@@ -211,9 +211,9 @@ struct column_to_strings_fn {
                (cudf::is_timestamp<column_type>()) || (cudf::is_duration<column_type>()));
   }
 
-  explicit column_to_strings_fn(csv_writer_options const& options,
-                                rmm::mr::device_memory_resource* mr = nullptr,
-                                rmm::cuda_stream_view stream        = nullptr)
+  explicit column_to_strings_fn(csv_writer_options const&        options,
+                                rmm::mr::device_memory_resource* mr     = nullptr,
+                                rmm::cuda_stream_view            stream = nullptr)
     : options_(options), mr_(mr), stream_(stream)
   {
   }
@@ -344,15 +344,15 @@ struct column_to_strings_fn {
   }
 
  private:
-  csv_writer_options const& options_;
+  csv_writer_options const&        options_;
   rmm::mr::device_memory_resource* mr_;
-  rmm::cuda_stream_view stream_;
+  rmm::cuda_stream_view            stream_;
 };
 }  // unnamed namespace
 
 // Forward to implementation
-writer::writer(std::unique_ptr<data_sink> sink,
-               csv_writer_options const& options,
+writer::writer(std::unique_ptr<data_sink>       sink,
+               csv_writer_options const&        options,
                rmm::mr::device_memory_resource* mr)
   : _impl(std::make_unique<impl>(std::move(sink), options, mr))
 {
@@ -361,8 +361,8 @@ writer::writer(std::unique_ptr<data_sink> sink,
 // Destructor within this translation unit
 writer::~writer() = default;
 
-writer::impl::impl(std::unique_ptr<data_sink> sink,
-                   csv_writer_options const& options,
+writer::impl::impl(std::unique_ptr<data_sink>       sink,
+                   csv_writer_options const&        options,
                    rmm::mr::device_memory_resource* mr)
   : out_sink_(std::move(sink)), mr_(mr), options_(options)
 {
@@ -370,7 +370,7 @@ writer::impl::impl(std::unique_ptr<data_sink> sink,
 
 // write the header: column names:
 //
-void writer::impl::write_chunked_begin(table_view const& table,
+void writer::impl::write_chunked_begin(table_view const&     table,
                                        const table_metadata* metadata,
                                        rmm::cuda_stream_view stream)
 {
@@ -393,8 +393,8 @@ void writer::impl::write_chunked_begin(table_view const& table,
 }
 
 void writer::impl::write_chunked(strings_column_view const& str_column_view,
-                                 const table_metadata* metadata,
-                                 rmm::cuda_stream_view stream)
+                                 const table_metadata*      metadata,
+                                 rmm::cuda_stream_view      stream)
 {
   // algorithm outline:
   //
@@ -410,11 +410,11 @@ void writer::impl::write_chunked(strings_column_view const& str_column_view,
   CUDF_EXPECTS(str_column_view.size() > 0, "Unexpected empty strings column.");
 
   cudf::string_scalar newline{options_.get_line_terminator()};
-  auto p_str_col_w_nl = cudf::strings::join_strings(str_column_view, newline);
+  auto                p_str_col_w_nl = cudf::strings::join_strings(str_column_view, newline);
   strings_column_view strings_column{p_str_col_w_nl->view()};
 
-  auto total_num_bytes      = strings_column.chars_size();
-  char const* ptr_all_bytes = strings_column.chars().data<char>();
+  auto        total_num_bytes = strings_column.chars_size();
+  char const* ptr_all_bytes   = strings_column.chars().data<char>();
 
   if (out_sink_->supports_device_write()) {
     // host algorithm call, but the underlying call
@@ -449,7 +449,7 @@ void writer::impl::write_chunked(strings_column_view const& str_column_view,
   }
 }
 
-void writer::impl::write(table_view const& table,
+void writer::impl::write(table_view const&     table,
                          const table_metadata* metadata,
                          rmm::cuda_stream_view stream)
 {
@@ -474,14 +474,14 @@ void writer::impl::write(table_view const& table,
 
     CUDF_EXPECTS(n_rows_per_chunk >= 8, "write_csv: invalid chunk_rows; must be at least 8");
 
-    auto num_rows = table.num_rows();
+    auto                    num_rows = table.num_rows();
     std::vector<table_view> vector_views;
 
     if (num_rows <= n_rows_per_chunk) {
       vector_views.push_back(table);
     } else {
       std::vector<size_type> splits;
-      auto n_chunks = num_rows / n_rows_per_chunk;
+      auto                   n_chunks = num_rows / n_rows_per_chunk;
       splits.resize(n_chunks);
 
       rmm::device_vector<size_type> d_splits(n_chunks, n_rows_per_chunk);
@@ -527,7 +527,7 @@ void writer::impl::write(table_view const& table,
       //(using null representation and delimiter):
       //
       std::string delimiter_str{options_.get_inter_column_delimiter()};
-      auto str_concat_col =
+      auto        str_concat_col =
         cudf::strings::concatenate(str_table_view, delimiter_str, options_.get_na_rep(), mr_);
 
       write_chunked(str_concat_col->view(), metadata, stream);
@@ -539,7 +539,7 @@ void writer::impl::write(table_view const& table,
   write_chunked_end(table, metadata, stream);
 }
 
-void writer::write(table_view const& table,
+void writer::write(table_view const&     table,
                    const table_metadata* metadata,
                    rmm::cuda_stream_view stream)
 {

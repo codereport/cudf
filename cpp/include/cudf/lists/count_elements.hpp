@@ -47,7 +47,7 @@ namespace lists {
  * @return New INT32 column with the number of elements for each row.
  */
 std::unique_ptr<column> count_elements(
-  lists_column_view const& input,
+  lists_column_view const&         input,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of lists_elements group

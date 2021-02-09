@@ -32,11 +32,11 @@ namespace cudf {
 namespace strings {
 namespace detail {
 std::unique_ptr<column> fill(
-  strings_column_view const& strings,
-  size_type begin,
-  size_type end,
-  string_scalar const& value,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  size_type                        begin,
+  size_type                        end,
+  string_scalar const&             value,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   auto strings_count = strings.size();
@@ -62,8 +62,8 @@ std::unique_ptr<column> fill(
     },
     stream,
     mr);
-  auto null_count               = valid_mask.second;
-  rmm::device_buffer& null_mask = valid_mask.first;
+  auto                null_count = valid_mask.second;
+  rmm::device_buffer& null_mask  = valid_mask.first;
 
   // build offsets column
   auto offsets_transformer = [d_strings, begin, end, d_value] __device__(size_type idx) {
@@ -79,7 +79,7 @@ std::unique_ptr<column> fill(
 
   // create the chars column
   size_type bytes = thrust::device_pointer_cast(d_offsets)[strings_count];
-  auto chars_column =
+  auto      chars_column =
     strings::detail::create_chars_child_column(strings_count, null_count, bytes, stream, mr);
   // fill the chars column
   auto d_chars = chars_column->mutable_view().data<char>();

@@ -32,7 +32,7 @@ struct TextNormalizeTest : public cudf::test::BaseFixture {
 
 TEST_F(TextNormalizeTest, NormalizeSpaces)
 {
-  std::vector<const char*> h_strings{"the\t fox  jumped over the      dog",
+  std::vector<const char*>           h_strings{"the\t fox  jumped over the      dog",
                                      "the dog\f chased  the cat\r",
                                      " the cat  chaséd  the mouse\n",
                                      nullptr,
@@ -47,7 +47,7 @@ TEST_F(TextNormalizeTest, NormalizeSpaces)
 
   cudf::strings_column_view strings_view(strings);
 
-  std::vector<const char*> h_expected{"the fox jumped over the dog",
+  std::vector<const char*>           h_expected{"the fox jumped over the dog",
                                       "the dog chased the cat",
                                       "the cat chaséd the mouse",
                                       nullptr,
@@ -68,7 +68,7 @@ TEST_F(TextNormalizeTest, NormalizeEmptyTest)
 {
   auto strings = cudf::make_empty_column(cudf::data_type{cudf::type_id::STRING});
   cudf::strings_column_view strings_view(strings->view());
-  auto results = nvtext::normalize_spaces(strings_view);
+  auto                      results = nvtext::normalize_spaces(strings_view);
   EXPECT_EQ(results->size(), 0);
   results = nvtext::normalize_characters(strings_view, true);
   EXPECT_EQ(results->size(), 0);
@@ -79,8 +79,8 @@ TEST_F(TextNormalizeTest, NormalizeEmptyTest)
 TEST_F(TextNormalizeTest, AllNullStrings)
 {
   cudf::test::strings_column_wrapper strings({"", "", ""}, {0, 0, 0});
-  cudf::strings_column_view strings_view(strings);
-  auto results = nvtext::normalize_spaces(strings_view);
+  cudf::strings_column_view          strings_view(strings);
+  auto                               results = nvtext::normalize_spaces(strings_view);
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, strings);
   results = nvtext::normalize_characters(strings_view, false);
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, strings);
@@ -89,8 +89,8 @@ TEST_F(TextNormalizeTest, AllNullStrings)
 TEST_F(TextNormalizeTest, SomeNullStrings)
 {
   cudf::test::strings_column_wrapper strings({"", ".", "a"}, {0, 1, 1});
-  cudf::strings_column_view strings_view(strings);
-  auto results = nvtext::normalize_characters(strings_view, false);
+  cudf::strings_column_view          strings_view(strings);
+  auto                               results = nvtext::normalize_characters(strings_view, false);
   cudf::test::strings_column_wrapper expected({"", " . ", "a"}, {0, 1, 1});
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, expected);
 }
@@ -108,12 +108,12 @@ TEST_F(TextNormalizeTest, NormalizeCharacters)
                                      "[a,b]",
                                      "丏丟",
                                      ""};
-  auto validity =
+  auto                     validity =
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; });
   cudf::test::strings_column_wrapper strings(h_strings.begin(), h_strings.end(), validity);
-  cudf::strings_column_view strings_view(strings);
+  cudf::strings_column_view          strings_view(strings);
   {
-    auto results = nvtext::normalize_characters(strings_view, true);
+    auto                               results = nvtext::normalize_characters(strings_view, true);
     cudf::test::strings_column_wrapper expected({"abc£def",
                                                  "",
                                                  "ee a io aeio",
@@ -128,7 +128,7 @@ TEST_F(TextNormalizeTest, NormalizeCharacters)
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, expected);
   }
   {
-    auto results = nvtext::normalize_characters(strings_view, false);
+    auto                               results = nvtext::normalize_characters(strings_view, false);
     cudf::test::strings_column_wrapper expected({"abc£def",
                                                  "",
                                                  "éè â îô aeio",

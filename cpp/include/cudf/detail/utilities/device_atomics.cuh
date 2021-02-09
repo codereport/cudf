@@ -66,16 +66,16 @@ struct genericAtomicOperationImpl<T, Op, 1> {
     using T_int = unsigned int;
 
     T_int* address_uint32 = reinterpret_cast<T_int*>(addr - (reinterpret_cast<size_t>(addr) & 3));
-    T_int shift           = ((reinterpret_cast<size_t>(addr) & 3) * 8);
+    T_int  shift          = ((reinterpret_cast<size_t>(addr) & 3) * 8);
 
     T_int old = *address_uint32;
     T_int assumed;
 
     do {
       assumed                = old;
-      T target_value         = T((old >> shift) & 0xff);
+      T       target_value   = T((old >> shift) & 0xff);
       uint8_t updating_value = type_reinterpret<uint8_t, T>(op(target_value, update_value));
-      T_int new_value        = (old & ~(0x000000ff << shift)) | (T_int(updating_value) << shift);
+      T_int   new_value      = (old & ~(0x000000ff << shift)) | (T_int(updating_value) << shift);
       old                    = atomicCAS(address_uint32, assumed, new_value);
     } while (assumed != old);
 
@@ -88,8 +88,8 @@ template <typename T, typename Op>
 struct genericAtomicOperationImpl<T, Op, 2> {
   __forceinline__ __device__ T operator()(T* addr, T const& update_value, Op op)
   {
-    using T_int      = unsigned int;
-    bool is_32_align = (reinterpret_cast<size_t>(addr) & 2) ? false : true;
+    using T_int        = unsigned int;
+    bool   is_32_align = (reinterpret_cast<size_t>(addr) & 2) ? false : true;
     T_int* address_uint32 =
       reinterpret_cast<T_int*>(reinterpret_cast<size_t>(addr) - (is_32_align ? 0 : 2));
 
@@ -98,7 +98,7 @@ struct genericAtomicOperationImpl<T, Op, 2> {
 
     do {
       assumed                 = old;
-      T target_value          = (is_32_align) ? T(old & 0xffff) : T(old >> 16);
+      T        target_value   = (is_32_align) ? T(old & 0xffff) : T(old >> 16);
       uint16_t updating_value = type_reinterpret<uint16_t, T>(op(target_value, update_value));
 
       T_int new_value = (is_32_align) ? (old & 0xffff0000) | updating_value
@@ -325,15 +325,15 @@ struct typesAtomicCASImpl<T, 1> {
   {
     using T_int = unsigned int;
 
-    T_int shift           = ((reinterpret_cast<size_t>(addr) & 3) * 8);
+    T_int  shift          = ((reinterpret_cast<size_t>(addr) & 3) * 8);
     T_int* address_uint32 = reinterpret_cast<T_int*>(addr - (reinterpret_cast<size_t>(addr) & 3));
 
     // the 'target_value' in `old` can be different from `compare`
     // because other thread may update the value
     // before fetching a value from `address_uint32` in this function
-    T_int old = *address_uint32;
-    T_int assumed;
-    T target_value;
+    T_int   old = *address_uint32;
+    T_int   assumed;
+    T       target_value;
     uint8_t u_val = type_reinterpret<uint8_t, T>(update_value);
 
     do {
@@ -357,13 +357,13 @@ struct typesAtomicCASImpl<T, 2> {
   {
     using T_int = unsigned int;
 
-    bool is_32_align = (reinterpret_cast<size_t>(addr) & 2) ? false : true;
+    bool   is_32_align = (reinterpret_cast<size_t>(addr) & 2) ? false : true;
     T_int* address_uint32 =
       reinterpret_cast<T_int*>(reinterpret_cast<size_t>(addr) - (is_32_align ? 0 : 2));
 
-    T_int old = *address_uint32;
-    T_int assumed;
-    T target_value;
+    T_int    old = *address_uint32;
+    T_int    assumed;
+    T        target_value;
     uint16_t u_val = type_reinterpret<uint16_t, T>(update_value);
 
     do {
@@ -430,7 +430,7 @@ struct typesAtomicCASImpl<T, 8> {
  */
 template <typename T, typename BinaryOp>
 typename std::enable_if_t<cudf::is_numeric<T>(), T> __forceinline__ __device__
-genericAtomicOperation(T* address, T const& update_value, BinaryOp op)
+                                                                    genericAtomicOperation(T* address, T const& update_value, BinaryOp op)
 {
   auto fun = cudf::detail::genericAtomicOperationImpl<T, BinaryOp>{};
   return T(fun(address, update_value, op));
@@ -439,7 +439,7 @@ genericAtomicOperation(T* address, T const& update_value, BinaryOp op)
 // specialization for cudf::detail::timestamp types
 template <typename T, typename BinaryOp>
 typename std::enable_if_t<cudf::is_timestamp<T>(), T> __forceinline__ __device__
-genericAtomicOperation(T* address, T const& update_value, BinaryOp op)
+                                                                      genericAtomicOperation(T* address, T const& update_value, BinaryOp op)
 {
   using R = typename T::rep;
   // Unwrap the input timestamp to its underlying duration value representation.
@@ -452,7 +452,7 @@ genericAtomicOperation(T* address, T const& update_value, BinaryOp op)
 // specialization for cudf::detail::duration types
 template <typename T, typename BinaryOp>
 typename std::enable_if_t<cudf::is_duration<T>(), T> __forceinline__ __device__
-genericAtomicOperation(T* address, T const& update_value, BinaryOp op)
+                                                                     genericAtomicOperation(T* address, T const& update_value, BinaryOp op)
 {
   using R = typename T::rep;
   // Unwrap the input duration to its underlying duration value representation.
@@ -464,9 +464,9 @@ genericAtomicOperation(T* address, T const& update_value, BinaryOp op)
 
 // specialization for bool types
 template <typename BinaryOp>
-__forceinline__ __device__ bool genericAtomicOperation(bool* address,
+__forceinline__ __device__ bool genericAtomicOperation(bool*       address,
                                                        bool const& update_value,
-                                                       BinaryOp op)
+                                                       BinaryOp    op)
 {
   using T = bool;
   // don't use underlying type to apply operation for bool

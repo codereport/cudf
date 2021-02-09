@@ -47,7 +47,7 @@ template <typename Filter, int block_size>
 __global__ void compute_block_counts(cudf::size_type* __restrict__ block_counts,
                                      cudf::size_type size,
                                      cudf::size_type per_thread,
-                                     Filter filter)
+                                     Filter          filter)
 {
   int tid   = threadIdx.x + per_thread * block_size * blockIdx.x;
   int count = 0;
@@ -90,18 +90,18 @@ __device__ cudf::size_type block_scan_mask(bool mask_true, cudf::size_type& bloc
 template <typename T, typename Filter, int block_size, bool has_validity>
 __launch_bounds__(block_size) __global__
   void scatter_kernel(cudf::mutable_column_device_view output_view,
-                      cudf::size_type* output_null_count,
-                      cudf::column_device_view input_view,
+                      cudf::size_type*                 output_null_count,
+                      cudf::column_device_view         input_view,
                       cudf::size_type const* __restrict__ block_offsets,
                       cudf::size_type size,
                       cudf::size_type per_thread,
-                      Filter filter)
+                      Filter          filter)
 {
   T* __restrict__ output_data                   = output_view.data<T>();
   cudf::bitmask_type* __restrict__ output_valid = output_view.null_mask();
   static_assert(block_size <= 1024, "Maximum thread block size exceeded");
 
-  int tid                      = threadIdx.x + per_thread * block_size * blockIdx.x;
+  int             tid          = threadIdx.x + per_thread * block_size * blockIdx.x;
   cudf::size_type block_offset = block_offsets[blockIdx.x];
 
   // one extra warp worth in case the block is not aligned
@@ -195,7 +195,7 @@ __launch_bounds__(block_size) __global__
   }
   // Compute total null_count for this block and add it to global count
   constexpr cudf::size_type leader_lane{0};
-  cudf::size_type block_valid_count =
+  cudf::size_type           block_valid_count =
     cudf::detail::single_lane_block_sum_reduce<block_size, leader_lane>(warp_valid_counts);
 
   if (threadIdx.x == 0) {  // one thread computes and adds to null count
@@ -228,12 +228,12 @@ template <typename Filter, int block_size>
 struct scatter_gather_functor {
   template <typename T, std::enable_if_t<cudf::is_fixed_width<T>()>* = nullptr>
   std::unique_ptr<cudf::column> operator()(
-    cudf::column_view const& input,
-    cudf::size_type const& output_size,
-    cudf::size_type const* block_offsets,
-    Filter filter,
-    cudf::size_type per_thread,
-    rmm::cuda_stream_view stream,
+    cudf::column_view const&         input,
+    cudf::size_type const&           output_size,
+    cudf::size_type const*           block_offsets,
+    Filter                           filter,
+    cudf::size_type                  per_thread,
+    rmm::cuda_stream_view            stream,
     rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
   {
     auto output_column = cudf::detail::allocate_like(
@@ -276,12 +276,12 @@ struct scatter_gather_functor {
   template <typename T,
             std::enable_if_t<!cudf::is_fixed_width<T>() and !cudf::is_fixed_point<T>()>* = nullptr>
   std::unique_ptr<cudf::column> operator()(
-    cudf::column_view const& input,
-    cudf::size_type const& output_size,
-    cudf::size_type const* block_offsets,
-    Filter filter,
-    cudf::size_type per_thread,
-    rmm::cuda_stream_view stream,
+    cudf::column_view const&         input,
+    cudf::size_type const&           output_size,
+    cudf::size_type const*           block_offsets,
+    Filter                           filter,
+    cudf::size_type                  per_thread,
+    rmm::cuda_stream_view            stream,
     rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
   {
     rmm::device_uvector<cudf::size_type> indices(output_size, stream);
@@ -323,16 +323,16 @@ namespace detail {
  */
 template <typename Filter>
 std::unique_ptr<table> copy_if(
-  table_view const& input,
-  Filter filter,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  table_view const&                input,
+  Filter                           filter,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   CUDF_FUNC_RANGE();
 
   if (0 == input.num_rows() || 0 == input.num_columns()) { return empty_like(input); }
 
-  constexpr int block_size = 256;
+  constexpr int   block_size = 256;
   cudf::size_type per_thread =
     elements_per_thread(compute_block_counts<Filter, block_size>, input.num_rows(), block_size);
   cudf::detail::grid_1d grid{input.num_rows(), block_size, per_thread};

@@ -42,14 +42,14 @@ TYPED_TEST(SliceTest, NumericColumnsWithNulls)
 {
   using T = TypeParam;
 
-  cudf::size_type start = 0;
-  cudf::size_type size  = 10;
-  auto valids           = cudf::detail::make_counting_transform_iterator(
+  cudf::size_type start  = 0;
+  cudf::size_type size   = 10;
+  auto            valids = cudf::detail::make_counting_transform_iterator(
     start, [](auto i) { return i % 2 == 0 ? true : false; });
 
   cudf::test::fixed_width_column_wrapper<T> col = create_fixed_columns<T>(start, size, valids);
 
-  std::vector<cudf::size_type> indices{1, 3, 2, 2, 5, 9};
+  std::vector<cudf::size_type>                           indices{1, 3, 2, 2, 5, 9};
   std::vector<cudf::test::fixed_width_column_wrapper<T>> expected =
     create_expected_columns<T>(indices, true);
   std::vector<cudf::column_view> result = cudf::slice(col, indices);
@@ -65,14 +65,14 @@ TYPED_TEST(SliceTest, NumericColumnsWithNullsAsColumn)
 {
   using T = TypeParam;
 
-  cudf::size_type start = 0;
-  cudf::size_type size  = 10;
-  auto valids           = cudf::detail::make_counting_transform_iterator(
+  cudf::size_type start  = 0;
+  cudf::size_type size   = 10;
+  auto            valids = cudf::detail::make_counting_transform_iterator(
     start, [](auto i) { return i % 2 == 0 ? true : false; });
 
   cudf::test::fixed_width_column_wrapper<T> col = create_fixed_columns<T>(start, size, valids);
 
-  std::vector<cudf::size_type> indices{1, 3, 2, 2, 5, 9};
+  std::vector<cudf::size_type>                           indices{1, 3, 2, 2, 5, 9};
   std::vector<cudf::test::fixed_width_column_wrapper<T>> expected =
     create_expected_columns<T>(indices, true);
   std::vector<cudf::column_view> result = cudf::slice(col, indices);
@@ -263,7 +263,7 @@ struct SliceCornerCases : public SliceTest<int8_t> {
 
 TEST_F(SliceCornerCases, EmptyColumn)
 {
-  cudf::column col{};
+  cudf::column                 col{};
   std::vector<cudf::size_type> indices{0, 0, 0, 0, 0, 0};
 
   std::vector<cudf::column_view> result = cudf::slice(col.view(), indices);
@@ -280,9 +280,9 @@ TEST_F(SliceCornerCases, EmptyColumn)
 
 TEST_F(SliceCornerCases, EmptyIndices)
 {
-  cudf::size_type start = 0;
-  cudf::size_type size  = 10;
-  auto valids           = cudf::detail::make_counting_transform_iterator(
+  cudf::size_type start  = 0;
+  cudf::size_type size   = 10;
+  auto            valids = cudf::detail::make_counting_transform_iterator(
     start, [](auto i) { return i % 2 == 0 ? true : false; });
 
   cudf::test::fixed_width_column_wrapper<int8_t> col =
@@ -298,9 +298,9 @@ TEST_F(SliceCornerCases, EmptyIndices)
 
 TEST_F(SliceCornerCases, InvalidSetOfIndices)
 {
-  cudf::size_type start = 0;
-  cudf::size_type size  = 10;
-  auto valids           = cudf::detail::make_counting_transform_iterator(
+  cudf::size_type start  = 0;
+  cudf::size_type size   = 10;
+  auto            valids = cudf::detail::make_counting_transform_iterator(
     start, [](auto i) { return i % 2 == 0 ? true : false; });
   cudf::test::fixed_width_column_wrapper<int8_t> col =
     create_fixed_columns<int8_t>(start, size, valids);
@@ -311,9 +311,9 @@ TEST_F(SliceCornerCases, InvalidSetOfIndices)
 
 TEST_F(SliceCornerCases, ImproperRange)
 {
-  cudf::size_type start = 0;
-  cudf::size_type size  = 10;
-  auto valids           = cudf::detail::make_counting_transform_iterator(
+  cudf::size_type start  = 0;
+  cudf::size_type size   = 10;
+  auto            valids = cudf::detail::make_counting_transform_iterator(
     start, [](auto i) { return i % 2 == 0 ? true : false; });
 
   cudf::test::fixed_width_column_wrapper<int8_t> col =
@@ -325,9 +325,9 @@ TEST_F(SliceCornerCases, ImproperRange)
 
 TEST_F(SliceCornerCases, NegativeOffset)
 {
-  cudf::size_type start = 0;
-  cudf::size_type size  = 10;
-  auto valids           = cudf::detail::make_counting_transform_iterator(
+  cudf::size_type start  = 0;
+  cudf::size_type size   = 10;
+  auto            valids = cudf::detail::make_counting_transform_iterator(
     start, [](auto i) { return i % 2 == 0 ? true : false; });
 
   cudf::test::fixed_width_column_wrapper<int8_t> col =
@@ -349,14 +349,14 @@ TYPED_TEST(SliceTableTest, NumericColumnsWithNulls)
 
   cudf::size_type start    = 0;
   cudf::size_type col_size = 10;
-  auto valids              = cudf::detail::make_counting_transform_iterator(
+  auto            valids   = cudf::detail::make_counting_transform_iterator(
     start, [](auto i) { return i % 2 == 0 ? true : false; });
 
-  cudf::size_type num_cols = 5;
-  cudf::table src_table    = create_fixed_table<T>(num_cols, start, col_size, valids);
+  cudf::size_type num_cols  = 5;
+  cudf::table     src_table = create_fixed_table<T>(num_cols, start, col_size, valids);
 
   std::vector<cudf::size_type> indices{1, 3, 2, 2, 5, 9};
-  std::vector<cudf::table> expected = create_expected_tables<T>(num_cols, indices, true);
+  std::vector<cudf::table>     expected = create_expected_tables<T>(num_cols, indices, true);
 
   std::vector<cudf::table_view> result = cudf::slice(src_table, indices);
 
@@ -406,7 +406,7 @@ TEST_F(SliceTableCornerCases, EmptyTable)
 {
   std::vector<cudf::size_type> indices{1, 3, 2, 4, 5, 9};
 
-  cudf::table src_table{};
+  cudf::table                   src_table{};
   std::vector<cudf::table_view> result = cudf::slice(src_table.view(), indices);
 
   unsigned long expected = 3;
@@ -418,11 +418,11 @@ TEST_F(SliceTableCornerCases, EmptyIndices)
 {
   cudf::size_type start    = 0;
   cudf::size_type col_size = 10;
-  auto valids              = cudf::detail::make_counting_transform_iterator(
+  auto            valids   = cudf::detail::make_counting_transform_iterator(
     start, [](auto i) { return i % 2 == 0 ? true : false; });
 
-  cudf::size_type num_cols = 5;
-  cudf::table src_table    = create_fixed_table<int8_t>(num_cols, start, col_size, valids);
+  cudf::size_type num_cols  = 5;
+  cudf::table     src_table = create_fixed_table<int8_t>(num_cols, start, col_size, valids);
   std::vector<cudf::size_type> indices{};
 
   std::vector<cudf::table_view> result = cudf::slice(src_table, indices);
@@ -436,11 +436,11 @@ TEST_F(SliceTableCornerCases, InvalidSetOfIndices)
 {
   cudf::size_type start    = 0;
   cudf::size_type col_size = 10;
-  auto valids              = cudf::detail::make_counting_transform_iterator(
+  auto            valids   = cudf::detail::make_counting_transform_iterator(
     start, [](auto i) { return i % 2 == 0 ? true : false; });
 
-  cudf::size_type num_cols = 5;
-  cudf::table src_table    = create_fixed_table<int8_t>(num_cols, start, col_size, valids);
+  cudf::size_type num_cols  = 5;
+  cudf::table     src_table = create_fixed_table<int8_t>(num_cols, start, col_size, valids);
 
   std::vector<cudf::size_type> indices{11, 12};
 
@@ -451,11 +451,11 @@ TEST_F(SliceTableCornerCases, ImproperRange)
 {
   cudf::size_type start    = 0;
   cudf::size_type col_size = 10;
-  auto valids              = cudf::detail::make_counting_transform_iterator(
+  auto            valids   = cudf::detail::make_counting_transform_iterator(
     start, [](auto i) { return i % 2 == 0 ? true : false; });
 
-  cudf::size_type num_cols = 5;
-  cudf::table src_table    = create_fixed_table<int8_t>(num_cols, start, col_size, valids);
+  cudf::size_type num_cols  = 5;
+  cudf::table     src_table = create_fixed_table<int8_t>(num_cols, start, col_size, valids);
 
   std::vector<cudf::size_type> indices{5, 4};
 
@@ -466,11 +466,11 @@ TEST_F(SliceTableCornerCases, NegativeOffset)
 {
   cudf::size_type start    = 0;
   cudf::size_type col_size = 10;
-  auto valids              = cudf::detail::make_counting_transform_iterator(
+  auto            valids   = cudf::detail::make_counting_transform_iterator(
     start, [](auto i) { return i % 2 == 0 ? true : false; });
 
-  cudf::size_type num_cols = 5;
-  cudf::table src_table    = create_fixed_table<int8_t>(num_cols, start, col_size, valids);
+  cudf::size_type num_cols  = 5;
+  cudf::table     src_table = create_fixed_table<int8_t>(num_cols, start, col_size, valids);
 
   std::vector<cudf::size_type> indices{-1, 4};
 
@@ -487,9 +487,9 @@ TEST_F(SliceTableCornerCases, MiscOffset)
   cudf::test::fixed_width_column_wrapper<int32_t> col3{
     {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0}};
-  std::vector<cudf::size_type> indices{19, 38};
+  std::vector<cudf::size_type>   indices{19, 38};
   std::vector<cudf::column_view> result = cudf::slice(col2, indices);
-  cudf::column result_column(result[0]);
+  cudf::column                   result_column(result[0]);
 
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(col3, result_column);
 }

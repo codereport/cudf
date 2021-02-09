@@ -38,8 +38,8 @@ TYPED_TEST_CASE(TypedScalarTestWithoutFixedPoint, cudf::test::FixedWidthTypesWit
 
 TYPED_TEST(TypedScalarTest, DefaultValidity)
 {
-  using Type = cudf::device_storage_type_t<TypeParam>;
-  Type value = cudf::test::make_type_param_scalar<TypeParam>(7);
+  using Type                           = cudf::device_storage_type_t<TypeParam>;
+  Type                           value = cudf::test::make_type_param_scalar<TypeParam>(7);
   cudf::scalar_type_t<TypeParam> s(value);
 
   EXPECT_TRUE(s.is_valid());
@@ -48,7 +48,7 @@ TYPED_TEST(TypedScalarTest, DefaultValidity)
 
 TYPED_TEST(TypedScalarTest, ConstructNull)
 {
-  TypeParam value = cudf::test::make_type_param_scalar<TypeParam>(5);
+  TypeParam                      value = cudf::test::make_type_param_scalar<TypeParam>(5);
   cudf::scalar_type_t<TypeParam> s(value, false);
 
   EXPECT_FALSE(s.is_valid());
@@ -56,7 +56,7 @@ TYPED_TEST(TypedScalarTest, ConstructNull)
 
 TYPED_TEST(TypedScalarTestWithoutFixedPoint, SetValue)
 {
-  TypeParam value = cudf::test::make_type_param_scalar<TypeParam>(9);
+  TypeParam                      value = cudf::test::make_type_param_scalar<TypeParam>(9);
   cudf::scalar_type_t<TypeParam> s;
   s.set_value(value);
 
@@ -66,7 +66,7 @@ TYPED_TEST(TypedScalarTestWithoutFixedPoint, SetValue)
 
 TYPED_TEST(TypedScalarTestWithoutFixedPoint, SetNull)
 {
-  TypeParam value = cudf::test::make_type_param_scalar<TypeParam>(6);
+  TypeParam                      value = cudf::test::make_type_param_scalar<TypeParam>(6);
   cudf::scalar_type_t<TypeParam> s;
   s.set_value(value);
   s.set_valid(false);
@@ -76,10 +76,10 @@ TYPED_TEST(TypedScalarTestWithoutFixedPoint, SetNull)
 
 TYPED_TEST(TypedScalarTest, CopyConstructor)
 {
-  using Type = cudf::device_storage_type_t<TypeParam>;
-  Type value = cudf::test::make_type_param_scalar<TypeParam>(8);
+  using Type                           = cudf::device_storage_type_t<TypeParam>;
+  Type                           value = cudf::test::make_type_param_scalar<TypeParam>(8);
   cudf::scalar_type_t<TypeParam> s(value);
-  auto s2 = s;
+  auto                           s2 = s;
 
   EXPECT_TRUE(s2.is_valid());
   EXPECT_EQ(value, s2.value());
@@ -87,11 +87,11 @@ TYPED_TEST(TypedScalarTest, CopyConstructor)
 
 TYPED_TEST(TypedScalarTest, MoveConstructor)
 {
-  TypeParam value = cudf::test::make_type_param_scalar<TypeParam>(8);
+  TypeParam                      value = cudf::test::make_type_param_scalar<TypeParam>(8);
   cudf::scalar_type_t<TypeParam> s(value);
-  auto data_ptr = s.data();
-  auto mask_ptr = s.validity_data();
-  decltype(s) s2(std::move(s));
+  auto                           data_ptr = s.data();
+  auto                           mask_ptr = s.validity_data();
+  decltype(s)                    s2(std::move(s));
 
   EXPECT_EQ(mask_ptr, s2.validity_data());
   EXPECT_EQ(data_ptr, s2.data());
@@ -103,7 +103,7 @@ struct StringScalarTest : public cudf::test::BaseFixture {
 TEST_F(StringScalarTest, DefaultValidity)
 {
   std::string value = "test string";
-  auto s            = cudf::string_scalar(value);
+  auto        s     = cudf::string_scalar(value);
 
   EXPECT_TRUE(s.is_valid());
   EXPECT_EQ(value, s.to_string());
@@ -119,8 +119,8 @@ TEST_F(StringScalarTest, ConstructNull)
 TEST_F(StringScalarTest, CopyConstructor)
 {
   std::string value = "test_string";
-  auto s            = cudf::string_scalar(value);
-  auto s2           = s;
+  auto        s     = cudf::string_scalar(value);
+  auto        s2    = s;
 
   EXPECT_TRUE(s2.is_valid());
   EXPECT_EQ(value, s2.to_string());
@@ -128,10 +128,10 @@ TEST_F(StringScalarTest, CopyConstructor)
 
 TEST_F(StringScalarTest, MoveConstructor)
 {
-  std::string value = "another test string";
-  auto s            = cudf::string_scalar(value);
-  auto data_ptr     = s.data();
-  auto mask_ptr     = s.validity_data();
+  std::string value    = "another test string";
+  auto        s        = cudf::string_scalar(value);
+  auto        data_ptr = s.data();
+  auto        mask_ptr = s.validity_data();
   decltype(s) s2(std::move(s));
 
   EXPECT_EQ(mask_ptr, s2.validity_data());

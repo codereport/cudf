@@ -34,9 +34,9 @@ namespace ast {
 namespace detail {
 
 device_data_reference::device_data_reference(device_data_reference_type reference_type,
-                                             cudf::data_type data_type,
-                                             cudf::size_type data_index,
-                                             table_reference table_source)
+                                             cudf::data_type            data_type,
+                                             cudf::size_type            data_index,
+                                             table_reference            table_source)
   : reference_type(reference_type),
     data_type(data_type),
     data_index(data_index),
@@ -45,8 +45,8 @@ device_data_reference::device_data_reference(device_data_reference_type referenc
 }
 
 device_data_reference::device_data_reference(device_data_reference_type reference_type,
-                                             cudf::data_type data_type,
-                                             cudf::size_type data_index)
+                                             cudf::data_type            data_type,
+                                             cudf::size_type            data_index)
   : reference_type(reference_type),
     data_type(data_type),
     data_index(data_index),

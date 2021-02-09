@@ -40,8 +40,8 @@ class reader {
    * @param options Settings for controlling reading behavior
    * @param mr Device memory resource to use for device memory allocation
    */
-  explicit reader(std::vector<std::string> const &filepaths,
-                  csv_reader_options const &options,
+  explicit reader(std::vector<std::string> const & filepaths,
+                  csv_reader_options const &       options,
                   rmm::mr::device_memory_resource *mr = rmm::mr::get_current_device_resource());
 
   /**
@@ -52,7 +52,7 @@ class reader {
    * @param mr Device memory resource to use for device memory allocation
    */
   explicit reader(std::vector<std::unique_ptr<cudf::io::datasource>> &&sources,
-                  csv_reader_options const &options,
+                  csv_reader_options const &                           options,
                   rmm::mr::device_memory_resource *mr = rmm::mr::get_current_device_resource());
 
   /**
@@ -86,8 +86,8 @@ class writer {
    * @param mr Device memory resource to use for device memory allocation
    */
   writer(std::unique_ptr<cudf::io::data_sink> sinkp,
-         csv_writer_options const &options,
-         rmm::mr::device_memory_resource *mr =
+         csv_writer_options const &           options,
+         rmm::mr::device_memory_resource *    mr =
            rmm::mr::get_current_device_resource());  // cannot provide definition here (because
                                                      // _impl is incomplete, hence unique_ptr has
                                                      // not enough sizeof() info)
@@ -104,7 +104,7 @@ class writer {
    * @param metadata Table metadata and column names
    * @param stream CUDA stream used for device memory operations and kernel launches.
    */
-  void write(table_view const &table,
+  void write(table_view const &    table,
              const table_metadata *metadata = nullptr,
              rmm::cuda_stream_view stream   = rmm::cuda_stream_default);
 };

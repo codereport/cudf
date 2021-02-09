@@ -656,7 +656,7 @@ TEST_F(BinaryOperationIntegrationTest, Greater_Vector_Vector_B8_TSMS_TSS)
   using GREATER = cudf::library::operation::Greater<TypeOut, TypeLhs, TypeRhs>;
 
   cudf::test::UniformRandomGenerator<long> rand_gen(1, 10);
-  auto itr = cudf::detail::make_counting_transform_iterator(
+  auto                                     itr = cudf::detail::make_counting_transform_iterator(
     0, [&rand_gen](auto row) { return rand_gen.generate() * 1000; });
 
   cudf::test::fixed_width_column_wrapper<TypeLhs, typename decltype(itr)::value_type> lhs(
@@ -941,10 +941,10 @@ TEST_F(BinaryOperationIntegrationTest, ShiftRightUnsigned_Vector_Vector_SI32)
 
   int num_els = 4;
 
-  TypeLhs lhs[] = {-8, 78, -93, 0, -INT_MAX};
+  TypeLhs                                         lhs[] = {-8, 78, -93, 0, -INT_MAX};
   cudf::test::fixed_width_column_wrapper<TypeLhs> lhs_w(lhs, lhs + num_els);
 
-  TypeRhs shift[] = {1, 1, 3, 2, 16};
+  TypeRhs                                         shift[] = {1, 1, 3, 2, 16};
   cudf::test::fixed_width_column_wrapper<TypeRhs> shift_w(shift, shift + num_els);
 
   TypeOut expected[] = {2147483644, 39, 536870900, 0, 32768};
@@ -1064,7 +1064,7 @@ TEST_F(BinaryOperationIntegrationTest, LogBase_Vector_Vector_double_SI64_SI32)
   // Find log to the base 7
   auto rhs_elements = cudf::detail::make_counting_transform_iterator(0, [](auto) { return 7; });
   fixed_width_column_wrapper<TypeRhs> rhs(rhs_elements, rhs_elements + 50);
-  auto out = cudf::binary_operation(
+  auto                                out = cudf::binary_operation(
     lhs, rhs, cudf::binary_operator::LOG_BASE, data_type(type_to_id<TypeOut>()));
 
   ASSERT_BINOP<TypeOut, TypeLhs, TypeRhs>(*out, lhs, rhs, LOG_BASE());
@@ -2026,12 +2026,12 @@ TYPED_TEST(FixedPointTestBothReps, FixedPointBinaryOpAdd)
 
   auto const sz = std::size_t{1000};
 
-  auto begin      = cudf::detail::make_counting_transform_iterator(1, [](auto i) {
+  auto       begin    = cudf::detail::make_counting_transform_iterator(1, [](auto i) {
     return decimalXX{i, scale_type{0}};
   });
-  auto const vec1 = std::vector<decimalXX>(begin, begin + sz);
-  auto const vec2 = std::vector<decimalXX>(sz, decimalXX{2, scale_type{0}});
-  auto expected   = std::vector<decimalXX>(sz);
+  auto const vec1     = std::vector<decimalXX>(begin, begin + sz);
+  auto const vec2     = std::vector<decimalXX>(sz, decimalXX{2, scale_type{0}});
+  auto       expected = std::vector<decimalXX>(sz);
 
   std::transform(std::cbegin(vec1),
                  std::cend(vec1),
@@ -2055,12 +2055,12 @@ TYPED_TEST(FixedPointTestBothReps, FixedPointBinaryOpMultiply)
 
   auto const sz = std::size_t{1000};
 
-  auto begin      = cudf::detail::make_counting_transform_iterator(1, [](auto i) {
+  auto       begin    = cudf::detail::make_counting_transform_iterator(1, [](auto i) {
     return decimalXX{i, scale_type{0}};
   });
-  auto const vec1 = std::vector<decimalXX>(begin, begin + sz);
-  auto const vec2 = std::vector<decimalXX>(sz, decimalXX{2, scale_type{0}});
-  auto expected   = std::vector<decimalXX>(sz);
+  auto const vec1     = std::vector<decimalXX>(begin, begin + sz);
+  auto const vec2     = std::vector<decimalXX>(sz, decimalXX{2, scale_type{0}});
+  auto       expected = std::vector<decimalXX>(sz);
 
   std::transform(std::cbegin(vec1),
                  std::cend(vec1),

@@ -64,9 +64,9 @@ class table {
    * @param stream CUDA stream used for device memory operations.
    * @param mr Device memory resource used for allocating the device memory for the new columns
    */
-  table(table_view view,
-        rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-        rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  table(table_view                       view,
+        rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+        rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
   /**
    * @brief Returns the number of columns in the table
@@ -146,7 +146,7 @@ class table {
 
  private:
   std::vector<std::unique_ptr<column>> _columns{};
-  size_type _num_rows{};
+  size_type                            _num_rows{};
 };
 
 }  // namespace cudf

@@ -57,32 +57,32 @@ class reader::impl {
 
   rmm::mr::device_memory_resource *mr_ = nullptr;
 
-  std::unique_ptr<datasource> source_;
-  std::string filepath_;
+  std::unique_ptr<datasource>         source_;
+  std::string                         filepath_;
   std::unique_ptr<datasource::buffer> buffer_;
 
   const char *uncomp_data_ = nullptr;
-  size_t uncomp_size_      = 0;
+  size_t      uncomp_size_ = 0;
 
   // Used when the input data is compressed, to ensure the allocated uncompressed data is freed
-  std::vector<char> uncomp_data_owner_;
-  rmm::device_buffer data_;
+  std::vector<char>            uncomp_data_owner_;
+  rmm::device_buffer           data_;
   rmm::device_vector<uint64_t> rec_starts_;
 
   size_t byte_range_offset_ = 0;
   size_t byte_range_size_   = 0;
-  bool load_whole_file_     = true;
+  bool   load_whole_file_   = true;
 
-  table_metadata metadata_;
+  table_metadata         metadata_;
   std::vector<data_type> dtypes_;
 
   // the map is only used for files with rows in object format; initialize to a dummy value so the
   // map object can be passed to the kernel in any case
-  col_map_ptr_type key_to_col_idx_map_;
+  col_map_ptr_type                                  key_to_col_idx_map_;
   std::unique_ptr<rmm::device_scalar<col_map_type>> d_key_col_map_;
 
   // parsing options
-  const bool allow_newlines_in_strings_ = false;
+  const bool    allow_newlines_in_strings_ = false;
   parse_options opts_{',', '\n', '\"', '.'};
 
   /**
@@ -178,9 +178,9 @@ class reader::impl {
   /**
    * @brief Constructor from a dataset source with reader options.
    */
-  explicit impl(std::unique_ptr<datasource> source,
-                std::string filepath,
-                json_reader_options const &options,
+  explicit impl(std::unique_ptr<datasource>      source,
+                std::string                      filepath,
+                json_reader_options const &      options,
                 rmm::mr::device_memory_resource *mr);
 
   /**

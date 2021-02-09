@@ -36,8 +36,8 @@ static constexpr char trie_terminating_character = '\n';
 
 struct SerialTrieNode {
   int16_t children_offset{-1};
-  char character{trie_terminating_character};
-  bool is_leaf{false};
+  char    character{trie_terminating_character};
+  bool    is_leaf{false};
   SerialTrieNode() = default;  // FIXME This is necessary for a Thrust bug on CentOS7 + CUDA10
   explicit SerialTrieNode(char c, bool leaf = false) noexcept : character(c), is_leaf(leaf) {}
 };
@@ -57,9 +57,9 @@ inline thrust::host_vector<SerialTrieNode> createSerializedTrie(
 {
   static constexpr int alphabet_size = std::numeric_limits<char>::max() + 1;
   struct TreeTrieNode {
-    using TrieNodePtr                 = std::unique_ptr<TreeTrieNode>;
-    std::vector<TrieNodePtr> children = std::vector<TrieNodePtr>(alphabet_size);
-    bool is_end_of_word               = false;
+    using TrieNodePtr                       = std::unique_ptr<TreeTrieNode>;
+    std::vector<TrieNodePtr> children       = std::vector<TrieNodePtr>(alphabet_size);
+    bool                     is_end_of_word = false;
   };
 
   // Construct a tree-structured trie
@@ -81,12 +81,12 @@ inline thrust::host_vector<SerialTrieNode> createSerializedTrie(
 
   struct IndexedTrieNode {
     TreeTrieNode const *const pnode;
-    int16_t const idx;
+    int16_t const             idx;
     IndexedTrieNode(TreeTrieNode const *const node, int16_t index) : pnode(node), idx(index) {}
   };
 
   // Serialize the tree trie
-  std::deque<IndexedTrieNode> to_visit;
+  std::deque<IndexedTrieNode>         to_visit;
   thrust::host_vector<SerialTrieNode> nodes;
 
   // If the Tree trie matches empty strings, the root node is marked as 'end of word'.
@@ -135,7 +135,7 @@ inline thrust::host_vector<SerialTrieNode> createSerializedTrie(
  * @return Boolean value, true if string is found, false otherwise
  */
 __host__ __device__ inline bool serialized_trie_contains(device_span<SerialTrieNode const> trie,
-                                                         device_span<char const> key)
+                                                         device_span<char const>           key)
 {
   if (trie.data() == nullptr || trie.empty()) return false;
   if (key.empty()) return trie.front().is_leaf;

@@ -28,12 +28,12 @@ namespace detail {
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> transform(
-  column_view const& input,
-  std::string const& unary_udf,
-  data_type output_type,
-  bool is_ptx,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  std::string const&               unary_udf,
+  data_type                        output_type,
+  bool                             is_ptx,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::nans_to_nulls
@@ -41,9 +41,9 @@ std::unique_ptr<column> transform(
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::pair<std::unique_ptr<rmm::device_buffer>, size_type> nans_to_nulls(
-  column_view const& input,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::bools_to_mask
@@ -51,9 +51,9 @@ std::pair<std::unique_ptr<rmm::device_buffer>, size_type> nans_to_nulls(
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::pair<std::unique_ptr<rmm::device_buffer>, cudf::size_type> bools_to_mask(
-  column_view const& input,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::encode
@@ -61,9 +61,9 @@ std::pair<std::unique_ptr<rmm::device_buffer>, cudf::size_type> bools_to_mask(
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::pair<std::unique_ptr<cudf::table>, std::unique_ptr<cudf::column>> encode(
-  cudf::table_view const& input,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  cudf::table_view const&          input,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::mask_to_bools
@@ -71,11 +71,11 @@ std::pair<std::unique_ptr<cudf::table>, std::unique_ptr<cudf::column>> encode(
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> mask_to_bools(
-  bitmask_type const* null_mask,
-  size_type begin_bit,
-  size_type end_bit,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  bitmask_type const*              null_mask,
+  size_type                        begin_bit,
+  size_type                        end_bit,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace detail
 }  // namespace cudf

@@ -27,12 +27,12 @@
 namespace cudf {
 namespace jit {
 
-launcher::launcher(const std::string& hash,
-                   const std::string& cuda_source,
-                   const std::vector<std::string>& header_names,
-                   const std::vector<std::string>& compiler_flags,
+launcher::launcher(const std::string&                       hash,
+                   const std::string&                       cuda_source,
+                   const std::vector<std::string>&          header_names,
+                   const std::vector<std::string>&          compiler_flags,
                    jitify::experimental::file_callback_type file_callback,
-                   rmm::cuda_stream_view stream)
+                   rmm::cuda_stream_view                    stream)
   : cache_instance{cudf::jit::cudfJitCache::Instance()}, stream(stream)
 {
   program = cache_instance.getProgram(

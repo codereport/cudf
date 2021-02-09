@@ -42,10 +42,10 @@ namespace detail {
  * @param mr Device memory resource used to allocatet the returned column's device memory.
  * @return New lists column of size (end - start)
  */
-std::unique_ptr<cudf::column> copy_slice(lists_column_view const& lists,
-                                         size_type start,
-                                         size_type end,
-                                         rmm::cuda_stream_view stream,
+std::unique_ptr<cudf::column> copy_slice(lists_column_view const&         lists,
+                                         size_type                        start,
+                                         size_type                        end,
+                                         rmm::cuda_stream_view            stream,
                                          rmm::mr::device_memory_resource* mr);
 }  // namespace detail
 }  // namespace lists

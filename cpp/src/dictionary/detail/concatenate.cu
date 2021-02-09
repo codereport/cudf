@@ -130,12 +130,12 @@ struct dispatch_compute_indices {
   template <typename Element>
   typename std::enable_if_t<cudf::is_relationally_comparable<Element, Element>(),
                             std::unique_ptr<column>>
-  operator()(column_view const& all_keys,
-             column_view const& all_indices,
-             column_view const& new_keys,
-             offsets_pair const* d_offsets,
-             size_type const* d_map_to_keys,
-             rmm::cuda_stream_view stream,
+  operator()(column_view const&               all_keys,
+             column_view const&               all_indices,
+             column_view const&               new_keys,
+             offsets_pair const*              d_offsets,
+             size_type const*                 d_map_to_keys,
+             rmm::cuda_stream_view            stream,
              rmm::mr::device_memory_resource* mr)
   {
     auto keys_view     = column_device_view::create(all_keys, stream);
@@ -187,8 +187,8 @@ struct dispatch_compute_indices {
 
 }  // namespace
 
-std::unique_ptr<column> concatenate(std::vector<column_view> const& columns,
-                                    rmm::cuda_stream_view stream,
+std::unique_ptr<column> concatenate(std::vector<column_view> const&  columns,
+                                    rmm::cuda_stream_view            stream,
                                     rmm::mr::device_memory_resource* mr)
 {
   // exception here is the same behavior as in cudf::concatenate
@@ -196,8 +196,8 @@ std::unique_ptr<column> concatenate(std::vector<column_view> const& columns,
 
   // concatenate the keys (and check the keys match)
   compute_children_offsets_fn child_offsets_fn{columns};
-  auto keys_type = child_offsets_fn.get_keys_type();
-  std::vector<column_view> keys_views(columns.size());
+  auto                        keys_type = child_offsets_fn.get_keys_type();
+  std::vector<column_view>    keys_views(columns.size());
   std::transform(columns.begin(), columns.end(), keys_views.begin(), [keys_type](auto cv) {
     auto dict_view = dictionary_column_view(cv);
     // empty column may not have keys so we create an empty column_view place-holder
@@ -226,13 +226,13 @@ std::unique_ptr<column> concatenate(std::vector<column_view> const& columns,
     if (dict_view.is_empty()) return column_view{data_type{type_id::UINT32}, 0, nullptr};
     return dict_view.get_indices_annotated();  // nicely includes validity mask and view offset
   });
-  auto all_indices        = cudf::detail::concatenate(indices_views, stream, mr);
+  auto       all_indices  = cudf::detail::concatenate(indices_views, stream, mr);
   auto const indices_size = all_indices->size();
 
   // build a vector of values to map the old indices to the concatenated keys
   auto children_offsets = child_offsets_fn.create_children_offsets(stream);
   rmm::device_uvector<size_type> map_to_keys(indices_size, stream);
-  auto indices_itr =
+  auto                           indices_itr =
     cudf::detail::make_counting_transform_iterator(1, [] __device__(size_type idx) {
       return offsets_pair{0, idx};
     });

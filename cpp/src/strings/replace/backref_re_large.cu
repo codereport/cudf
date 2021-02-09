@@ -25,13 +25,13 @@ namespace strings {
 namespace detail {
 
 //
-children_pair replace_with_backrefs_large(column_device_view const& d_strings,
-                                          reprog_device& d_prog,
-                                          string_view const& d_repl_template,
+children_pair replace_with_backrefs_large(column_device_view const&         d_strings,
+                                          reprog_device&                    d_prog,
+                                          string_view const&                d_repl_template,
                                           rmm::device_vector<backref_type>& backrefs,
-                                          size_type null_count,
-                                          rmm::cuda_stream_view stream,
-                                          rmm::mr::device_memory_resource* mr)
+                                          size_type                         null_count,
+                                          rmm::cuda_stream_view             stream,
+                                          rmm::mr::device_memory_resource*  mr)
 {
   return make_strings_children(
     backrefs_fn<RX_STACK_LARGE>{

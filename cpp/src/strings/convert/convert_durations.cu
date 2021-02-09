@@ -37,12 +37,12 @@ namespace {
 
 // duration components timeparts structure
 struct alignas(4) duration_component {
-  int32_t day;        //-2,147,483,648 to 2,147,483,647
-  int32_t subsecond;  // 000000000 to 999999999
-  int8_t hour;        // 00 to 23
-  int8_t minute;      // 00 to 59
-  int8_t second;      // 00 to 59
-  bool is_negative;   // true/false
+  int32_t day;          //-2,147,483,648 to 2,147,483,647
+  int32_t subsecond;    // 000000000 to 999999999
+  int8_t  hour;         // 00 to 23
+  int8_t  minute;       // 00 to 59
+  int8_t  second;       // 00 to 59
+  bool    is_negative;  // true/false
 };
 
 enum class format_char_type : int8_t {
@@ -57,8 +57,8 @@ enum class format_char_type : int8_t {
  */
 struct alignas(4) format_item {
   format_char_type item_type;  // specifier or literal indicator
-  char value;                  // specifier or literal value
-  int8_t length;               // item length in bytes
+  char             value;      // specifier or literal value
+  int8_t           length;     // item length in bytes
 
   static format_item new_specifier(char format_char, int8_t length)
   {
@@ -78,7 +78,7 @@ struct alignas(4) format_item {
  * components and when formatting a string from duration components.
  */
 struct format_compiler {
-  std::string format;
+  std::string                      format;
   rmm::device_uvector<format_item> d_items;
   format_compiler(const char* format_, rmm::cuda_stream_view stream)
     : format(format_), d_items(0, stream)
@@ -96,9 +96,9 @@ struct format_compiler {
       {'r', 11}   // HH:MM:SS AM/PM
     };
     std::vector<format_item> items;
-    const char* str = format.c_str();
-    auto length     = format.length();
-    bool negative_sign{true};
+    const char*              str    = format.c_str();
+    auto                     length = format.length();
+    bool                     negative_sign{true};
     while (length > 0) {
       char ch = *str++;
       length--;
@@ -182,8 +182,8 @@ __device__ void dissect_duration(T duration, duration_component* timeparts)
 template <typename T>
 struct duration_to_string_size_fn {
   const column_device_view d_durations;
-  const format_item* d_format_items;
-  size_type items_count;
+  const format_item*       d_format_items;
+  size_type                items_count;
 
   __device__ int8_t format_length(char format_char, duration_component const* const timeparts) const
   {
@@ -205,7 +205,7 @@ struct duration_to_string_size_fn {
   __device__ size_type operator()(size_type idx)
   {
     if (d_durations.is_null(idx)) return 0;
-    auto duration                = d_durations.element<T>(idx);
+    auto               duration  = d_durations.element<T>(idx);
     duration_component timeparts = {0};  // days, hours, minutes, seconds, subseconds(9)
     dissect_duration(duration, &timeparts);
     return thrust::transform_reduce(
@@ -228,16 +228,16 @@ struct duration_to_string_size_fn {
 template <typename T>
 struct duration_to_string_fn : public duration_to_string_size_fn<T> {
   const int32_t* d_offsets;
-  char* d_chars;
+  char*          d_chars;
   using duration_to_string_size_fn<T>::d_durations;
   using duration_to_string_size_fn<T>::d_format_items;
   using duration_to_string_size_fn<T>::items_count;
 
   duration_to_string_fn(const column_device_view d_durations,
-                        const format_item* d_format_items,
-                        size_type items_count,
-                        const int32_t* d_offsets,
-                        char* d_chars)
+                        const format_item*       d_format_items,
+                        size_type                items_count,
+                        const int32_t*           d_offsets,
+                        char*                    d_chars)
     : duration_to_string_size_fn<T>{d_durations, d_format_items, items_count},
       d_offsets(d_offsets),
       d_chars(d_chars)
@@ -258,7 +258,7 @@ struct duration_to_string_fn : public duration_to_string_size_fn<T> {
     }
 
     char digits[MAX_DIGITS] = {'0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
-    int digits_idx          = 0;
+    int  digits_idx         = 0;
     while (value != 0) {
       assert(digits_idx < MAX_DIGITS);
       digits[digits_idx++] = '0' + std::abs(value % 10);
@@ -384,7 +384,7 @@ struct duration_to_string_fn : public duration_to_string_size_fn<T> {
   __device__ void operator()(size_type idx)
   {
     if (d_durations.is_null(idx)) return;
-    auto duration                = d_durations.template element<T>(idx);
+    auto               duration  = d_durations.template element<T>(idx);
     duration_component timeparts = {0};  // days, hours, minutes, seconds, subseconds(9)
     dissect_duration(duration, &timeparts);
     // convert to characters
@@ -399,19 +399,19 @@ struct duration_to_string_fn : public duration_to_string_size_fn<T> {
  */
 struct dispatch_from_durations_fn {
   template <typename T, std::enable_if_t<cudf::is_duration<T>()>* = nullptr>
-  std::unique_ptr<column> operator()(column_view const& durations,
-                                     std::string const& format,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(column_view const&               durations,
+                                     std::string const&               format,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr) const
   {
     CUDF_EXPECTS(!format.empty(), "Format parameter must not be empty.");
 
     format_compiler compiler(format.c_str(), stream);
-    auto d_format_items = compiler.compiled_format_items();
+    auto            d_format_items = compiler.compiled_format_items();
 
     size_type strings_count = durations.size();
-    auto column             = column_device_view::create(durations, stream);
-    auto d_column           = *column;
+    auto      column        = column_device_view::create(durations, stream);
+    auto      d_column      = *column;
 
     // copy null mask
     rmm::device_buffer null_mask = cudf::detail::copy_bitmask(durations, stream, mr);
@@ -465,14 +465,14 @@ static const __device__ __constant__ int32_t powers_of_ten[10] = {
 template <typename T>  // duration type
 struct parse_duration {
   column_device_view const d_strings;
-  format_item const* d_format_items;
-  size_type items_count;
+  format_item const*       d_format_items;
+  size_type                items_count;
 
   // function to parse string (maximum 10 digits) to integer.
   __device__ int32_t str2int(const char* str, int8_t max_bytes, int8_t& actual_length)
   {
-    const char* ptr = (*str == '-' || *str == '+') ? str + 1 : str;
-    int32_t value   = 0;
+    const char* ptr   = (*str == '-' || *str == '+') ? str + 1 : str;
+    int32_t     value = 0;
     for (int8_t idx = 0; idx < max_bytes; ++idx) {
       char chr = *ptr++;
       if (chr < '0' || chr > '9') {
@@ -487,12 +487,12 @@ struct parse_duration {
 
   // function to parse fraction of decimal value with trailing zeros removed.
   __device__ int32_t str2int_fixed(const char* str,
-                                   int8_t fixed_width,
-                                   size_type string_length,
-                                   int8_t& actual_length)
+                                   int8_t      fixed_width,
+                                   size_type   string_length,
+                                   int8_t&     actual_length)
   {
-    const char* ptr = (*str == '.') ? str + 1 : str;
-    int32_t value   = 0;
+    const char* ptr   = (*str == '.') ? str + 1 : str;
+    int32_t     value = 0;
     // parse till fixed_width or end of string.
     for (int8_t idx = 0; idx < fixed_width && idx < string_length; ++idx) {
       char chr = *ptr++;
@@ -512,8 +512,8 @@ struct parse_duration {
   // parse 2 digit string to integer
   __device__ int8_t parse_2digit_int(const char* str, int8_t& actual_length)
   {
-    const char* ptr = (*str == '-' || *str == '+') ? str + 1 : str;
-    int8_t value    = 0;
+    const char* ptr   = (*str == '-' || *str == '+') ? str + 1 : str;
+    int8_t      value = 0;
     if (*ptr >= '0' && *ptr <= '9') value = (value * 10) + static_cast<int32_t>(*ptr++ - '0');
     if (*ptr >= '0' && *ptr <= '9') value = (value * 10) + static_cast<int32_t>(*ptr++ - '0');
     actual_length += (ptr - str);
@@ -536,8 +536,8 @@ struct parse_duration {
   // Returns 0 if all ok.
   __device__ int parse_into_parts(string_view const& d_string, duration_component* timeparts)
   {
-    auto ptr    = d_string.data();
-    auto length = d_string.size_bytes();
+    auto   ptr    = d_string.data();
+    auto   length = d_string.size_bytes();
     int8_t hour_shift{0};
     for (size_t idx = 0; idx < items_count; ++idx) {
       auto item = d_format_items[idx];
@@ -633,11 +633,11 @@ struct parse_duration {
 
   inline __device__ int64_t duration_from_parts(duration_component const* timeparts)
   {
-    int32_t days  = timeparts->day;
-    auto hour     = timeparts->hour;
-    auto minute   = timeparts->minute;
-    auto second   = timeparts->second;
-    auto duration = duration_D(days) + cuda::std::chrono::hours(hour) +
+    int32_t days     = timeparts->day;
+    auto    hour     = timeparts->hour;
+    auto    minute   = timeparts->minute;
+    auto    second   = timeparts->second;
+    auto    duration = duration_D(days) + cuda::std::chrono::hours(hour) +
                     cuda::std::chrono::minutes(minute) + duration_s(second);
     if (cuda::std::is_same<T, duration_D>::value)
       return cuda::std::chrono::duration_cast<duration_D>(duration).count();
@@ -675,13 +675,13 @@ struct parse_duration {
 struct dispatch_to_durations_fn {
   template <typename T, std::enable_if_t<cudf::is_duration<T>()>* = nullptr>
   void operator()(column_device_view const& d_strings,
-                  std::string const& format,
-                  mutable_column_view& results_view,
-                  rmm::cuda_stream_view stream) const
+                  std::string const&        format,
+                  mutable_column_view&      results_view,
+                  rmm::cuda_stream_view     stream) const
   {
-    format_compiler compiler(format.c_str(), stream);
-    auto d_items   = compiler.compiled_format_items();
-    auto d_results = results_view.data<T>();
+    format_compiler   compiler(format.c_str(), stream);
+    auto              d_items   = compiler.compiled_format_items();
+    auto              d_results = results_view.data<T>();
     parse_duration<T> pfn{d_strings, d_items, compiler.items_count()};
     thrust::transform(rmm::exec_policy(stream),
                       thrust::make_counting_iterator<size_type>(0),
@@ -701,9 +701,9 @@ struct dispatch_to_durations_fn {
 
 }  // namespace
 
-std::unique_ptr<column> from_durations(column_view const& durations,
-                                       std::string const& format,
-                                       rmm::cuda_stream_view stream,
+std::unique_ptr<column> from_durations(column_view const&               durations,
+                                       std::string const&               format,
+                                       rmm::cuda_stream_view            stream,
                                        rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = durations.size();
@@ -713,10 +713,10 @@ std::unique_ptr<column> from_durations(column_view const& durations,
     durations.type(), dispatch_from_durations_fn{}, durations, format, stream, mr);
 }
 
-std::unique_ptr<column> to_durations(strings_column_view const& strings,
-                                     data_type duration_type,
-                                     std::string const& format,
-                                     rmm::cuda_stream_view stream,
+std::unique_ptr<column> to_durations(strings_column_view const&       strings,
+                                     data_type                        duration_type,
+                                     std::string const&               format,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = strings.size();
@@ -742,17 +742,17 @@ std::unique_ptr<column> to_durations(strings_column_view const& strings,
 
 }  // namespace detail
 
-std::unique_ptr<column> from_durations(column_view const& durations,
-                                       std::string const& format,
+std::unique_ptr<column> from_durations(column_view const&               durations,
+                                       std::string const&               format,
                                        rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::from_durations(durations, format, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> to_durations(strings_column_view const& strings,
-                                     data_type duration_type,
-                                     std::string const& format,
+std::unique_ptr<column> to_durations(strings_column_view const&       strings,
+                                     data_type                        duration_type,
+                                     std::string const&               format,
                                      rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

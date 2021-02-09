@@ -32,7 +32,7 @@ struct TextGenerateNgramsTest : public cudf::test::BaseFixture {
 TEST_F(TextGenerateNgramsTest, Ngrams)
 {
   cudf::test::strings_column_wrapper strings{"the", "fox", "jumped", "over", "thé", "dog"};
-  cudf::strings_column_view strings_view(strings);
+  cudf::strings_column_view          strings_view(strings);
 
   {
     cudf::test::strings_column_wrapper expected{
@@ -64,7 +64,7 @@ TEST_F(TextGenerateNgramsTest, Ngrams)
                                                 "hé",
                                                 "do",
                                                 "og"};
-    auto const results = nvtext::generate_character_ngrams(strings_view, 2);
+    auto const                         results = nvtext::generate_character_ngrams(strings_view, 2);
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, expected);
   }
   {
@@ -85,7 +85,7 @@ TEST_F(TextGenerateNgramsTest, NgramsWithNulls)
 
   cudf::strings_column_view strings_view(strings);
   {
-    auto const results = nvtext::generate_ngrams(strings_view, 3);
+    auto const                         results = nvtext::generate_ngrams(strings_view, 3);
     cudf::test::strings_column_wrapper expected{
       "the_fox_jumped", "fox_jumped_over", "jumped_over_the", "over_the_dog"};
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, expected);
@@ -120,7 +120,7 @@ TEST_F(TextGenerateNgramsTest, Errors)
   EXPECT_THROW(nvtext::generate_character_ngrams(cudf::strings_column_view(strings), 3),
                cudf::logic_error);
 
-  std::vector<const char*> h_strings{"", nullptr, "", nullptr};
+  std::vector<const char*>           h_strings{"", nullptr, "", nullptr};
   cudf::test::strings_column_wrapper strings_no_tokens(
     h_strings.begin(),
     h_strings.end(),

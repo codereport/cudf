@@ -42,12 +42,12 @@ namespace detail {
  * @return New strings column.
  */
 std::unique_ptr<column> fill(
-  strings_column_view const& strings,
-  size_type begin,
-  size_type end,
-  string_scalar const& value,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  strings_column_view const&       strings,
+  size_type                        begin,
+  size_type                        end,
+  string_scalar const&             value,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace detail
 }  // namespace strings

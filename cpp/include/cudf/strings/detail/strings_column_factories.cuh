@@ -35,9 +35,9 @@ namespace detail {
 
 // Create a strings-type column from vector of pointer/size pairs
 template <typename IndexPairIterator>
-std::unique_ptr<column> make_strings_column(IndexPairIterator begin,
-                                            IndexPairIterator end,
-                                            rmm::cuda_stream_view stream,
+std::unique_ptr<column> make_strings_column(IndexPairIterator                begin,
+                                            IndexPairIterator                end,
+                                            rmm::cuda_stream_view            stream,
                                             rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

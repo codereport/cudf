@@ -1090,7 +1090,7 @@ class csv_reader_options_builder {
  * @return The set of columns along with metadata.
  */
 table_with_metadata read_csv(
-  csv_reader_options const& options,
+  csv_reader_options const&        options,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group
@@ -1417,7 +1417,7 @@ class csv_writer_options_builder {
  * @param options Settings for controlling writing behavior.
  * @param mr Device memory resource to use for device memory allocation.
  */
-void write_csv(csv_writer_options const& options,
+void write_csv(csv_writer_options const&        options,
                rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

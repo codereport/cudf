@@ -37,17 +37,17 @@ __global__ static void init_curand(curandState* state, const int nstates)
 template <typename key_type, typename size_type>
 __global__ static void init_build_tbl(key_type* const build_tbl,
                                       const size_type build_tbl_size,
-                                      const key_type rand_max,
-                                      const bool uniq_build_tbl_keys,
+                                      const key_type  rand_max,
+                                      const bool      uniq_build_tbl_keys,
                                       key_type* const lottery,
                                       const size_type lottery_size,
-                                      curandState* state,
-                                      const int num_states)
+                                      curandState*    state,
+                                      const int       num_states)
 {
   static_assert(std::is_signed<key_type>::value, "key_type needs to be signed for lottery to work");
 
-  const int start_idx   = blockIdx.x * blockDim.x + threadIdx.x;
-  const key_type stride = blockDim.x * gridDim.x;
+  const int      start_idx = blockIdx.x * blockDim.x + threadIdx.x;
+  const key_type stride    = blockDim.x * gridDim.x;
   assert(start_idx < num_states);
 
   curandState localState = state[start_idx];
@@ -61,7 +61,7 @@ __global__ static void init_build_tbl(key_type* const build_tbl,
       // the spot to -1.
 
       size_type lottery_idx = x * lottery_size;
-      key_type lottery_val  = -1;
+      key_type  lottery_val = -1;
 
       while (-1 == lottery_val) {
         lottery_val = lottery[lottery_idx];
@@ -83,25 +83,25 @@ __global__ static void init_build_tbl(key_type* const build_tbl,
 }
 
 template <typename key_type, typename size_type>
-__global__ void init_probe_tbl(key_type* const probe_tbl,
-                               const size_type probe_tbl_size,
+__global__ void init_probe_tbl(key_type* const       probe_tbl,
+                               const size_type       probe_tbl_size,
                                const key_type* const build_tbl,
-                               const size_type build_tbl_size,
+                               const size_type       build_tbl_size,
                                const key_type* const lottery,
-                               const size_type lottery_size,
-                               const double selectivity,
-                               curandState* state,
-                               const int num_states)
+                               const size_type       lottery_size,
+                               const double          selectivity,
+                               curandState*          state,
+                               const int             num_states)
 {
-  const int start_idx    = blockIdx.x * blockDim.x + threadIdx.x;
-  const size_type stride = blockDim.x * gridDim.x;
+  const int       start_idx = blockIdx.x * blockDim.x + threadIdx.x;
+  const size_type stride    = blockDim.x * gridDim.x;
   assert(start_idx < num_states);
 
   curandState localState = state[start_idx];
 
   for (size_type idx = start_idx; idx < probe_tbl_size; idx += stride) {
     key_type val;
-    double x = curand_uniform_double(&localState);
+    double   x = curand_uniform_double(&localState);
 
     if (x <= selectivity) {
       // x <= selectivity means this key in the probe table should be present in the build table, so
@@ -157,9 +157,9 @@ void generate_input_tables(key_type* const build_tbl,
                            const size_type build_tbl_size,
                            key_type* const probe_tbl,
                            const size_type probe_tbl_size,
-                           const double selectivity,
-                           const key_type rand_max,
-                           const bool uniq_build_tbl_keys)
+                           const double    selectivity,
+                           const key_type  rand_max,
+                           const bool      uniq_build_tbl_keys)
 {
   // With large values of rand_max the a lot of temporary storage is needed for the lottery. At the
   // expense of not being that accurate with applying the selectivity an especially more memory
@@ -225,7 +225,7 @@ void generate_input_tables(key_type* const build_tbl,
   // Exclude keys used in build table from lottery
   thrust::counting_iterator<key_type> first_lottery_elem(0);
   thrust::counting_iterator<key_type> last_lottery_elem = first_lottery_elem + lottery_size;
-  key_type* lottery_end                                 = thrust::set_difference(thrust::device,
+  key_type*                           lottery_end       = thrust::set_difference(thrust::device,
                                                  first_lottery_elem,
                                                  last_lottery_elem,
                                                  build_tbl_sorted.begin(),

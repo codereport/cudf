@@ -48,7 +48,7 @@ TYPED_TEST(TileTest, NoRows)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T> in_a({});
-  cudf::table_view in(std::vector<cudf::column_view>{in_a});
+  cudf::table_view              in(std::vector<cudf::column_view>{in_a});
 
   auto expected = in;
 
@@ -62,10 +62,10 @@ TYPED_TEST(TileTest, OneColumn)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T, int32_t> in_a({-1, 0, 1});
-  cudf::table_view in(std::vector<cudf::column_view>{in_a});
+  cudf::table_view                       in(std::vector<cudf::column_view>{in_a});
 
   fixed_width_column_wrapper<T, int32_t> expected_a({-1, 0, 1, -1, 0, 1});
-  cudf::table_view expected(std::vector<cudf::column_view>{expected_a});
+  cudf::table_view                       expected(std::vector<cudf::column_view>{expected_a});
 
   auto actual = cudf::tile(in, 2);
 
@@ -77,10 +77,10 @@ TYPED_TEST(TileTest, OneColumnNullable)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T, int32_t> in_a({-1, 0, 1}, {1, 0, 0});
-  cudf::table_view in(std::vector<cudf::column_view>{in_a});
+  cudf::table_view                       in(std::vector<cudf::column_view>{in_a});
 
   fixed_width_column_wrapper<T, int32_t> expected_a({-1, 0, 1, -1, 0, 1}, {1, 0, 0, 1, 0, 0});
-  cudf::table_view expected(std::vector<cudf::column_view>{expected_a});
+  cudf::table_view                       expected(std::vector<cudf::column_view>{expected_a});
 
   auto actual = cudf::tile(in, 2);
 
@@ -92,7 +92,7 @@ TYPED_TEST(TileTest, OneColumnNegativeCount)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T, int32_t> in_a({-1, 0, 1}, {1, 0, 0});
-  cudf::table_view in(std::vector<cudf::column_view>{in_a});
+  cudf::table_view                       in(std::vector<cudf::column_view>{in_a});
 
   EXPECT_THROW(cudf::tile(in, -1), cudf::logic_error);
 }
@@ -102,9 +102,9 @@ TYPED_TEST(TileTest, OneColumnZeroCount)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T, int32_t> in_a({-1, 0, 1}, {1, 0, 0});
-  cudf::table_view in(std::vector<cudf::column_view>{in_a});
+  cudf::table_view                       in(std::vector<cudf::column_view>{in_a});
 
-  std::vector<T> vals{};
+  std::vector<T>    vals{};
   std::vector<bool> mask{};
 
   fixed_width_column_wrapper<T> expected_a(vals.begin(), vals.end(), mask.begin());

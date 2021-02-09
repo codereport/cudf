@@ -54,18 +54,18 @@ enum class device_data_reference_type {
  */
 struct alignas(8) device_data_reference {
   device_data_reference(device_data_reference_type reference_type,
-                        cudf::data_type data_type,
-                        cudf::size_type data_index,
-                        table_reference table_source);
+                        cudf::data_type            data_type,
+                        cudf::size_type            data_index,
+                        table_reference            table_source);
 
   device_data_reference(device_data_reference_type reference_type,
-                        cudf::data_type data_type,
-                        cudf::size_type data_index);
+                        cudf::data_type            data_type,
+                        cudf::size_type            data_index);
 
   const device_data_reference_type reference_type;  // Source of data
-  const cudf::data_type data_type;                  // Type of data
+  const cudf::data_type            data_type;       // Type of data
   const cudf::size_type
-    data_index;  // The column index of a table, index of a literal, or index of an intermediate
+                        data_index;  // The column index of a table, index of a literal, or index of an intermediate
   const table_reference table_source;
 
   inline bool operator==(const device_data_reference& rhs) const
@@ -210,13 +210,13 @@ class linearizer {
    public:
     intermediate_counter() : used_values(), max_used(0) {}
     cudf::size_type take();
-    void give(cudf::size_type value);
+    void            give(cudf::size_type value);
     cudf::size_type get_max_used() const { return max_used; }
 
    private:
-    cudf::size_type find_first_missing() const;
+    cudf::size_type              find_first_missing() const;
     std::vector<cudf::size_type> used_values;
-    cudf::size_type max_used;
+    cudf::size_type              max_used;
   };
 
  private:
@@ -225,12 +225,12 @@ class linearizer {
   cudf::size_type add_data_reference(detail::device_data_reference data_ref);
 
   // State information about the "linearized" GPU execution plan
-  cudf::table_view table;
-  cudf::size_type node_count;
-  intermediate_counter intermediate_counter;
-  std::vector<detail::device_data_reference> data_references;
-  std::vector<ast_operator> operators;
-  std::vector<cudf::size_type> operator_source_indices;
+  cudf::table_view                                               table;
+  cudf::size_type                                                node_count;
+  intermediate_counter                                           intermediate_counter;
+  std::vector<detail::device_data_reference>                     data_references;
+  std::vector<ast_operator>                                      operators;
+  std::vector<cudf::size_type>                                   operator_source_indices;
   std::vector<cudf::detail::fixed_width_scalar_device_view_base> literals;
 };
 

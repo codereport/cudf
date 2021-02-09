@@ -69,8 +69,8 @@ struct column_wrapper_constructor {
 template <>
 struct column_wrapper_constructor<std::string, std::string> {
   template <typename ValueIter, typename ValidityIter>
-  cudf::test::strings_column_wrapper operator()(ValueIter begin,
-                                                ValueIter end,
+  cudf::test::strings_column_wrapper operator()(ValueIter    begin,
+                                                ValueIter    end,
                                                 ValidityIter validity_begin) const
   {
     return cudf::test::strings_column_wrapper{begin, end, validity_begin};
@@ -79,9 +79,9 @@ struct column_wrapper_constructor<std::string, std::string> {
 
 template <typename ElementTo, typename SourceElementT = ElementTo>
 auto get_expected_column(std::vector<SourceElementT> const& input_values,
-                         std::vector<bool> const& input_validity,
-                         std::vector<bool> const& struct_validity,
-                         std::vector<int32_t> const& gather_map)
+                         std::vector<bool> const&           input_validity,
+                         std::vector<bool> const&           struct_validity,
+                         std::vector<int32_t> const&        gather_map)
 {
   auto is_valid =  // Validity predicate.
     [&input_values, &input_validity, &struct_validity, &gather_map](auto gather_index) {
@@ -123,18 +123,18 @@ TYPED_TEST(TypedStructGatherTest, TestSimpleStructGather)
   // 2. Numeric "ages" column.
   auto const ages          = std::vector<int32_t>{5, 10, 15, 20, 25, 30};
   auto const ages_validity = std::vector<bool>{1, 1, 1, 1, 0, 1};
-  auto ages_column =
+  auto       ages_column =
     fixed_width_column_wrapper<TypeParam, int32_t>{ages.begin(), ages.end(), ages_validity.begin()};
 
   // 3. Boolean "is_human" column.
   auto const is_human          = {true, true, false, false, false, false};
   auto const is_human_validity = std::vector<bool>{1, 1, 1, 0, 1, 1};
-  auto is_human_col =
+  auto       is_human_col =
     fixed_width_column_wrapper<bool>{is_human.begin(), is_human.end(), is_human_validity.begin()};
 
   // Assemble struct column.
   auto const struct_validity = std::vector<bool>{1, 1, 1, 1, 1, 0};
-  auto struct_column =
+  auto       struct_column =
     structs_column_wrapper{{names_column, ages_column, is_human_col}, struct_validity.begin()}
       .release();
 
@@ -430,7 +430,7 @@ TYPED_TEST(TypedStructGatherTest, TestEmptyGather)
 
   auto const ages          = std::vector<int32_t>{5, 10, 15, 20, 25, 30};
   auto const ages_validity = std::vector<bool>{1, 1, 1, 1, 0, 1};
-  auto ages_column =
+  auto       ages_column =
     fixed_width_column_wrapper<TypeParam, int32_t>{ages.begin(), ages.end(), ages_validity.begin()};
 
   auto const struct_validity = std::vector<bool>{1, 1, 1, 1, 1, 0};
@@ -449,7 +449,7 @@ TYPED_TEST(TypedStructGatherTest, TestEmptyGather)
   auto const gathered_struct_col_view = cudf::structs_column_view{gathered_struct_col};
 
   // Expect empty struct column gathered.
-  auto expected_ages_column          = fixed_width_column_wrapper<TypeParam>{};
+  auto       expected_ages_column    = fixed_width_column_wrapper<TypeParam>{};
   auto const expected_structs_column = structs_column_wrapper{{expected_ages_column}}.release();
 
   expect_columns_equivalent(*expected_structs_column, gathered_struct_col);

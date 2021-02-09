@@ -195,7 +195,7 @@ CUDA_HOST_DEVICE_CALLABLE constexpr T shift(T const& val, scale_type const& scal
 template <typename Rep,
           typename cuda::std::enable_if_t<is_supported_representation_type<Rep>()>* = nullptr>
 struct scaled_integer {
-  Rep value;
+  Rep        value;
   scale_type scale;
   CUDA_HOST_DEVICE_CALLABLE explicit scaled_integer(Rep v, scale_type s) : value(v), scale(s) {}
 };
@@ -211,7 +211,7 @@ struct scaled_integer {
  */
 template <typename Rep, Radix Rad>
 class fixed_point {
-  Rep _value;
+  Rep        _value;
   scale_type _scale;
 
  public:
@@ -537,8 +537,8 @@ class fixed_point {
   explicit operator std::string() const
   {
     if (_scale < 0) {
-      int const n = std::pow(10, -_scale);
-      int const f = _value % n;
+      int const  n = std::pow(10, -_scale);
+      int const  f = _value % n;
       auto const num_zeros =
         std::max(0, (-_scale - static_cast<int32_t>(std::to_string(f).size())));
       auto const zeros = std::string(num_zeros, '0');

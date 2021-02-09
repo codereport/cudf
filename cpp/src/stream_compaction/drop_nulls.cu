@@ -42,14 +42,14 @@ struct valid_table_filter {
   ~valid_table_filter() = default;
 
   valid_table_filter(cudf::table_device_view const& keys_device_view,
-                     cudf::size_type keep_threshold)
+                     cudf::size_type                keep_threshold)
     : keep_threshold(keep_threshold), keys_device_view(keys_device_view)
   {
   }
 
  protected:
-  cudf::size_type keep_threshold;
-  cudf::size_type num_columns;
+  cudf::size_type         keep_threshold;
+  cudf::size_type         num_columns;
   cudf::table_device_view keys_device_view;
 };
 
@@ -60,10 +60,10 @@ namespace detail {
 /*
  * Filters a table to remove null elements.
  */
-std::unique_ptr<table> drop_nulls(table_view const& input,
-                                  std::vector<size_type> const& keys,
-                                  cudf::size_type keep_threshold,
-                                  rmm::cuda_stream_view stream,
+std::unique_ptr<table> drop_nulls(table_view const&                input,
+                                  std::vector<size_type> const&    keys,
+                                  cudf::size_type                  keep_threshold,
+                                  rmm::cuda_stream_view            stream,
                                   rmm::mr::device_memory_resource* mr)
 {
   auto keys_view = input.select(keys);
@@ -82,9 +82,9 @@ std::unique_ptr<table> drop_nulls(table_view const& input,
 /*
  * Filters a table to remove null elements.
  */
-std::unique_ptr<table> drop_nulls(table_view const& input,
-                                  std::vector<size_type> const& keys,
-                                  cudf::size_type keep_threshold,
+std::unique_ptr<table> drop_nulls(table_view const&                input,
+                                  std::vector<size_type> const&    keys,
+                                  cudf::size_type                  keep_threshold,
                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -93,8 +93,8 @@ std::unique_ptr<table> drop_nulls(table_view const& input,
 /*
  * Filters a table to remove null elements.
  */
-std::unique_ptr<table> drop_nulls(table_view const& input,
-                                  std::vector<size_type> const& keys,
+std::unique_ptr<table> drop_nulls(table_view const&                input,
+                                  std::vector<size_type> const&    keys,
                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

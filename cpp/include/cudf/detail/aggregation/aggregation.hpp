@@ -132,8 +132,8 @@ struct quantile_aggregation final : derived_aggregation<quantile_aggregation> {
     : derived_aggregation{QUANTILE}, _quantiles{q}, _interpolation{i}
   {
   }
-  std::vector<double> _quantiles;  ///< Desired quantile(s)
-  interpolation _interpolation;    ///< Desired interpolation
+  std::vector<double> _quantiles;      ///< Desired quantile(s)
+  interpolation       _interpolation;  ///< Desired interpolation
 
  protected:
   friend class derived_aggregation<quantile_aggregation>;
@@ -260,7 +260,7 @@ struct nth_element_aggregation final : derived_aggregation<nth_element_aggregati
     : derived_aggregation{NTH_ELEMENT}, _n{n}, _null_handling{null_handling}
   {
   }
-  size_type _n;                ///< nth index to return
+  size_type   _n;              ///< nth index to return
   null_policy _null_handling;  ///< include or exclude nulls
 
  protected:
@@ -282,9 +282,9 @@ struct nth_element_aggregation final : derived_aggregation<nth_element_aggregati
  * specified in udf
  */
 struct udf_aggregation final : derived_aggregation<udf_aggregation> {
-  udf_aggregation(aggregation::Kind type,
+  udf_aggregation(aggregation::Kind  type,
                   std::string const& user_defined_aggregator,
-                  data_type output_type)
+                  data_type          output_type)
     : derived_aggregation{type},
       _source{user_defined_aggregator},
       _operator_name{(type == aggregation::PTX) ? "rolling_udf_ptx" : "rolling_udf_cuda"},
@@ -297,7 +297,7 @@ struct udf_aggregation final : derived_aggregation<udf_aggregation> {
   std::string const _source;
   std::string const _operator_name;
   std::string const _function_name;
-  data_type _output_type;
+  data_type         _output_type;
 
  protected:
   friend class derived_aggregation<udf_aggregation>;
@@ -551,7 +551,7 @@ AGG_KIND_MAPPING(aggregation::VARIANCE, var_aggregation);
 #pragma nv_exec_check_disable
 template <typename F, typename... Ts>
 CUDA_HOST_DEVICE_CALLABLE decltype(auto) aggregation_dispatcher(aggregation::Kind k,
-                                                                F&& f,
+                                                                F&&               f,
                                                                 Ts&&... args)
 {
   switch (k) {
@@ -633,7 +633,7 @@ struct dispatch_source {
 #pragma nv_exec_check_disable
   template <typename Element, typename F, typename... Ts>
   CUDA_HOST_DEVICE_CALLABLE decltype(auto) operator()(aggregation::Kind k,
-                                                      F&& f,
+                                                      F&&               f,
                                                       Ts&&... args) const noexcept
   {
     return aggregation_dispatcher(

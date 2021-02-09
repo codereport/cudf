@@ -35,12 +35,12 @@ namespace {
 
 // duration components timeparts structure
 struct alignas(4) duration_component {
-  int32_t day;         //-2,147,483,648 to 2,147,483,647
-  int32_t nanosecond;  // 000000000 to 999999999
-  int8_t hour;         // 00 to 23
-  int8_t minute;       // 00 to 59
-  int8_t second;       // 00 to 59
-  bool is_negative;    // true/false
+  int32_t day;          //-2,147,483,648 to 2,147,483,647
+  int32_t nanosecond;   // 000000000 to 999999999
+  int8_t  hour;         // 00 to 23
+  int8_t  minute;       // 00 to 59
+  int8_t  second;       // 00 to 59
+  bool    is_negative;  // true/false
 };
 
 template <typename T>
@@ -76,7 +76,7 @@ struct duration_to_string_size_fn {
   __device__ size_type operator()(size_type idx)
   {
     if (d_durations.is_null(idx)) return 0;
-    auto duration                = d_durations.element<T>(idx);
+    auto               duration  = d_durations.element<T>(idx);
     duration_component timeparts = {0};  // days, hours, minutes, seconds, nanoseconds(9)
     dissect_duration(duration, &timeparts);
     // [-] %d days [+]HH:MM:SS.mmmuuunnn
@@ -87,12 +87,12 @@ struct duration_to_string_size_fn {
 template <typename T>
 struct duration_to_string_fn : public duration_to_string_size_fn<T> {
   const int32_t* d_offsets;
-  char* d_chars;
+  char*          d_chars;
   using duration_to_string_size_fn<T>::d_durations;
 
   duration_to_string_fn(const column_device_view d_durations,
-                        const int32_t* d_offsets,
-                        char* d_chars)
+                        const int32_t*           d_offsets,
+                        char*                    d_chars)
     : duration_to_string_size_fn<T>{d_durations}, d_offsets(d_offsets), d_chars(d_chars)
   {
   }
@@ -154,7 +154,7 @@ struct duration_to_string_fn : public duration_to_string_size_fn<T> {
   __device__ void operator()(size_type idx)
   {
     if (d_durations.is_null(idx)) return;
-    auto duration                = d_durations.template element<T>(idx);
+    auto               duration  = d_durations.template element<T>(idx);
     duration_component timeparts = {0};  // days, hours, minutes, seconds, nanoseconds(9)
     dissect_duration(duration, &timeparts);
     // convert to characters
@@ -169,13 +169,13 @@ struct duration_to_string_fn : public duration_to_string_size_fn<T> {
  */
 struct dispatch_from_durations_fn {
   template <typename T, std::enable_if_t<cudf::is_duration<T>()>* = nullptr>
-  std::unique_ptr<column> operator()(column_view const& durations,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(column_view const&               durations,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr) const
   {
     size_type strings_count = durations.size();
-    auto column             = column_device_view::create(durations, stream);
-    auto d_column           = *column;
+    auto      column        = column_device_view::create(durations, stream);
+    auto      d_column      = *column;
 
     // copy null mask
     rmm::device_buffer null_mask = cudf::detail::copy_bitmask(durations, stream, mr);
@@ -222,8 +222,8 @@ struct dispatch_from_durations_fn {
 
 }  // namespace
 
-std::unique_ptr<column> pandas_format_durations(column_view const& durations,
-                                                rmm::cuda_stream_view stream,
+std::unique_ptr<column> pandas_format_durations(column_view const&               durations,
+                                                rmm::cuda_stream_view            stream,
                                                 rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = durations.size();

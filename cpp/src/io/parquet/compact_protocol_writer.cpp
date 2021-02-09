@@ -203,7 +203,7 @@ inline size_t CompactProtocolFieldWriter::value()
   return writer.m_buf.size() - struct_start_pos;
 }
 
-inline void CompactProtocolFieldWriter::field_struct_blob(int field,
+inline void CompactProtocolFieldWriter::field_struct_blob(int                         field,
                                                           const std::vector<uint8_t> &val)
 {
   put_field_header(field, current_field_value, ST_FLD_STRUCT);
@@ -221,7 +221,7 @@ inline void CompactProtocolFieldWriter::field_string(int field, const std::strin
   current_field_value = field;
 }
 
-inline void CompactProtocolFieldWriter::field_string_list(int field,
+inline void CompactProtocolFieldWriter::field_string_list(int                             field,
                                                           const std::vector<std::string> &val)
 {
   put_field_header(field, current_field_value, ST_FLD_LIST);

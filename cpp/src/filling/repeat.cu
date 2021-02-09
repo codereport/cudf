@@ -111,10 +111,10 @@ struct compute_offsets {
 
 namespace cudf {
 namespace detail {
-std::unique_ptr<table> repeat(table_view const& input_table,
-                              column_view const& count,
-                              bool check_count,
-                              rmm::cuda_stream_view stream,
+std::unique_ptr<table> repeat(table_view const&                input_table,
+                              column_view const&               count,
+                              bool                             check_count,
+                              rmm::cuda_stream_view            stream,
                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(input_table.num_rows() == count.size(), "in and count must have equal size");
@@ -124,7 +124,7 @@ std::unique_ptr<table> repeat(table_view const& input_table,
 
   auto offsets = cudf::type_dispatcher(count.type(), compute_offsets{&count}, check_count, stream);
 
-  size_type output_size{offsets.back()};
+  size_type                     output_size{offsets.back()};
   rmm::device_vector<size_type> indices(output_size);
   thrust::upper_bound(rmm::exec_policy(stream),
                       offsets.begin(),
@@ -137,9 +137,9 @@ std::unique_ptr<table> repeat(table_view const& input_table,
     input_table, indices.begin(), indices.end(), out_of_bounds_policy::DONT_CHECK, stream, mr);
 }
 
-std::unique_ptr<table> repeat(table_view const& input_table,
-                              size_type count,
-                              rmm::cuda_stream_view stream,
+std::unique_ptr<table> repeat(table_view const&                input_table,
+                              size_type                        count,
+                              rmm::cuda_stream_view            stream,
                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(count >= 0, "count value should be non-negative");
@@ -159,17 +159,17 @@ std::unique_ptr<table> repeat(table_view const& input_table,
 
 }  // namespace detail
 
-std::unique_ptr<table> repeat(table_view const& input_table,
-                              column_view const& count,
-                              bool check_count,
+std::unique_ptr<table> repeat(table_view const&                input_table,
+                              column_view const&               count,
+                              bool                             check_count,
                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::repeat(input_table, count, check_count, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<table> repeat(table_view const& input_table,
-                              size_type count,
+std::unique_ptr<table> repeat(table_view const&                input_table,
+                              size_type                        count,
                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

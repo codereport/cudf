@@ -132,8 +132,8 @@ struct distribution_params<
   T,
   typename std::enable_if_t<!std::is_same<T, bool>::value && cudf::is_numeric<T>()>> {
   distribution_id id;
-  T lower_bound;
-  T upper_bound;
+  T               lower_bound;
+  T               upper_bound;
 };
 
 /**
@@ -150,8 +150,8 @@ struct distribution_params<T, typename std::enable_if_t<std::is_same<T, bool>::v
 template <typename T>
 struct distribution_params<T, typename std::enable_if_t<cudf::is_chrono<T>()>> {
   distribution_id id;
-  int64_t lower_bound;
-  int64_t upper_bound;
+  int64_t         lower_bound;
+  int64_t         upper_bound;
 };
 
 /**
@@ -169,9 +169,9 @@ struct distribution_params<T,
  */
 template <typename T>
 struct distribution_params<T, typename std::enable_if_t<std::is_same<T, cudf::list_view>::value>> {
-  cudf::type_id element_type;
+  cudf::type_id                 element_type;
   distribution_params<uint32_t> length_params;
-  cudf::size_type max_depth;
+  cudf::size_type               max_depth;
 };
 
 // Present for compilation only. To be implemented once reader/writers support the fixed width type.
@@ -213,15 +213,15 @@ std::vector<cudf::type_id> get_type_or_group(std::vector<int32_t> const& ids);
  */
 class data_profile {
   std::map<cudf::type_id, distribution_params<uint64_t>> int_params;
-  std::map<cudf::type_id, distribution_params<double>> float_params;
+  std::map<cudf::type_id, distribution_params<double>>   float_params;
   distribution_params<cudf::string_view> string_dist_desc{{distribution_id::NORMAL, 0, 32}};
-  distribution_params<cudf::list_view> list_dist_desc{
+  distribution_params<cudf::list_view>   list_dist_desc{
     cudf::type_id::INT32, {distribution_id::GEOMETRIC, 0, 100}, 2};
 
-  double bool_probability        = 0.5;
-  double null_frequency          = 0.01;
-  cudf::size_type cardinality    = 2000;
-  cudf::size_type avg_run_length = 4;
+  double          bool_probability = 0.5;
+  double          null_frequency   = 0.01;
+  cudf::size_type cardinality      = 2000;
+  cudf::size_type avg_run_length   = 4;
 
  public:
   template <typename T,
@@ -300,10 +300,10 @@ class data_profile {
   template <typename T,
             typename Type_enum,
             typename std::enable_if_t<std::is_integral<T>::value, T>* = nullptr>
-  void set_distribution_params(Type_enum type_or_group,
+  void set_distribution_params(Type_enum       type_or_group,
                                distribution_id dist,
-                               T lower_bound,
-                               T upper_bound)
+                               T               lower_bound,
+                               T               upper_bound)
   {
     for (auto tid : get_type_or_group(static_cast<int32_t>(type_or_group))) {
       if (tid == cudf::type_id::STRING) {
@@ -324,10 +324,10 @@ class data_profile {
   template <typename T,
             typename Type_enum,
             typename std::enable_if_t<std::is_floating_point<T>::value, T>* = nullptr>
-  void set_distribution_params(Type_enum type_or_group,
+  void set_distribution_params(Type_enum       type_or_group,
                                distribution_id dist,
-                               T lower_bound,
-                               T upper_bound)
+                               T               lower_bound,
+                               T               upper_bound)
   {
     for (auto tid : get_type_or_group(static_cast<int32_t>(type_or_group))) {
       float_params[tid] = {
@@ -373,10 +373,10 @@ struct row_count {
  * @param seed optional, seed for the pseudo-random engine
  */
 std::unique_ptr<cudf::table> create_random_table(std::vector<cudf::type_id> const& dtype_ids,
-                                                 cudf::size_type num_cols,
-                                                 table_size_bytes table_bytes,
+                                                 cudf::size_type                   num_cols,
+                                                 table_size_bytes                  table_bytes,
                                                  data_profile const& data_params = data_profile{},
-                                                 unsigned seed                   = 1);
+                                                 unsigned            seed        = 1);
 
 /**
  * @brief Deterministically generates a table filled with data with the given parameters.
@@ -391,7 +391,7 @@ std::unique_ptr<cudf::table> create_random_table(std::vector<cudf::type_id> cons
  * @param seed optional, seed for the pseudo-random engine
  */
 std::unique_ptr<cudf::table> create_random_table(std::vector<cudf::type_id> const& dtype_ids,
-                                                 cudf::size_type num_cols,
-                                                 row_count num_rows,
+                                                 cudf::size_type                   num_cols,
+                                                 row_count                         num_rows,
                                                  data_profile const& data_params = data_profile{},
-                                                 unsigned seed                   = 1);
+                                                 unsigned            seed        = 1);

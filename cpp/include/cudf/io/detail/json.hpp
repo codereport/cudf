@@ -53,8 +53,8 @@ class reader {
    * @param options Settings for controlling reading behavior
    * @param mr Device memory resource to use for device memory allocation
    */
-  explicit reader(std::vector<std::string> const &filepaths,
-                  json_reader_options const &options,
+  explicit reader(std::vector<std::string> const & filepaths,
+                  json_reader_options const &      options,
                   rmm::mr::device_memory_resource *mr = rmm::mr::get_current_device_resource());
 
   /**
@@ -65,7 +65,7 @@ class reader {
    * @param mr Device memory resource to use for device memory allocation
    */
   explicit reader(std::vector<std::unique_ptr<cudf::io::datasource>> &&sources,
-                  json_reader_options const &options,
+                  json_reader_options const &                          options,
                   rmm::mr::device_memory_resource *mr = rmm::mr::get_current_device_resource());
 
   /**
@@ -80,7 +80,7 @@ class reader {
    * @return cudf::table object that contains the array of cudf::column.
    */
   table_with_metadata read(json_reader_options const &options,
-                           rmm::cuda_stream_view stream = rmm::cuda_stream_default);
+                           rmm::cuda_stream_view      stream = rmm::cuda_stream_default);
 };
 
 }  // namespace json

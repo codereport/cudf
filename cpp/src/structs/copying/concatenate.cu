@@ -36,8 +36,8 @@ namespace detail {
 /**
  * @copydoc cudf::structs::detail::concatenate
  */
-std::unique_ptr<column> concatenate(std::vector<column_view> const& columns,
-                                    rmm::cuda_stream_view stream,
+std::unique_ptr<column> concatenate(std::vector<column_view> const&  columns,
+                                    rmm::cuda_stream_view            stream,
                                     rmm::mr::device_memory_resource* mr)
 {
   // get ordered children

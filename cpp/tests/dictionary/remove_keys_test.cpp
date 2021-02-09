@@ -50,7 +50,7 @@ TEST_F(DictionaryRemoveKeysTest, StringsColumn)
   // remove_unused_keys
   {
     cudf::test::fixed_width_column_wrapper<int32_t> gather_map{0, 4, 3, 1};
-    auto const table_result =
+    auto const                                      table_result =
       cudf::gather(cudf::table_view{{dictionary->view()}}, gather_map)->release();
     auto const result  = cudf::dictionary::remove_unused_keys(table_result.front()->view());
     auto const decoded = cudf::dictionary::decode(result->view());
@@ -76,7 +76,7 @@ TEST_F(DictionaryRemoveKeysTest, FloatColumn)
   }
   {
     cudf::test::fixed_width_column_wrapper<int32_t> gather_map{0, 2, 3, 1};
-    auto const table_result =
+    auto const                                      table_result =
       cudf::gather(cudf::table_view{{dictionary->view()}}, gather_map)->release();
     auto const result  = cudf::dictionary::remove_unused_keys(table_result.front()->view());
     auto const decoded = cudf::dictionary::decode(result->view());
@@ -102,7 +102,7 @@ TEST_F(DictionaryRemoveKeysTest, WithNull)
   }
   {
     cudf::test::fixed_width_column_wrapper<int32_t> gather_map{0, 2, 3, 1};
-    auto const table_result =
+    auto const                                      table_result =
       cudf::gather(cudf::table_view{{dictionary->view()}}, gather_map)->release();
     auto const result  = cudf::dictionary::remove_unused_keys(table_result.front()->view());
     auto const decoded = cudf::dictionary::decode(result->view());
@@ -114,7 +114,7 @@ TEST_F(DictionaryRemoveKeysTest, WithNull)
 TEST_F(DictionaryRemoveKeysTest, Errors)
 {
   cudf::test::fixed_width_column_wrapper<int64_t> input{1, 2, 3};
-  auto const dictionary = cudf::dictionary::encode(input);
+  auto const                                      dictionary = cudf::dictionary::encode(input);
 
   cudf::test::fixed_width_column_wrapper<float> del_keys{1.0, 2.0, 3.0};
   EXPECT_THROW(cudf::dictionary::remove_keys(dictionary->view(), del_keys), cudf::logic_error);

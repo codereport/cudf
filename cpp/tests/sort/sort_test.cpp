@@ -32,9 +32,9 @@
 
 namespace cudf {
 namespace test {
-void run_sort_test(table_view input,
-                   column_view expected_sorted_indices,
-                   std::vector<order> column_order         = {},
+void run_sort_test(table_view              input,
+                   column_view             expected_sorted_indices,
+                   std::vector<order>      column_order    = {},
                    std::vector<null_order> null_precedence = {})
 {
   // Sorted table
@@ -61,12 +61,12 @@ TYPED_TEST(Sort, WithNullMax)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T> col1{{5, 4, 3, 5, 8, 5}, {1, 1, 0, 1, 1, 1}};
-  strings_column_wrapper col2({"d", "e", "a", "d", "k", "d"}, {1, 1, 0, 1, 1, 1});
+  strings_column_wrapper        col2({"d", "e", "a", "d", "k", "d"}, {1, 1, 0, 1, 1, 1});
   fixed_width_column_wrapper<T> col3{{10, 40, 70, 5, 2, 10}, {1, 1, 0, 1, 1, 1}};
-  table_view input{{col1, col2, col3}};
+  table_view                    input{{col1, col2, col3}};
 
   fixed_width_column_wrapper<int32_t> expected{{1, 0, 5, 3, 4, 2}};
-  std::vector<order> column_order{order::ASCENDING, order::ASCENDING, order::DESCENDING};
+  std::vector<order>      column_order{order::ASCENDING, order::ASCENDING, order::DESCENDING};
   std::vector<null_order> null_precedence{null_order::AFTER, null_order::AFTER, null_order::AFTER};
 
   // Sorted order
@@ -101,9 +101,9 @@ TYPED_TEST(Sort, WithNullMin)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T> col1{{5, 4, 3, 5, 8}, {1, 1, 0, 1, 1}};
-  strings_column_wrapper col2({"d", "e", "a", "d", "k"}, {1, 1, 0, 1, 1});
+  strings_column_wrapper        col2({"d", "e", "a", "d", "k"}, {1, 1, 0, 1, 1});
   fixed_width_column_wrapper<T> col3{{10, 40, 70, 5, 2}, {1, 1, 0, 1, 1}};
-  table_view input{{col1, col2, col3}};
+  table_view                    input{{col1, col2, col3}};
 
   fixed_width_column_wrapper<int32_t> expected{{2, 1, 0, 3, 4}};
   std::vector<order> column_order{order::ASCENDING, order::ASCENDING, order::DESCENDING};
@@ -139,12 +139,12 @@ TYPED_TEST(Sort, WithMixedNullOrder)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T> col1{{5, 4, 3, 5, 8}, {0, 0, 1, 1, 0}};
-  strings_column_wrapper col2({"d", "e", "a", "d", "k"}, {0, 1, 0, 0, 1});
+  strings_column_wrapper        col2({"d", "e", "a", "d", "k"}, {0, 1, 0, 0, 1});
   fixed_width_column_wrapper<T> col3{{10, 40, 70, 5, 2}, {1, 0, 1, 0, 1}};
-  table_view input{{col1, col2, col3}};
+  table_view                    input{{col1, col2, col3}};
 
   fixed_width_column_wrapper<int32_t> expected{{2, 3, 0, 1, 4}};
-  std::vector<order> column_order{order::ASCENDING, order::ASCENDING, order::ASCENDING};
+  std::vector<order>      column_order{order::ASCENDING, order::ASCENDING, order::ASCENDING};
   std::vector<null_order> null_precedence{null_order::AFTER, null_order::BEFORE, null_order::AFTER};
 
   auto got = sorted_order(input, column_order, null_precedence);
@@ -174,9 +174,9 @@ TYPED_TEST(Sort, WithAllValid)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T> col1{{5, 4, 3, 5, 8}};
-  strings_column_wrapper col2({"d", "e", "a", "d", "k"});
+  strings_column_wrapper        col2({"d", "e", "a", "d", "k"});
   fixed_width_column_wrapper<T> col3{{10, 40, 70, 5, 2}};
-  table_view input{{col1, col2, col3}};
+  table_view                    input{{col1, col2, col3}};
 
   fixed_width_column_wrapper<int32_t> expected{{2, 1, 0, 3, 4}};
   std::vector<order> column_order{order::ASCENDING, order::ASCENDING, order::DESCENDING};
@@ -219,9 +219,9 @@ TYPED_TEST(Sort, MisMatchInColumnOrderSize)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T> col1{{5, 4, 3, 5, 8}};
-  strings_column_wrapper col2({"d", "e", "a", "d", "k"});
+  strings_column_wrapper        col2({"d", "e", "a", "d", "k"});
   fixed_width_column_wrapper<T> col3{{10, 40, 70, 5, 2}};
-  table_view input{{col1, col2, col3}};
+  table_view                    input{{col1, col2, col3}};
 
   std::vector<order> column_order{order::ASCENDING, order::DESCENDING};
 
@@ -236,11 +236,11 @@ TYPED_TEST(Sort, MisMatchInNullPrecedenceSize)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T> col1{{5, 4, 3, 5, 8}};
-  strings_column_wrapper col2({"d", "e", "a", "d", "k"});
+  strings_column_wrapper        col2({"d", "e", "a", "d", "k"});
   fixed_width_column_wrapper<T> col3{{10, 40, 70, 5, 2}};
-  table_view input{{col1, col2, col3}};
+  table_view                    input{{col1, col2, col3}};
 
-  std::vector<order> column_order{order::ASCENDING, order::DESCENDING, order::DESCENDING};
+  std::vector<order>      column_order{order::ASCENDING, order::DESCENDING, order::DESCENDING};
   std::vector<null_order> null_precedence{null_order::AFTER, null_order::BEFORE};
 
   EXPECT_THROW(sorted_order(input, column_order, null_precedence), logic_error);
@@ -254,10 +254,10 @@ TYPED_TEST(Sort, ZeroSizedColumns)
   using T = TypeParam;
 
   fixed_width_column_wrapper<T> col1{};
-  table_view input{{col1}};
+  table_view                    input{{col1}};
 
   fixed_width_column_wrapper<int32_t> expected{};
-  std::vector<order> column_order{order::ASCENDING};
+  std::vector<order>                  column_order{order::ASCENDING};
 
   auto got = sorted_order(input, column_order);
 
@@ -275,12 +275,12 @@ TEST_F(SortByKey, ValueKeysSizeMismatch)
   using T = int64_t;
 
   fixed_width_column_wrapper<T> col1{{5, 4, 3, 5, 8}};
-  strings_column_wrapper col2({"d", "e", "a", "d", "k"});
+  strings_column_wrapper        col2({"d", "e", "a", "d", "k"});
   fixed_width_column_wrapper<T> col3{{10, 40, 70, 5, 2}};
-  table_view values{{col1, col2, col3}};
+  table_view                    values{{col1, col2, col3}};
 
   fixed_width_column_wrapper<T> key_col{{5, 4, 3, 5}};
-  table_view keys{{key_col}};
+  table_view                    keys{{key_col}};
 
   EXPECT_THROW(sort_by_key(values, keys), logic_error);
 }

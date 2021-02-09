@@ -43,19 +43,19 @@ namespace {
  * using the provided start, stop, and step parameters.
  */
 struct substring_fn {
-  const column_device_view d_column;
+  const column_device_view              d_column;
   numeric_scalar_device_view<size_type> d_start, d_stop, d_step;
-  const int32_t* d_offsets{};
-  char* d_chars{};
+  const int32_t*                        d_offsets{};
+  char*                                 d_chars{};
 
   __device__ cudf::size_type operator()(size_type idx)
   {
     if (d_column.is_null(idx)) return 0;  // null string
-    string_view d_str = d_column.template element<string_view>(idx);
-    auto const length = d_str.length();
+    string_view d_str  = d_column.template element<string_view>(idx);
+    auto const  length = d_str.length();
     if (length == 0) return 0;  // empty string
-    size_type const step = d_step.is_valid() ? d_step.value() : 1;
-    auto const begin     = [&] {  // always inclusive
+    size_type const step  = d_step.is_valid() ? d_step.value() : 1;
+    auto const      begin = [&] {  // always inclusive
       // when invalid, default depends on step
       if (!d_start.is_valid()) return (step > 0) ? d_str.begin() : (d_str.end() - 1);
       // normal positive position logic
@@ -80,9 +80,9 @@ struct substring_fn {
       return d_str.begin() + (adjust >= 0 ? adjust : -1);
     }();
 
-    size_type bytes = 0;
-    char* d_buffer  = d_chars ? d_chars + d_offsets[idx] : nullptr;
-    auto itr        = begin;
+    size_type bytes    = 0;
+    char*     d_buffer = d_chars ? d_chars + d_offsets[idx] : nullptr;
+    auto      itr      = begin;
     while (step > 0 ? itr < end : end < itr) {
       bytes += bytes_in_char_utf8(*itr);
       if (d_buffer) d_buffer += from_char_utf8(*itr, d_buffer);
@@ -96,12 +96,12 @@ struct substring_fn {
 
 //
 std::unique_ptr<column> slice_strings(
-  strings_column_view const& strings,
-  numeric_scalar<size_type> const& start = numeric_scalar<size_type>(0, false),
-  numeric_scalar<size_type> const& stop  = numeric_scalar<size_type>(0, false),
-  numeric_scalar<size_type> const& step  = numeric_scalar<size_type>(1),
-  rmm::cuda_stream_view stream           = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr    = rmm::mr::get_current_device_resource())
+  strings_column_view const&       strings,
+  numeric_scalar<size_type> const& start  = numeric_scalar<size_type>(0, false),
+  numeric_scalar<size_type> const& stop   = numeric_scalar<size_type>(0, false),
+  numeric_scalar<size_type> const& step   = numeric_scalar<size_type>(1),
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   size_type strings_count = strings.size();
   if (strings_count == 0) return make_empty_strings_column(stream, mr);
@@ -147,7 +147,7 @@ std::unique_ptr<column> slice_strings(
 
 // external API
 
-std::unique_ptr<column> slice_strings(strings_column_view const& strings,
+std::unique_ptr<column> slice_strings(strings_column_view const&       strings,
                                       numeric_scalar<size_type> const& start,
                                       numeric_scalar<size_type> const& stop,
                                       numeric_scalar<size_type> const& step,
@@ -166,18 +166,18 @@ namespace {
  * This both calculates the output size and executes the substring.
  */
 struct substring_from_fn {
-  const column_device_view d_column;
+  const column_device_view              d_column;
   const cudf::detail::input_indexalator starts;
   const cudf::detail::input_indexalator stops;
-  const int32_t* d_offsets{};
-  char* d_chars{};
+  const int32_t*                        d_offsets{};
+  char*                                 d_chars{};
 
   __device__ size_type operator()(size_type idx)
   {
     if (d_column.is_null(idx)) return 0;  // null string
-    string_view d_str = d_column.template element<string_view>(idx);
-    auto const length = d_str.length();
-    auto const start  = starts[idx];
+    string_view d_str  = d_column.template element<string_view>(idx);
+    auto const  length = d_str.length();
+    auto const  start  = starts[idx];
     if (start >= length) return 0;  // empty string
     auto const stop = stops[idx];
     auto const end  = (((stop < 0) || (stop > length)) ? length : stop);
@@ -202,11 +202,11 @@ struct substring_from_fn {
  * @param mr Device memory resource used to allocate the returned column's device memory.
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
-std::unique_ptr<column> compute_substrings_from_fn(column_device_view const& d_column,
-                                                   size_type null_count,
-                                                   cudf::detail::input_indexalator starts,
-                                                   cudf::detail::input_indexalator stops,
-                                                   rmm::cuda_stream_view stream,
+std::unique_ptr<column> compute_substrings_from_fn(column_device_view const&        d_column,
+                                                   size_type                        null_count,
+                                                   cudf::detail::input_indexalator  starts,
+                                                   cudf::detail::input_indexalator  stops,
+                                                   rmm::cuda_stream_view            stream,
                                                    rmm::mr::device_memory_resource* mr)
 {
   auto strings_count = d_column.size();
@@ -251,12 +251,12 @@ std::unique_ptr<column> compute_substrings_from_fn(column_device_view const& d_c
  * compute the start and end indices of the substring. This function accomplishes that.
  */
 template <typename DelimiterItrT>
-void compute_substring_indices(column_device_view const& d_column,
-                               DelimiterItrT const delim_itr,
-                               size_type delimiter_count,
-                               size_type* start_char_pos,
-                               size_type* end_char_pos,
-                               rmm::cuda_stream_view stream,
+void compute_substring_indices(column_device_view const&        d_column,
+                               DelimiterItrT const              delim_itr,
+                               size_type                        delimiter_count,
+                               size_type*                       start_char_pos,
+                               size_type*                       end_char_pos,
+                               rmm::cuda_stream_view            stream,
                                rmm::mr::device_memory_resource* mr)
 {
   auto strings_count = d_column.size();
@@ -281,7 +281,7 @@ void compute_substring_indices(column_device_view const& d_column,
         auto const col_val_len   = col_val.length();
         auto const delimiter_len = delim_val.length();
 
-        auto nsearches           = (delimiter_count < 0) ? -delimiter_count : delimiter_count;
+        auto       nsearches     = (delimiter_count < 0) ? -delimiter_count : delimiter_count;
         bool const left_to_right = (delimiter_count > 0);
 
         size_type start_pos = start_char_pos[idx];
@@ -311,10 +311,10 @@ void compute_substring_indices(column_device_view const& d_column,
 
 //
 std::unique_ptr<column> slice_strings(
-  strings_column_view const& strings,
-  column_view const& starts_column,
-  column_view const& stops_column,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  column_view const&               starts_column,
+  column_view const&               stops_column,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   size_type strings_count = strings.size();
@@ -339,10 +339,10 @@ std::unique_ptr<column> slice_strings(
 }
 
 template <typename DelimiterItrT>
-std::unique_ptr<column> slice_strings(strings_column_view const& strings,
-                                      DelimiterItrT const delimiter_itr,
-                                      size_type count,
-                                      rmm::cuda_stream_view stream,
+std::unique_ptr<column> slice_strings(strings_column_view const&       strings,
+                                      DelimiterItrT const              delimiter_itr,
+                                      size_type                        count,
+                                      rmm::cuda_stream_view            stream,
                                       rmm::mr::device_memory_resource* mr)
 {
   auto strings_count = strings.size();
@@ -385,18 +385,18 @@ std::unique_ptr<column> slice_strings(strings_column_view const& strings,
 
 // external API
 
-std::unique_ptr<column> slice_strings(strings_column_view const& strings,
-                                      column_view const& starts_column,
-                                      column_view const& stops_column,
+std::unique_ptr<column> slice_strings(strings_column_view const&       strings,
+                                      column_view const&               starts_column,
+                                      column_view const&               stops_column,
                                       rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::slice_strings(strings, starts_column, stops_column, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> slice_strings(strings_column_view const& strings,
-                                      string_scalar const& delimiter,
-                                      size_type count,
+std::unique_ptr<column> slice_strings(strings_column_view const&       strings,
+                                      string_scalar const&             delimiter,
+                                      size_type                        count,
                                       rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -407,9 +407,9 @@ std::unique_ptr<column> slice_strings(strings_column_view const& strings,
                                mr);
 }
 
-std::unique_ptr<column> slice_strings(strings_column_view const& strings,
-                                      strings_column_view const& delimiters,
-                                      size_type count,
+std::unique_ptr<column> slice_strings(strings_column_view const&       strings,
+                                      strings_column_view const&       delimiters,
+                                      size_type                        count,
                                       rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(strings.size() == delimiters.size(),

@@ -34,8 +34,8 @@ namespace ast {
  * @return std::unique_ptr<column> Output column.
  */
 std::unique_ptr<column> compute_column(
-  table_view const table,
-  expression const& expr,
+  table_view const                 table,
+  expression const&                expr,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 }  // namespace ast

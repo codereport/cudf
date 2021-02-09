@@ -30,14 +30,14 @@
 
 namespace cudf {
 namespace test {
-void run_rank_test(table_view input,
-                   table_view expected,
+void run_rank_test(table_view  input,
+                   table_view  expected,
                    rank_method method,
-                   order column_order,
+                   order       column_order,
                    null_policy null_handling,
-                   null_order null_precedence,
-                   bool percentage,
-                   bool debug = false)
+                   null_order  null_precedence,
+                   bool        percentage,
+                   bool        debug = false)
 {
   int i = 0;
   for (auto &&input_column : input) {
@@ -67,14 +67,14 @@ template <typename T>
 struct Rank : public BaseFixture {
   fixed_width_column_wrapper<T> col1{{5, 4, 3, 5, 8, 5}};
   fixed_width_column_wrapper<T> col2{{5, 4, 3, 5, 8, 5}, {1, 1, 0, 1, 1, 1}};
-  strings_column_wrapper col3{{"d", "e", "a", "d", "k", "d"}, {1, 1, 1, 1, 1, 1}};
+  strings_column_wrapper        col3{{"d", "e", "a", "d", "k", "d"}, {1, 1, 1, 1, 1, 1}};
 
-  void run_all_tests(rank_method method,
-                     input_arg_t input_arg,
+  void run_all_tests(rank_method       method,
+                     input_arg_t       input_arg,
                      column_view const col1_rank,
                      column_view const col2_rank,
                      column_view const col3_rank,
-                     bool percentage = false)
+                     bool              percentage = false)
   {
     if (std::is_same<T, bool>::value) return;
     for (auto const &test_case : {

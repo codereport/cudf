@@ -52,14 +52,14 @@ namespace {
 // 5  ab     _       cd_
 //
 struct partition_fn {
-  column_device_view const d_strings;    // strings to split
-  string_view const d_delimiter;         // delimiter for split
-  string_index_pair* d_indices_left{};   // the three
-  string_index_pair* d_indices_delim{};  // output columns
-  string_index_pair* d_indices_right{};  // amigos
+  column_device_view const d_strings;          // strings to split
+  string_view const        d_delimiter;        // delimiter for split
+  string_index_pair*       d_indices_left{};   // the three
+  string_index_pair*       d_indices_delim{};  // output columns
+  string_index_pair*       d_indices_right{};  // amigos
 
-  partition_fn(column_device_view const& d_strings,
-               string_view const& d_delimiter,
+  partition_fn(column_device_view const&              d_strings,
+               string_view const&                     d_delimiter,
                rmm::device_vector<string_index_pair>& indices_left,
                rmm::device_vector<string_index_pair>& indices_delim,
                rmm::device_vector<string_index_pair>& indices_right)
@@ -80,8 +80,8 @@ struct partition_fn {
     }
   }
 
-  __device__ size_type check_delimiter(size_type idx,
-                                       string_view const& d_str,
+  __device__ size_type check_delimiter(size_type                    idx,
+                                       string_view const&           d_str,
                                        string_view::const_iterator& itr)
   {
     size_type offset = itr.byte_offset();
@@ -115,7 +115,7 @@ struct partition_fn {
       return;
     }
     string_view d_str = d_strings.element<string_view>(idx);
-    size_type pos     = -1;
+    size_type   pos   = -1;
     for (auto itr = d_str.begin(); (pos < 0) && (itr < d_str.end()); ++itr)
       pos = check_delimiter(idx, d_str, itr);
     if (pos < 0)  // delimiter not found
@@ -143,8 +143,8 @@ struct partition_fn {
 // 5  ab_cd  _      ""
 //
 struct rpartition_fn : public partition_fn {
-  rpartition_fn(column_device_view const& d_strings,
-                string_view const& d_delimiter,
+  rpartition_fn(column_device_view const&              d_strings,
+                string_view const&                     d_delimiter,
                 rmm::device_vector<string_index_pair>& indices_left,
                 rmm::device_vector<string_index_pair>& indices_delim,
                 rmm::device_vector<string_index_pair>& indices_right)
@@ -159,8 +159,8 @@ struct rpartition_fn : public partition_fn {
       return;
     }
     string_view d_str = d_strings.element<string_view>(idx);
-    size_type pos     = -1;
-    auto itr          = d_str.end();
+    size_type   pos   = -1;
+    auto        itr   = d_str.end();
     while ((pos < 0) && (d_str.begin() < itr)) {
       --itr;
       pos = check_delimiter(idx, d_str, itr);
@@ -177,15 +177,15 @@ struct rpartition_fn : public partition_fn {
 }  // namespace
 
 std::unique_ptr<table> partition(
-  strings_column_view const& strings,
-  string_scalar const& delimiter      = string_scalar(""),
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  strings_column_view const&       strings,
+  string_scalar const&             delimiter = string_scalar(""),
+  rmm::cuda_stream_view            stream    = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(delimiter.is_valid(), "Parameter delimiter must be valid");
   auto strings_count = strings.size();
   if (strings_count == 0) return std::make_unique<table>(std::vector<std::unique_ptr<column>>());
-  auto strings_column = column_device_view::create(strings.parent(), stream);
+  auto        strings_column = column_device_view::create(strings.parent(), stream);
   string_view d_delimiter(delimiter.data(), delimiter.size());
   rmm::device_vector<string_index_pair> left_indices(strings_count), delim_indices(strings_count),
     right_indices(strings_count);
@@ -204,15 +204,15 @@ std::unique_ptr<table> partition(
 }
 
 std::unique_ptr<table> rpartition(
-  strings_column_view const& strings,
-  string_scalar const& delimiter      = string_scalar(""),
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  strings_column_view const&       strings,
+  string_scalar const&             delimiter = string_scalar(""),
+  rmm::cuda_stream_view            stream    = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(delimiter.is_valid(), "Parameter delimiter must be valid");
   auto strings_count = strings.size();
   if (strings_count == 0) return std::make_unique<table>(std::vector<std::unique_ptr<column>>());
-  auto strings_column = column_device_view::create(strings.parent(), stream);
+  auto        strings_column = column_device_view::create(strings.parent(), stream);
   string_view d_delimiter(delimiter.data(), delimiter.size());
   rmm::device_vector<string_index_pair> left_indices(strings_count), delim_indices(strings_count),
     right_indices(strings_count);
@@ -234,16 +234,16 @@ std::unique_ptr<table> rpartition(
 
 // external APIs
 
-std::unique_ptr<table> partition(strings_column_view const& strings,
-                                 string_scalar const& delimiter,
+std::unique_ptr<table> partition(strings_column_view const&       strings,
+                                 string_scalar const&             delimiter,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::partition(strings, delimiter, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<table> rpartition(strings_column_view const& strings,
-                                  string_scalar const& delimiter,
+std::unique_ptr<table> rpartition(strings_column_view const&       strings,
+                                  string_scalar const&             delimiter,
                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

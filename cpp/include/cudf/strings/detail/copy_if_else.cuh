@@ -53,11 +53,11 @@ namespace detail {
  */
 template <typename StringPairIterLeft, typename StringPairIterRight, typename Filter>
 std::unique_ptr<cudf::column> copy_if_else(
-  StringPairIterLeft lhs_begin,
-  StringPairIterLeft lhs_end,
-  StringPairIterRight rhs_begin,
-  Filter filter_fn,
-  rmm::cuda_stream_view stream,
+  StringPairIterLeft               lhs_begin,
+  StringPairIterLeft               lhs_end,
+  StringPairIterRight              rhs_begin,
+  Filter                           filter_fn,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   auto strings_count = std::distance(lhs_begin, lhs_end);
@@ -72,14 +72,14 @@ std::unique_ptr<cudf::column> copy_if_else(
     },
     stream,
     mr);
-  size_type null_count = valid_mask.second;
+  size_type          null_count = valid_mask.second;
   rmm::device_buffer null_mask{0, stream, mr};
   if (null_count) null_mask = valid_mask.first;
 
   // build offsets column
   auto offsets_transformer = [lhs_begin, rhs_begin, filter_fn] __device__(size_type idx) {
-    bool bfilter    = filter_fn(idx);
-    size_type bytes = 0;
+    bool      bfilter = filter_fn(idx);
+    size_type bytes   = 0;
     if (bfilter ? thrust::get<1>(lhs_begin[idx]) : thrust::get<1>(rhs_begin[idx]))
       bytes = bfilter ? thrust::get<0>(lhs_begin[idx]).size_bytes()
                       : thrust::get<0>(rhs_begin[idx]).size_bytes();
@@ -92,9 +92,9 @@ std::unique_ptr<cudf::column> copy_if_else(
   auto d_offsets = offsets_column->view().template data<int32_t>();
 
   // build chars column
-  size_type bytes   = thrust::device_pointer_cast(d_offsets)[strings_count];
-  auto chars_column = create_chars_child_column(strings_count, null_count, bytes, stream, mr);
-  auto d_chars      = chars_column->mutable_view().template data<char>();
+  size_type bytes        = thrust::device_pointer_cast(d_offsets)[strings_count];
+  auto      chars_column = create_chars_child_column(strings_count, null_count, bytes, stream, mr);
+  auto      d_chars      = chars_column->mutable_view().template data<char>();
   // fill in chars
   thrust::for_each_n(
     rmm::exec_policy(stream),

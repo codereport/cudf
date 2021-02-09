@@ -33,11 +33,11 @@
 namespace cudf {
 namespace detail {
 
-std::unique_ptr<table> sample(table_view const& input,
-                              size_type const n,
-                              sample_with_replacement replacement,
-                              int64_t const seed,
-                              rmm::cuda_stream_view stream,
+std::unique_ptr<table> sample(table_view const&                input,
+                              size_type const                  n,
+                              sample_with_replacement          replacement,
+                              int64_t const                    seed,
+                              rmm::cuda_stream_view            stream,
                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(n >= 0, "expected number of samples should be non-negative");
@@ -51,7 +51,7 @@ std::unique_ptr<table> sample(table_view const& input,
 
   if (replacement == sample_with_replacement::TRUE) {
     auto RandomGen = [seed, num_rows] __device__(auto i) {
-      thrust::default_random_engine rng(seed);
+      thrust::default_random_engine               rng(seed);
       thrust::uniform_int_distribution<size_type> dist{0, num_rows - 1};
       rng.discard(i);
       return dist(rng);
@@ -84,10 +84,10 @@ std::unique_ptr<table> sample(table_view const& input,
 
 }  // namespace detail
 
-std::unique_ptr<table> sample(table_view const& input,
-                              size_type const n,
-                              sample_with_replacement replacement,
-                              int64_t const seed,
+std::unique_ptr<table> sample(table_view const&                input,
+                              size_type const                  n,
+                              sample_with_replacement          replacement,
+                              int64_t const                    seed,
                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

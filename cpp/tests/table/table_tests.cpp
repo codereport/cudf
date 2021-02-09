@@ -46,7 +46,7 @@ TEST_F(TableTest, EmptyColumnedTable)
 {
   std::vector<column_view> cols{};
 
-  TView input(cols);
+  TView           input(cols);
   cudf::size_type expected = 0;
 
   EXPECT_EQ(input.num_columns(), expected);
@@ -71,7 +71,7 @@ TEST_F(TableTest, ValidateConstructorTableViewToTable)
 
 TEST_F(TableTest, GetTableWithSelectedColumns)
 {
-  column_wrapper<int8_t> col1{{1, 2, 3, 4}};
+  column_wrapper<int8_t>  col1{{1, 2, 3, 4}};
   column_wrapper<int16_t> col2{{1, 2, 3, 4}};
   column_wrapper<int32_t> col3{{4, 5, 6, 7}};
   column_wrapper<int64_t> col4{{4, 5, 6, 7}};
@@ -91,7 +91,7 @@ TEST_F(TableTest, GetTableWithSelectedColumns)
 
 TEST_F(TableTest, SelectingOutOfBounds)
 {
-  column_wrapper<int8_t> col1{{1, 2, 3, 4}};
+  column_wrapper<int8_t>  col1{{1, 2, 3, 4}};
   column_wrapper<int16_t> col2{{1, 2, 3, 4}};
 
   CVector cols;
@@ -105,7 +105,7 @@ TEST_F(TableTest, SelectingOutOfBounds)
 
 TEST_F(TableTest, SelectingNoColumns)
 {
-  column_wrapper<int8_t> col1{{1, 2, 3, 4}};
+  column_wrapper<int8_t>  col1{{1, 2, 3, 4}};
   column_wrapper<int16_t> col2{{1, 2, 3, 4}};
 
   CVector cols;
@@ -119,7 +119,7 @@ TEST_F(TableTest, SelectingNoColumns)
 
 TEST_F(TableTest, CreateFromViewVector)
 {
-  column_wrapper<int8_t> col1{{1, 2, 3, 4}};
+  column_wrapper<int8_t>  col1{{1, 2, 3, 4}};
   column_wrapper<int16_t> col2{{1, 2, 3, 4}};
 
   std::vector<TView> views;
@@ -132,7 +132,7 @@ TEST_F(TableTest, CreateFromViewVector)
 
 TEST_F(TableTest, CreateFromViewVectorRowsMismatch)
 {
-  column_wrapper<int8_t> col1{{1, 2, 3, 4}};
+  column_wrapper<int8_t>  col1{{1, 2, 3, 4}};
   column_wrapper<int16_t> col2{{1, 2, 3}};
 
   std::vector<TView> views;

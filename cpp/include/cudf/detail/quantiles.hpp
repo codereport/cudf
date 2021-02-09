@@ -27,27 +27,27 @@ namespace detail {
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<column> quantile(
-  column_view const& input,
-  std::vector<double> const& q,
-  interpolation interp                = interpolation::LINEAR,
-  column_view const& ordered_indices  = {},
-  bool exact                          = true,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  std::vector<double> const&       q,
+  interpolation                    interp          = interpolation::LINEAR,
+  column_view const&               ordered_indices = {},
+  bool                             exact           = true,
+  rmm::cuda_stream_view            stream          = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr              = rmm::mr::get_current_device_resource());
 
 /** @copydoc cudf::quantiles()
  *
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<table> quantiles(
-  table_view const& input,
-  std::vector<double> const& q,
-  interpolation interp                           = interpolation::NEAREST,
-  cudf::sorted is_input_sorted                   = sorted::NO,
-  std::vector<order> const& column_order         = {},
-  std::vector<null_order> const& null_precedence = {},
-  rmm::cuda_stream_view stream                   = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr            = rmm::mr::get_current_device_resource());
+  table_view const&                input,
+  std::vector<double> const&       q,
+  interpolation                    interp          = interpolation::NEAREST,
+  cudf::sorted                     is_input_sorted = sorted::NO,
+  std::vector<order> const&        column_order    = {},
+  std::vector<null_order> const&   null_precedence = {},
+  rmm::cuda_stream_view            stream          = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr              = rmm::mr::get_current_device_resource());
 
 }  // namespace detail
 }  // namespace cudf

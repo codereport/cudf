@@ -54,8 +54,8 @@ class table_view_base {
                 "column_view_base.");
 
  private:
-  std::vector<ColumnView> _columns{};  ///< ColumnViews to columns of equal size
-  size_type _num_rows{};               ///< The number of elements in every column
+  std::vector<ColumnView> _columns{};   ///< ColumnViews to columns of equal size
+  size_type               _num_rows{};  ///< The number of elements in every column
 
  public:
   using iterator       = decltype(std::begin(_columns));
@@ -268,8 +268,8 @@ inline bool have_same_types(table_view const& lhs, table_view const& rhs)
  * @param target Table to receive the updated column views.
  * @return New table_view.
  */
-table_view scatter_columns(table_view const& source,
+table_view scatter_columns(table_view const&             source,
                            std::vector<size_type> const& map,
-                           table_view const& target);
+                           table_view const&             target);
 
 }  // namespace cudf

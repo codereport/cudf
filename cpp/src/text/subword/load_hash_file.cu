@@ -137,12 +137,12 @@ const aux_codepoint_data_type* get_aux_codepoint_data(rmm::cuda_stream_view stre
  * @param filename_hashed_vocabulary Path to text file containing hashed vocabulary
  * @return object containing hash table elements for the wordpiece tokenizer
  */
-hashed_vocabulary load_vocabulary_file(std::string const& filename_hashed_vocabulary,
-                                       rmm::cuda_stream_view stream,
+hashed_vocabulary load_vocabulary_file(std::string const&               filename_hashed_vocabulary,
+                                       rmm::cuda_stream_view            stream,
                                        rmm::mr::device_memory_resource* mr)
 {
   hashed_vocabulary result;
-  std::ifstream hash_file(filename_hashed_vocabulary);
+  std::ifstream     hash_file(filename_hashed_vocabulary);
   CUDF_EXPECTS(hash_file.good(), "Could not open " + filename_hashed_vocabulary);
 
   std::string line;
@@ -170,7 +170,7 @@ hashed_vocabulary load_vocabulary_file(std::string const& filename_hashed_vocabu
   }
 
   std::getline(hash_file, line);
-  uint64_t hash_table_length = std::stoull(line);
+  uint64_t              hash_table_length = std::stoull(line);
   std::vector<uint64_t> table(hash_table_length);
 
   std::generate(table.begin(), table.end(), [&hash_file]() {
@@ -232,7 +232,7 @@ hashed_vocabulary load_vocabulary_file(std::string const& filename_hashed_vocabu
 
 }  // namespace detail
 
-hashed_vocabulary load_vocabulary_file(std::string const& filename_hashed_vocabulary,
+hashed_vocabulary load_vocabulary_file(std::string const&               filename_hashed_vocabulary,
                                        rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

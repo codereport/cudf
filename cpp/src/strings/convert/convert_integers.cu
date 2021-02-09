@@ -65,8 +65,8 @@ struct string_to_integer_fn {
 struct dispatch_to_integers_fn {
   template <typename IntegerType, std::enable_if_t<std::is_integral<IntegerType>::value>* = nullptr>
   void operator()(column_device_view const& strings_column,
-                  mutable_column_view& output_column,
-                  rmm::cuda_stream_view stream) const
+                  mutable_column_view&      output_column,
+                  rmm::cuda_stream_view     stream) const
   {
     auto d_results = output_column.data<IntegerType>();
     thrust::transform(rmm::exec_policy(stream),
@@ -94,9 +94,9 @@ void dispatch_to_integers_fn::operator()<bool>(column_device_view const&,
 }  // namespace
 
 // This will convert a strings column into any integer column type.
-std::unique_ptr<column> to_integers(strings_column_view const& strings,
-                                    data_type output_type,
-                                    rmm::cuda_stream_view stream,
+std::unique_ptr<column> to_integers(strings_column_view const&       strings,
+                                    data_type                        output_type,
+                                    rmm::cuda_stream_view            stream,
                                     rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = strings.size();
@@ -120,8 +120,8 @@ std::unique_ptr<column> to_integers(strings_column_view const& strings,
 }  // namespace detail
 
 // external API
-std::unique_ptr<column> to_integers(strings_column_view const& strings,
-                                    data_type output_type,
+std::unique_ptr<column> to_integers(strings_column_view const&       strings,
+                                    data_type                        output_type,
                                     rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -156,14 +156,14 @@ struct integer_to_string_size_fn {
 template <typename IntegerType>
 struct integer_to_string_fn {
   column_device_view d_column;
-  const int32_t* d_offsets;
-  char* d_chars;
+  const int32_t*     d_offsets;
+  char*              d_chars;
 
   __device__ void operator()(size_type idx)
   {
     if (d_column.is_null(idx)) return;
-    IntegerType value = d_column.element<IntegerType>(idx);
-    char* d_buffer    = d_chars + d_offsets[idx];
+    IntegerType value    = d_column.element<IntegerType>(idx);
+    char*       d_buffer = d_chars + d_offsets[idx];
     integer_to_string(value, d_buffer);
   }
 };
@@ -174,13 +174,13 @@ struct integer_to_string_fn {
  */
 struct dispatch_from_integers_fn {
   template <typename IntegerType, std::enable_if_t<std::is_integral<IntegerType>::value>* = nullptr>
-  std::unique_ptr<column> operator()(column_view const& integers,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(column_view const&               integers,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr) const
   {
     size_type strings_count = integers.size();
-    auto column             = column_device_view::create(integers, stream);
-    auto d_column           = *column;
+    auto      column        = column_device_view::create(integers, stream);
+    auto      d_column      = *column;
 
     // copy the null mask
     rmm::device_buffer null_mask = cudf::detail::copy_bitmask(integers, stream, mr);
@@ -194,7 +194,7 @@ struct dispatch_from_integers_fn {
 
     // build chars column
     size_type bytes = thrust::device_pointer_cast(d_new_offsets)[strings_count];
-    auto chars_column =
+    auto      chars_column =
       detail::create_chars_child_column(strings_count, integers.null_count(), bytes, stream, mr);
     auto chars_view = chars_column->mutable_view();
     auto d_chars    = chars_view.template data<char>();
@@ -232,8 +232,8 @@ std::unique_ptr<column> dispatch_from_integers_fn::operator()<bool>(
 }  // namespace
 
 // This will convert all integer column types into a strings column.
-std::unique_ptr<column> from_integers(column_view const& integers,
-                                      rmm::cuda_stream_view stream,
+std::unique_ptr<column> from_integers(column_view const&               integers,
+                                      rmm::cuda_stream_view            stream,
                                       rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = integers.size();
@@ -246,7 +246,7 @@ std::unique_ptr<column> from_integers(column_view const& integers,
 
 // external API
 
-std::unique_ptr<column> from_integers(column_view const& integers,
+std::unique_ptr<column> from_integers(column_view const&               integers,
                                       rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

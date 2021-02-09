@@ -891,7 +891,7 @@ class color {
     return uint32_t{byte3} << 24 | uint32_t{byte2} << 16 | uint32_t{byte1} << 8 | uint32_t{byte0};
   }
 
-  value_type const _value{};                     ///< color's argb color code
+  value_type const      _value{};                ///< color's argb color code
   nvtxColorType_t const _type{NVTX_COLOR_ARGB};  ///< NVTX color type code
 };
 
@@ -1360,8 +1360,8 @@ class message {
   NVTX3_RELAXED_CONSTEXPR nvtxMessageType_t get_type() const noexcept { return type_; }
 
  private:
-  nvtxMessageType_t const type_{};  ///< message type
-  nvtxMessageValue_t value_{};      ///< message contents
+  nvtxMessageType_t const type_{};   ///< message type
+  nvtxMessageValue_t      value_{};  ///< message contents
 };
 
 /**
@@ -1466,8 +1466,8 @@ class payload {
   NVTX3_RELAXED_CONSTEXPR nvtxPayloadType_t get_type() const noexcept { return type_; }
 
  private:
-  nvtxPayloadType_t const type_;  ///< Type of the payload value
-  value_type value_;              ///< Union holding the payload value
+  nvtxPayloadType_t const type_;   ///< Type of the payload value
+  value_type              value_;  ///< Union holding the payload value
 };
 
 /**
@@ -1904,10 +1904,10 @@ inline void mark(event_attributes const& attr) noexcept
  * `domain` to which the `registered_message` belongs. Else,
  * `domain::global` to  indicate that the global NVTX domain should be used.
  */
-#define NVTX3_FUNC_RANGE_IN(D)                                                 \
-  static ::nvtx3::registered_message<D> const nvtx3_func_name__{__func__};     \
-  static ::nvtx3::event_attributes const nvtx3_func_attr__{nvtx3_func_name__}; \
-  ::nvtx3::domain_thread_range<D> const nvtx3_range__{nvtx3_func_attr__};
+#define NVTX3_FUNC_RANGE_IN(D)                                                      \
+  static ::nvtx3::registered_message<D> const nvtx3_func_name__{__func__};          \
+  static ::nvtx3::event_attributes const      nvtx3_func_attr__{nvtx3_func_name__}; \
+  ::nvtx3::domain_thread_range<D> const       nvtx3_range__{nvtx3_func_attr__};
 
 /**
  * @brief Convenience macro for generating a range in the global domain from the

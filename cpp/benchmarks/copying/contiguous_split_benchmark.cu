@@ -28,13 +28,13 @@
 
 template <typename T>
 void BM_contiguous_split_common(benchmark::State& state,
-                                std::vector<T>& src_cols,
-                                int64_t num_rows,
-                                int64_t num_splits,
-                                int64_t bytes_total)
+                                std::vector<T>&   src_cols,
+                                int64_t           num_rows,
+                                int64_t           num_splits,
+                                int64_t           bytes_total)
 {
   // generate splits
-  cudf::size_type split_stride = num_rows / num_splits;
+  cudf::size_type              split_stride = num_rows / num_splits;
   std::vector<cudf::size_type> splits;
   for (int idx = 0; idx < num_rows; idx += split_stride) {
     splits.push_back(std::min(idx + split_stride, static_cast<cudf::size_type>(num_rows)));
@@ -50,7 +50,7 @@ void BM_contiguous_split_common(benchmark::State& state,
 
   for (auto _ : state) {
     cuda_event_timer raii(state, true);  // flush_l2_cache = true, stream = 0
-    auto result = cudf::contiguous_split(src_table, splits);
+    auto             result = cudf::contiguous_split(src_table, splits);
   }
 
   state.SetBytesProcessed(static_cast<int64_t>(state.iterations()) * bytes_total);
@@ -61,13 +61,13 @@ class ContiguousSplit : public cudf::benchmark {
 
 void BM_contiguous_split(benchmark::State& state)
 {
-  int64_t total_desired_bytes = state.range(0);
-  cudf::size_type num_cols    = state.range(1);
-  cudf::size_type num_splits  = state.range(2);
-  bool include_validity       = state.range(3) == 0 ? false : true;
+  int64_t         total_desired_bytes = state.range(0);
+  cudf::size_type num_cols            = state.range(1);
+  cudf::size_type num_splits          = state.range(2);
+  bool            include_validity    = state.range(3) == 0 ? false : true;
 
-  cudf::size_type el_size = 4;  // ints and floats
-  int64_t num_rows        = total_desired_bytes / (num_cols * el_size);
+  cudf::size_type el_size  = 4;  // ints and floats
+  int64_t         num_rows = total_desired_bytes / (num_cols * el_size);
 
   // generate input table
   srand(31337);
@@ -102,12 +102,12 @@ int rand_range(int r)
 
 void BM_contiguous_split_strings(benchmark::State& state)
 {
-  int64_t total_desired_bytes = state.range(0);
-  cudf::size_type num_cols    = state.range(1);
-  cudf::size_type num_splits  = state.range(2);
-  bool include_validity       = state.range(3) == 0 ? false : true;
+  int64_t         total_desired_bytes = state.range(0);
+  cudf::size_type num_cols            = state.range(1);
+  cudf::size_type num_splits          = state.range(2);
+  bool            include_validity    = state.range(3) == 0 ? false : true;
 
-  const int64_t string_len = 8;
+  const int64_t            string_len = 8;
   std::vector<const char*> h_strings{
     "aaaaaaaa", "bbbbbbbb", "cccccccc", "dddddddd", "eeeeeeee", "ffffffff", "gggggggg", "hhhhhhhh"};
 
@@ -119,7 +119,7 @@ void BM_contiguous_split_strings(benchmark::State& state)
   auto valids = cudf::detail::make_counting_transform_iterator(
     0, [](auto i) { return i % 2 == 0 ? true : false; });
   std::vector<cudf::test::strings_column_wrapper> src_cols;
-  std::vector<const char*> one_col(num_rows);
+  std::vector<const char*>                        one_col(num_rows);
   for (int64_t idx = 0; idx < num_cols; idx++) {
     // fill in a random set of strings
     for (int64_t s_idx = 0; s_idx < num_rows; s_idx++) {

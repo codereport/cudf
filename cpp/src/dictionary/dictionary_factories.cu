@@ -28,8 +28,8 @@ namespace cudf {
 namespace {
 struct dispatch_create_indices {
   template <typename IndexType, std::enable_if_t<is_index_type<IndexType>()>* = nullptr>
-  std::unique_ptr<column> operator()(column_view const& indices,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(column_view const&               indices,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     CUDF_EXPECTS(std::is_unsigned<IndexType>(), "indices must be an unsigned type");
@@ -47,9 +47,9 @@ struct dispatch_create_indices {
 };
 }  // namespace
 
-std::unique_ptr<column> make_dictionary_column(column_view const& keys_column,
-                                               column_view const& indices_column,
-                                               rmm::cuda_stream_view stream,
+std::unique_ptr<column> make_dictionary_column(column_view const&               keys_column,
+                                               column_view const&               indices_column,
+                                               rmm::cuda_stream_view            stream,
                                                rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(!keys_column.has_nulls(), "keys column must not have nulls");
@@ -59,7 +59,7 @@ std::unique_ptr<column> make_dictionary_column(column_view const& keys_column,
   auto indices_copy =
     type_dispatcher(indices_column.type(), dispatch_create_indices{}, indices_column, stream, mr);
   rmm::device_buffer null_mask{0, stream, mr};
-  auto null_count = indices_column.null_count();
+  auto               null_count = indices_column.null_count();
   if (null_count) null_mask = detail::copy_bitmask(indices_column, stream, mr);
 
   std::vector<std::unique_ptr<column>> children;
@@ -75,14 +75,14 @@ std::unique_ptr<column> make_dictionary_column(column_view const& keys_column,
 
 std::unique_ptr<column> make_dictionary_column(std::unique_ptr<column> keys_column,
                                                std::unique_ptr<column> indices_column,
-                                               rmm::device_buffer&& null_mask,
-                                               size_type null_count)
+                                               rmm::device_buffer&&    null_mask,
+                                               size_type               null_count)
 {
   CUDF_EXPECTS(!keys_column->has_nulls(), "keys column must not have nulls");
   CUDF_EXPECTS(!indices_column->has_nulls(), "indices column must not have nulls");
   CUDF_EXPECTS(is_unsigned(indices_column->type()), "indices must be type unsigned integer");
 
-  auto count = indices_column->size();
+  auto                                 count = indices_column->size();
   std::vector<std::unique_ptr<column>> children;
   children.emplace_back(std::move(indices_column));
   children.emplace_back(std::move(keys_column));
@@ -114,9 +114,9 @@ struct make_unsigned_fn {
 
 }  // namespace
 
-std::unique_ptr<column> make_dictionary_column(std::unique_ptr<column> keys,
-                                               std::unique_ptr<column> indices,
-                                               rmm::cuda_stream_view stream,
+std::unique_ptr<column> make_dictionary_column(std::unique_ptr<column>          keys,
+                                               std::unique_ptr<column>          indices,
+                                               rmm::cuda_stream_view            stream,
                                                rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(!keys->has_nulls(), "keys column must not have nulls");
@@ -125,7 +125,7 @@ std::unique_ptr<column> make_dictionary_column(std::unique_ptr<column> keys,
   auto const indices_type = cudf::type_dispatcher(indices->type(), make_unsigned_fn{});
   auto const indices_size = indices->size();        // these need to be saved
   auto const null_count   = indices->null_count();  // before calling release()
-  auto contents           = indices->release();
+  auto       contents     = indices->release();
   // compute the indices type using the size of the key set
   auto const new_type = dictionary::detail::get_indices_type_for_size(keys->size());
 

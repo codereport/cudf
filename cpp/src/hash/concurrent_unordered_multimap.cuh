@@ -50,7 +50,7 @@
 template <typename Key,
           typename Element,
           typename size_type,
-          Key unused_key,
+          Key     unused_key,
           Element unused_element,
           typename Hasher       = default_hash<Key>,
           typename Equality     = equal_to<Key>,
@@ -70,7 +70,7 @@ class concurrent_unordered_multimap {
  private:
   union pair2longlong {
     unsigned long long int longlong;
-    value_type pair;
+    value_type             pair;
   };
 
  public:
@@ -101,12 +101,12 @@ class concurrent_unordered_multimap {
    * equal
    * @param allocator The allocator to use for allocation of the map's storage
    */
-  static auto create(size_type capacity,
-                     rmm::cuda_stream_view stream    = rmm::cuda_stream_default,
-                     const bool init                 = true,
-                     const Hasher& hash_function     = hasher(),
-                     const Equality& equal           = key_equal(),
-                     const allocator_type& allocator = allocator_type())
+  static auto create(size_type             capacity,
+                     rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
+                     const bool            init          = true,
+                     const Hasher&         hash_function = hasher(),
+                     const Equality&       equal         = key_equal(),
+                     const allocator_type& allocator     = allocator_type())
   {
     CUDF_FUNC_RANGE();
     using Self = concurrent_unordered_multimap<Key,
@@ -248,8 +248,8 @@ class concurrent_unordered_multimap {
   template <typename hash_value_type = typename Hasher::result_type>
   __forceinline__ __host__ __device__ int get_partition(
     const key_type& the_key,
-    const int num_parts                    = 1,
-    bool precomputed_hash                  = false,
+    const int       num_parts              = 1,
+    bool            precomputed_hash       = false,
     hash_value_type precomputed_hash_value = 0) const
   {
     hash_value_type hash_value{0};
@@ -296,12 +296,12 @@ class concurrent_unordered_multimap {
   template <typename hash_value_type = typename Hasher::result_type,
             typename comparison_type = key_equal>
   __forceinline__ __device__ iterator insert(const value_type& x,
-                                             bool precomputed_hash                  = false,
-                                             hash_value_type precomputed_hash_value = 0,
-                                             comparison_type keys_are_equal         = key_equal())
+                                             bool              precomputed_hash       = false,
+                                             hash_value_type   precomputed_hash_value = 0,
+                                             comparison_type   keys_are_equal         = key_equal())
   {
-    const size_type hashtbl_size = m_hashtbl_size;
-    value_type* hashtbl_values   = m_hashtbl_values;
+    const size_type hashtbl_size   = m_hashtbl_size;
+    value_type*     hashtbl_values = m_hashtbl_values;
 
     hash_value_type hash_value{0};
 
@@ -387,11 +387,11 @@ class concurrent_unordered_multimap {
   template <typename hash_value_type = typename Hasher::result_type,
             typename comparison_type = key_equal>
   __forceinline__ __device__ iterator insert_part(const value_type& x,
-                                                  const int part                         = 0,
-                                                  const int num_parts                    = 1,
-                                                  bool precomputed_hash                  = false,
-                                                  hash_value_type precomputed_hash_value = 0,
-                                                  comparison_type keys_are_equal = key_equal())
+                                                  const int         part                   = 0,
+                                                  const int         num_parts              = 1,
+                                                  bool              precomputed_hash       = false,
+                                                  hash_value_type   precomputed_hash_value = 0,
+                                                  comparison_type   keys_are_equal = key_equal())
   {
     hash_value_type hash_value{0};
 
@@ -435,10 +435,10 @@ class concurrent_unordered_multimap {
   template <typename hash_value_type = typename Hasher::result_type,
             typename comparison_type = key_equal>
   __forceinline__ __host__ __device__ const_iterator
-  find(const key_type& the_key,
-       bool precomputed_hash                  = false,
-       hash_value_type precomputed_hash_value = 0,
-       comparison_type keys_are_equal         = key_equal()) const
+                                      find(const key_type& the_key,
+                                           bool            precomputed_hash       = false,
+                                           hash_value_type precomputed_hash_value = 0,
+                                           comparison_type keys_are_equal = key_equal()) const
   {
     hash_value_type hash_value{0};
 
@@ -458,7 +458,7 @@ class concurrent_unordered_multimap {
 
     size_type counter = 0;
     while (0 == begin_ptr) {
-      value_type* tmp_ptr    = m_hashtbl_values + hash_tbl_idx;
+      value_type*    tmp_ptr = m_hashtbl_values + hash_tbl_idx;
       const key_type tmp_val = tmp_ptr->first;
       if (keys_are_equal(the_key, tmp_val)) {
         begin_ptr = tmp_ptr;
@@ -476,7 +476,7 @@ class concurrent_unordered_multimap {
   }
 
   void assign_async(const concurrent_unordered_multimap& other,
-                    rmm::cuda_stream_view stream = rmm::cuda_stream_default)
+                    rmm::cuda_stream_view                stream = rmm::cuda_stream_default)
   {
     m_collisions = other.m_collisions;
     if (other.m_hashtbl_size <= m_hashtbl_capacity) {
@@ -532,12 +532,12 @@ class concurrent_unordered_multimap {
   ~concurrent_unordered_multimap()                                          = default;
 
  private:
-  hasher m_hf;
-  key_equal m_equal;
-  allocator_type m_allocator;
-  size_type m_hashtbl_size;
-  size_type m_hashtbl_capacity;
-  value_type* m_hashtbl_values;
+  hasher             m_hf;
+  key_equal          m_equal;
+  allocator_type     m_allocator;
+  size_type          m_hashtbl_size;
+  size_type          m_hashtbl_capacity;
+  value_type*        m_hashtbl_values;
   unsigned long long m_collisions;
 
   /**
@@ -553,11 +553,11 @@ class concurrent_unordered_multimap {
    * @param[in] a An optional functor for allocating the hash table memory
    * @param[in] stream CUDA stream used for device memory operations and kernel launches.
    */
-  explicit concurrent_unordered_multimap(size_type n,
-                                         const bool init              = true,
-                                         const Hasher& hash_function  = hasher(),
-                                         const Equality& equal        = key_equal(),
-                                         const allocator_type& a      = allocator_type(),
+  explicit concurrent_unordered_multimap(size_type             n,
+                                         const bool            init          = true,
+                                         const Hasher&         hash_function = hasher(),
+                                         const Equality&       equal         = key_equal(),
+                                         const allocator_type& a             = allocator_type(),
                                          rmm::cuda_stream_view stream = rmm::cuda_stream_default)
     : m_hf(hash_function),
       m_equal(equal),
@@ -570,7 +570,7 @@ class concurrent_unordered_multimap {
     constexpr int block_size = 128;
     {
       cudaPointerAttributes hashtbl_values_ptr_attributes;
-      cudaError_t status =
+      cudaError_t           status =
         cudaPointerGetAttributes(&hashtbl_values_ptr_attributes, m_hashtbl_values);
 
       if (cudaSuccess == status && isPtrManaged(hashtbl_values_ptr_attributes)) {

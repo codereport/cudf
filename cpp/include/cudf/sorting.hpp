@@ -58,10 +58,10 @@ enum class rank_method {
  * `input` if it were sorted
  */
 std::unique_ptr<column> sorted_order(
-  table_view input,
-  std::vector<order> const& column_order         = {},
-  std::vector<null_order> const& null_precedence = {},
-  rmm::mr::device_memory_resource* mr            = rmm::mr::get_current_device_resource());
+  table_view                       input,
+  std::vector<order> const&        column_order    = {},
+  std::vector<null_order> const&   null_precedence = {},
+  rmm::mr::device_memory_resource* mr              = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Computes the row indices that would produce `input` in a stable
@@ -72,10 +72,10 @@ std::unique_ptr<column> sorted_order(
  * @copydoc cudf::sorted_order
  */
 std::unique_ptr<column> stable_sorted_order(
-  table_view input,
-  std::vector<order> const& column_order         = {},
-  std::vector<null_order> const& null_precedence = {},
-  rmm::mr::device_memory_resource* mr            = rmm::mr::get_current_device_resource());
+  table_view                       input,
+  std::vector<order> const&        column_order    = {},
+  std::vector<null_order> const&   null_precedence = {},
+  rmm::mr::device_memory_resource* mr              = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Checks whether the rows of a `table` are sorted in a lexicographical
@@ -93,8 +93,8 @@ std::unique_ptr<column> stable_sorted_order(
  *
  * @returns bool                true if sorted as expected, false if not.
  */
-bool is_sorted(cudf::table_view const& table,
-               std::vector<order> const& column_order,
+bool is_sorted(cudf::table_view const&        table,
+               std::vector<order> const&      column_order,
                std::vector<null_order> const& null_precedence);
 
 /**
@@ -112,10 +112,10 @@ bool is_sorted(cudf::table_view const& table,
  * @return New table containing the desired sorted order of `input`
  */
 std::unique_ptr<table> sort(
-  table_view input,
-  std::vector<order> const& column_order         = {},
-  std::vector<null_order> const& null_precedence = {},
-  rmm::mr::device_memory_resource* mr            = rmm::mr::get_current_device_resource());
+  table_view                       input,
+  std::vector<order> const&        column_order    = {},
+  std::vector<null_order> const&   null_precedence = {},
+  rmm::mr::device_memory_resource* mr              = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Performs a key-value sort.
@@ -139,11 +139,11 @@ std::unique_ptr<table> sort(
  * the rows of `keys`.
  */
 std::unique_ptr<table> sort_by_key(
-  table_view const& values,
-  table_view const& keys,
-  std::vector<order> const& column_order         = {},
-  std::vector<null_order> const& null_precedence = {},
-  rmm::mr::device_memory_resource* mr            = rmm::mr::get_current_device_resource());
+  table_view const&                values,
+  table_view const&                keys,
+  std::vector<order> const&        column_order    = {},
+  std::vector<null_order> const&   null_precedence = {},
+  rmm::mr::device_memory_resource* mr              = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Computes the ranks of input column in sorted order.
@@ -176,12 +176,12 @@ std::unique_ptr<table> sort_by_key(
  *`percentage=True`
  */
 std::unique_ptr<column> rank(
-  column_view const& input,
-  rank_method method,
-  order column_order,
-  null_policy null_handling,
-  null_order null_precedence,
-  bool percentage,
+  column_view const&               input,
+  rank_method                      method,
+  order                            column_order,
+  null_policy                      null_handling,
+  null_order                       null_precedence,
+  bool                             percentage,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -205,11 +205,11 @@ std::unique_ptr<column> rank(
  *
  */
 std::unique_ptr<column> segmented_sorted_order(
-  table_view const& keys,
-  column_view const& segment_offsets,
-  std::vector<order> const& column_order         = {},
-  std::vector<null_order> const& null_precedence = {},
-  rmm::mr::device_memory_resource* mr            = rmm::mr::get_current_device_resource());
+  table_view const&                keys,
+  column_view const&               segment_offsets,
+  std::vector<order> const&        column_order    = {},
+  std::vector<null_order> const&   null_precedence = {},
+  rmm::mr::device_memory_resource* mr              = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Performs a lexicographic segmented sort of a table
@@ -234,12 +234,12 @@ std::unique_ptr<column> segmented_sorted_order(
  *
  */
 std::unique_ptr<table> segmented_sort_by_key(
-  table_view const& values,
-  table_view const& keys,
-  column_view const& segment_offsets,
-  std::vector<order> const& column_order         = {},
-  std::vector<null_order> const& null_precedence = {},
-  rmm::mr::device_memory_resource* mr            = rmm::mr::get_current_device_resource());
+  table_view const&                values,
+  table_view const&                keys,
+  column_view const&               segment_offsets,
+  std::vector<order> const&        column_order    = {},
+  std::vector<null_order> const&   null_precedence = {},
+  rmm::mr::device_memory_resource* mr              = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group
 }  // namespace cudf

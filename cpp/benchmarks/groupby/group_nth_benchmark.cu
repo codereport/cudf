@@ -33,8 +33,8 @@ class Groupby : public cudf::benchmark {
 template <typename T>
 T random_int(T min, T max)
 {
-  static unsigned seed = 13377331;
-  static std::mt19937 engine{seed};
+  static unsigned                         seed = 13377331;
+  static std::mt19937                     engine{seed};
   static std::uniform_int_distribution<T> uniform{min, max};
 
   return uniform(engine);
@@ -67,7 +67,7 @@ void BM_pre_sorted_nth(benchmark::State& state)
 
   for (auto _ : state) {
     cuda_event_timer timer(state, true);
-    auto result = gb_obj.aggregate(requests);
+    auto             result = gb_obj.aggregate(requests);
   }
 }
 

@@ -32,9 +32,9 @@ namespace detail {
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<table> from_dlpack(
-  DLManagedTensor const* managed_tensor,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  DLManagedTensor const*           managed_tensor,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @copydoc cudf::to_dlpack
@@ -42,9 +42,9 @@ std::unique_ptr<table> from_dlpack(
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 DLManagedTensor* to_dlpack(
-  table_view const& input,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  table_view const&                input,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 // Creating arrow as per given type_id and buffer arguments
 template <typename... Ts>
@@ -101,10 +101,10 @@ data_type arrow_to_cudf_type(arrow::DataType const& arrow_type);
  *
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
-std::shared_ptr<arrow::Table> to_arrow(table_view input,
+std::shared_ptr<arrow::Table> to_arrow(table_view                          input,
                                        std::vector<column_metadata> const& metadata = {},
                                        rmm::cuda_stream_view stream = rmm::cuda_stream_default,
-                                       arrow::MemoryPool* ar_mr     = arrow::default_memory_pool());
+                                       arrow::MemoryPool*    ar_mr  = arrow::default_memory_pool());
 
 /**
  * @copydoc cudf::arrow_to_cudf
@@ -112,9 +112,9 @@ std::shared_ptr<arrow::Table> to_arrow(table_view input,
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 std::unique_ptr<table> from_arrow(
-  arrow::Table const& input_table,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  arrow::Table const&              input_table,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace detail
 }  // namespace cudf

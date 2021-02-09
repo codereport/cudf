@@ -52,8 +52,8 @@ class CompactProtocolWriter {
 
 class CompactProtocolFieldWriter {
   CompactProtocolWriter &writer;
-  size_t struct_start_pos;
-  int current_field_value;
+  size_t                 struct_start_pos;
+  int                    current_field_value;
 
  public:
   CompactProtocolFieldWriter(CompactProtocolWriter &caller)

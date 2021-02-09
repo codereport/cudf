@@ -55,9 +55,9 @@ namespace dictionary {
  * @return Returns a dictionary column.
  */
 std::unique_ptr<column> encode(
-  column_view const& column,
-  data_type indices_type              = data_type{type_id::UINT32},
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               column,
+  data_type                        indices_type = data_type{type_id::UINT32},
+  rmm::mr::device_memory_resource* mr           = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Create a column by gathering the keys from the provided
@@ -74,7 +74,7 @@ std::unique_ptr<column> encode(
  * @return New column with type matching the dictionary_column's keys.
  */
 std::unique_ptr<column> decode(
-  dictionary_column_view const& dictionary_column,
+  dictionary_column_view const&    dictionary_column,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

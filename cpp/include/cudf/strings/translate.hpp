@@ -53,9 +53,9 @@ namespace strings {
  * @return New column with padded strings.
  */
 std::unique_ptr<column> translate(
-  strings_column_view const& strings,
+  strings_column_view const&                          strings,
   std::vector<std::pair<char_utf8, char_utf8>> const& chars_table,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  rmm::mr::device_memory_resource*                    mr = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Removes or keeps the specified character ranges in cudf::strings::filter_characters
@@ -93,10 +93,10 @@ enum class filter_type : bool { KEEP, REMOVE };
  * @return New column with filtered strings.
  */
 std::unique_ptr<column> filter_characters(
-  strings_column_view const& strings,
+  strings_column_view const&                               strings,
   std::vector<std::pair<cudf::char_utf8, cudf::char_utf8>> characters_to_filter,
-  filter_type keep_characters         = filter_type::KEEP,
-  string_scalar const& replacement    = string_scalar(""),
+  filter_type                                              keep_characters = filter_type::KEEP,
+  string_scalar const&                                     replacement     = string_scalar(""),
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group

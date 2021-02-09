@@ -41,7 +41,7 @@ struct hash_string_fn {
 
 TEST_F(StringsHashTest, HashTest)
 {
-  std::vector<const char*> h_strings{"abcdefghijklmnopqrstuvwxyz",
+  std::vector<const char*>           h_strings{"abcdefghijklmnopqrstuvwxyz",
                                      "abcdefghijklmnopqrstuvwxyz",
                                      "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
                                      "0123456789",

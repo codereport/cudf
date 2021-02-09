@@ -49,10 +49,10 @@ namespace detail {
  * @return `rmm::device_buffer` Device buffer allocation
  */
 inline rmm::device_buffer create_data(
-  data_type type,
-  size_type size,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  data_type                        type,
+  size_type                        size,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   std::size_t data_size = size_of(type) * size;
 
@@ -81,10 +81,10 @@ struct column_buffer {
   column_buffer(data_type _type, bool _is_nullable) : type(_type), is_nullable(_is_nullable) {}
 
   // construct with a known size. allocates memory
-  column_buffer(data_type _type,
-                size_type _size,
-                bool _is_nullable                   = true,
-                rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
+  column_buffer(data_type                        _type,
+                size_type                        _size,
+                bool                             _is_nullable = true,
+                rmm::cuda_stream_view            stream       = rmm::cuda_stream_default,
                 rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
     : type(_type), is_nullable(_is_nullable), _null_count(0)
   {
@@ -101,9 +101,9 @@ struct column_buffer {
 
   // instantiate a column of known type with a specified size.  Allows deferred creation for
   // preprocessing steps such as in the Parquet reader
-  void create(size_type _size,
-              rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-              rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  void create(size_type                        _size,
+              rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+              rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
   {
     size = _size;
 
@@ -138,16 +138,16 @@ struct column_buffer {
   auto& null_count() { return _null_count; }
 
   rmm::device_vector<str_pair> _strings;
-  rmm::device_buffer _data{};
-  rmm::device_buffer _null_mask{};
-  size_type _null_count{0};
+  rmm::device_buffer           _data{};
+  rmm::device_buffer           _null_mask{};
+  size_type                    _null_count{0};
 
-  bool is_nullable{false};
-  data_type type{type_id::EMPTY};
-  size_type size{0};
+  bool                       is_nullable{false};
+  data_type                  type{type_id::EMPTY};
+  size_type                  size{0};
   std::vector<column_buffer> children;
-  uint32_t user_data{0};  // arbitrary user data
-  std::string name;
+  uint32_t                   user_data{0};  // arbitrary user data
+  std::string                name;
 };
 
 namespace {
@@ -163,10 +163,10 @@ namespace {
  * @return `std::unique_ptr<cudf::column>` Column from the existing device data
  */
 std::unique_ptr<column> make_column(
-  column_buffer& buffer,
-  column_name_info* schema_info       = nullptr,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  column_buffer&                   buffer,
+  column_name_info*                schema_info = nullptr,
+  rmm::cuda_stream_view            stream      = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr          = rmm::mr::get_current_device_resource())
 {
   using str_pair = thrust::pair<const char*, size_type>;
 

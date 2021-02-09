@@ -60,11 +60,11 @@ struct gather_data {
  *                          usage down.
  */
 template <bool NullifyOutOfBounds, typename MapItType>
-gather_data make_gather_data(cudf::lists_column_view const& source_column,
-                             MapItType gather_map,
-                             size_type gather_map_size,
-                             rmm::device_uvector<int32_t>&& prev_base_offsets,
-                             rmm::cuda_stream_view stream,
+gather_data make_gather_data(cudf::lists_column_view const&   source_column,
+                             MapItType                        gather_map,
+                             size_type                        gather_map_size,
+                             rmm::device_uvector<int32_t>&&   prev_base_offsets,
+                             rmm::cuda_stream_view            stream,
                              rmm::mr::device_memory_resource* mr)
 {
   // size of the gather map is the # of output rows
@@ -72,7 +72,7 @@ gather_data make_gather_data(cudf::lists_column_view const& source_column,
   size_type offset_count = output_count + 1;
 
   // offsets of the source column
-  int32_t const* src_offsets{source_column.offsets().data<int32_t>() + source_column.offset()};
+  int32_t const*  src_offsets{source_column.offsets().data<int32_t>() + source_column.offset()};
   size_type const src_size = source_column.size();
 
   // outgoing offsets.  these will persist as output from the entire gather operation
@@ -234,10 +234,10 @@ gather_data make_gather_data(cudf::lists_column_view const& source_column,
  *          next level of recursion.
  */
 template <bool NullifyOutOfBounds, typename MapItType>
-gather_data make_gather_data(cudf::lists_column_view const& source_column,
-                             MapItType gather_map,
-                             size_type gather_map_size,
-                             rmm::cuda_stream_view stream,
+gather_data make_gather_data(cudf::lists_column_view const&   source_column,
+                             MapItType                        gather_map,
+                             size_type                        gather_map_size,
+                             rmm::cuda_stream_view            stream,
                              rmm::mr::device_memory_resource* mr)
 {
   return make_gather_data<NullifyOutOfBounds, MapItType>(
@@ -262,9 +262,9 @@ gather_data make_gather_data(cudf::lists_column_view const& source_column,
  * @returns column with elements gathered based on `gather_data`
  */
 std::unique_ptr<column> gather_list_nested(
-  lists_column_view const& list,
-  gather_data& gd,
-  rmm::cuda_stream_view stream,
+  lists_column_view const&         list,
+  gather_data&                     gd,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -280,9 +280,9 @@ std::unique_ptr<column> gather_list_nested(
  * @returns column with elements gathered based on `gather_data`
  */
 std::unique_ptr<column> gather_list_leaf(
-  column_view const& column,
-  gather_data const& gd,
-  rmm::cuda_stream_view stream,
+  column_view const&               column,
+  gather_data const&               gd,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -293,10 +293,10 @@ std::unique_ptr<column> gather_list_leaf(
  * @param stream CUDA stream on which to execute kernels
  */
 std::unique_ptr<column> segmented_gather(
-  lists_column_view const& source_column,
-  lists_column_view const& gather_map_list,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  lists_column_view const&         source_column,
+  lists_column_view const&         gather_map_list,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace detail
 }  // namespace lists

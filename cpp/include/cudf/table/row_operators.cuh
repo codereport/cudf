@@ -155,7 +155,7 @@ class element_equality_comparator {
    */
   __host__ __device__ element_equality_comparator(column_device_view lhs,
                                                   column_device_view rhs,
-                                                  bool nulls_are_equal = true)
+                                                  bool               nulls_are_equal = true)
     : lhs{lhs}, rhs{rhs}, nulls_are_equal{nulls_are_equal}
   {
   }
@@ -197,7 +197,7 @@ class element_equality_comparator {
  private:
   column_device_view lhs;
   column_device_view rhs;
-  bool nulls_are_equal;
+  bool               nulls_are_equal;
 };
 
 template <bool has_nulls = true>
@@ -224,7 +224,7 @@ class row_equality_comparator {
  private:
   table_device_view lhs;
   table_device_view rhs;
-  bool nulls_are_equal;
+  bool              nulls_are_equal;
 };
 
 /**
@@ -248,7 +248,7 @@ class element_relational_comparator {
    */
   __host__ __device__ element_relational_comparator(column_device_view lhs,
                                                     column_device_view rhs,
-                                                    null_order null_precedence)
+                                                    null_order         null_precedence)
     : lhs{lhs}, rhs{rhs}, null_precedence{null_precedence}
   {
   }
@@ -298,7 +298,7 @@ class element_relational_comparator {
  private:
   column_device_view lhs;
   column_device_view rhs;
-  null_order null_precedence;
+  null_order         null_precedence;
 };
 
 /**
@@ -337,7 +337,7 @@ class row_lexicographic_comparator {
    */
   row_lexicographic_comparator(table_device_view lhs,
                                table_device_view rhs,
-                               order const* column_order         = nullptr,
+                               order const*      column_order    = nullptr,
                                null_order const* null_precedence = nullptr)
     : _lhs{lhs}, _rhs{rhs}, _column_order{column_order}, _null_precedence{null_precedence}
   {
@@ -360,7 +360,7 @@ class row_lexicographic_comparator {
       bool ascending = (_column_order == nullptr) or (_column_order[i] == order::ASCENDING);
 
       weak_ordering state{weak_ordering::EQUIVALENT};
-      null_order null_precedence =
+      null_order    null_precedence =
         _null_precedence == nullptr ? null_order::BEFORE : _null_precedence[i];
 
       auto comparator =
@@ -379,7 +379,7 @@ class row_lexicographic_comparator {
   table_device_view _lhs;
   table_device_view _rhs;
   null_order const* _null_precedence{};
-  order const* _column_order{};
+  order const*      _column_order{};
 };  // class row_lexicographic_comparator
 
 /**
@@ -422,7 +422,7 @@ class element_hasher_with_seed {
   }
 
  private:
-  uint32_t _seed;
+  uint32_t        _seed;
   hash_value_type _null_hash;
 };
 
@@ -508,7 +508,7 @@ class row_hasher_initial_values {
 
  private:
   table_device_view _table;
-  hash_value_type* _initial_hash;
+  hash_value_type*  _initial_hash;
 };
 
 }  // namespace cudf

@@ -266,7 +266,7 @@ class expression : public detail::node {
    */
   cudf::size_type accept(detail::linearizer& visitor) const override;
 
-  const ast_operator op;
+  const ast_operator                                    op;
   const std::vector<std::reference_wrapper<const node>> operands;
 };
 

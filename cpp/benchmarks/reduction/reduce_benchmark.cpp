@@ -35,12 +35,12 @@ void BM_reduction(benchmark::State& state, std::unique_ptr<cudf::aggregation> co
   const cudf::size_type column_size{(cudf::size_type)state.range(0)};
 
   cudf::test::UniformRandomGenerator<long> rand_gen(0, 100);
-  auto data_it = cudf::detail::make_counting_transform_iterator(
+  auto                                     data_it = cudf::detail::make_counting_transform_iterator(
     0, [&rand_gen](cudf::size_type row) { return rand_gen.generate(); });
   cudf::test::fixed_width_column_wrapper<type, typename decltype(data_it)::value_type> values(
     data_it, data_it + column_size);
 
-  auto input_column = cudf::column_view(values);
+  auto            input_column = cudf::column_view(values);
   cudf::data_type output_dtype =
     (agg->kind == cudf::aggregation::MEAN || agg->kind == cudf::aggregation::VARIANCE ||
      agg->kind == cudf::aggregation::STD)
@@ -49,7 +49,7 @@ void BM_reduction(benchmark::State& state, std::unique_ptr<cudf::aggregation> co
 
   for (auto _ : state) {
     cuda_event_timer timer(state, true);
-    auto result = cudf::reduce(input_column, agg, output_dtype);
+    auto             result = cudf::reduce(input_column, agg, output_dtype);
   }
 }
 

@@ -51,24 +51,24 @@ enum class two_pass {
 template <two_pass Pass = two_pass::SIZE_ONLY>
 struct replace_fn {
   column_device_view const d_strings;
-  string_view const d_target;
-  string_view const d_repl;
-  int32_t max_repl;
-  const int32_t* d_offsets{};
-  char* d_chars{};
+  string_view const        d_target;
+  string_view const        d_repl;
+  int32_t                  max_repl;
+  const int32_t*           d_offsets{};
+  char*                    d_chars{};
 
   __device__ size_type operator()(size_type idx)
   {
     if (d_strings.is_null(idx)) return 0;  // null string
     string_view d_str = d_strings.element<string_view>(idx);
-    auto max_n        = max_repl;
+    auto        max_n = max_repl;
     if (max_n < 0) max_n = d_str.length();  // max possible replacements
     char* out_ptr = nullptr;
     if (Pass == two_pass::EXECUTE_OP) out_ptr = d_chars + d_offsets[idx];
-    const char* in_ptr = d_str.data();
-    size_type bytes    = d_str.size_bytes();
-    auto position      = d_str.find(d_target);
-    size_type last_pos = 0;
+    const char* in_ptr   = d_str.data();
+    size_type   bytes    = d_str.size_bytes();
+    auto        position = d_str.find(d_target);
+    size_type   last_pos = 0;
     while ((position >= 0) && (max_n > 0)) {
       if (Pass == two_pass::SIZE_ONLY)
         bytes += d_repl.size_bytes() - d_target.size_bytes();
@@ -91,11 +91,11 @@ struct replace_fn {
 }  // namespace
 
 //
-std::unique_ptr<column> replace(strings_column_view const& strings,
-                                string_scalar const& target,
-                                string_scalar const& repl,
-                                int32_t maxrepl,
-                                rmm::cuda_stream_view stream,
+std::unique_ptr<column> replace(strings_column_view const&       strings,
+                                string_scalar const&             target,
+                                string_scalar const&             repl,
+                                int32_t                          maxrepl,
+                                rmm::cuda_stream_view            stream,
                                 rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = strings.size();
@@ -122,7 +122,7 @@ std::unique_ptr<column> replace(strings_column_view const& strings,
 
   // build chars column
   size_type bytes = thrust::device_pointer_cast(d_offsets)[strings_count];
-  auto chars_column =
+  auto      chars_column =
     create_chars_child_column(strings_count, strings.null_count(), bytes, stream, mr);
   auto d_chars = chars_column->mutable_view().data<char>();
   thrust::for_each_n(
@@ -149,22 +149,22 @@ namespace {
 template <two_pass Pass = two_pass::SIZE_ONLY>
 struct replace_slice_fn {
   column_device_view const d_strings;
-  string_view const d_repl;
-  size_type start, stop;
-  const int32_t* d_offsets{};
-  char* d_chars{};
+  string_view const        d_repl;
+  size_type                start, stop;
+  const int32_t*           d_offsets{};
+  char*                    d_chars{};
 
   __device__ size_type operator()(size_type idx)
   {
     if (d_strings.is_null(idx)) return 0;  // null string
-    string_view d_str = d_strings.element<string_view>(idx);
-    auto length       = d_str.length();
-    char* out_ptr     = nullptr;
+    string_view d_str   = d_strings.element<string_view>(idx);
+    auto        length  = d_str.length();
+    char*       out_ptr = nullptr;
     if (Pass == two_pass::EXECUTE_OP) out_ptr = d_chars + d_offsets[idx];
     const char* in_ptr = d_str.data();
-    size_type bytes    = d_str.size_bytes();
-    size_type begin    = ((start < 0) || (start > length) ? length : start);
-    size_type end      = ((stop < 0) || (stop > length) ? length : stop);
+    size_type   bytes  = d_str.size_bytes();
+    size_type   begin  = ((start < 0) || (start > length) ? length : start);
+    size_type   end    = ((stop < 0) || (stop > length) ? length : stop);
     begin              = d_str.byte_offset(begin);
     end                = d_str.byte_offset(end);
     bytes += d_repl.size_bytes() - (end - begin);
@@ -179,11 +179,11 @@ struct replace_slice_fn {
 
 }  // namespace
 
-std::unique_ptr<column> replace_slice(strings_column_view const& strings,
-                                      string_scalar const& repl,
-                                      size_type start,
-                                      size_type stop,
-                                      rmm::cuda_stream_view stream,
+std::unique_ptr<column> replace_slice(strings_column_view const&       strings,
+                                      string_scalar const&             repl,
+                                      size_type                        start,
+                                      size_type                        stop,
+                                      rmm::cuda_stream_view            stream,
                                       rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = strings.size();
@@ -209,7 +209,7 @@ std::unique_ptr<column> replace_slice(strings_column_view const& strings,
 
   // build chars column
   size_type bytes = thrust::device_pointer_cast(d_offsets)[strings_count];
-  auto chars_column =
+  auto      chars_column =
     create_chars_child_column(strings_count, strings.null_count(), bytes, stream, mr);
   auto chars_view = chars_column->mutable_view();
   auto d_chars    = chars_view.data<char>();
@@ -239,18 +239,18 @@ struct replace_multi_fn {
   column_device_view const d_strings;
   column_device_view const d_targets;
   column_device_view const d_repls;
-  const int32_t* d_offsets{};
-  char* d_chars{};
+  const int32_t*           d_offsets{};
+  char*                    d_chars{};
 
   __device__ size_type operator()(size_type idx)
   {
     if (d_strings.is_null(idx)) return 0;
-    string_view d_str = d_strings.element<string_view>(idx);
-    char* out_ptr     = nullptr;
+    string_view d_str   = d_strings.element<string_view>(idx);
+    char*       out_ptr = nullptr;
     if (Pass == two_pass::EXECUTE_OP) out_ptr = d_chars + d_offsets[idx];
     const char* in_ptr = d_str.data();
-    size_type size     = d_str.size_bytes();
-    size_type bytes = size, spos = 0, lpos = 0;
+    size_type   size   = d_str.size_bytes();
+    size_type   bytes = size, spos = 0, lpos = 0;
     while (spos < size) {  // check each character against each target
       for (int tgt_idx = 0; tgt_idx < d_targets.size(); ++tgt_idx) {
         string_view d_tgt = d_targets.element<string_view>(tgt_idx);
@@ -283,10 +283,10 @@ struct replace_multi_fn {
 
 }  // namespace
 
-std::unique_ptr<column> replace(strings_column_view const& strings,
-                                strings_column_view const& targets,
-                                strings_column_view const& repls,
-                                rmm::cuda_stream_view stream,
+std::unique_ptr<column> replace(strings_column_view const&       strings,
+                                strings_column_view const&       targets,
+                                strings_column_view const&       repls,
+                                rmm::cuda_stream_view            stream,
                                 rmm::mr::device_memory_resource* mr)
 {
   auto strings_count = strings.size();
@@ -317,7 +317,7 @@ std::unique_ptr<column> replace(strings_column_view const& strings,
 
   // build chars column
   size_type bytes = thrust::device_pointer_cast(d_offsets)[strings_count];
-  auto chars_column =
+  auto      chars_column =
     create_chars_child_column(strings_count, strings.null_count(), bytes, stream, mr);
   auto d_chars = chars_column->mutable_view().data<char>();
   thrust::for_each_n(
@@ -335,9 +335,9 @@ std::unique_ptr<column> replace(strings_column_view const& strings,
                              mr);
 }
 
-std::unique_ptr<column> replace_nulls(strings_column_view const& strings,
-                                      string_scalar const& repl,
-                                      rmm::cuda_stream_view stream,
+std::unique_ptr<column> replace_nulls(strings_column_view const&       strings,
+                                      string_scalar const&             repl,
+                                      rmm::cuda_stream_view            stream,
                                       rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = strings.size();
@@ -360,8 +360,8 @@ std::unique_ptr<column> replace_nulls(strings_column_view const& strings,
   auto d_offsets = offsets_column->view().data<int32_t>();
 
   // build chars column
-  size_type bytes   = thrust::device_pointer_cast(d_offsets)[strings_count];
-  auto chars_column = strings::detail::create_chars_child_column(
+  size_type bytes        = thrust::device_pointer_cast(d_offsets)[strings_count];
+  auto      chars_column = strings::detail::create_chars_child_column(
     strings_count, strings.null_count(), bytes, stream, mr);
   auto d_chars = chars_column->mutable_view().data<char>();
   thrust::for_each_n(rmm::exec_policy(stream),
@@ -386,37 +386,37 @@ std::unique_ptr<column> replace_nulls(strings_column_view const& strings,
 
 // external API
 
-std::unique_ptr<column> replace(strings_column_view const& strings,
-                                string_scalar const& target,
-                                string_scalar const& repl,
-                                int32_t maxrepl,
+std::unique_ptr<column> replace(strings_column_view const&       strings,
+                                string_scalar const&             target,
+                                string_scalar const&             repl,
+                                int32_t                          maxrepl,
                                 rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::replace(strings, target, repl, maxrepl, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> replace_slice(strings_column_view const& strings,
-                                      string_scalar const& repl,
-                                      size_type start,
-                                      size_type stop,
+std::unique_ptr<column> replace_slice(strings_column_view const&       strings,
+                                      string_scalar const&             repl,
+                                      size_type                        start,
+                                      size_type                        stop,
                                       rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::replace_slice(strings, repl, start, stop, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> replace(strings_column_view const& strings,
-                                strings_column_view const& targets,
-                                strings_column_view const& repls,
+std::unique_ptr<column> replace(strings_column_view const&       strings,
+                                strings_column_view const&       targets,
+                                strings_column_view const&       repls,
                                 rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::replace(strings, targets, repls, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> replace_nulls(strings_column_view const& strings,
-                                      string_scalar const& repl,
+std::unique_ptr<column> replace_nulls(strings_column_view const&       strings,
+                                      string_scalar const&             repl,
                                       rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

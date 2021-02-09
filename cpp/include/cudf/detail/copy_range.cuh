@@ -38,11 +38,11 @@ template <cudf::size_type block_size,
           typename SourceValidityIterator,
           typename T,
           bool has_validity>
-__global__ void copy_range_kernel(SourceValueIterator source_value_begin,
-                                  SourceValidityIterator source_validity_begin,
+__global__ void copy_range_kernel(SourceValueIterator              source_value_begin,
+                                  SourceValidityIterator           source_validity_begin,
                                   cudf::mutable_column_device_view target,
-                                  cudf::size_type target_begin,
-                                  cudf::size_type target_end,
+                                  cudf::size_type                  target_begin,
+                                  cudf::size_type                  target_end,
                                   cudf::size_type* __restrict__ const null_count)
 {
   using cudf::detail::warp_size;
@@ -52,16 +52,16 @@ __global__ void copy_range_kernel(SourceValueIterator source_value_begin,
                 "copy_range_kernel assumes bitmask element size in bits == warp size");
 
   constexpr cudf::size_type leader_lane{0};
-  const int lane_id = threadIdx.x % warp_size;
+  const int                 lane_id = threadIdx.x % warp_size;
 
-  const cudf::size_type tid = threadIdx.x + blockIdx.x * blockDim.x;
-  const int warp_id         = tid / warp_size;
+  const cudf::size_type tid     = threadIdx.x + blockIdx.x * blockDim.x;
+  const int             warp_id = tid / warp_size;
 
   const cudf::size_type offset         = target.offset();
   const cudf::size_type begin_mask_idx = cudf::word_index(offset + target_begin);
   const cudf::size_type end_mask_idx   = cudf::word_index(offset + target_end);
 
-  cudf::size_type mask_idx             = begin_mask_idx + warp_id;
+  cudf::size_type       mask_idx       = begin_mask_idx + warp_id;
   const cudf::size_type masks_per_grid = gridDim.x * blockDim.x / warp_size;
 
   cudf::size_type target_offset = begin_mask_idx * warp_size - (offset + target_begin);
@@ -70,8 +70,8 @@ __global__ void copy_range_kernel(SourceValueIterator source_value_begin,
   cudf::size_type warp_null_change{0};
 
   while (mask_idx <= end_mask_idx) {
-    cudf::size_type index = mask_idx * warp_size + lane_id - offset;
-    bool in_range         = (index >= target_begin && index < target_end);
+    cudf::size_type index    = mask_idx * warp_size + lane_id - offset;
+    bool            in_range = (index >= target_begin && index < target_end);
 
     // write data
     if (in_range) target.element<T>(index) = *(source_value_begin + source_idx);
@@ -79,8 +79,8 @@ __global__ void copy_range_kernel(SourceValueIterator source_value_begin,
     if (has_validity) {  // update bitmask
       int active_mask = __ballot_sync(0xFFFFFFFF, in_range);
 
-      bool valid    = in_range && *(source_validity_begin + source_idx);
-      int warp_mask = __ballot_sync(active_mask, valid);
+      bool valid     = in_range && *(source_validity_begin + source_idx);
+      int  warp_mask = __ballot_sync(active_mask, valid);
 
       cudf::bitmask_type old_mask = target.get_mask_word(mask_idx);
 
@@ -131,12 +131,12 @@ namespace detail {
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 template <typename SourceValueIterator, typename SourceValidityIterator>
-void copy_range(SourceValueIterator source_value_begin,
+void copy_range(SourceValueIterator    source_value_begin,
                 SourceValidityIterator source_validity_begin,
-                mutable_column_view& target,
-                size_type target_begin,
-                size_type target_end,
-                rmm::cuda_stream_view stream = rmm::cuda_stream_default)
+                mutable_column_view&   target,
+                size_type              target_begin,
+                size_type              target_end,
+                rmm::cuda_stream_view  stream = rmm::cuda_stream_default)
 {
   CUDF_EXPECTS((target_begin <= target_end) && (target_begin >= 0) &&
                  (target_begin < target.size()) && (target_end <= target.size()),
@@ -192,11 +192,11 @@ void copy_range(SourceValueIterator source_value_begin,
  * @copydoc cudf::copy_range_in_place
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
-void copy_range_in_place(column_view const& source,
-                         mutable_column_view& target,
-                         size_type source_begin,
-                         size_type source_end,
-                         size_type target_begin,
+void copy_range_in_place(column_view const&    source,
+                         mutable_column_view&  target,
+                         size_type             source_begin,
+                         size_type             source_end,
+                         size_type             target_begin,
                          rmm::cuda_stream_view stream = rmm::cuda_stream_default);
 
 /**
@@ -205,13 +205,13 @@ void copy_range_in_place(column_view const& source,
  * @return std::unique_ptr<column> The result target column
  */
 std::unique_ptr<column> copy_range(
-  column_view const& source,
-  column_view const& target,
-  size_type source_begin,
-  size_type source_end,
-  size_type target_begin,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               source,
+  column_view const&               target,
+  size_type                        source_begin,
+  size_type                        source_end,
+  size_type                        target_begin,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace detail
 }  // namespace cudf

@@ -112,9 +112,9 @@ class bitwise_partitioner {
  * @param[out] global_partition_sizes The number of rows in each partition.
  */
 template <class row_hasher_t, typename partitioner_type>
-__global__ void compute_row_partition_numbers(row_hasher_t the_hasher,
-                                              const size_type num_rows,
-                                              const size_type num_partitions,
+__global__ void compute_row_partition_numbers(row_hasher_t           the_hasher,
+                                              const size_type        num_rows,
+                                              const size_type        num_partitions,
                                               const partitioner_type the_partitioner,
                                               size_type* __restrict__ row_partition_numbers,
                                               size_type* __restrict__ row_partition_offset,
@@ -251,13 +251,13 @@ __global__ void copy_block_partitions(InputIter input_iter,
                                       size_type const* __restrict__ scanned_block_partition_sizes)
 {
   extern __shared__ char shared_memory[];
-  auto block_output = reinterpret_cast<DataType*>(shared_memory);
-  auto partition_offset_shared =
+  auto                   block_output = reinterpret_cast<DataType*>(shared_memory);
+  auto                   partition_offset_shared =
     reinterpret_cast<size_type*>(block_output + OPTIMIZED_BLOCK_SIZE * OPTIMIZED_ROWS_PER_THREAD);
   auto partition_offset_global = partition_offset_shared + num_partitions + 1;
 
   typedef cub::BlockScan<size_type, OPTIMIZED_BLOCK_SIZE> BlockScan;
-  __shared__ typename BlockScan::TempStorage temp_storage;
+  __shared__ typename BlockScan::TempStorage              temp_storage;
 
   // use ELEMENTS_PER_THREAD=2 to support upto 1024 partitions
   size_type temp_histo[ELEMENTS_PER_THREAD];
@@ -326,15 +326,15 @@ __global__ void copy_block_partitions(InputIter input_iter,
 }
 
 template <typename InputIter, typename OutputIter>
-void copy_block_partitions_impl(InputIter const input,
-                                OutputIter output,
-                                size_type num_rows,
-                                size_type num_partitions,
-                                size_type const* row_partition_numbers,
-                                size_type const* row_partition_offset,
-                                size_type const* block_partition_sizes,
-                                size_type const* scanned_block_partition_sizes,
-                                size_type grid_size,
+void copy_block_partitions_impl(InputIter const       input,
+                                OutputIter            output,
+                                size_type             num_rows,
+                                size_type             num_partitions,
+                                size_type const*      row_partition_numbers,
+                                size_type const*      row_partition_offset,
+                                size_type const*      block_partition_sizes,
+                                size_type const*      scanned_block_partition_sizes,
+                                size_type             grid_size,
                                 rmm::cuda_stream_view stream)
 {
   // We need 3 chunks of shared memory:
@@ -355,16 +355,16 @@ void copy_block_partitions_impl(InputIter const input,
     scanned_block_partition_sizes);
 }
 
-rmm::device_vector<size_type> compute_gather_map(size_type num_rows,
-                                                 size_type num_partitions,
+rmm::device_vector<size_type> compute_gather_map(size_type        num_rows,
+                                                 size_type        num_partitions,
                                                  size_type const* row_partition_numbers,
                                                  size_type const* row_partition_offset,
                                                  size_type const* block_partition_sizes,
                                                  size_type const* scanned_block_partition_sizes,
-                                                 size_type grid_size,
+                                                 size_type        grid_size,
                                                  rmm::cuda_stream_view stream)
 {
-  auto sequence = thrust::make_counting_iterator(0);
+  auto                          sequence = thrust::make_counting_iterator(0);
   rmm::device_vector<size_type> gather_map(num_rows);
 
   copy_block_partitions_impl(sequence,
@@ -383,14 +383,14 @@ rmm::device_vector<size_type> compute_gather_map(size_type num_rows,
 
 struct copy_block_partitions_dispatcher {
   template <typename DataType, std::enable_if_t<is_fixed_width<DataType>()>* = nullptr>
-  std::unique_ptr<column> operator()(column_view const& input,
-                                     const size_type num_partitions,
-                                     size_type const* row_partition_numbers,
-                                     size_type const* row_partition_offset,
-                                     size_type const* block_partition_sizes,
-                                     size_type const* scanned_block_partition_sizes,
-                                     size_type grid_size,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(column_view const&               input,
+                                     const size_type                  num_partitions,
+                                     size_type const*                 row_partition_numbers,
+                                     size_type const*                 row_partition_offset,
+                                     size_type const*                 block_partition_sizes,
+                                     size_type const*                 scanned_block_partition_sizes,
+                                     size_type                        grid_size,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     using Type = device_storage_type_t<DataType>;
@@ -412,14 +412,14 @@ struct copy_block_partitions_dispatcher {
   }
 
   template <typename DataType, std::enable_if_t<not is_fixed_width<DataType>()>* = nullptr>
-  std::unique_ptr<column> operator()(column_view const& input,
-                                     const size_type num_partitions,
-                                     size_type const* row_partition_numbers,
-                                     size_type const* row_partition_offset,
-                                     size_type const* block_partition_sizes,
-                                     size_type const* scanned_block_partition_sizes,
-                                     size_type grid_size,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<column> operator()(column_view const&               input,
+                                     const size_type                  num_partitions,
+                                     size_type const*                 row_partition_numbers,
+                                     size_type const*                 row_partition_offset,
+                                     size_type const*                 block_partition_sizes,
+                                     size_type const*                 scanned_block_partition_sizes,
+                                     size_type                        grid_size,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     // Use move_to_output_buffer to create an equivalent gather map
@@ -447,10 +447,10 @@ struct copy_block_partitions_dispatcher {
 // NOTE hash_has_nulls must be true if table_to_hash has nulls
 template <template <typename> class hash_function, bool hash_has_nulls>
 std::pair<std::unique_ptr<table>, std::vector<size_type>> hash_partition_table(
-  table_view const& input,
-  table_view const& table_to_hash,
-  size_type num_partitions,
-  rmm::cuda_stream_view stream,
+  table_view const&                input,
+  table_view const&                table_to_hash,
+  size_type                        num_partitions,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr)
 {
   auto const num_rows = table_to_hash.num_rows();
@@ -642,18 +642,18 @@ struct dispatch_map_type {
   template <typename MapType>
   std::enable_if_t<is_index_type<MapType>(),
                    std::pair<std::unique_ptr<table>, std::vector<size_type>>>
-  operator()(table_view const& t,
-             column_view const& partition_map,
-             size_type num_partitions,
-             rmm::cuda_stream_view stream,
+  operator()(table_view const&                t,
+             column_view const&               partition_map,
+             size_type                        num_partitions,
+             rmm::cuda_stream_view            stream,
              rmm::mr::device_memory_resource* mr) const
   {
     // Build a histogram of the number of rows in each partition
     rmm::device_vector<size_type> histogram(num_partitions + 1);
-    std::size_t temp_storage_bytes{};
-    std::size_t const num_levels = num_partitions + 1;
-    size_type const lower_level  = 0;
-    size_type const upper_level  = num_partitions;
+    std::size_t                   temp_storage_bytes{};
+    std::size_t const             num_levels  = num_partitions + 1;
+    size_type const               lower_level = 0;
+    size_type const               upper_level = num_partitions;
     cub::DeviceHistogram::HistogramEven(nullptr,
                                         temp_storage_bytes,
                                         partition_map.begin<MapType>(),
@@ -709,10 +709,10 @@ struct dispatch_map_type {
   template <typename MapType>
   std::enable_if_t<not is_index_type<MapType>(),
                    std::pair<std::unique_ptr<table>, std::vector<size_type>>>
-  operator()(table_view const& t,
-             column_view const& partition_map,
-             size_type num_partitions,
-             rmm::cuda_stream_view stream,
+  operator()(table_view const&                t,
+             column_view const&               partition_map,
+             size_type                        num_partitions,
+             rmm::cuda_stream_view            stream,
              rmm::mr::device_memory_resource* mr) const
   {
     CUDF_FAIL("Unexpected, non-integral partition map.");
@@ -724,10 +724,10 @@ namespace detail {
 namespace local {
 template <template <typename> class hash_function>
 std::pair<std::unique_ptr<table>, std::vector<size_type>> hash_partition(
-  table_view const& input,
-  std::vector<size_type> const& columns_to_hash,
-  int num_partitions,
-  rmm::cuda_stream_view stream,
+  table_view const&                input,
+  std::vector<size_type> const&    columns_to_hash,
+  int                              num_partitions,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr)
 {
   auto table_to_hash = input.select(columns_to_hash);
@@ -748,10 +748,10 @@ std::pair<std::unique_ptr<table>, std::vector<size_type>> hash_partition(
 }  // namespace local
 
 std::pair<std::unique_ptr<table>, std::vector<size_type>> partition(
-  table_view const& t,
-  column_view const& partition_map,
-  size_type num_partitions,
-  rmm::cuda_stream_view stream,
+  table_view const&                t,
+  column_view const&               partition_map,
+  size_type                        num_partitions,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(t.num_rows() == partition_map.size(),
@@ -769,11 +769,11 @@ std::pair<std::unique_ptr<table>, std::vector<size_type>> partition(
 
 // Partition based on hash values
 std::pair<std::unique_ptr<table>, std::vector<size_type>> hash_partition(
-  table_view const& input,
-  std::vector<size_type> const& columns_to_hash,
-  int num_partitions,
-  hash_id hash_function,
-  rmm::cuda_stream_view stream,
+  table_view const&                input,
+  std::vector<size_type> const&    columns_to_hash,
+  int                              num_partitions,
+  hash_id                          hash_function,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -795,9 +795,9 @@ std::pair<std::unique_ptr<table>, std::vector<size_type>> hash_partition(
 
 // Partition based on an explicit partition map
 std::pair<std::unique_ptr<table>, std::vector<size_type>> partition(
-  table_view const& t,
-  column_view const& partition_map,
-  size_type num_partitions,
+  table_view const&                t,
+  column_view const&               partition_map,
+  size_type                        num_partitions,
   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

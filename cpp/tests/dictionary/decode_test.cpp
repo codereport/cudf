@@ -60,8 +60,8 @@ TEST_F(DictionaryDecodeTest, ColumnWithNull)
 TEST_F(DictionaryDecodeTest, EmptyColumn)
 {
   cudf::test::fixed_width_column_wrapper<int16_t> input;
-  auto dictionary = cudf::dictionary::encode(input);
-  auto output     = cudf::dictionary::decode(cudf::dictionary_column_view(dictionary->view()));
+  auto                                            dictionary = cudf::dictionary::encode(input);
+  auto output = cudf::dictionary::decode(cudf::dictionary_column_view(dictionary->view()));
 
   // check empty
   EXPECT_EQ(output->size(), 0);

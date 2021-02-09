@@ -50,12 +50,12 @@ __global__ void test_value(ScalarDeviceViewType s, ScalarDeviceViewType s1, bool
 
 TYPED_TEST(TypedScalarDeviceViewTest, Value)
 {
-  TypeParam value = cudf::test::make_type_param_scalar<TypeParam>(7);
+  TypeParam                      value = cudf::test::make_type_param_scalar<TypeParam>(7);
   cudf::scalar_type_t<TypeParam> s(value);
   cudf::scalar_type_t<TypeParam> s1;
 
-  auto scalar_device_view  = cudf::get_scalar_device_view(s);
-  auto scalar_device_view1 = cudf::get_scalar_device_view(s1);
+  auto                     scalar_device_view  = cudf::get_scalar_device_view(s);
+  auto                     scalar_device_view1 = cudf::get_scalar_device_view(s1);
   rmm::device_scalar<bool> result;
 
   test_set_value<<<1, 1>>>(scalar_device_view, scalar_device_view1);
@@ -78,10 +78,10 @@ __global__ void test_null(ScalarDeviceViewType s, bool* result)
 
 TYPED_TEST(TypedScalarDeviceViewTest, ConstructNull)
 {
-  TypeParam value = cudf::test::make_type_param_scalar<TypeParam>(5);
+  TypeParam                      value = cudf::test::make_type_param_scalar<TypeParam>(5);
   cudf::scalar_type_t<TypeParam> s(value, false);
-  auto scalar_device_view = cudf::get_scalar_device_view(s);
-  rmm::device_scalar<bool> result;
+  auto                           scalar_device_view = cudf::get_scalar_device_view(s);
+  rmm::device_scalar<bool>       result;
 
   test_null<<<1, 1>>>(scalar_device_view, result.data());
   CHECK_CUDA(0);
@@ -98,7 +98,7 @@ __global__ void test_setnull(ScalarDeviceViewType s)
 TYPED_TEST(TypedScalarDeviceViewTest, SetNull)
 {
   cudf::scalar_type_t<TypeParam> s;
-  auto scalar_device_view = cudf::get_scalar_device_view(s);
+  auto                           scalar_device_view = cudf::get_scalar_device_view(s);
   s.set_valid(true);
   EXPECT_TRUE(s.is_valid());
 
@@ -112,19 +112,19 @@ struct StringScalarDeviceViewTest : public cudf::test::BaseFixture {
 };
 
 __global__ void test_string_value(cudf::string_scalar_device_view s,
-                                  const char* value,
-                                  cudf::size_type size,
-                                  bool* result)
+                                  const char*                     value,
+                                  cudf::size_type                 size,
+                                  bool*                           result)
 {
   *result = (s.value() == cudf::string_view(value, size));
 }
 
 TEST_F(StringScalarDeviceViewTest, Value)
 {
-  std::string value("test string");
+  std::string         value("test string");
   cudf::string_scalar s(value);
 
-  auto scalar_device_view = cudf::get_scalar_device_view(s);
+  auto                     scalar_device_view = cudf::get_scalar_device_view(s);
   rmm::device_scalar<bool> result;
   rmm::device_vector<char> value_v(value.begin(), value.end());
 

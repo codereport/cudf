@@ -55,8 +55,8 @@ class int_fastdiv {
       return;
     }
 
-    int p;
-    unsigned int ad, anc, delta, q1, r1, q2, r2, t;
+    int            p;
+    unsigned int   ad, anc, delta, q1, r1, q2, r2, t;
     const unsigned two31 = 0x80000000;
     ad                   = (d == 0) ? 1 : abs(d);
     t                    = two31 + ((unsigned int)d >> 31);
@@ -94,7 +94,7 @@ class int_fastdiv {
       n_add_sign = 0;
   }
 
-  __host__ __device__ __forceinline__ friend int operator/(const int divident,
+  __host__ __device__ __forceinline__ friend int operator/(const int          divident,
                                                            const int_fastdiv& divisor);
 };
 
@@ -142,13 +142,13 @@ __host__ __device__ __forceinline__ int operator%(const short n, const int_fastd
 }
 
 __host__ __device__ __forceinline__ int operator/(const unsigned short n,
-                                                  const int_fastdiv& divisor)
+                                                  const int_fastdiv&   divisor)
 {
   return ((int)n) / divisor;
 }
 
 __host__ __device__ __forceinline__ int operator%(const unsigned short n,
-                                                  const int_fastdiv& divisor)
+                                                  const int_fastdiv&   divisor)
 {
   return ((int)n) % divisor;
 }

@@ -44,10 +44,10 @@ namespace detail {
  */
 template <typename InputIterator>
 std::unique_ptr<column> make_offsets_child_column(
-  InputIterator begin,
-  InputIterator end,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  InputIterator                    begin,
+  InputIterator                    end,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(begin < end, "Invalid iterator range");
   auto count = thrust::distance(begin, end);
@@ -77,9 +77,9 @@ std::unique_ptr<column> make_offsets_child_column(
  */
 template <typename Iter>
 std::unique_ptr<cudf::column> child_offsets_from_string_iterator(
-  Iter strings_begin,
-  cudf::size_type num_strings,
-  rmm::cuda_stream_view stream,
+  Iter                             strings_begin,
+  cudf::size_type                  num_strings,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   auto transformer = [] __device__(string_view v) { return v.size_bytes(); };

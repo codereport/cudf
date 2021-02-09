@@ -47,10 +47,10 @@ namespace cudf {
  *                      every element of the input
  */
 std::unique_ptr<column> transform(
-  column_view const& input,
-  std::string const& unary_udf,
-  data_type output_type,
-  bool is_ptx,
+  column_view const&               input,
+  std::string const&               unary_udf,
+  data_type                        output_type,
+  bool                             is_ptx,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -65,7 +65,7 @@ std::unique_ptr<column> transform(
  * null count obtained by replacing `NaN` in `input` with null.
  */
 std::pair<std::unique_ptr<rmm::device_buffer>, size_type> nans_to_nulls(
-  column_view const& input,
+  column_view const&               input,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -84,7 +84,7 @@ std::pair<std::unique_ptr<rmm::device_buffer>, size_type> nans_to_nulls(
  * `false` represent `invalid`/`0`.
  */
 std::pair<std::unique_ptr<rmm::device_buffer>, cudf::size_type> bools_to_mask(
-  column_view const& input,
+  column_view const&               input,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -112,7 +112,7 @@ std::pair<std::unique_ptr<rmm::device_buffer>, cudf::size_type> bools_to_mask(
  * and a column of integer indices representing the encoded rows.
  */
 std::pair<std::unique_ptr<cudf::table>, std::unique_ptr<cudf::column>> encode(
-  cudf::table_view const& input,
+  cudf::table_view const&          input,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -137,9 +137,9 @@ std::pair<std::unique_ptr<cudf::table>, std::unique_ptr<cudf::column>> encode(
  * @return A boolean column representing the given mask from [begin_bit, end_bit).
  */
 std::unique_ptr<column> mask_to_bools(
-  bitmask_type const* bitmask,
-  size_type begin_bit,
-  size_type end_bit,
+  bitmask_type const*              bitmask,
+  size_type                        begin_bit,
+  size_type                        end_bit,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

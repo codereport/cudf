@@ -70,10 +70,10 @@ std::unique_ptr<column> make_empty_column(data_type type)
 }
 
 // Allocate storage for a specified number of numeric elements
-std::unique_ptr<column> make_numeric_column(data_type type,
-                                            size_type size,
-                                            mask_state state,
-                                            rmm::cuda_stream_view stream,
+std::unique_ptr<column> make_numeric_column(data_type                        type,
+                                            size_type                        size,
+                                            mask_state                       state,
+                                            rmm::cuda_stream_view            stream,
                                             rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -88,10 +88,10 @@ std::unique_ptr<column> make_numeric_column(data_type type,
 }
 
 // Allocate storage for a specified number of numeric elements
-std::unique_ptr<column> make_fixed_point_column(data_type type,
-                                                size_type size,
-                                                mask_state state,
-                                                rmm::cuda_stream_view stream,
+std::unique_ptr<column> make_fixed_point_column(data_type                        type,
+                                                size_type                        size,
+                                                mask_state                       state,
+                                                rmm::cuda_stream_view            stream,
                                                 rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -106,10 +106,10 @@ std::unique_ptr<column> make_fixed_point_column(data_type type,
 }
 
 // Allocate storage for a specified number of timestamp elements
-std::unique_ptr<column> make_timestamp_column(data_type type,
-                                              size_type size,
-                                              mask_state state,
-                                              rmm::cuda_stream_view stream,
+std::unique_ptr<column> make_timestamp_column(data_type                        type,
+                                              size_type                        size,
+                                              mask_state                       state,
+                                              rmm::cuda_stream_view            stream,
                                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -124,10 +124,10 @@ std::unique_ptr<column> make_timestamp_column(data_type type,
 }
 
 // Allocate storage for a specified number of duration elements
-std::unique_ptr<column> make_duration_column(data_type type,
-                                             size_type size,
-                                             mask_state state,
-                                             rmm::cuda_stream_view stream,
+std::unique_ptr<column> make_duration_column(data_type                        type,
+                                             size_type                        size,
+                                             mask_state                       state,
+                                             rmm::cuda_stream_view            stream,
                                              rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -142,10 +142,10 @@ std::unique_ptr<column> make_duration_column(data_type type,
 }
 
 // Allocate storage for a specified number of fixed width elements
-std::unique_ptr<column> make_fixed_width_column(data_type type,
-                                                size_type size,
-                                                mask_state state,
-                                                rmm::cuda_stream_view stream,
+std::unique_ptr<column> make_fixed_width_column(data_type                        type,
+                                                size_type                        size,
+                                                mask_state                       state,
+                                                rmm::cuda_stream_view            stream,
                                                 rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

@@ -61,11 +61,11 @@ namespace strings {
  * @return New strings column.
  */
 std::unique_ptr<column> replace(
-  strings_column_view const& strings,
-  string_scalar const& target,
-  string_scalar const& repl,
-  int32_t maxrepl                     = -1,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  strings_column_view const&       strings,
+  string_scalar const&             target,
+  string_scalar const&             repl,
+  int32_t                          maxrepl = -1,
+  rmm::mr::device_memory_resource* mr      = rmm::mr::get_current_device_resource());
 
 /**
  * @brief This function replaces each string in the column with the provided
@@ -101,11 +101,11 @@ std::unique_ptr<column> replace(
  * @return New strings column.
  */
 std::unique_ptr<column> replace_slice(
-  strings_column_view const& strings,
-  string_scalar const& repl           = string_scalar(""),
-  size_type start                     = 0,
-  size_type stop                      = -1,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  strings_column_view const&       strings,
+  string_scalar const&             repl  = string_scalar(""),
+  size_type                        start = 0,
+  size_type                        stop  = -1,
+  rmm::mr::device_memory_resource* mr    = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Replaces substrings matching a list of targets with the corresponding
@@ -146,9 +146,9 @@ std::unique_ptr<column> replace_slice(
  * @return New strings column.
  */
 std::unique_ptr<column> replace(
-  strings_column_view const& strings,
-  strings_column_view const& targets,
-  strings_column_view const& repls,
+  strings_column_view const&       strings,
+  strings_column_view const&       targets,
+  strings_column_view const&       repls,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -169,9 +169,9 @@ std::unique_ptr<column> replace(
  * @return New strings column.
  */
 std::unique_ptr<column> replace_nulls(
-  strings_column_view const& strings,
-  string_scalar const& repl           = string_scalar(""),
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  strings_column_view const&       strings,
+  string_scalar const&             repl = string_scalar(""),
+  rmm::mr::device_memory_resource* mr   = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group
 }  // namespace strings

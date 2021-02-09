@@ -47,7 +47,7 @@ TYPED_TEST(PartitionTest, EmptyInputs)
   using map_type   = cudf::test::GetType<TypeParam, 1>;
 
   fixed_width_column_wrapper<value_type> empty_column{};
-  fixed_width_column_wrapper<map_type> empty_map{};
+  fixed_width_column_wrapper<map_type>   empty_map{};
 
   auto result = cudf::partition(cudf::table_view{{empty_column}}, empty_map, 10);
 
@@ -64,7 +64,7 @@ TYPED_TEST(PartitionTest, MapInputSizeMismatch)
   using map_type   = cudf::test::GetType<TypeParam, 1>;
 
   fixed_width_column_wrapper<value_type, int32_t> input({1, 2, 3});
-  fixed_width_column_wrapper<map_type> map{1, 2};
+  fixed_width_column_wrapper<map_type>            map{1, 2};
 
   EXPECT_THROW(cudf::partition(cudf::table_view{{input}}, map, 3), cudf::logic_error);
 }
@@ -75,7 +75,7 @@ TYPED_TEST(PartitionTest, MapWithNullsThrows)
   using map_type   = cudf::test::GetType<TypeParam, 1>;
 
   fixed_width_column_wrapper<value_type, int32_t> input({1, 2, 3});
-  fixed_width_column_wrapper<map_type> map{{1, 2}, {1, 0}};
+  fixed_width_column_wrapper<map_type>            map{{1, 2}, {1, 0}};
 
   EXPECT_THROW(cudf::partition(cudf::table_view{{input}}, map, 3), cudf::logic_error);
 }
@@ -87,8 +87,8 @@ TYPED_TEST(PartitionTest, MapWithNullsThrows)
  * The order of rows within each partition may be different, so each partition
  * is first sorted before being compared for equality.
  */
-void expect_equal_partitions(cudf::table_view expected,
-                             cudf::table_view actual,
+void expect_equal_partitions(cudf::table_view                    expected,
+                             cudf::table_view                    actual,
                              std::vector<cudf::size_type> const& offsets)
 {
   // Need to convert partition offsets into split points by dropping the first
@@ -110,13 +110,13 @@ void expect_equal_partitions(cudf::table_view expected,
              });
 }
 
-void run_partition_test(cudf::table_view table_to_partition,
-                        cudf::column_view partition_map,
-                        cudf::size_type num_partitions,
-                        cudf::table_view expected_partitioned_table,
+void run_partition_test(cudf::table_view                    table_to_partition,
+                        cudf::column_view                   partition_map,
+                        cudf::size_type                     num_partitions,
+                        cudf::table_view                    expected_partitioned_table,
                         std::vector<cudf::size_type> const& expected_offsets)
 {
-  auto result = cudf::partition(table_to_partition, partition_map, num_partitions);
+  auto        result = cudf::partition(table_to_partition, partition_map, num_partitions);
   auto const& actual_partitioned_table = result.first;
   auto const& actual_offsets           = result.second;
   EXPECT_EQ(actual_offsets, expected_offsets);
@@ -132,7 +132,7 @@ TYPED_TEST(PartitionTest, Identity)
 
   fixed_width_column_wrapper<value_type, int32_t> first({0, 1, 2, 3, 4, 5});
   strings_column_wrapper strings{"this", "is", "a", "column", "of", "strings"};
-  auto table_to_partition = cudf::table_view{{first, strings}};
+  auto                   table_to_partition = cudf::table_view{{first, strings}};
 
   fixed_width_column_wrapper<map_type> map{0, 1, 2, 3, 4, 5};
 
@@ -148,7 +148,7 @@ TYPED_TEST(PartitionTest, Reverse)
 
   fixed_width_column_wrapper<value_type, int32_t> first({0, 1, 3, 7, 5, 13});
   strings_column_wrapper strings{"this", "is", "a", "column", "of", "strings"};
-  auto table_to_partition = cudf::table_view{{first, strings}};
+  auto                   table_to_partition = cudf::table_view{{first, strings}};
 
   fixed_width_column_wrapper<map_type> map{5, 4, 3, 2, 1, 0};
 
@@ -168,7 +168,7 @@ TYPED_TEST(PartitionTest, SinglePartition)
 
   fixed_width_column_wrapper<value_type, int32_t> first({0, 1, 3, 7, 5, 13});
   strings_column_wrapper strings{"this", "is", "a", "column", "of", "strings"};
-  auto table_to_partition = cudf::table_view{{first, strings}};
+  auto                   table_to_partition = cudf::table_view{{first, strings}};
 
   fixed_width_column_wrapper<map_type> map{0, 0, 0, 0, 0, 0};
 
@@ -188,7 +188,7 @@ TYPED_TEST(PartitionTest, EmptyPartitions)
 
   fixed_width_column_wrapper<value_type, int32_t> first({0, 1, 3, 7, 5, 13});
   strings_column_wrapper strings{"this", "is", "a", "column", "of", "strings"};
-  auto table_to_partition = cudf::table_view{{first, strings}};
+  auto                   table_to_partition = cudf::table_view{{first, strings}};
 
   fixed_width_column_wrapper<map_type> map{2, 2, 0, 0, 4, 4};
 

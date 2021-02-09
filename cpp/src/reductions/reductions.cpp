@@ -30,14 +30,14 @@
 namespace cudf {
 namespace detail {
 struct reduce_dispatch_functor {
-  column_view const col;
-  data_type output_dtype;
+  column_view const                col;
+  data_type                        output_dtype;
   rmm::mr::device_memory_resource *mr;
-  rmm::cuda_stream_view stream;
+  rmm::cuda_stream_view            stream;
 
-  reduce_dispatch_functor(column_view const &col,
-                          data_type output_dtype,
-                          rmm::cuda_stream_view stream,
+  reduce_dispatch_functor(column_view const &              col,
+                          data_type                        output_dtype,
+                          rmm::cuda_stream_view            stream,
                           rmm::mr::device_memory_resource *mr)
     : col(col), output_dtype(output_dtype), mr(mr), stream(stream)
   {
@@ -106,11 +106,11 @@ struct reduce_dispatch_functor {
 };
 
 std::unique_ptr<scalar> reduce(
-  column_view const &col,
+  column_view const &                 col,
   std::unique_ptr<aggregation> const &agg,
-  data_type output_dtype,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource *mr = rmm::mr::get_current_device_resource())
+  data_type                           output_dtype,
+  rmm::cuda_stream_view               stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource *   mr     = rmm::mr::get_current_device_resource())
 {
   std::unique_ptr<scalar> result = make_default_constructed_scalar(output_dtype);
   result->set_valid(false, stream);
@@ -124,10 +124,10 @@ std::unique_ptr<scalar> reduce(
 }
 }  // namespace detail
 
-std::unique_ptr<scalar> reduce(column_view const &col,
+std::unique_ptr<scalar> reduce(column_view const &                 col,
                                std::unique_ptr<aggregation> const &agg,
-                               data_type output_dtype,
-                               rmm::mr::device_memory_resource *mr)
+                               data_type                           output_dtype,
+                               rmm::mr::device_memory_resource *   mr)
 {
   CUDF_FUNC_RANGE();
   return detail::reduce(col, agg, output_dtype, rmm::cuda_stream_default, mr);

@@ -50,7 +50,7 @@ auto const temp_env = static_cast<cudf::test::TempDirTestEnvironment*>(
 template <typename T>
 std::unique_ptr<cudf::table> create_random_fixed_table(cudf::size_type num_columns,
                                                        cudf::size_type num_rows,
-                                                       bool include_validity)
+                                                       bool            include_validity)
 {
   auto valids = cudf::detail::make_counting_transform_iterator(
     0, [](auto i) { return i % 2 == 0 ? true : false; });
@@ -139,8 +139,8 @@ inline auto random_values(size_t size)
                                                    std::uniform_real_distribution<T1>,
                                                    std::uniform_int_distribution<T1>>>;
 
-  static constexpr auto seed = 0xf00d;
-  static std::mt19937 engine{seed};
+  static constexpr auto       seed = 0xf00d;
+  static std::mt19937         engine{seed};
   static uniform_distribution dist{};
   std::generate_n(values.begin(), size, [&]() { return T{dist(engine)}; });
 
@@ -152,9 +152,9 @@ struct SkipRowTest {
   SkipRowTest(void) : test_calls(0) {}
 
   std::unique_ptr<table> get_expected_result(const std::string& filepath,
-                                             int skip_rows,
-                                             int file_num_rows,
-                                             int read_num_rows)
+                                             int                skip_rows,
+                                             int                file_num_rows,
+                                             int                read_num_rows)
   {
     auto sequence = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i; });
     auto validity = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
@@ -220,7 +220,7 @@ TYPED_TEST(OrcWriterNumericTypeTest, SingleColumn)
   auto sequence = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i; });
   auto validity = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
-  constexpr auto num_rows = 100;
+  constexpr auto                                                     num_rows = 100;
   column_wrapper<TypeParam, typename decltype(sequence)::value_type> col(
     sequence, sequence + num_rows, validity);
 
@@ -229,7 +229,7 @@ TYPED_TEST(OrcWriterNumericTypeTest, SingleColumn)
   auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(1, expected->num_columns());
 
-  auto filepath = temp_env->get_temp_filepath("OrcSingleColumn.orc");
+  auto                        filepath = temp_env->get_temp_filepath("OrcSingleColumn.orc");
   cudf_io::orc_writer_options out_opts =
     cudf_io::orc_writer_options::builder(cudf_io::sink_info{filepath}, expected->view());
   cudf_io::write_orc(out_opts);
@@ -246,7 +246,7 @@ TYPED_TEST(OrcWriterNumericTypeTest, SingleColumnWithNulls)
   auto sequence = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i; });
   auto validity = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return (i % 2); });
 
-  constexpr auto num_rows = 100;
+  constexpr auto                                                     num_rows = 100;
   column_wrapper<TypeParam, typename decltype(sequence)::value_type> col(
     sequence, sequence + num_rows, validity);
 
@@ -273,7 +273,7 @@ TYPED_TEST(OrcWriterTimestampTypeTest, Timestamps)
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return (std::rand() / 10); });
   auto validity = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
-  constexpr auto num_rows = 100;
+  constexpr auto                                                     num_rows = 100;
   column_wrapper<TypeParam, typename decltype(sequence)::value_type> col(
     sequence, sequence + num_rows, validity);
 
@@ -282,7 +282,7 @@ TYPED_TEST(OrcWriterTimestampTypeTest, Timestamps)
   auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(1, expected->num_columns());
 
-  auto filepath = temp_env->get_temp_filepath("OrcTimestamps.orc");
+  auto                        filepath = temp_env->get_temp_filepath("OrcTimestamps.orc");
   cudf_io::orc_writer_options out_opts =
     cudf_io::orc_writer_options::builder(cudf_io::sink_info{filepath}, expected->view());
   cudf_io::write_orc(out_opts);
@@ -303,7 +303,7 @@ TYPED_TEST(OrcWriterTimestampTypeTest, TimestampsWithNulls)
   auto validity =
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return (i > 30) && (i < 60); });
 
-  constexpr auto num_rows = 100;
+  constexpr auto                                                     num_rows = 100;
   column_wrapper<TypeParam, typename decltype(sequence)::value_type> col(
     sequence, sequence + num_rows, validity);
 
@@ -312,7 +312,7 @@ TYPED_TEST(OrcWriterTimestampTypeTest, TimestampsWithNulls)
   auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(1, expected->num_columns());
 
-  auto filepath = temp_env->get_temp_filepath("OrcTimestampsWithNulls.orc");
+  auto                        filepath = temp_env->get_temp_filepath("OrcTimestampsWithNulls.orc");
   cudf_io::orc_writer_options out_opts =
     cudf_io::orc_writer_options::builder(cudf_io::sink_info{filepath}, expected->view());
   cudf_io::write_orc(out_opts);
@@ -338,12 +338,12 @@ TEST_F(OrcWriterTest, MultiColumn)
   auto col5_data = random_values<double>(num_rows);
   auto validity  = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
-  column_wrapper<bool> col0{col0_data.begin(), col0_data.end(), validity};
-  column_wrapper<int8_t> col1{col1_data.begin(), col1_data.end(), validity};
+  column_wrapper<bool>    col0{col0_data.begin(), col0_data.end(), validity};
+  column_wrapper<int8_t>  col1{col1_data.begin(), col1_data.end(), validity};
   column_wrapper<int16_t> col2{col2_data.begin(), col2_data.end(), validity};
   column_wrapper<int32_t> col3{col3_data.begin(), col3_data.end(), validity};
-  column_wrapper<float> col4{col4_data.begin(), col4_data.end(), validity};
-  column_wrapper<double> col5{col5_data.begin(), col5_data.end(), validity};
+  column_wrapper<float>   col4{col4_data.begin(), col4_data.end(), validity};
+  column_wrapper<double>  col5{col5_data.begin(), col5_data.end(), validity};
 
   cudf_io::table_metadata expected_metadata;
   expected_metadata.column_names.emplace_back("bools");
@@ -363,7 +363,7 @@ TEST_F(OrcWriterTest, MultiColumn)
   auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(6, expected->num_columns());
 
-  auto filepath = temp_env->get_temp_filepath("OrcMultiColumn.orc");
+  auto                        filepath = temp_env->get_temp_filepath("OrcMultiColumn.orc");
   cudf_io::orc_writer_options out_opts =
     cudf_io::orc_writer_options::builder(cudf_io::sink_info{filepath}, expected->view())
       .metadata(&expected_metadata);
@@ -399,12 +399,12 @@ TEST_F(OrcWriterTest, MultiColumnWithNulls)
   auto col5_mask =
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return (i > 80); });
 
-  column_wrapper<bool> col0{col0_data.begin(), col0_data.end(), col0_mask};
-  column_wrapper<int8_t> col1{col1_data.begin(), col1_data.end(), col1_mask};
+  column_wrapper<bool>    col0{col0_data.begin(), col0_data.end(), col0_mask};
+  column_wrapper<int8_t>  col1{col1_data.begin(), col1_data.end(), col1_mask};
   column_wrapper<int16_t> col2{col2_data.begin(), col2_data.end(), col2_mask};
   column_wrapper<int32_t> col3{col3_data.begin(), col3_data.end(), col3_mask};
-  column_wrapper<float> col4{col4_data.begin(), col4_data.end(), col4_mask};
-  column_wrapper<double> col5{col5_data.begin(), col5_data.end(), col5_mask};
+  column_wrapper<float>   col4{col4_data.begin(), col4_data.end(), col4_mask};
+  column_wrapper<double>  col5{col5_data.begin(), col5_data.end(), col5_mask};
 
   cudf_io::table_metadata expected_metadata;
   expected_metadata.column_names.emplace_back("bools");
@@ -424,7 +424,7 @@ TEST_F(OrcWriterTest, MultiColumnWithNulls)
   auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(6, expected->num_columns());
 
-  auto filepath = temp_env->get_temp_filepath("OrcMultiColumnWithNulls.orc");
+  auto                        filepath = temp_env->get_temp_filepath("OrcMultiColumnWithNulls.orc");
   cudf_io::orc_writer_options out_opts =
     cudf_io::orc_writer_options::builder(cudf_io::sink_info{filepath}, expected->view())
       .metadata(&expected_metadata);
@@ -443,7 +443,7 @@ TEST_F(OrcWriterTest, ReadZeroRows)
   auto sequence = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i; });
   auto validity = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
-  constexpr auto num_rows = 10;
+  constexpr auto                                                   num_rows = 10;
   column_wrapper<int64_t, typename decltype(sequence)::value_type> col(
     sequence, sequence + num_rows, validity);
 
@@ -452,7 +452,7 @@ TEST_F(OrcWriterTest, ReadZeroRows)
   auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(1, expected->num_columns());
 
-  auto filepath = temp_env->get_temp_filepath("OrcSingleColumn.orc");
+  auto                        filepath = temp_env->get_temp_filepath("OrcSingleColumn.orc");
   cudf_io::orc_writer_options out_opts =
     cudf_io::orc_writer_options::builder(cudf_io::sink_info{filepath}, expected->view());
   cudf_io::write_orc(out_opts);
@@ -477,9 +477,9 @@ TEST_F(OrcWriterTest, Strings)
   auto seq_col2 = random_values<float>(num_rows);
   auto validity = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
-  column_wrapper<int> col0{seq_col0.begin(), seq_col0.end(), validity};
+  column_wrapper<int>               col0{seq_col0.begin(), seq_col0.end(), validity};
   column_wrapper<cudf::string_view> col1{strings.begin(), strings.end()};
-  column_wrapper<float> col2{seq_col2.begin(), seq_col2.end(), validity};
+  column_wrapper<float>             col2{seq_col2.begin(), seq_col2.end(), validity};
 
   cudf_io::table_metadata expected_metadata;
   expected_metadata.column_names.emplace_back("col_other");
@@ -493,7 +493,7 @@ TEST_F(OrcWriterTest, Strings)
   auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(3, expected->num_columns());
 
-  auto filepath = temp_env->get_temp_filepath("OrcStrings.orc");
+  auto                        filepath = temp_env->get_temp_filepath("OrcStrings.orc");
   cudf_io::orc_writer_options out_opts =
     cudf_io::orc_writer_options::builder(cudf_io::sink_info{filepath}, expected->view())
       .metadata(&expected_metadata);
@@ -519,9 +519,9 @@ TEST_F(OrcWriterTest, SlicedTable)
   auto seq_col2 = random_values<float>(num_rows);
   auto validity = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
 
-  column_wrapper<int> col0{seq_col0.begin(), seq_col0.end(), validity};
+  column_wrapper<int>               col0{seq_col0.begin(), seq_col0.end(), validity};
   column_wrapper<cudf::string_view> col1{strings.begin(), strings.end()};
-  column_wrapper<float> col2{seq_col2.begin(), seq_col2.end(), validity};
+  column_wrapper<float>             col2{seq_col2.begin(), seq_col2.end(), validity};
 
   cudf_io::table_metadata expected_metadata;
   expected_metadata.column_names.emplace_back("col_other");
@@ -537,7 +537,7 @@ TEST_F(OrcWriterTest, SlicedTable)
 
   auto expected_slice = cudf::slice(expected->view(), {2, static_cast<cudf::size_type>(num_rows)});
 
-  auto filepath = temp_env->get_temp_filepath("SlicedTable.parquet");
+  auto                        filepath = temp_env->get_temp_filepath("SlicedTable.parquet");
   cudf_io::orc_writer_options out_opts =
     cudf_io::orc_writer_options::builder(cudf_io::sink_info{filepath}, expected_slice)
       .metadata(&expected_metadata);
@@ -554,8 +554,8 @@ TEST_F(OrcWriterTest, SlicedTable)
 TEST_F(OrcWriterTest, HostBuffer)
 {
   constexpr auto num_rows = 100 << 10;
-  const auto seq_col      = random_values<int>(num_rows);
-  const auto validity =
+  const auto     seq_col  = random_values<int>(num_rows);
+  const auto     validity =
     cudf::detail::make_counting_transform_iterator(0, [](auto i) { return true; });
   column_wrapper<int> col{seq_col.begin(), seq_col.end(), validity};
 
@@ -567,7 +567,7 @@ TEST_F(OrcWriterTest, HostBuffer)
   const auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(1, expected->num_columns());
 
-  std::vector<char> out_buffer;
+  std::vector<char>           out_buffer;
   cudf_io::orc_writer_options out_opts =
     cudf_io::orc_writer_options::builder(cudf_io::sink_info(&out_buffer), expected->view())
       .metadata(&expected_metadata);
@@ -600,7 +600,7 @@ TEST_F(OrcWriterTest, negTimestampsNano)
   auto expected = std::make_unique<table>(std::move(cols));
   EXPECT_EQ(1, expected->num_columns());
 
-  auto filepath = temp_env->get_temp_filepath("OrcNegTimestamp.orc");
+  auto                        filepath = temp_env->get_temp_filepath("OrcNegTimestamp.orc");
   cudf_io::orc_writer_options out_opts =
     cudf_io::orc_writer_options::builder(cudf_io::sink_info{filepath}, expected->view());
 
@@ -618,11 +618,11 @@ TEST_F(OrcWriterTest, Slice)
 {
   auto col =
     cudf::test::fixed_width_column_wrapper<int>{{1, 2, 3, 4, 5}, {true, true, true, false, true}};
-  std::vector<cudf::size_type> indices{2, 5};
+  std::vector<cudf::size_type>   indices{2, 5};
   std::vector<cudf::column_view> result = cudf::slice(col, indices);
-  cudf::table_view tbl{result};
+  cudf::table_view               tbl{result};
 
-  auto filepath = temp_env->get_temp_filepath("Slice.orc");
+  auto                        filepath = temp_env->get_temp_filepath("Slice.orc");
   cudf_io::orc_writer_options out_opts =
     cudf_io::orc_writer_options::builder(cudf_io::sink_info{filepath}, tbl);
   cudf_io::write_orc(out_opts);
@@ -639,7 +639,7 @@ TEST_F(OrcChunkedWriterTest, SingleTable)
   srand(31337);
   auto table1 = create_random_fixed_table<int>(5, 5, true);
 
-  auto filepath = temp_env->get_temp_filepath("ChunkedSingle.orc");
+  auto                                filepath = temp_env->get_temp_filepath("ChunkedSingle.orc");
   cudf_io::chunked_orc_writer_options opts =
     cudf_io::chunked_orc_writer_options::builder(cudf_io::sink_info{filepath});
   cudf_io::orc_chunked_writer(opts).write(*table1);
@@ -659,7 +659,7 @@ TEST_F(OrcChunkedWriterTest, SimpleTable)
 
   auto full_table = cudf::concatenate({*table1, *table2});
 
-  auto filepath = temp_env->get_temp_filepath("ChunkedSimple.orc");
+  auto                                filepath = temp_env->get_temp_filepath("ChunkedSimple.orc");
   cudf_io::chunked_orc_writer_options opts =
     cudf_io::chunked_orc_writer_options::builder(cudf_io::sink_info{filepath});
   cudf_io::orc_chunked_writer(opts).write(*table1).write(*table2);
@@ -679,7 +679,7 @@ TEST_F(OrcChunkedWriterTest, LargeTables)
 
   auto full_table = cudf::concatenate({*table1, *table2});
 
-  auto filepath = temp_env->get_temp_filepath("ChunkedLarge.orc");
+  auto                                filepath = temp_env->get_temp_filepath("ChunkedLarge.orc");
   cudf_io::chunked_orc_writer_options opts =
     cudf_io::chunked_orc_writer_options::builder(cudf_io::sink_info{filepath});
   cudf_io::orc_chunked_writer(opts).write(*table1).write(*table2);
@@ -695,8 +695,8 @@ TEST_F(OrcChunkedWriterTest, ManyTables)
 {
   srand(31337);
   std::vector<std::unique_ptr<table>> tables;
-  std::vector<table_view> table_views;
-  constexpr int num_tables = 96;
+  std::vector<table_view>             table_views;
+  constexpr int                       num_tables = 96;
   for (int idx = 0; idx < num_tables; idx++) {
     auto tbl = create_random_fixed_table<int>(16, 64, true);
     table_views.push_back(*tbl);
@@ -725,13 +725,13 @@ TEST_F(OrcChunkedWriterTest, Strings)
 {
   std::vector<std::unique_ptr<cudf::column>> cols;
 
-  bool mask1[] = {1, 1, 0, 1, 1, 1, 1};
+  bool                     mask1[] = {1, 1, 0, 1, 1, 1, 1};
   std::vector<const char*> h_strings1{"four", "score", "and", "seven", "years", "ago", "abcdefgh"};
   cudf::test::strings_column_wrapper strings1(h_strings1.begin(), h_strings1.end(), mask1);
   cols.push_back(strings1.release());
   cudf::table tbl1(std::move(cols));
 
-  bool mask2[] = {0, 1, 1, 1, 1, 1, 1};
+  bool                     mask2[] = {0, 1, 1, 1, 1, 1, 1};
   std::vector<const char*> h_strings2{"ooooo", "ppppppp", "fff", "j", "cccc", "bbb", "zzzzzzzzzzz"};
   cudf::test::strings_column_wrapper strings2(h_strings2.begin(), h_strings2.end(), mask2);
   cols.push_back(strings2.release());
@@ -739,7 +739,7 @@ TEST_F(OrcChunkedWriterTest, Strings)
 
   auto expected = cudf::concatenate({tbl1, tbl2});
 
-  auto filepath = temp_env->get_temp_filepath("ChunkedStrings.orc");
+  auto                                filepath = temp_env->get_temp_filepath("ChunkedStrings.orc");
   cudf_io::chunked_orc_writer_options opts =
     cudf_io::chunked_orc_writer_options::builder(cudf_io::sink_info{filepath});
   cudf_io::orc_chunked_writer(opts).write(tbl1).write(tbl2);
@@ -801,7 +801,7 @@ TEST_F(OrcChunkedWriterTest, ReadStripes)
 
   auto full_table = cudf::concatenate({*table2, *table1, *table2});
 
-  auto filepath = temp_env->get_temp_filepath("ChunkedStripes.orc");
+  auto                                filepath = temp_env->get_temp_filepath("ChunkedStripes.orc");
   cudf_io::chunked_orc_writer_options opts =
     cudf_io::chunked_orc_writer_options::builder(cudf_io::sink_info{filepath});
   cudf_io::orc_chunked_writer(opts).write(*table1).write(*table2);
@@ -837,7 +837,7 @@ TYPED_TEST(OrcChunkedWriterNumericTypeTest, UnalignedSize)
 
   using T = TypeParam;
 
-  int num_els = 31;
+  int                                        num_els = 31;
   std::vector<std::unique_ptr<cudf::column>> cols;
 
   bool mask[] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -884,7 +884,7 @@ TYPED_TEST(OrcChunkedWriterNumericTypeTest, UnalignedSize2)
 
   using T = TypeParam;
 
-  int num_els = 33;
+  int                                        num_els = 33;
   std::vector<std::unique_ptr<cudf::column>> cols;
 
   bool mask[] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

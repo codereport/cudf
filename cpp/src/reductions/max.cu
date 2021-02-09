@@ -23,9 +23,9 @@
 namespace cudf {
 namespace reduction {
 
-std::unique_ptr<cudf::scalar> max(column_view const& col,
-                                  cudf::data_type const output_dtype,
-                                  rmm::cuda_stream_view stream,
+std::unique_ptr<cudf::scalar> max(column_view const&               col,
+                                  cudf::data_type const            output_dtype,
+                                  rmm::cuda_stream_view            stream,
                                   rmm::mr::device_memory_resource* mr)
 {
   auto const input_type =

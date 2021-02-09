@@ -34,9 +34,9 @@ struct byte_list_conversion {
    */
   template <typename T>
   std::enable_if_t<!std::is_integral<T>::value and !is_floating_point<T>(), std::unique_ptr<column>>
-  operator()(column_view const& input_column,
-             flip_endianness configuration,
-             rmm::cuda_stream_view stream,
+  operator()(column_view const&               input_column,
+             flip_endianness                  configuration,
+             rmm::cuda_stream_view            stream,
              rmm::mr::device_memory_resource* mr) const
   {
     CUDF_FAIL("Unsupported non-numeric and non-string column");
@@ -44,18 +44,18 @@ struct byte_list_conversion {
 
   template <typename T>
   std::enable_if_t<is_floating_point<T>() or std::is_integral<T>::value, std::unique_ptr<column>>
-  operator()(column_view const& input_column,
-             flip_endianness configuration,
-             rmm::cuda_stream_view stream,
+  operator()(column_view const&               input_column,
+             flip_endianness                  configuration,
+             rmm::cuda_stream_view            stream,
              rmm::mr::device_memory_resource* mr) const
   {
-    size_type num_bytes = input_column.size() * sizeof(T);
-    auto byte_column    = make_numeric_column(
+    size_type num_bytes   = input_column.size() * sizeof(T);
+    auto      byte_column = make_numeric_column(
       data_type{type_id::UINT8}, num_bytes, mask_state::UNALLOCATED, stream, mr);
 
-    char* d_chars      = reinterpret_cast<char*>(byte_column->mutable_view().data<uint8_t>());
-    char const* d_data = reinterpret_cast<char const*>(input_column.data<T>());
-    size_type mask     = sizeof(T) - 1;
+    char*       d_chars = reinterpret_cast<char*>(byte_column->mutable_view().data<uint8_t>());
+    char const* d_data  = reinterpret_cast<char const*>(input_column.data<T>());
+    size_type   mask    = sizeof(T) - 1;
 
     if (configuration == flip_endianness::YES) {
       thrust::for_each(rmm::exec_policy(stream),
@@ -86,13 +86,13 @@ struct byte_list_conversion {
 
 template <>
 std::unique_ptr<cudf::column> byte_list_conversion::operator()<string_view>(
-  column_view const& input_column,
-  flip_endianness configuration,
-  rmm::cuda_stream_view stream,
+  column_view const&               input_column,
+  flip_endianness                  configuration,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr) const
 {
   strings_column_view input_strings(input_column);
-  auto strings_count = input_strings.size();
+  auto                strings_count = input_strings.size();
   if (strings_count == 0) return cudf::empty_like(input_column);
 
   auto contents = std::make_unique<column>(input_column, stream, mr)->release();
@@ -112,9 +112,9 @@ std::unique_ptr<cudf::column> byte_list_conversion::operator()<string_view>(
  *
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
-std::unique_ptr<column> byte_cast(column_view const& input_column,
-                                  flip_endianness endian_configuration,
-                                  rmm::cuda_stream_view stream,
+std::unique_ptr<column> byte_cast(column_view const&               input_column,
+                                  flip_endianness                  endian_configuration,
+                                  rmm::cuda_stream_view            stream,
                                   rmm::mr::device_memory_resource* mr)
 {
   return type_dispatcher(
@@ -126,8 +126,8 @@ std::unique_ptr<column> byte_cast(column_view const& input_column,
 /**
  * @copydoc cudf::byte_cast(input_column,flip_endianess,rmm::mr::device_memory_resource)
  */
-std::unique_ptr<column> byte_cast(column_view const& input_column,
-                                  flip_endianness endian_configuration,
+std::unique_ptr<column> byte_cast(column_view const&               input_column,
+                                  flip_endianness                  endian_configuration,
                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

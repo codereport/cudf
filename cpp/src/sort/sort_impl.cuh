@@ -53,9 +53,9 @@ struct simple_comparator {
            (ascending ? weak_ordering::LESS : weak_ordering::GREATER);
   }
   column_device_view const d_column;
-  bool has_nulls;
-  bool ascending;
-  null_order null_precedence{};
+  bool                     has_nulls;
+  bool                     ascending;
+  null_order               null_precedence{};
 };
 
 /**
@@ -70,10 +70,10 @@ struct simple_comparator {
  * @return Sorted indices for the input column.
  */
 template <bool stable>
-std::unique_ptr<column> sorted_order(column_view const& input,
-                                     order column_order,
-                                     null_order null_precedence,
-                                     rmm::cuda_stream_view stream,
+std::unique_ptr<column> sorted_order(column_view const&               input,
+                                     order                            column_order,
+                                     null_order                       null_precedence,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr);
 
 /**
@@ -83,10 +83,10 @@ std::unique_ptr<column> sorted_order(column_view const& input,
  * @param stream CUDA stream used for device memory operations and kernel launches
  */
 template <bool stable = false>
-std::unique_ptr<column> sorted_order(table_view input,
-                                     std::vector<order> const& column_order,
-                                     std::vector<null_order> const& null_precedence,
-                                     rmm::cuda_stream_view stream,
+std::unique_ptr<column> sorted_order(table_view                       input,
+                                     std::vector<order> const&        column_order,
+                                     std::vector<null_order> const&   null_precedence,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
 {
   if (input.num_rows() == 0 or input.num_columns() == 0) {
@@ -120,12 +120,12 @@ std::unique_ptr<column> sorted_order(table_view input,
                   : sorted_order<false>(single_col, col_order, null_prec, stream, mr);
   }
 
-  auto device_table = table_device_view::create(input, stream);
+  auto                      device_table = table_device_view::create(input, stream);
   rmm::device_vector<order> d_column_order(column_order);
 
   if (has_nulls(input)) {
     rmm::device_vector<null_order> d_null_precedence(null_precedence);
-    auto comparator = row_lexicographic_comparator<true>(
+    auto                           comparator = row_lexicographic_comparator<true>(
       *device_table, *device_table, d_column_order.data().get(), d_null_precedence.data().get());
     if (stable) {
       thrust::stable_sort(rmm::exec_policy(stream),

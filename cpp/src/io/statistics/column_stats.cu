@@ -30,9 +30,9 @@ namespace io {
  * @brief shared state for statistics gather kernel
  */
 struct stats_state_s {
-  stats_column_desc col;                 ///< Column information
-  statistics_group group;                ///< Group description
-  statistics_chunk ck;                   ///< Output statistics chunk
+  stats_column_desc       col;           ///< Column information
+  statistics_group        group;         ///< Group description
+  statistics_chunk        ck;            ///< Output statistics chunk
   volatile statistics_val warp_min[32];  ///< Min reduction scratch
   volatile statistics_val warp_max[32];  ///< Max reduction scratch
   volatile statistics_val warp_sum[32];  ///< Sum reduction scratch
@@ -42,14 +42,14 @@ struct stats_state_s {
  * @brief shared state for statistics merge kernel
  */
 struct merge_state_s {
-  stats_column_desc col;                 ///< Column information
-  statistics_merge_group group;          ///< Group description
-  statistics_chunk ck;                   ///< Resulting statistics chunk
-  volatile statistics_val warp_min[32];  ///< Min reduction scratch
-  volatile statistics_val warp_max[32];  ///< Max reduction scratch
-  volatile statistics_val warp_sum[32];  ///< Sum reduction scratch
-  volatile uint32_t warp_non_nulls[32];  ///< Non-nulls reduction scratch
-  volatile uint32_t warp_nulls[32];      ///< Nulls reduction scratch
+  stats_column_desc       col;                 ///< Column information
+  statistics_merge_group  group;               ///< Group description
+  statistics_chunk        ck;                  ///< Resulting statistics chunk
+  volatile statistics_val warp_min[32];        ///< Min reduction scratch
+  volatile statistics_val warp_max[32];        ///< Max reduction scratch
+  volatile statistics_val warp_sum[32];        ///< Sum reduction scratch
+  volatile uint32_t       warp_non_nulls[32];  ///< Non-nulls reduction scratch
+  volatile uint32_t       warp_nulls[32];      ///< Nulls reduction scratch
 };
 
 /**
@@ -69,7 +69,7 @@ struct IgnoreNaNSum {
  */
 inline __device__ string_stats WarpReduceMinString(const char *smin, uint32_t lmin)
 {
-  uint32_t len = shuffle_xor(lmin, 1);
+  uint32_t    len = shuffle_xor(lmin, 1);
   const char *ptr =
     reinterpret_cast<const char *>(shuffle_xor(reinterpret_cast<uintptr_t>(smin), 1));
   if (!smin || (ptr && nvstr_is_lesser(ptr, len, smin, lmin))) {
@@ -108,7 +108,7 @@ inline __device__ string_stats WarpReduceMinString(const char *smin, uint32_t lm
  */
 inline __device__ string_stats WarpReduceMaxString(const char *smax, uint32_t lmax)
 {
-  uint32_t len = shuffle_xor(lmax, 1);
+  uint32_t    len = shuffle_xor(lmax, 1);
   const char *ptr =
     reinterpret_cast<const char *>(shuffle_xor(reinterpret_cast<uintptr_t>(smax), 1));
   if (!smax || (ptr && nvstr_is_greater(ptr, len, smax, lmax))) {
@@ -152,20 +152,20 @@ inline __device__ string_stats WarpReduceMaxString(const char *smax, uint32_t lm
  */
 template <typename Storage>
 void __device__
-gatherIntColumnStats(stats_state_s *s, statistics_dtype dtype, uint32_t t, Storage &storage)
+     gatherIntColumnStats(stats_state_s *s, statistics_dtype dtype, uint32_t t, Storage &storage)
 {
   using warp_reduce = cub::WarpReduce<int64_t>;
-  int64_t vmin      = INT64_MAX;
-  int64_t vmax      = INT64_MIN;
-  int64_t vsum      = 0;
-  int64_t v;
+  int64_t  vmin     = INT64_MAX;
+  int64_t  vmax     = INT64_MIN;
+  int64_t  vsum     = 0;
+  int64_t  v;
   uint32_t nn_cnt = 0;
-  bool has_minmax;
+  bool     has_minmax;
   for (uint32_t i = 0; i < s->group.num_rows; i += 1024) {
-    uint32_t r                = i + t;
-    uint32_t row              = r + s->group.start_row;
+    uint32_t        r         = i + t;
+    uint32_t        row       = r + s->group.start_row;
     const uint32_t *valid_map = s->col.valid_map_base;
-    uint32_t is_valid         = (r < s->group.num_rows && row < s->col.num_values)
+    uint32_t        is_valid  = (r < s->group.num_rows && row < s->col.num_values)
                           ? (valid_map) ? (valid_map[(row + s->col.column_offset) / 32] >>
                                            ((row + s->col.column_offset) % 32)) &
                                             1
@@ -240,20 +240,20 @@ gatherIntColumnStats(stats_state_s *s, statistics_dtype dtype, uint32_t t, Stora
  */
 template <typename Storage>
 void __device__
-gatherFloatColumnStats(stats_state_s *s, statistics_dtype dtype, uint32_t t, Storage &storage)
+     gatherFloatColumnStats(stats_state_s *s, statistics_dtype dtype, uint32_t t, Storage &storage)
 {
   using warp_reduce = cub::WarpReduce<double>;
-  double vmin       = CUDART_INF;
-  double vmax       = -CUDART_INF;
-  double vsum       = 0;
-  double v;
+  double   vmin     = CUDART_INF;
+  double   vmax     = -CUDART_INF;
+  double   vsum     = 0;
+  double   v;
   uint32_t nn_cnt = 0;
-  bool has_minmax;
+  bool     has_minmax;
   for (uint32_t i = 0; i < s->group.num_rows; i += 1024) {
-    uint32_t r                = i + t;
-    uint32_t row              = r + s->group.start_row;
+    uint32_t        r         = i + t;
+    uint32_t        row       = r + s->group.start_row;
     const uint32_t *valid_map = s->col.valid_map_base;
-    uint32_t is_valid         = (r < s->group.num_rows && row < s->col.num_values)
+    uint32_t        is_valid  = (r < s->group.num_rows && row < s->col.num_values)
                           ? (valid_map) ? (valid_map[(row + s->col.column_offset) >> 5] >>
                                            ((row + s->col.column_offset) & 0x1f)) &
                                             1
@@ -309,7 +309,7 @@ gatherFloatColumnStats(stats_state_s *s, statistics_dtype dtype, uint32_t t, Sto
 // FIXME: Use native libcudf string type
 struct nvstrdesc_s {
   const char *ptr;
-  size_t count;
+  size_t      count;
 };
 
 /**
@@ -322,21 +322,21 @@ struct nvstrdesc_s {
 template <typename Storage>
 void __device__ gatherStringColumnStats(stats_state_s *s, uint32_t t, Storage &storage)
 {
-  using warp_reduce = cub::WarpReduce<uint32_t>;
-  uint32_t len_sum  = 0;
-  const char *smin  = nullptr;
-  const char *smax  = nullptr;
-  uint32_t lmin     = 0;
-  uint32_t lmax     = 0;
-  uint32_t nn_cnt   = 0;
-  bool has_minmax;
+  using warp_reduce    = cub::WarpReduce<uint32_t>;
+  uint32_t     len_sum = 0;
+  const char * smin    = nullptr;
+  const char * smax    = nullptr;
+  uint32_t     lmin    = 0;
+  uint32_t     lmax    = 0;
+  uint32_t     nn_cnt  = 0;
+  bool         has_minmax;
   string_stats minval, maxval;
 
   for (uint32_t i = 0; i < s->group.num_rows; i += 1024) {
-    uint32_t r                = i + t;
-    uint32_t row              = r + s->group.start_row;
+    uint32_t        r         = i + t;
+    uint32_t        row       = r + s->group.start_row;
     const uint32_t *valid_map = s->col.valid_map_base;
-    uint32_t is_valid         = (r < s->group.num_rows && row < s->col.num_values)
+    uint32_t        is_valid  = (r < s->group.num_rows && row < s->col.num_values)
                           ? (valid_map) ? (valid_map[(row + s->col.column_offset) >> 5] >>
                                            ((row + s->col.column_offset) & 0x1f)) &
                                             1
@@ -344,8 +344,8 @@ void __device__ gatherStringColumnStats(stats_state_s *s, uint32_t t, Storage &s
                           : 0;
     if (is_valid) {
       const nvstrdesc_s *str_col = static_cast<const nvstrdesc_s *>(s->col.column_data_base);
-      uint32_t len               = (uint32_t)str_col[row].count;
-      const char *ptr            = str_col[row].ptr;
+      uint32_t           len     = (uint32_t)str_col[row].count;
+      const char *       ptr     = str_col[row].ptr;
       len_sum += len;
       if (!smin || nvstr_is_lesser(ptr, len, smin, lmin)) {
         lmin = len;
@@ -412,14 +412,14 @@ __global__ void __launch_bounds__(block_size, 1)
 {
   __shared__ __align__(8) stats_state_s state_g;
   __shared__ union {
-    typename cub::WarpReduce<int64_t>::TempStorage integer_stats[block_size / 32];
-    typename cub::WarpReduce<double>::TempStorage float_stats[block_size / 32];
+    typename cub::WarpReduce<int64_t>::TempStorage  integer_stats[block_size / 32];
+    typename cub::WarpReduce<double>::TempStorage   float_stats[block_size / 32];
     typename cub::WarpReduce<uint32_t>::TempStorage string_stats[block_size / 32];
   } temp_storage;
 
   stats_state_s *const s = &state_g;
-  uint32_t t             = threadIdx.x;
-  statistics_dtype dtype;
+  uint32_t             t = threadIdx.x;
+  statistics_dtype     dtype;
 
   if (t < sizeof(statistics_group) / sizeof(uint32_t)) {
     reinterpret_cast<uint32_t *>(&s->group)[t] =
@@ -458,19 +458,19 @@ __global__ void __launch_bounds__(block_size, 1)
  * @param storage temporary storage for warp reduction
  */
 template <typename Storage>
-void __device__ mergeIntColumnStats(merge_state_s *s,
-                                    statistics_dtype dtype,
+void __device__ mergeIntColumnStats(merge_state_s *         s,
+                                    statistics_dtype        dtype,
                                     const statistics_chunk *ck_in,
-                                    uint32_t num_chunks,
-                                    uint32_t t,
-                                    Storage &storage)
+                                    uint32_t                num_chunks,
+                                    uint32_t                t,
+                                    Storage &               storage)
 {
-  int64_t vmin        = INT64_MAX;
-  int64_t vmax        = INT64_MIN;
-  int64_t vsum        = 0;
+  int64_t  vmin       = INT64_MAX;
+  int64_t  vmax       = INT64_MIN;
+  int64_t  vsum       = 0;
   uint32_t non_nulls  = 0;
   uint32_t null_count = 0;
-  bool has_minmax;
+  bool     has_minmax;
   for (uint32_t i = t; i < num_chunks; i += 1024) {
     const statistics_chunk *ck = &ck_in[i];
     if (ck->has_minmax) {
@@ -541,18 +541,18 @@ void __device__ mergeIntColumnStats(merge_state_s *s,
  * @param storage temporary storage for warp reduction
  */
 template <typename Storage>
-void __device__ mergeFloatColumnStats(merge_state_s *s,
+void __device__ mergeFloatColumnStats(merge_state_s *         s,
                                       const statistics_chunk *ck_in,
-                                      uint32_t num_chunks,
-                                      uint32_t t,
-                                      Storage &storage)
+                                      uint32_t                num_chunks,
+                                      uint32_t                t,
+                                      Storage &               storage)
 {
-  double vmin         = CUDART_INF;
-  double vmax         = -CUDART_INF;
-  double vsum         = 0;
+  double   vmin       = CUDART_INF;
+  double   vmax       = -CUDART_INF;
+  double   vsum       = 0;
   uint32_t non_nulls  = 0;
   uint32_t null_count = 0;
-  bool has_minmax;
+  bool     has_minmax;
   for (uint32_t i = t; i < num_chunks; i += 1024) {
     const statistics_chunk *ck = &ck_in[i];
     if (ck->has_minmax) {
@@ -624,28 +624,28 @@ void __device__ mergeFloatColumnStats(merge_state_s *s,
  * @param storage temporary storage for warp reduction
  */
 template <typename Storage>
-void __device__ mergeStringColumnStats(merge_state_s *s,
+void __device__ mergeStringColumnStats(merge_state_s *         s,
                                        const statistics_chunk *ck_in,
-                                       uint32_t num_chunks,
-                                       uint32_t t,
-                                       Storage &storage)
+                                       uint32_t                num_chunks,
+                                       uint32_t                t,
+                                       Storage &               storage)
 {
-  uint32_t len_sum    = 0;
-  const char *smin    = nullptr;
-  const char *smax    = nullptr;
-  uint32_t lmin       = 0;
-  uint32_t lmax       = 0;
-  uint32_t non_nulls  = 0;
-  uint32_t null_count = 0;
-  bool has_minmax;
+  uint32_t     len_sum    = 0;
+  const char * smin       = nullptr;
+  const char * smax       = nullptr;
+  uint32_t     lmin       = 0;
+  uint32_t     lmax       = 0;
+  uint32_t     non_nulls  = 0;
+  uint32_t     null_count = 0;
+  bool         has_minmax;
   string_stats minval, maxval;
 
   for (uint32_t i = t; i < num_chunks; i += 1024) {
     const statistics_chunk *ck = &ck_in[i];
     if (ck->has_minmax) {
-      uint32_t len0    = ck->min_value.str_val.length;
+      uint32_t    len0 = ck->min_value.str_val.length;
       const char *ptr0 = ck->min_value.str_val.ptr;
-      uint32_t len1    = ck->max_value.str_val.length;
+      uint32_t    len1 = ck->max_value.str_val.length;
       const char *ptr1 = ck->max_value.str_val.ptr;
       if (!smin || (ptr0 && nvstr_is_lesser(ptr0, len0, smin, lmin))) {
         lmin = len0;
@@ -718,20 +718,20 @@ void __device__ mergeStringColumnStats(merge_state_s *s,
  */
 template <int block_size>
 __global__ void __launch_bounds__(block_size, 1)
-  gpuMergeColumnStatistics(statistics_chunk *chunks_out,
-                           const statistics_chunk *chunks_in,
+  gpuMergeColumnStatistics(statistics_chunk *            chunks_out,
+                           const statistics_chunk *      chunks_in,
                            const statistics_merge_group *groups)
 {
   __shared__ __align__(8) merge_state_s state_g;
   __shared__ struct {
     typename cub::WarpReduce<uint32_t>::TempStorage u32[block_size / 32];
-    typename cub::WarpReduce<int64_t>::TempStorage i64[block_size / 32];
-    typename cub::WarpReduce<double>::TempStorage f64[block_size / 32];
+    typename cub::WarpReduce<int64_t>::TempStorage  i64[block_size / 32];
+    typename cub::WarpReduce<double>::TempStorage   f64[block_size / 32];
   } storage;
 
   merge_state_s *const s = &state_g;
-  uint32_t t             = threadIdx.x;
-  statistics_dtype dtype;
+  uint32_t             t = threadIdx.x;
+  statistics_dtype     dtype;
 
   if (t < sizeof(statistics_merge_group) / sizeof(uint32_t)) {
     reinterpret_cast<uint32_t *>(&s->group)[t] =
@@ -768,10 +768,10 @@ __global__ void __launch_bounds__(block_size, 1)
  * @param[in] num_chunks Number of chunks & rowgroups
  * @param[in] stream CUDA stream to use, default 0
  */
-void GatherColumnStatistics(statistics_chunk *chunks,
+void GatherColumnStatistics(statistics_chunk *      chunks,
                             const statistics_group *groups,
-                            uint32_t num_chunks,
-                            rmm::cuda_stream_view stream)
+                            uint32_t                num_chunks,
+                            rmm::cuda_stream_view   stream)
 {
   gpuGatherColumnStatistics<1024><<<num_chunks, 1024, 0, stream.value()>>>(chunks, groups);
 }
@@ -785,11 +785,11 @@ void GatherColumnStatistics(statistics_chunk *chunks,
  * @param[in] num_chunks Number of chunks & groups
  * @param[in] stream CUDA stream to use, default 0
  */
-void MergeColumnStatistics(statistics_chunk *chunks_out,
-                           const statistics_chunk *chunks_in,
+void MergeColumnStatistics(statistics_chunk *            chunks_out,
+                           const statistics_chunk *      chunks_in,
                            const statistics_merge_group *groups,
-                           uint32_t num_chunks,
-                           rmm::cuda_stream_view stream)
+                           uint32_t                      num_chunks,
+                           rmm::cuda_stream_view         stream)
 {
   gpuMergeColumnStatistics<1024>
     <<<num_chunks, 1024, 0, stream.value()>>>(chunks_out, chunks_in, groups);

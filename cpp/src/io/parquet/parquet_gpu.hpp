@@ -43,12 +43,12 @@ namespace parquet {
  * @brief Struct representing an input column in the file.
  */
 struct input_column_info {
-  int schema_idx;
+  int         schema_idx;
   std::string name;
   // size == nesting depth. the associated real output
   // buffer index in the dest column for each level of nesting.
   std::vector<int> nesting;
-  auto nesting_depth() const { return nesting.size(); }
+  auto             nesting_depth() const { return nesting.size(); }
 };
 
 namespace gpu {
@@ -75,7 +75,7 @@ enum level_type {
  */
 struct nvstrdesc_s {
   const char *ptr;
-  size_t count;
+  size_t      count;
 };
 
 /**
@@ -96,11 +96,11 @@ struct PageNestingInfo {
   int32_t page_start_value;  // absolute output start index in output column data
 
   // set during data decoding
-  int32_t valid_count;       // # of valid values decoded in this page/nesting-level
-  int32_t value_count;       // total # of values decoded in this page/nesting-level
-  int32_t valid_map_offset;  // current offset in bits relative to valid_map
-  uint8_t *data_out;         // pointer into output buffer
-  uint32_t *valid_map;       // pointer into output validity buffer
+  int32_t   valid_count;       // # of valid values decoded in this page/nesting-level
+  int32_t   value_count;       // total # of values decoded in this page/nesting-level
+  int32_t   valid_map_offset;  // current offset in bits relative to valid_map
+  uint8_t * data_out;          // pointer into output buffer
+  uint32_t *valid_map;         // pointer into output validity buffer
 };
 
 /**
@@ -118,13 +118,13 @@ struct PageInfo {
   // - In the case of a flat schema, it will correspond to the # of output rows
   // - In the case of a nested schema, you have to decode the repetition and definition
   //   levels to extract actual column values
-  int32_t num_input_values;
-  int32_t chunk_row;       // starting row of this page relative to the start of the chunk
-  int32_t num_rows;        // number of rows in this page
-  int32_t chunk_idx;       // column chunk this page belongs to
-  int32_t src_col_schema;  // schema index of this column
-  uint8_t flags;           // PAGEINFO_FLAGS_XXX
-  Encoding encoding;       // Encoding for data or dictionary page
+  int32_t  num_input_values;
+  int32_t  chunk_row;       // starting row of this page relative to the start of the chunk
+  int32_t  num_rows;        // number of rows in this page
+  int32_t  chunk_idx;       // column chunk this page belongs to
+  int32_t  src_col_schema;  // schema index of this column
+  uint8_t  flags;           // PAGEINFO_FLAGS_XXX
+  Encoding encoding;        // Encoding for data or dictionary page
   Encoding definition_level_encoding;  // Encoding used for definition levels (data page)
   Encoding repetition_level_encoding;  // Encoding used for repetition levels (data page)
 
@@ -132,7 +132,7 @@ struct PageInfo {
   int skipped_leaf_values;
 
   // nesting information (input/output) for each page
-  int num_nesting_levels;
+  int              num_nesting_levels;
   PageNestingInfo *nesting;
 };
 
@@ -141,24 +141,24 @@ struct PageInfo {
  */
 struct ColumnChunkDesc {
   ColumnChunkDesc() = default;
-  explicit constexpr ColumnChunkDesc(size_t compressed_size_,
+  explicit constexpr ColumnChunkDesc(size_t   compressed_size_,
                                      uint8_t *compressed_data_,
-                                     size_t num_values_,
+                                     size_t   num_values_,
                                      uint16_t datatype_,
                                      uint16_t datatype_length_,
-                                     size_t start_row_,
+                                     size_t   start_row_,
                                      uint32_t num_rows_,
-                                     int16_t max_definition_level_,
-                                     int16_t max_repetition_level_,
-                                     int16_t max_nesting_depth_,
-                                     uint8_t def_level_bits_,
-                                     uint8_t rep_level_bits_,
-                                     int8_t codec_,
-                                     int8_t converted_type_,
-                                     int8_t decimal_scale_,
-                                     int32_t ts_clock_rate_,
-                                     int32_t src_col_index_,
-                                     int32_t src_col_schema_)
+                                     int16_t  max_definition_level_,
+                                     int16_t  max_repetition_level_,
+                                     int16_t  max_nesting_depth_,
+                                     uint8_t  def_level_bits_,
+                                     uint8_t  rep_level_bits_,
+                                     int8_t   codec_,
+                                     int8_t   converted_type_,
+                                     int8_t   decimal_scale_,
+                                     int32_t  ts_clock_rate_,
+                                     int32_t  src_col_index_,
+                                     int32_t  src_col_schema_)
     : compressed_data(compressed_data_),
       compressed_size(compressed_size_),
       num_values(num_values_),
@@ -184,28 +184,28 @@ struct ColumnChunkDesc {
   {
   }
 
-  uint8_t *compressed_data;                        // pointer to compressed column chunk data
-  size_t compressed_size;                          // total compressed data size for this chunk
-  size_t num_values;                               // total number of values in this column
-  size_t start_row;                                // starting row of this chunk
-  uint32_t num_rows;                               // number of rows in this chunk
-  int16_t max_level[level_type::NUM_LEVEL_TYPES];  // max definition/repetition level
-  int16_t max_nesting_depth;                       // max nesting depth of the output
-  uint16_t data_type;                              // basic column data type, ((type_length << 3) |
-                                                   // parquet::Type)
+  uint8_t *compressed_data;                         // pointer to compressed column chunk data
+  size_t   compressed_size;                         // total compressed data size for this chunk
+  size_t   num_values;                              // total number of values in this column
+  size_t   start_row;                               // starting row of this chunk
+  uint32_t num_rows;                                // number of rows in this chunk
+  int16_t  max_level[level_type::NUM_LEVEL_TYPES];  // max definition/repetition level
+  int16_t  max_nesting_depth;                       // max nesting depth of the output
+  uint16_t data_type;                               // basic column data type, ((type_length << 3) |
+                                                    // parquet::Type)
   uint8_t
-    level_bits[level_type::NUM_LEVEL_TYPES];  // bits to encode max definition/repetition levels
-  int32_t num_data_pages;                     // number of data pages
-  int32_t num_dict_pages;                     // number of dictionary pages
-  int32_t max_num_pages;                      // size of page_info array
-  PageInfo *page_info;                        // output page info for up to num_dict_pages +
-                                              // num_data_pages (dictionary pages first)
-  nvstrdesc_s *str_dict_index;                // index for string dictionary
-  uint32_t **valid_map_base;                  // base pointers of valid bit map for this column
-  void **column_data_base;                    // base pointers of column data
-  int8_t codec;                               // compressed codec enum
-  int8_t converted_type;                      // converted type enum
-  int8_t decimal_scale;                       // decimal scale pow(10, -decimal_scale)
+            level_bits[level_type::NUM_LEVEL_TYPES];  // bits to encode max definition/repetition levels
+  int32_t   num_data_pages;                           // number of data pages
+  int32_t   num_dict_pages;                           // number of dictionary pages
+  int32_t   max_num_pages;                            // size of page_info array
+  PageInfo *page_info;                                // output page info for up to num_dict_pages +
+                                                      // num_data_pages (dictionary pages first)
+  nvstrdesc_s *str_dict_index;                        // index for string dictionary
+  uint32_t **  valid_map_base;    // base pointers of valid bit map for this column
+  void **      column_data_base;  // base pointers of column data
+  int8_t       codec;             // compressed codec enum
+  int8_t       converted_type;    // converted type enum
+  int8_t       decimal_scale;     // decimal scale pow(10, -decimal_scale)
   int32_t ts_clock_rate;  // output timestamp clock frequency (0=default, 1000=ms, 1000000000=ns)
 
   int32_t src_col_index;   // my input column index
@@ -216,10 +216,10 @@ struct ColumnChunkDesc {
  * @brief Struct describing an encoder column
  */
 struct EncColumnDesc : stats_column_desc {
-  uint32_t *dict_index;    //!< Dictionary index [row]
-  uint32_t *dict_data;     //!< Dictionary data (unique row indices)
-  uint8_t physical_type;   //!< physical data type
-  uint8_t converted_type;  //!< logical data type
+  uint32_t *dict_index;      //!< Dictionary index [row]
+  uint32_t *dict_data;       //!< Dictionary data (unique row indices)
+  uint8_t   physical_type;   //!< physical data type
+  uint8_t   converted_type;  //!< logical data type
   // TODO (dm): Evaluate if this is sufficient. At 4 bits, this allows a maximum 16 level nesting
   uint8_t level_bits;  //!< bits to encode max definition (lower nibble) & repetition (upper nibble)
                        //!< levels
@@ -227,8 +227,8 @@ struct EncColumnDesc : stats_column_desc {
     *nesting_offsets;  //!< If column is a nested type, contains offset array of each nesting level
 
   size_type const *level_offsets;  //!< Offset array for per-row pre-calculated rep/def level values
-  uint8_t const *rep_values;       //!< Pre-calculated repetition level values
-  uint8_t const *def_values;       //!< Pre-calculated definition level values
+  uint8_t const *  rep_values;     //!< Pre-calculated repetition level values
+  uint8_t const *  def_values;     //!< Pre-calculated definition level values
 
   column_device_view *leaf_column;    //!< Pointer to leaf column
   column_device_view *parent_column;  //!< Pointer to parent column. Is nullptr if not list type.
@@ -259,7 +259,7 @@ struct EncPage {
   uint8_t *compressed_data;  //!< Ptr to compressed page
   uint16_t num_fragments;    //!< Number of fragments in page
   PageType page_type;        //!< Page type
-  uint8_t dict_bits_plus1;   //!< 0=plain, nonzero:bits to encoding dictionary indices + 1
+  uint8_t  dict_bits_plus1;  //!< 0=plain, nonzero:bits to encoding dictionary indices + 1
   uint32_t chunk_id;         //!< Index in chunk array
   uint32_t hdr_size;         //!< Size of page header
   uint32_t max_hdr_size;     //!< Maximum size of page header
@@ -272,8 +272,8 @@ struct EncPage {
 };
 
 /// Size of hash used for building dictionaries
-constexpr unsigned int kDictHashBits = 16;
-constexpr size_t kDictScratchSize    = (1 << kDictHashBits) * sizeof(uint32_t);
+constexpr unsigned int kDictHashBits    = 16;
+constexpr size_t       kDictScratchSize = (1 << kDictHashBits) * sizeof(uint32_t);
 
 /**
  * @brief Return the byte length of parquet dtypes that are physically represented by INT32
@@ -292,7 +292,7 @@ inline uint32_t __device__ GetDtypeLogicalLen(column_device_view *col)
 /**
  * @brief Return worst-case compressed size of compressed data given the uncompressed size
  */
-inline size_t __device__ __host__ GetMaxCompressedBfrSize(size_t uncomp_size,
+inline size_t __device__ __host__ GetMaxCompressedBfrSize(size_t   uncomp_size,
                                                           uint32_t num_pages = 1)
 {
   return uncomp_size + (uncomp_size >> 7) + num_pages * 8;
@@ -302,22 +302,22 @@ inline size_t __device__ __host__ GetMaxCompressedBfrSize(size_t uncomp_size,
  * @brief Struct describing an encoder column chunk
  */
 struct EncColumnChunk {
-  const EncColumnDesc *col_desc;  //!< Column description
-  PageFragment *fragments;        //!< First fragment in chunk
-  uint8_t *uncompressed_bfr;      //!< Uncompressed page data
-  uint8_t *compressed_bfr;        //!< Compressed page data
-  const statistics_chunk *stats;  //!< Fragment statistics
-  uint32_t bfr_size;              //!< Uncompressed buffer size
-  uint32_t compressed_size;       //!< Compressed buffer size
-  uint32_t start_row;             //!< First row of chunk
-  uint32_t num_rows;              //!< Number of rows in chunk
+  const EncColumnDesc *   col_desc;          //!< Column description
+  PageFragment *          fragments;         //!< First fragment in chunk
+  uint8_t *               uncompressed_bfr;  //!< Uncompressed page data
+  uint8_t *               compressed_bfr;    //!< Compressed page data
+  const statistics_chunk *stats;             //!< Fragment statistics
+  uint32_t                bfr_size;          //!< Uncompressed buffer size
+  uint32_t                compressed_size;   //!< Compressed buffer size
+  uint32_t                start_row;         //!< First row of chunk
+  uint32_t                num_rows;          //!< Number of rows in chunk
   uint32_t num_values;      //!< Number of values in chunk. Different from num_rows for nested types
   uint32_t first_fragment;  //!< First fragment of chunk
   uint32_t first_page;      //!< First page of chunk
   uint32_t num_pages;       //!< Number of pages in chunk
   uint32_t dictionary_id;   //!< Dictionary id for this chunk
-  uint8_t is_compressed;    //!< Nonzero if the chunk uses compression
-  uint8_t has_dictionary;   //!< Nonzero if the chunk uses dictionary encoding
+  uint8_t  is_compressed;   //!< Nonzero if the chunk uses compression
+  uint8_t  has_dictionary;  //!< Nonzero if the chunk uses dictionary encoding
   uint16_t num_dict_fragments;  //!< Number of fragments using dictionary
   uint32_t dictionary_size;     //!< Size of dictionary
   uint32_t total_dict_entries;  //!< Total number of entries in dictionary
@@ -341,8 +341,8 @@ void DecodePageHeaders(ColumnChunkDesc *chunks, int32_t num_chunks, rmm::cuda_st
  * @param[in] num_chunks Number of column chunks
  * @param[in] stream CUDA stream to use, default 0
  */
-void BuildStringDictionaryIndex(ColumnChunkDesc *chunks,
-                                int32_t num_chunks,
+void BuildStringDictionaryIndex(ColumnChunkDesc *     chunks,
+                                int32_t               num_chunks,
                                 rmm::cuda_stream_view stream);
 
 /**
@@ -364,14 +364,14 @@ void BuildStringDictionaryIndex(ColumnChunkDesc *chunks,
  * @param[in] min_rows crop all rows below min_row
  * @param[in] stream Cuda stream
  */
-void PreprocessColumnData(hostdevice_vector<PageInfo> &pages,
-                          hostdevice_vector<ColumnChunkDesc> const &chunks,
-                          std::vector<input_column_info> &input_columns,
+void PreprocessColumnData(hostdevice_vector<PageInfo> &                 pages,
+                          hostdevice_vector<ColumnChunkDesc> const &    chunks,
+                          std::vector<input_column_info> &              input_columns,
                           std::vector<cudf::io::detail::column_buffer> &output_columns,
-                          size_t num_rows,
-                          size_t min_row,
-                          rmm::cuda_stream_view stream,
-                          rmm::mr::device_memory_resource *mr);
+                          size_t                                        num_rows,
+                          size_t                                        min_row,
+                          rmm::cuda_stream_view                         stream,
+                          rmm::mr::device_memory_resource *             mr);
 
 /**
  * @brief Launches kernel for reading the column data stored in the pages
@@ -385,11 +385,11 @@ void PreprocessColumnData(hostdevice_vector<PageInfo> &pages,
  * @param[in] min_row Minimum number of rows to read
  * @param[in] stream CUDA stream to use, default 0
  */
-void DecodePageData(hostdevice_vector<PageInfo> &pages,
+void DecodePageData(hostdevice_vector<PageInfo> &             pages,
                     hostdevice_vector<ColumnChunkDesc> const &chunks,
-                    size_t num_rows,
-                    size_t min_row,
-                    rmm::cuda_stream_view stream);
+                    size_t                                    num_rows,
+                    size_t                                    min_row,
+                    rmm::cuda_stream_view                     stream);
 
 /**
  * @brief Dremel data that describes one nested type column
@@ -398,12 +398,12 @@ void DecodePageData(hostdevice_vector<PageInfo> &pages,
  */
 struct dremel_data {
   rmm::device_uvector<size_type> dremel_offsets;
-  rmm::device_uvector<uint8_t> rep_level;
-  rmm::device_uvector<uint8_t> def_level;
+  rmm::device_uvector<uint8_t>   rep_level;
+  rmm::device_uvector<uint8_t>   def_level;
 
   size_type leaf_col_offset;
   size_type leaf_data_size;
-  uint8_t max_def_level;
+  uint8_t   max_def_level;
 };
 
 /**
@@ -425,9 +425,9 @@ struct dremel_data {
  *
  * @return A struct containing dremel data
  */
-dremel_data get_dremel_data(column_view h_col,
+dremel_data get_dremel_data(column_view              h_col,
                             std::vector<bool> const &level_nullability = {},
-                            rmm::cuda_stream_view stream               = rmm::cuda_stream_default);
+                            rmm::cuda_stream_view    stream            = rmm::cuda_stream_default);
 
 /**
  * @brief Launches kernel for initializing encoder page fragments
@@ -440,12 +440,12 @@ dremel_data get_dremel_data(column_view h_col,
  * @param[in] num_rows Number of rows per column
  * @param[in] stream CUDA stream to use, default 0
  */
-void InitPageFragments(PageFragment *frag,
-                       const EncColumnDesc *col_desc,
-                       int32_t num_fragments,
-                       int32_t num_columns,
-                       uint32_t fragment_size,
-                       uint32_t num_rows,
+void InitPageFragments(PageFragment *        frag,
+                       const EncColumnDesc * col_desc,
+                       int32_t               num_fragments,
+                       int32_t               num_columns,
+                       uint32_t              fragment_size,
+                       uint32_t              num_rows,
                        rmm::cuda_stream_view stream);
 
 /**
@@ -456,10 +456,10 @@ void InitPageFragments(PageFragment *frag,
  * @param[in] parent_table_device_view Table device view containing parent columns
  * @param[in] stream CUDA stream to use, default 0
  */
-void init_column_device_views(EncColumnDesc *col_desc,
-                              column_device_view *leaf_column_views,
+void init_column_device_views(EncColumnDesc *          col_desc,
+                              column_device_view *     leaf_column_views,
                               const table_device_view &parent_table_device_view,
-                              rmm::cuda_stream_view stream);
+                              rmm::cuda_stream_view    stream);
 
 /**
  * @brief Launches kernel for initializing fragment statistics groups
@@ -472,12 +472,12 @@ void init_column_device_views(EncColumnDesc *col_desc,
  * @param[in] fragment_size Max size of each fragment in rows
  * @param[in] stream CUDA stream to use, default 0
  */
-void InitFragmentStatistics(statistics_group *groups,
-                            const PageFragment *fragments,
-                            const EncColumnDesc *col_desc,
-                            int32_t num_fragments,
-                            int32_t num_columns,
-                            uint32_t fragment_size,
+void InitFragmentStatistics(statistics_group *    groups,
+                            const PageFragment *  fragments,
+                            const EncColumnDesc * col_desc,
+                            int32_t               num_fragments,
+                            int32_t               num_columns,
+                            uint32_t              fragment_size,
                             rmm::cuda_stream_view stream);
 
 /**
@@ -492,14 +492,14 @@ void InitFragmentStatistics(statistics_group *groups,
  * @param[in] chunk_grstats Setup for chunk-level stats
  * @param[in] stream CUDA stream to use, default 0
  */
-void InitEncoderPages(EncColumnChunk *chunks,
-                      EncPage *pages,
-                      const EncColumnDesc *col_desc,
-                      int32_t num_rowgroups,
-                      int32_t num_columns,
+void InitEncoderPages(EncColumnChunk *        chunks,
+                      EncPage *               pages,
+                      const EncColumnDesc *   col_desc,
+                      int32_t                 num_rowgroups,
+                      int32_t                 num_columns,
                       statistics_merge_group *page_grstats  = nullptr,
                       statistics_merge_group *chunk_grstats = nullptr,
-                      rmm::cuda_stream_view stream          = rmm::cuda_stream_default);
+                      rmm::cuda_stream_view   stream        = rmm::cuda_stream_default);
 
 /**
  * @brief Launches kernel for packing column data into parquet pages
@@ -512,13 +512,13 @@ void InitEncoderPages(EncColumnChunk *chunks,
  * @param[out] comp_out Optionally initializes compressor output params
  * @param[in] stream CUDA stream to use, default 0
  */
-void EncodePages(EncPage *pages,
+void EncodePages(EncPage *             pages,
                  const EncColumnChunk *chunks,
-                 uint32_t num_pages,
-                 uint32_t start_page            = 0,
-                 gpu_inflate_input_s *comp_in   = nullptr,
-                 gpu_inflate_status_s *comp_out = nullptr,
-                 rmm::cuda_stream_view stream   = rmm::cuda_stream_default);
+                 uint32_t              num_pages,
+                 uint32_t              start_page = 0,
+                 gpu_inflate_input_s * comp_in    = nullptr,
+                 gpu_inflate_status_s *comp_out   = nullptr,
+                 rmm::cuda_stream_view stream     = rmm::cuda_stream_default);
 
 /**
  * @brief Launches kernel to make the compressed vs uncompressed chunk-level decision
@@ -530,12 +530,12 @@ void EncodePages(EncPage *pages,
  * @param[in] comp_out Compressor status or nullptr if no compression
  * @param[in] stream CUDA stream to use, default 0
  */
-void DecideCompression(EncColumnChunk *chunks,
-                       const EncPage *pages,
-                       uint32_t num_chunks,
-                       uint32_t start_page,
+void DecideCompression(EncColumnChunk *            chunks,
+                       const EncPage *             pages,
+                       uint32_t                    num_chunks,
+                       uint32_t                    start_page,
                        const gpu_inflate_status_s *comp_out = nullptr,
-                       rmm::cuda_stream_view stream         = rmm::cuda_stream_default);
+                       rmm::cuda_stream_view       stream   = rmm::cuda_stream_default);
 
 /**
  * @brief Launches kernel to encode page headers
@@ -549,14 +549,14 @@ void DecideCompression(EncColumnChunk *chunks,
  * @param[in] chunk_stats Optional chunk-level statistics to be encoded
  * @param[in] stream CUDA stream to use, default 0
  */
-void EncodePageHeaders(EncPage *pages,
-                       EncColumnChunk *chunks,
-                       uint32_t num_pages,
-                       uint32_t start_page                  = 0,
-                       const gpu_inflate_status_s *comp_out = nullptr,
-                       const statistics_chunk *page_stats   = nullptr,
-                       const statistics_chunk *chunk_stats  = nullptr,
-                       rmm::cuda_stream_view stream         = rmm::cuda_stream_default);
+void EncodePageHeaders(EncPage *                   pages,
+                       EncColumnChunk *            chunks,
+                       uint32_t                    num_pages,
+                       uint32_t                    start_page  = 0,
+                       const gpu_inflate_status_s *comp_out    = nullptr,
+                       const statistics_chunk *    page_stats  = nullptr,
+                       const statistics_chunk *    chunk_stats = nullptr,
+                       rmm::cuda_stream_view       stream      = rmm::cuda_stream_default);
 
 /**
  * @brief Launches kernel to gather pages to a single contiguous block per chunk
@@ -567,9 +567,9 @@ void EncodePageHeaders(EncPage *pages,
  * @param[in] comp_out Compressor status
  * @param[in] stream CUDA stream to use, default 0
  */
-void GatherPages(EncColumnChunk *chunks,
-                 const EncPage *pages,
-                 uint32_t num_chunks,
+void GatherPages(EncColumnChunk *      chunks,
+                 const EncPage *       pages,
+                 uint32_t              num_chunks,
                  rmm::cuda_stream_view stream);
 
 /**
@@ -581,10 +581,10 @@ void GatherPages(EncColumnChunk *chunks,
  * @param[in] num_chunks Number of column chunks
  * @param[in] stream CUDA stream to use, default 0
  */
-void BuildChunkDictionaries(EncColumnChunk *chunks,
-                            uint32_t *dev_scratch,
-                            size_t scratch_size,
-                            uint32_t num_chunks,
+void BuildChunkDictionaries(EncColumnChunk *      chunks,
+                            uint32_t *            dev_scratch,
+                            size_t                scratch_size,
+                            uint32_t              num_chunks,
                             rmm::cuda_stream_view stream);
 
 }  // namespace gpu

@@ -79,7 +79,7 @@ TEST_F(DictionaryAddKeysTest, WithNull)
 TEST_F(DictionaryAddKeysTest, Errors)
 {
   cudf::test::fixed_width_column_wrapper<int64_t> input{1, 2, 3};
-  auto dictionary = cudf::dictionary::encode(input);
+  auto                                            dictionary = cudf::dictionary::encode(input);
 
   cudf::test::fixed_width_column_wrapper<float> new_keys{1.0, 2.0, 3.0};
   EXPECT_THROW(cudf::dictionary::add_keys(dictionary->view(), new_keys), cudf::logic_error);

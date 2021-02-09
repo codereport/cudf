@@ -31,7 +31,7 @@ struct TextReplaceTest : public cudf::test::BaseFixture {
 
 TEST_F(TextReplaceTest, ReplaceTokens)
 {
-  std::vector<const char*> h_strings{"the fox jumped over the dog",
+  std::vector<const char*>           h_strings{"the fox jumped over the dog",
                                      "is theme of the thesis",
                                      nullptr,
                                      "",
@@ -43,7 +43,7 @@ TEST_F(TextReplaceTest, ReplaceTokens)
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; }));
   cudf::test::strings_column_wrapper targets({"is", "the"});
   cudf::test::strings_column_wrapper repls({"___", ""});
-  std::vector<const char*> h_expected{" fox jumped over  dog",
+  std::vector<const char*>           h_expected{" fox jumped over  dog",
                                       "___ theme of  thesis",
                                       nullptr,
                                       "",
@@ -90,11 +90,11 @@ TEST_F(TextReplaceTest, ReplaceTokensEmptyTest)
 TEST_F(TextReplaceTest, ReplaceTokensErrorTest)
 {
   auto strings = cudf::make_empty_column(cudf::data_type{cudf::type_id::STRING});
-  cudf::strings_column_view strings_view(strings->view());
+  cudf::strings_column_view          strings_view(strings->view());
   cudf::test::strings_column_wrapper notnulls({"", "", ""});
-  cudf::strings_column_view notnulls_view(notnulls);
+  cudf::strings_column_view          notnulls_view(notnulls);
   cudf::test::strings_column_wrapper nulls({"", ""}, {0, 0});
-  cudf::strings_column_view nulls_view(nulls);
+  cudf::strings_column_view          nulls_view(nulls);
 
   EXPECT_THROW(nvtext::replace_tokens(strings_view, nulls_view, notnulls_view), cudf::logic_error);
   EXPECT_THROW(nvtext::replace_tokens(strings_view, notnulls_view, nulls_view), cudf::logic_error);
@@ -132,7 +132,7 @@ TEST_F(TextReplaceTest, FilterTokens)
 
 TEST_F(TextReplaceTest, FilterTokensEmptyTest)
 {
-  auto strings       = cudf::make_empty_column(cudf::data_type{cudf::type_id::STRING});
+  auto       strings = cudf::make_empty_column(cudf::data_type{cudf::type_id::STRING});
   auto const results = nvtext::filter_tokens(cudf::strings_column_view(strings->view()), 7);
   EXPECT_EQ(results->size(), 0);
 }

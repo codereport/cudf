@@ -56,9 +56,9 @@ struct hex_to_integer_fn {
    */
   __device__ int64_t string_to_integer(string_view const& d_str)
   {
-    int64_t result = 0, base = 1;
-    const char* str = d_str.data();
-    size_type index = d_str.size_bytes();
+    int64_t     result = 0, base = 1;
+    const char* str   = d_str.data();
+    size_type   index = d_str.size_bytes();
     while (index-- > 0) {
       char ch = str[index];
       if (ch >= '0' && ch <= '9') {
@@ -92,8 +92,8 @@ struct hex_to_integer_fn {
 struct dispatch_hex_to_integers_fn {
   template <typename IntegerType, std::enable_if_t<std::is_integral<IntegerType>::value>* = nullptr>
   void operator()(column_device_view const& strings_column,
-                  mutable_column_view& output_column,
-                  rmm::cuda_stream_view stream) const
+                  mutable_column_view&      output_column,
+                  rmm::cuda_stream_view     stream) const
   {
     auto d_results = output_column.data<IntegerType>();
     thrust::transform(rmm::exec_policy(stream),
@@ -122,9 +122,9 @@ void dispatch_hex_to_integers_fn::operator()<bool>(column_device_view const&,
 
 // This will convert a strings column into any integer column type.
 std::unique_ptr<column> hex_to_integers(
-  strings_column_view const& strings,
-  data_type output_type,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  data_type                        output_type,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   size_type strings_count = strings.size();
@@ -145,8 +145,8 @@ std::unique_ptr<column> hex_to_integers(
   return results;
 }
 
-std::unique_ptr<column> is_hex(strings_column_view const& strings,
-                               rmm::cuda_stream_view stream,
+std::unique_ptr<column> is_hex(strings_column_view const&       strings,
+                               rmm::cuda_stream_view            stream,
                                rmm::mr::device_memory_resource* mr)
 {
   auto strings_column = column_device_view::create(strings.parent(), stream);
@@ -186,15 +186,15 @@ std::unique_ptr<column> is_hex(strings_column_view const& strings,
 }  // namespace detail
 
 // external API
-std::unique_ptr<column> hex_to_integers(strings_column_view const& strings,
-                                        data_type output_type,
+std::unique_ptr<column> hex_to_integers(strings_column_view const&       strings,
+                                        data_type                        output_type,
                                         rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::hex_to_integers(strings, output_type, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> is_hex(strings_column_view const& strings,
+std::unique_ptr<column> is_hex(strings_column_view const&       strings,
                                rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

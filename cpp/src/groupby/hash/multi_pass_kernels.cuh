@@ -33,17 +33,17 @@ struct var_hash_functor {
   Map const map;
   bitmask_type const* __restrict__ row_bitmask;
   mutable_column_device_view target;
-  column_device_view source;
-  column_device_view sum;
-  column_device_view count;
-  size_type ddof;
-  var_hash_functor(Map const map,
-                   bitmask_type const* row_bitmask,
+  column_device_view         source;
+  column_device_view         sum;
+  column_device_view         count;
+  size_type                  ddof;
+  var_hash_functor(Map const                  map,
+                   bitmask_type const*        row_bitmask,
                    mutable_column_device_view target,
-                   column_device_view source,
-                   column_device_view sum,
-                   column_device_view count,
-                   size_type ddof)
+                   column_device_view         source,
+                   column_device_view         sum,
+                   column_device_view         count,
+                   size_type                  ddof)
     : map(map),
       row_bitmask(row_bitmask),
       target(target),
@@ -81,8 +81,8 @@ struct var_hash_functor {
     CountType group_size = count.element<CountType>(target_index);
     if (group_size == 0 or group_size - ddof <= 0) return;
 
-    auto x        = static_cast<Target>(source.element<Source>(source_index));
-    auto mean     = static_cast<Target>(sum.element<SumType>(target_index)) / group_size;
+    auto   x      = static_cast<Target>(source.element<Source>(source_index));
+    auto   mean   = static_cast<Target>(sum.element<SumType>(target_index)) / group_size;
     Target result = (x - mean) * (x - mean) / (group_size - ddof);
     atomicAdd(&target.element<Target>(target_index), result);
     // STD sqrt is applied in finalize()

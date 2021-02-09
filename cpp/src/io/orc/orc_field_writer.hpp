@@ -30,7 +30,7 @@ namespace io {
 namespace orc {
 
 struct ProtobufWriter::ProtobufFieldWriter {
-  int struct_size;
+  int             struct_size;
   ProtobufWriter *p;
 
   ProtobufFieldWriter(ProtobufWriter *pbw) : struct_size(0), p(pbw) {}

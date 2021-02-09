@@ -168,7 +168,7 @@ TEST_F(StringsCaseTest, MultiCharLower)
   // there's only one of these
   cudf::test::strings_column_wrapper strings{"\u0130"};
   cudf::test::strings_column_wrapper expected{"\u0069\u0307"};
-  auto strings_view = cudf::strings_column_view(strings);
+  auto                               strings_view = cudf::strings_column_view(strings);
 
   auto results = cudf::strings::to_lower(strings_view);
 

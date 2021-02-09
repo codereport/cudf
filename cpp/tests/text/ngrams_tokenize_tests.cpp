@@ -30,7 +30,7 @@ struct TextNgramsTokenizeTest : public cudf::test::BaseFixture {
 
 TEST_F(TextNgramsTokenizeTest, Tokenize)
 {
-  std::vector<const char*> h_strings{"the fox jumped over the dog",
+  std::vector<const char*>           h_strings{"the fox jumped over the dog",
                                      "the dog chased  the cat",
                                      " the cat chased the mouse ",
                                      nullptr,
@@ -61,7 +61,7 @@ TEST_F(TextNgramsTokenizeTest, Tokenize)
                                                 "mousé_ate",
                                                 "ate_the",
                                                 "the_cheese"};
-    auto results = nvtext::ngrams_tokenize(strings_view);
+    auto                               results = nvtext::ngrams_tokenize(strings_view);
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, expected);
   }
   {
@@ -99,10 +99,10 @@ TEST_F(TextNgramsTokenizeTest, Tokenize)
 TEST_F(TextNgramsTokenizeTest, TokenizeOneGram)
 {
   cudf::test::strings_column_wrapper strings{"aaa bbb", "  ccc  ddd  ", "eee"};
-  cudf::strings_column_view strings_view(strings);
+  cudf::strings_column_view          strings_view(strings);
 
   cudf::test::strings_column_wrapper expected{"aaa", "bbb", "ccc", "ddd", "eee"};
-  auto results = nvtext::ngrams_tokenize(strings_view, 1);
+  auto                               results = nvtext::ngrams_tokenize(strings_view, 1);
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, expected);
 }
 
@@ -110,7 +110,7 @@ TEST_F(TextNgramsTokenizeTest, TokenizeEmptyTest)
 {
   auto strings = cudf::make_empty_column(cudf::data_type{cudf::type_id::STRING});
   cudf::strings_column_view strings_view(strings->view());
-  auto results = nvtext::ngrams_tokenize(strings_view);
+  auto                      results = nvtext::ngrams_tokenize(strings_view);
   EXPECT_EQ(results->size(), 0);
   EXPECT_EQ(results->has_nulls(), false);
 }
@@ -118,6 +118,6 @@ TEST_F(TextNgramsTokenizeTest, TokenizeEmptyTest)
 TEST_F(TextNgramsTokenizeTest, TokenizeErrorTest)
 {
   cudf::test::strings_column_wrapper strings{"this column intentionally left blank"};
-  cudf::strings_column_view strings_view(strings);
+  cudf::strings_column_view          strings_view(strings);
   EXPECT_THROW(nvtext::ngrams_tokenize(strings_view, 0), cudf::logic_error);
 }

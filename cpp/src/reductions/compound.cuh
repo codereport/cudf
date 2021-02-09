@@ -43,18 +43,18 @@ namespace compound {
  * `cudf::reduction::op::compound_op`
  */
 template <typename ElementType, typename ResultType, typename Op>
-std::unique_ptr<scalar> compound_reduction(column_view const& col,
-                                           data_type const output_dtype,
-                                           cudf::size_type ddof,
-                                           rmm::cuda_stream_view stream,
+std::unique_ptr<scalar> compound_reduction(column_view const&               col,
+                                           data_type const                  output_dtype,
+                                           cudf::size_type                  ddof,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
 {
   cudf::size_type valid_count = col.size() - col.null_count();
 
   // reduction by iterator
-  auto dcol = cudf::column_device_view::create(col, stream);
+  auto                    dcol = cudf::column_device_view::create(col, stream);
   std::unique_ptr<scalar> result;
-  Op compound_op{};
+  Op                      compound_op{};
 
   if (!cudf::is_dictionary(col.type())) {
     if (col.has_nulls()) {
@@ -96,20 +96,20 @@ struct result_type_dispatcher {
 
  public:
   template <typename ResultType, std::enable_if_t<is_supported_v<ResultType>()>* = nullptr>
-  std::unique_ptr<scalar> operator()(column_view const& col,
-                                     cudf::data_type const output_dtype,
-                                     cudf::size_type ddof,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<scalar> operator()(column_view const&               col,
+                                     cudf::data_type const            output_dtype,
+                                     cudf::size_type                  ddof,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     return compound_reduction<ElementType, ResultType, Op>(col, output_dtype, ddof, stream, mr);
   }
 
   template <typename ResultType, std::enable_if_t<not is_supported_v<ResultType>()>* = nullptr>
-  std::unique_ptr<scalar> operator()(column_view const& col,
-                                     cudf::data_type const output_dtype,
-                                     cudf::size_type ddof,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<scalar> operator()(column_view const&               col,
+                                     cudf::data_type const            output_dtype,
+                                     cudf::size_type                  ddof,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("Unsupported output data type");
@@ -129,10 +129,10 @@ struct element_type_dispatcher {
 
  public:
   template <typename ElementType, std::enable_if_t<is_supported_v<ElementType>()>* = nullptr>
-  std::unique_ptr<scalar> operator()(column_view const& col,
-                                     cudf::data_type const output_dtype,
-                                     cudf::size_type ddof,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<scalar> operator()(column_view const&               col,
+                                     cudf::data_type const            output_dtype,
+                                     cudf::size_type                  ddof,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     return cudf::type_dispatcher(
@@ -140,10 +140,10 @@ struct element_type_dispatcher {
   }
 
   template <typename ElementType, std::enable_if_t<not is_supported_v<ElementType>()>* = nullptr>
-  std::unique_ptr<scalar> operator()(column_view const& col,
-                                     cudf::data_type const output_dtype,
-                                     cudf::size_type ddof,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<scalar> operator()(column_view const&               col,
+                                     cudf::data_type const            output_dtype,
+                                     cudf::size_type                  ddof,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL(

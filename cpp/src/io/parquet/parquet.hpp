@@ -73,21 +73,21 @@ typedef struct TimeUnit_isset {
 
 struct TimeUnit {
   TimeUnit_isset isset;
-  MilliSeconds MILLIS;
-  MicroSeconds MICROS;
+  MilliSeconds   MILLIS;
+  MicroSeconds   MICROS;
 };
 
 struct TimeType {
-  bool isAdjustedToUTC = false;
+  bool     isAdjustedToUTC = false;
   TimeUnit unit;
 };
 struct TimestampType {
-  bool isAdjustedToUTC = false;
+  bool     isAdjustedToUTC = false;
   TimeUnit unit;
 };
 struct IntType {
   int8_t bitWidth = 0;
-  bool isSigned   = false;
+  bool   isSigned = false;
 };
 struct NullType {
 };
@@ -129,18 +129,18 @@ typedef struct LogicalType_isset {
 
 struct LogicalType {
   LogicalType_isset isset;
-  StringType STRING;
-  MapType MAP;
-  ListType LIST;
-  EnumType ENUM;
-  DecimalType DECIMAL;
-  DateType DATE;
-  TimeType TIME;
-  TimestampType TIMESTAMP;
-  IntType INTEGER;
-  NullType UNKNOWN;
-  JsonType JSON;
-  BsonType BSON;
+  StringType        STRING;
+  MapType           MAP;
+  ListType          LIST;
+  EnumType          ENUM;
+  DecimalType       DECIMAL;
+  DateType          DATE;
+  TimeType          TIME;
+  TimestampType     TIMESTAMP;
+  IntType           INTEGER;
+  NullType          UNKNOWN;
+  JsonType          JSON;
+  BsonType          BSON;
 };
 
 /**
@@ -150,16 +150,16 @@ struct LogicalType {
  * as a schema tree.
  */
 struct SchemaElement {
-  Type type                    = UNDEFINED_TYPE;
+  Type          type           = UNDEFINED_TYPE;
   ConvertedType converted_type = UNKNOWN;
-  LogicalType logical_type;
-  int32_t type_length =
+  LogicalType   logical_type;
+  int32_t       type_length =
     0;  // Byte length of FIXED_LENGTH_BYTE_ARRAY elements, or maximum bit length for other types
-  FieldRepetitionType repetition_type = REQUIRED;
-  std::string name                    = "";
-  int32_t num_children                = 0;
-  int32_t decimal_scale               = 0;
-  int32_t decimal_precision           = 0;
+  FieldRepetitionType repetition_type   = REQUIRED;
+  std::string         name              = "";
+  int32_t             num_children      = 0;
+  int32_t             decimal_scale     = 0;
+  int32_t             decimal_precision = 0;
 
   // The following fields are filled in later during schema initialization
   int max_definition_level = 0;
@@ -211,12 +211,12 @@ struct SchemaElement {
  * @brief Thrift-derived struct describing a column chunk
  */
 struct ColumnChunkMetaData {
-  Type type = BOOLEAN;
-  std::vector<Encoding> encodings;
+  Type                     type = BOOLEAN;
+  std::vector<Encoding>    encodings;
   std::vector<std::string> path_in_schema;
-  Compression codec  = UNCOMPRESSED;
-  int64_t num_values = 0;
-  int64_t total_uncompressed_size =
+  Compression              codec      = UNCOMPRESSED;
+  int64_t                  num_values = 0;
+  int64_t                  total_uncompressed_size =
     0;  // total byte size of all uncompressed pages in this column chunk (including the headers)
   int64_t total_compressed_size =
     0;  // total byte size of all compressed pages in this column chunk (including the headers)
@@ -236,13 +236,13 @@ struct ColumnChunkMetaData {
  * reading.
  */
 struct ColumnChunk {
-  std::string file_path = "";
-  int64_t file_offset   = 0;
+  std::string         file_path   = "";
+  int64_t             file_offset = 0;
   ColumnChunkMetaData meta_data;
-  int64_t offset_index_offset = 0;  // File offset of ColumnChunk's OffsetIndex
-  int32_t offset_index_length = 0;  // Size of ColumnChunk's OffsetIndex, in bytes
-  int64_t column_index_offset = 0;  // File offset of ColumnChunk's ColumnIndex
-  int32_t column_index_length = 0;  // Size of ColumnChunk's ColumnIndex, in bytes
+  int64_t             offset_index_offset = 0;  // File offset of ColumnChunk's OffsetIndex
+  int32_t             offset_index_length = 0;  // Size of ColumnChunk's OffsetIndex, in bytes
+  int64_t             column_index_offset = 0;  // File offset of ColumnChunk's ColumnIndex
+  int32_t             column_index_length = 0;  // Size of ColumnChunk's ColumnIndex, in bytes
 
   // Following fields are derived from other fields
   int schema_idx = -1;  // Index in flattened schema (derived from path_in_schema)
@@ -255,9 +255,9 @@ struct ColumnChunk {
  * consisting of a column chunk for each column.
  */
 struct RowGroup {
-  int64_t total_byte_size = 0;
+  int64_t                  total_byte_size = 0;
   std::vector<ColumnChunk> columns;
-  int64_t num_rows = 0;
+  int64_t                  num_rows = 0;
 };
 
 /**
@@ -276,20 +276,20 @@ struct KeyValue {
  * prior to conversion to Parquet.
  */
 struct FileMetaData {
-  int32_t version = 0;
+  int32_t                    version = 0;
   std::vector<SchemaElement> schema;
-  int64_t num_rows = 0;
-  std::vector<RowGroup> row_groups;
-  std::vector<KeyValue> key_value_metadata;
-  std::string created_by         = "";
-  uint32_t column_order_listsize = 0;
+  int64_t                    num_rows = 0;
+  std::vector<RowGroup>      row_groups;
+  std::vector<KeyValue>      key_value_metadata;
+  std::string                created_by            = "";
+  uint32_t                   column_order_listsize = 0;
 };
 
 /**
  * @brief Thrift-derived struct describing the header for a data page
  */
 struct DataPageHeader {
-  int32_t num_values                 = 0;  // Number of values, including NULLs, in this data page.
+  int32_t  num_values                = 0;  // Number of values, including NULLs, in this data page.
   Encoding encoding                  = Encoding::PLAIN;  // Encoding used for this data page
   Encoding definition_level_encoding = Encoding::PLAIN;  // Encoding used for definition levels
   Encoding repetition_level_encoding = Encoding::PLAIN;  // Encoding used for repetition levels
@@ -299,8 +299,8 @@ struct DataPageHeader {
  * @brief Thrift-derived struct describing the header for a dictionary page
  */
 struct DictionaryPageHeader {
-  int32_t num_values = 0;                // Number of values in the dictionary
-  Encoding encoding  = Encoding::PLAIN;  // Encoding using this dictionary page
+  int32_t  num_values = 0;                // Number of values in the dictionary
+  Encoding encoding   = Encoding::PLAIN;  // Encoding using this dictionary page
 };
 
 /**
@@ -317,7 +317,7 @@ struct PageHeader {
     PageType::DATA_PAGE;  // the type of the page: indicates which of the *_header fields is set
   int32_t uncompressed_page_size = 0;  // Uncompressed page size in bytes (not including the header)
   int32_t compressed_page_size   = 0;  // Compressed page size in bytes (not including the header)
-  DataPageHeader data_page_header;
+  DataPageHeader       data_page_header;
   DictionaryPageHeader dictionary_page_header;
 };
 
@@ -362,9 +362,9 @@ class CompactProtocolReader {
     m_base = m_cur = base;
     m_end          = base + len;
   }
-  ptrdiff_t bytecount() const noexcept { return m_cur - m_base; }
+  ptrdiff_t    bytecount() const noexcept { return m_cur - m_base; }
   unsigned int getb() noexcept { return (m_cur < m_end) ? *m_cur++ : 0; }
-  void skip_bytes(size_t bytecnt) noexcept
+  void         skip_bytes(size_t bytecnt) noexcept
   {
     bytecnt = std::min(bytecnt, (size_t)(m_end - m_cur));
     m_cur += bytecnt;
@@ -402,9 +402,9 @@ class CompactProtocolReader {
   }
   int32_t get_listh(uint8_t *el_type) noexcept
   {
-    uint32_t c = getb();
-    int32_t sz = c >> 4;
-    *el_type   = c & 0xf;
+    uint32_t c  = getb();
+    int32_t  sz = c >> 4;
+    *el_type    = c & 0xf;
     if (sz == 0xf) sz = get_u32();
     return sz;
   }
@@ -437,10 +437,10 @@ class CompactProtocolReader {
 
  protected:
   int WalkSchema(FileMetaData *md,
-                 int idx           = 0,
-                 int parent_idx    = 0,
-                 int max_def_level = 0,
-                 int max_rep_level = 0);
+                 int           idx           = 0,
+                 int           parent_idx    = 0,
+                 int           max_def_level = 0,
+                 int           max_rep_level = 0);
 
  protected:
   const uint8_t *m_base = nullptr;
@@ -472,7 +472,7 @@ class CompactProtocolReader {
  * @return True if field type is not bool
  */
 class ParquetFieldBool {
-  int field_val;
+  int   field_val;
   bool &val;
 
  public:
@@ -493,7 +493,7 @@ class ParquetFieldBool {
  * @return True if field type is not int8
  */
 class ParquetFieldInt8 {
-  int field_val;
+  int     field_val;
   int8_t &val;
 
  public:
@@ -514,7 +514,7 @@ class ParquetFieldInt8 {
  * @return True if field type is not int32
  */
 class ParquetFieldInt32 {
-  int field_val;
+  int      field_val;
   int32_t &val;
 
  public:
@@ -535,7 +535,7 @@ class ParquetFieldInt32 {
  * @return True if field type is not int32 or int64
  */
 class ParquetFieldInt64 {
-  int field_val;
+  int      field_val;
   int64_t &val;
 
  public:
@@ -558,7 +558,7 @@ class ParquetFieldInt64 {
  */
 template <typename T>
 class ParquetFieldStructListFunctor {
-  int field_val;
+  int             field_val;
   std::vector<T> &val;
 
  public:
@@ -596,7 +596,7 @@ ParquetFieldStructListFunctor<T> ParquetFieldStructList(int f, std::vector<T> &v
  * of the CompactProtocolReader
  */
 class ParquetFieldString {
-  int field_val;
+  int          field_val;
   std::string &val;
 
  public:
@@ -627,7 +627,7 @@ class ParquetFieldString {
 template <typename T>
 class ParquetFieldStructFunctor {
   int field_val;
-  T &val;
+  T & val;
 
  public:
   ParquetFieldStructFunctor(int f, T &v) : field_val(f), val(v) {}
@@ -656,9 +656,9 @@ ParquetFieldStructFunctor<T> ParquetFieldStruct(int f, T &v)
  */
 template <typename T, bool is_empty = false>
 class ParquetFieldUnionFunctor {
-  int field_val;
+  int   field_val;
   bool &is_set;
-  T &val;
+  T &   val;
 
  public:
   ParquetFieldUnionFunctor(int f, bool &b, T &v) : field_val(f), is_set(b), val(v) {}
@@ -678,9 +678,9 @@ class ParquetFieldUnionFunctor {
 
 template <typename T>
 struct ParquetFieldUnionFunctor<T, true> {
-  int field_val;
+  int   field_val;
   bool &is_set;
-  T &val;
+  T &   val;
 
  public:
   ParquetFieldUnionFunctor(int f, bool &b, T &v) : field_val(f), is_set(b), val(v) {}
@@ -712,7 +712,7 @@ ParquetFieldUnionFunctor<T, std::is_empty<T>::value> ParquetFieldUnion(int f, bo
  */
 template <typename Enum>
 class ParquetFieldEnum {
-  int field_val;
+  int   field_val;
   Enum &val;
 
  public:
@@ -734,7 +734,7 @@ class ParquetFieldEnum {
  */
 template <typename Enum>
 class ParquetFieldEnumListFunctor {
-  int field_val;
+  int                field_val;
   std::vector<Enum> &val;
 
  public:
@@ -767,7 +767,7 @@ ParquetFieldEnumListFunctor<T> ParquetFieldEnumList(int field, std::vector<T> &v
  * string fails
  */
 class ParquetFieldStringList {
-  int field_val;
+  int                       field_val;
   std::vector<std::string> &val;
 
  public:
@@ -800,7 +800,7 @@ class ParquetFieldStringList {
  * @return True if field type mismatches
  */
 class ParquetFieldStructBlob {
-  int field_val;
+  int                   field_val;
   std::vector<uint8_t> &val;
 
  public:

@@ -46,14 +46,14 @@ namespace {
 template <size_t stack_size>
 struct findall_fn {
   column_device_view const d_strings;
-  reprog_device prog;
-  size_type column_index;
-  size_type const* d_counts;
+  reprog_device            prog;
+  size_type                column_index;
+  size_type const*         d_counts;
 
   findall_fn(column_device_view const& d_strings,
-             reprog_device& prog,
-             size_type column_index    = -1,
-             size_type const* d_counts = nullptr)
+             reprog_device&            prog,
+             size_type                 column_index = -1,
+             size_type const*          d_counts     = nullptr)
     : d_strings(d_strings), prog(prog), column_index(column_index), d_counts(d_counts)
   {
   }
@@ -67,11 +67,11 @@ struct findall_fn {
     u_char data1[stack_size];
     u_char data2[stack_size];
     prog.set_stack_mem(data1, data2);
-    string_view d_str      = d_strings.element<string_view>(idx);
-    auto const nchars      = d_str.length();
-    int32_t spos           = 0;
-    int32_t epos           = static_cast<int32_t>(nchars);
-    size_type column_count = 0;
+    string_view d_str        = d_strings.element<string_view>(idx);
+    auto const  nchars       = d_str.length();
+    int32_t     spos         = 0;
+    int32_t     epos         = static_cast<int32_t>(nchars);
+    size_type   column_count = 0;
     while (spos <= nchars) {
       if (prog.find(idx, d_str, spos, epos) <= 0) break;  // no more matches found
       if (column_count == column_index) break;            // found our column
@@ -113,10 +113,10 @@ struct findall_count_fn : public findall_fn<stack_size> {
 
 //
 std::unique_ptr<table> findall_re(
-  strings_column_view const& strings,
-  std::string const& pattern,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource(),
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default)
+  strings_column_view const&       strings,
+  std::string const&               pattern,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource(),
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default)
 {
   auto strings_count  = strings.size();
   auto strings_column = column_device_view::create(strings.parent(), stream);
@@ -124,12 +124,12 @@ std::unique_ptr<table> findall_re(
 
   auto d_flags = detail::get_character_flags_table();
   // compile regex into device object
-  auto prog       = reprog_device::create(pattern, d_flags, strings_count, stream);
-  auto d_prog     = *prog;
-  int regex_insts = prog->insts_counts();
+  auto prog        = reprog_device::create(pattern, d_flags, strings_count, stream);
+  auto d_prog      = *prog;
+  int  regex_insts = prog->insts_counts();
 
   rmm::device_vector<size_type> find_counts(strings_count);
-  auto d_find_counts = find_counts.data().get();
+  auto                          d_find_counts = find_counts.data().get();
 
   if ((regex_insts > MAX_STACK_INSTS) || (regex_insts <= RX_SMALL_INSTS))
     thrust::transform(rmm::exec_policy(stream),
@@ -165,7 +165,7 @@ std::unique_ptr<table> findall_re(
 
   for (int32_t column_index = 0; column_index < columns; ++column_index) {
     rmm::device_vector<string_index_pair> indices(strings_count);
-    string_index_pair* d_indices = indices.data().get();
+    string_index_pair*                    d_indices = indices.data().get();
 
     if ((regex_insts > MAX_STACK_INSTS) || (regex_insts <= RX_SMALL_INSTS))
       thrust::transform(rmm::exec_policy(stream),
@@ -196,8 +196,8 @@ std::unique_ptr<table> findall_re(
 
 // external API
 
-std::unique_ptr<table> findall_re(strings_column_view const& strings,
-                                  std::string const& pattern,
+std::unique_ptr<table> findall_re(strings_column_view const&       strings,
+                                  std::string const&               pattern,
                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

@@ -40,16 +40,16 @@ constexpr bool enable_bool_rle = true;
 constexpr bool enable_bool_rle = false;
 #endif
 
-constexpr int init_hash_bits       = 12;
+constexpr int      init_hash_bits  = 12;
 constexpr uint32_t rle_buffer_size = (1 << 9);
 
 struct frag_init_state_s {
-  EncColumnDesc col;
-  PageFragment frag;
-  uint32_t total_dupes;
-  size_type start_value_idx;
+  EncColumnDesc     col;
+  PageFragment      frag;
+  uint32_t          total_dupes;
+  size_type         start_value_idx;
   volatile uint32_t scratch_red[32];
-  uint32_t dict[max_page_fragment_size];
+  uint32_t          dict[max_page_fragment_size];
   union {
     uint16_t u16[1 << (init_hash_bits)];
     uint32_t u32[1 << (init_hash_bits - 1)];
@@ -57,23 +57,23 @@ struct frag_init_state_s {
 };
 
 struct page_enc_state_s {
-  uint8_t *cur;          //!< current output ptr
-  uint8_t *rle_out;      //!< current RLE write ptr
-  uint32_t rle_run;      //!< current RLE run
-  uint32_t run_val;      //!< current RLE run value
-  uint32_t rle_pos;      //!< RLE encoder positions
-  uint32_t rle_numvals;  //!< RLE input value count
-  uint32_t rle_lit_count;
-  uint32_t rle_rpt_count;
-  uint32_t page_start_val;
-  volatile uint32_t rpt_map[4];
-  volatile uint32_t scratch_red[32];
-  EncPage page;
-  EncColumnChunk ck;
-  EncColumnDesc col;
-  gpu_inflate_input_s comp_in;
+  uint8_t *            cur;          //!< current output ptr
+  uint8_t *            rle_out;      //!< current RLE write ptr
+  uint32_t             rle_run;      //!< current RLE run
+  uint32_t             run_val;      //!< current RLE run value
+  uint32_t             rle_pos;      //!< RLE encoder positions
+  uint32_t             rle_numvals;  //!< RLE input value count
+  uint32_t             rle_lit_count;
+  uint32_t             rle_rpt_count;
+  uint32_t             page_start_val;
+  volatile uint32_t    rpt_map[4];
+  volatile uint32_t    scratch_red[32];
+  EncPage              page;
+  EncColumnChunk       ck;
+  EncColumnDesc        col;
+  gpu_inflate_input_s  comp_in;
   gpu_inflate_status_s comp_out;
-  uint16_t vals[rle_buffer_size];
+  uint16_t             vals[rle_buffer_size];
 };
 
 /**
@@ -111,10 +111,10 @@ inline __device__ uint32_t uint64_init_hash(uint64_t v)
  */
 // blockDim {512,1,1}
 template <int block_size>
-__global__ void __launch_bounds__(block_size) gpuInitPageFragments(PageFragment *frag,
+__global__ void __launch_bounds__(block_size) gpuInitPageFragments(PageFragment *       frag,
                                                                    const EncColumnDesc *col_desc,
-                                                                   int32_t num_fragments,
-                                                                   int32_t num_columns,
+                                                                   int32_t  num_fragments,
+                                                                   int32_t  num_columns,
                                                                    uint32_t fragment_size,
                                                                    uint32_t max_num_rows)
 {
@@ -123,13 +123,13 @@ __global__ void __launch_bounds__(block_size) gpuInitPageFragments(PageFragment 
   using warp_reduce      = cub::WarpReduce<uint32_t>;
   using half_warp_reduce = cub::WarpReduce<uint32_t, 16>;
   __shared__ union {
-    typename warp_reduce::TempStorage full[block_size / 32];
+    typename warp_reduce::TempStorage      full[block_size / 32];
     typename half_warp_reduce::TempStorage half;
   } temp_storage;
 
   frag_init_state_s *const s = &state_g;
-  uint32_t t                 = threadIdx.x;
-  uint32_t start_row, dtype_len, dtype_len_in, dtype;
+  uint32_t                 t = threadIdx.x;
+  uint32_t                 start_row, dtype_len, dtype_len_in, dtype;
 
   if (t == 0) s->col = col_desc[blockIdx.x];
   for (uint32_t i = 0; i < sizeof(s->map) / sizeof(uint32_t); i += block_size) {
@@ -295,10 +295,10 @@ __global__ void __launch_bounds__(block_size) gpuInitPageFragments(PageFragment 
   // Put the indices back in hash order
   if (s->col.dict_index) {
     uint32_t *dict_index = s->col.dict_index + start_row;
-    uint32_t nnz         = s->frag.non_nulls;
+    uint32_t  nnz        = s->frag.non_nulls;
     for (uint32_t i = 0; i < nnz; i += block_size) {
       uint32_t pos = 0, hash = 0, pos_old, pos_new, sh, colliding_row, val = 0;
-      bool collision;
+      bool     collision;
       if (i + t < nnz) {
         val     = dict_index[i + t];
         hash    = val & ((1 << init_hash_bits) - 1);
@@ -403,19 +403,19 @@ __global__ void __launch_bounds__(block_size) gpuInitPageFragments(PageFragment 
 }
 
 // blockDim {128,1,1}
-__global__ void __launch_bounds__(128) gpuInitFragmentStats(statistics_group *groups,
-                                                            const PageFragment *fragments,
+__global__ void __launch_bounds__(128) gpuInitFragmentStats(statistics_group *   groups,
+                                                            const PageFragment * fragments,
                                                             const EncColumnDesc *col_desc,
-                                                            int32_t num_fragments,
-                                                            int32_t num_columns,
-                                                            uint32_t fragment_size)
+                                                            int32_t              num_fragments,
+                                                            int32_t              num_columns,
+                                                            uint32_t             fragment_size)
 {
   __shared__ __align__(8) statistics_group group_g[4];
 
-  uint32_t lane_id          = threadIdx.x & 0x1f;
-  uint32_t frag_id          = blockIdx.y * 4 + (threadIdx.x >> 5);
-  uint32_t column_id        = blockIdx.x;
-  statistics_group *const g = &group_g[threadIdx.x >> 5];
+  uint32_t                lane_id   = threadIdx.x & 0x1f;
+  uint32_t                frag_id   = blockIdx.y * 4 + (threadIdx.x >> 5);
+  uint32_t                column_id = blockIdx.x;
+  statistics_group *const g         = &group_g[threadIdx.x >> 5];
   if (!lane_id && frag_id < num_fragments) {
     g->col       = &col_desc[column_id];
     g->start_row = fragments[column_id * num_fragments + frag_id].start_value_idx;
@@ -426,13 +426,13 @@ __global__ void __launch_bounds__(128) gpuInitFragmentStats(statistics_group *gr
 }
 
 // blockDim {128,1,1}
-__global__ void __launch_bounds__(128) gpuInitPages(EncColumnChunk *chunks,
-                                                    EncPage *pages,
-                                                    const EncColumnDesc *col_desc,
+__global__ void __launch_bounds__(128) gpuInitPages(EncColumnChunk *        chunks,
+                                                    EncPage *               pages,
+                                                    const EncColumnDesc *   col_desc,
                                                     statistics_merge_group *page_grstats,
                                                     statistics_merge_group *chunk_grstats,
-                                                    int32_t num_rowgroups,
-                                                    int32_t num_columns)
+                                                    int32_t                 num_rowgroups,
+                                                    int32_t                 num_columns)
 {
   __shared__ __align__(8) EncColumnDesc col_g;
   __shared__ __align__(8) EncColumnChunk ck_g;
@@ -776,7 +776,7 @@ static __device__ void RleEncode(
       if (rle_rpt_count < max_rpt_count || (flush && rle_pos == numvals)) {
         if (t == 0) {
           uint32_t const run_val = s->run_val;
-          uint8_t *dst           = VlqEncode(s->rle_out, rle_run);
+          uint8_t *      dst     = VlqEncode(s->rle_out, rle_run);
           *dst++                 = run_val;
           if (nbits > 8) { *dst++ = run_val >> 8; }
           s->rle_out = dst;
@@ -827,7 +827,7 @@ static __device__ void RleEncode(
       rle_rpt_count = s->rle_rpt_count;
       if (rle_lit_count != 0 || (rle_run != 0 && rle_rpt_count != 0)) {
         uint32_t lit_div8;
-        bool need_more_data = false;
+        bool     need_more_data = false;
         if (!flush && rle_pos + rle_lit_count == numvals) {
           // Wait for more data
           rle_lit_count -= min(rle_lit_count, 24);
@@ -886,9 +886,9 @@ static __device__ void RleEncode(
  * @param[in] t thread id (0..127)
  */
 static __device__ void PlainBoolEncode(page_enc_state_s *s,
-                                       uint32_t numvals,
-                                       uint32_t flush,
-                                       uint32_t t)
+                                       uint32_t          numvals,
+                                       uint32_t          flush,
+                                       uint32_t          t)
 {
   uint32_t rle_pos = s->rle_pos;
   uint8_t *dst     = s->rle_out;
@@ -930,7 +930,7 @@ constexpr auto julian_calendar_epoch_diff()
  * elapsed in the day and days is the number of days from Julian epoch.
  */
 static __device__ std::pair<cuda::std::chrono::nanoseconds, cuda::std::chrono::days>
-convert_nanoseconds(cuda::std::chrono::sys_time<cuda::std::chrono::nanoseconds> const ns)
+                  convert_nanoseconds(cuda::std::chrono::sys_time<cuda::std::chrono::nanoseconds> const ns)
 {
   using namespace cuda::std::chrono;
   auto const nanosecond_ticks = ns.time_since_epoch();
@@ -942,18 +942,18 @@ convert_nanoseconds(cuda::std::chrono::sys_time<cuda::std::chrono::nanoseconds> 
 }
 
 // blockDim(128, 1, 1)
-__global__ void __launch_bounds__(128, 8) gpuEncodePages(EncPage *pages,
+__global__ void __launch_bounds__(128, 8) gpuEncodePages(EncPage *             pages,
                                                          const EncColumnChunk *chunks,
-                                                         gpu_inflate_input_s *comp_in,
+                                                         gpu_inflate_input_s * comp_in,
                                                          gpu_inflate_status_s *comp_out,
-                                                         uint32_t start_page)
+                                                         uint32_t              start_page)
 {
   __shared__ __align__(8) page_enc_state_s state_g;
 
   page_enc_state_s *const s = &state_g;
-  uint32_t t                = threadIdx.x;
-  uint32_t dtype, dtype_len_in, dtype_len_out;
-  int32_t dict_bits;
+  uint32_t                t = threadIdx.x;
+  uint32_t                dtype, dtype_len_in, dtype_len_out;
+  int32_t                 dict_bits;
 
   if (t == 0) {
     s->page = pages[start_page + blockIdx.x];
@@ -1226,7 +1226,7 @@ __global__ void __launch_bounds__(128, 8) gpuEncodePages(EncPage *pages,
             memcpy(dst + pos, &v, 8);
           } break;
           case BYTE_ARRAY: {
-            auto str     = s->col.leaf_column->element<string_view>(val_idx);
+            auto     str = s->col.leaf_column->element<string_view>(val_idx);
             uint32_t v   = len - 4;  // string length
             dst[pos + 0] = v;
             dst[pos + 1] = v >> 8;
@@ -1261,10 +1261,10 @@ __global__ void __launch_bounds__(128, 8) gpuEncodePages(EncPage *pages,
 }
 
 // blockDim(128, 1, 1)
-__global__ void __launch_bounds__(128) gpuDecideCompression(EncColumnChunk *chunks,
-                                                            const EncPage *pages,
+__global__ void __launch_bounds__(128) gpuDecideCompression(EncColumnChunk *            chunks,
+                                                            const EncPage *             pages,
                                                             const gpu_inflate_status_s *comp_out,
-                                                            uint32_t start_page)
+                                                            uint32_t                    start_page)
 {
   __shared__ __align__(8) EncColumnChunk ck_g;
   __shared__ __align__(4) unsigned int error_count;
@@ -1360,7 +1360,7 @@ inline __device__ uint8_t *cpw_put_fldh(uint8_t *p, int f, int cur, int t)
 
 class header_encoder {
   uint8_t *current_header_ptr;
-  int current_field_index;
+  int      current_field_index;
 
  public:
   inline __device__ header_encoder(uint8_t *header_start)
@@ -1418,10 +1418,10 @@ class header_encoder {
   inline __device__ void set_ptr(uint8_t *ptr) { current_header_ptr = ptr; }
 };
 
-__device__ uint8_t *EncodeStatistics(uint8_t *start,
+__device__ uint8_t *EncodeStatistics(uint8_t *               start,
                                      const statistics_chunk *s,
-                                     const EncColumnDesc *col,
-                                     float *fp_scratch)
+                                     const EncColumnDesc *   col,
+                                     float *                 fp_scratch)
 {
   uint8_t *end, dtype, dtype_len;
   dtype = col->stats_dtype;
@@ -1444,7 +1444,7 @@ __device__ uint8_t *EncodeStatistics(uint8_t *start,
   encoder.field_int64(3, s->null_count);
   if (s->has_minmax) {
     const void *vmin, *vmax;
-    uint32_t lmin, lmax;
+    uint32_t    lmin, lmax;
 
     if (dtype == dtype_string) {
       lmin = s->min_value.str_val.length;
@@ -1471,12 +1471,12 @@ __device__ uint8_t *EncodeStatistics(uint8_t *start,
 }
 
 // blockDim(128, 1, 1)
-__global__ void __launch_bounds__(128) gpuEncodePageHeaders(EncPage *pages,
-                                                            EncColumnChunk *chunks,
+__global__ void __launch_bounds__(128) gpuEncodePageHeaders(EncPage *                   pages,
+                                                            EncColumnChunk *            chunks,
                                                             const gpu_inflate_status_s *comp_out,
-                                                            const statistics_chunk *page_stats,
-                                                            const statistics_chunk *chunk_stats,
-                                                            uint32_t start_page)
+                                                            const statistics_chunk *    page_stats,
+                                                            const statistics_chunk *    chunk_stats,
+                                                            uint32_t                    start_page)
 {
   __shared__ __align__(8) EncColumnDesc col_g;
   __shared__ __align__(8) EncColumnChunk ck_g;
@@ -1508,7 +1508,7 @@ __global__ void __launch_bounds__(128) gpuEncodePageHeaders(EncPage *pages,
       compressed_page_size = uncompressed_page_size;
     }
     header_encoder encoder(hdr_start);
-    PageType page_type = page_g.page_type;
+    PageType       page_type = page_g.page_type;
     // NOTE: For dictionary encoding, parquet v2 recommends using PLAIN in dictionary page and
     // RLE_DICTIONARY in data page, but parquet v1 uses PLAIN_DICTIONARY in both dictionary and
     // data pages (actual encoding is identical).
@@ -1562,10 +1562,10 @@ __global__ void __launch_bounds__(1024) gpuGatherPages(EncColumnChunk *chunks, c
   __shared__ __align__(8) EncColumnChunk ck_g;
   __shared__ __align__(8) EncPage page_g;
 
-  uint32_t t = threadIdx.x;
-  uint8_t *dst, *dst_base;
+  uint32_t       t = threadIdx.x;
+  uint8_t *      dst, *dst_base;
   const EncPage *first_page;
-  uint32_t num_pages, uncompressed_size;
+  uint32_t       num_pages, uncompressed_size;
 
   if (t == 0) ck_g = chunks[blockIdx.x];
   __syncthreads();
@@ -1578,7 +1578,7 @@ __global__ void __launch_bounds__(1024) gpuGatherPages(EncColumnChunk *chunks, c
   uncompressed_size = ck_g.bfr_size;
   for (uint32_t page = 0; page < num_pages; page++) {
     const uint8_t *src;
-    uint32_t hdr_len, data_len;
+    uint32_t       hdr_len, data_len;
 
     if (t == 0) { page_g = first_page[page]; }
     __syncthreads();
@@ -1671,18 +1671,18 @@ __global__ void __launch_bounds__(1024) gpuGatherPages(EncColumnChunk *chunks, c
  *
  * Similarly we merge up all the way till level 0 offsets
  */
-dremel_data get_dremel_data(column_view h_col,
+dremel_data get_dremel_data(column_view              h_col,
                             std::vector<bool> const &level_nullability,
-                            rmm::cuda_stream_view stream)
+                            rmm::cuda_stream_view    stream)
 {
   CUDF_EXPECTS(h_col.type().id() == type_id::LIST,
                "Can only get rep/def levels for LIST type column");
 
   auto get_empties = [&](column_view col, size_type start, size_type end) {
-    auto lcv = lists_column_view(col);
+    auto                           lcv = lists_column_view(col);
     rmm::device_uvector<size_type> empties_idx(lcv.size(), stream);
     rmm::device_uvector<size_type> empties(lcv.size(), stream);
-    auto d_off = lcv.offsets().data<size_type>();
+    auto                           d_off = lcv.offsets().data<size_type>();
 
     auto empties_idx_end =
       thrust::copy_if(rmm::exec_policy(stream),
@@ -1702,12 +1702,12 @@ dremel_data get_dremel_data(column_view h_col,
 
   // Reverse the nesting in order to merge the deepest level with the leaf first and merge bottom
   // up
-  auto curr_col        = h_col;
-  size_t max_vals_size = 0;
+  auto                     curr_col      = h_col;
+  size_t                   max_vals_size = 0;
   std::vector<column_view> nesting_levels;
-  std::vector<uint8_t> def_at_level;
-  size_type level       = 0;
-  auto add_def_at_level = [&](size_type level) {
+  std::vector<uint8_t>     def_at_level;
+  size_type                level            = 0;
+  auto                     add_def_at_level = [&](size_type level) {
     auto is_level_nullable =
       curr_col.nullable() or (not level_nullability.empty() and level_nullability[level]);
     def_at_level.push_back(is_level_nullable ? 2 : 1);
@@ -1738,7 +1738,7 @@ dremel_data get_dremel_data(column_view h_col,
     [offset_at_level  = d_column_offsets.data(),
      end_idx_at_level = d_column_ends.data(),
      col              = *d_col] __device__() {
-      auto curr_col           = col;
+      auto      curr_col      = col;
       size_type off           = curr_col.offset();
       size_type end           = off + curr_col.size();
       size_type level         = 0;
@@ -1775,10 +1775,10 @@ dremel_data get_dremel_data(column_view h_col,
   rmm::device_uvector<uint8_t> rep_level(max_vals_size, stream);
   rmm::device_uvector<uint8_t> def_level(max_vals_size, stream);
 
-  rmm::device_uvector<uint8_t> temp_rep_vals(max_vals_size, stream);
-  rmm::device_uvector<uint8_t> temp_def_vals(max_vals_size, stream);
+  rmm::device_uvector<uint8_t>   temp_rep_vals(max_vals_size, stream);
+  rmm::device_uvector<uint8_t>   temp_def_vals(max_vals_size, stream);
   rmm::device_uvector<size_type> new_offsets(0, stream);
-  size_type curr_rep_values_size = 0;
+  size_type                      curr_rep_values_size = 0;
   {
     // At this point, curr_col contains the leaf column. Max nesting level is
     // nesting_levels.size().
@@ -1790,7 +1790,7 @@ dremel_data get_dremel_data(column_view h_col,
     // Get empties at this level
     rmm::device_uvector<size_type> empties(0, stream);
     rmm::device_uvector<size_type> empties_idx(0, stream);
-    size_t empties_size;
+    size_t                         empties_size;
     std::tie(empties, empties_idx, empties_size) =
       get_empties(nesting_levels[level], column_offsets[level], column_ends[level]);
 
@@ -1876,7 +1876,7 @@ dremel_data get_dremel_data(column_view h_col,
     // Get empties at this level
     rmm::device_uvector<size_type> empties(0, stream);
     rmm::device_uvector<size_type> empties_idx(0, stream);
-    size_t empties_size;
+    size_t                         empties_size;
     std::tie(empties, empties_idx, empties_size) =
       get_empties(nesting_levels[level], column_offsets[level], column_ends[level]);
 
@@ -1966,7 +1966,7 @@ dremel_data get_dremel_data(column_view h_col,
 
   size_type leaf_col_offset = column_offsets[column_offsets.size() - 1];
   size_type leaf_data_size  = column_ends[column_ends.size() - 1] - leaf_col_offset;
-  uint8_t max_def_level     = def_at_level.back() - 1;
+  uint8_t   max_def_level   = def_at_level.back() - 1;
 
   return dremel_data{std::move(new_offsets),
                      std::move(rep_level),
@@ -1985,12 +1985,12 @@ dremel_data get_dremel_data(column_view h_col,
  * @param[in] num_columns Number of columns
  * @param[in] stream CUDA stream to use, default 0
  */
-void InitPageFragments(PageFragment *frag,
-                       const EncColumnDesc *col_desc,
-                       int32_t num_fragments,
-                       int32_t num_columns,
-                       uint32_t fragment_size,
-                       uint32_t num_rows,
+void InitPageFragments(PageFragment *        frag,
+                       const EncColumnDesc * col_desc,
+                       int32_t               num_fragments,
+                       int32_t               num_columns,
+                       uint32_t              fragment_size,
+                       uint32_t              num_rows,
                        rmm::cuda_stream_view stream)
 {
   dim3 dim_grid(num_columns, num_fragments);  // 1 threadblock per fragment
@@ -2004,10 +2004,10 @@ void InitPageFragments(PageFragment *frag,
  *            const table_device_view &parent_table_device_view,
  *            rmm::cuda_stream_view stream)
  */
-void init_column_device_views(EncColumnDesc *col_desc,
-                              column_device_view *leaf_column_views,
+void init_column_device_views(EncColumnDesc *          col_desc,
+                              column_device_view *     leaf_column_views,
                               const table_device_view &parent_column_table_device_view,
-                              rmm::cuda_stream_view stream)
+                              rmm::cuda_stream_view    stream)
 {
   cudf::detail::device_single_thread(
     [col_desc,
@@ -2044,12 +2044,12 @@ void init_column_device_views(EncColumnDesc *col_desc,
  * @param[in] fragment_size Max size of each fragment in rows
  * @param[in] stream CUDA stream to use, default 0
  */
-void InitFragmentStatistics(statistics_group *groups,
-                            const PageFragment *fragments,
-                            const EncColumnDesc *col_desc,
-                            int32_t num_fragments,
-                            int32_t num_columns,
-                            uint32_t fragment_size,
+void InitFragmentStatistics(statistics_group *    groups,
+                            const PageFragment *  fragments,
+                            const EncColumnDesc * col_desc,
+                            int32_t               num_fragments,
+                            int32_t               num_columns,
+                            uint32_t              fragment_size,
                             rmm::cuda_stream_view stream)
 {
   dim3 dim_grid(num_columns, (num_fragments + 3) >> 2);  // 1 warp per fragment
@@ -2069,14 +2069,14 @@ void InitFragmentStatistics(statistics_group *groups,
  * @param[out] chunk_grstats Setup for chunk-level stats
  * @param[in] stream CUDA stream to use, default 0
  */
-void InitEncoderPages(EncColumnChunk *chunks,
-                      EncPage *pages,
-                      const EncColumnDesc *col_desc,
-                      int32_t num_rowgroups,
-                      int32_t num_columns,
+void InitEncoderPages(EncColumnChunk *        chunks,
+                      EncPage *               pages,
+                      const EncColumnDesc *   col_desc,
+                      int32_t                 num_rowgroups,
+                      int32_t                 num_columns,
                       statistics_merge_group *page_grstats,
                       statistics_merge_group *chunk_grstats,
-                      rmm::cuda_stream_view stream)
+                      rmm::cuda_stream_view   stream)
 {
   dim3 dim_grid(num_columns, num_rowgroups);  // 1 threadblock per rowgroup
   gpuInitPages<<<dim_grid, 128, 0, stream.value()>>>(
@@ -2094,11 +2094,11 @@ void InitEncoderPages(EncColumnChunk *chunks,
  * @param[out] comp_out Optionally initializes compressor output params
  * @param[in] stream CUDA stream to use, default 0
  */
-void EncodePages(EncPage *pages,
+void EncodePages(EncPage *             pages,
                  const EncColumnChunk *chunks,
-                 uint32_t num_pages,
-                 uint32_t start_page,
-                 gpu_inflate_input_s *comp_in,
+                 uint32_t              num_pages,
+                 uint32_t              start_page,
+                 gpu_inflate_input_s * comp_in,
                  gpu_inflate_status_s *comp_out,
                  rmm::cuda_stream_view stream)
 {
@@ -2118,12 +2118,12 @@ void EncodePages(EncPage *pages,
  * @param[in] comp_out Compressor status
  * @param[in] stream CUDA stream to use, default 0
  */
-void DecideCompression(EncColumnChunk *chunks,
-                       const EncPage *pages,
-                       uint32_t num_chunks,
-                       uint32_t start_page,
+void DecideCompression(EncColumnChunk *            chunks,
+                       const EncPage *             pages,
+                       uint32_t                    num_chunks,
+                       uint32_t                    start_page,
                        const gpu_inflate_status_s *comp_out,
-                       rmm::cuda_stream_view stream)
+                       rmm::cuda_stream_view       stream)
 {
   gpuDecideCompression<<<num_chunks, 128, 0, stream.value()>>>(chunks, pages, comp_out, start_page);
 }
@@ -2140,14 +2140,14 @@ void DecideCompression(EncColumnChunk *chunks,
  * @param[in] chunk_stats Optional chunk-level statistics to be encoded
  * @param[in] stream CUDA stream to use, default 0
  */
-void EncodePageHeaders(EncPage *pages,
-                       EncColumnChunk *chunks,
-                       uint32_t num_pages,
-                       uint32_t start_page,
+void EncodePageHeaders(EncPage *                   pages,
+                       EncColumnChunk *            chunks,
+                       uint32_t                    num_pages,
+                       uint32_t                    start_page,
                        const gpu_inflate_status_s *comp_out,
-                       const statistics_chunk *page_stats,
-                       const statistics_chunk *chunk_stats,
-                       rmm::cuda_stream_view stream)
+                       const statistics_chunk *    page_stats,
+                       const statistics_chunk *    chunk_stats,
+                       rmm::cuda_stream_view       stream)
 {
   gpuEncodePageHeaders<<<num_pages, 128, 0, stream.value()>>>(
     pages, chunks, comp_out, page_stats, chunk_stats, start_page);
@@ -2161,9 +2161,9 @@ void EncodePageHeaders(EncPage *pages,
  * @param[in] num_chunks Number of column chunks
  * @param[in] stream CUDA stream to use, default 0
  */
-void GatherPages(EncColumnChunk *chunks,
-                 const EncPage *pages,
-                 uint32_t num_chunks,
+void GatherPages(EncColumnChunk *      chunks,
+                 const EncPage *       pages,
+                 uint32_t              num_chunks,
                  rmm::cuda_stream_view stream)
 {
   gpuGatherPages<<<num_chunks, 1024, 0, stream.value()>>>(chunks, pages);

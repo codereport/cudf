@@ -48,7 +48,7 @@ void PQ_write(benchmark::State& state)
   cudf::table_view view = tbl->view();
 
   for (auto _ : state) {
-    cuda_event_timer raii(state, true);  // flush_l2_cache = true, stream = 0
+    cuda_event_timer                raii(state, true);  // flush_l2_cache = true, stream = 0
     cudf_io::parquet_writer_options opts =
       cudf_io::parquet_writer_options::builder(cudf_io::sink_info(), view);
     cudf_io::write_parquet(opts);
@@ -69,7 +69,7 @@ void PQ_write_chunked(benchmark::State& state)
   }
 
   for (auto _ : state) {
-    cuda_event_timer raii(state, true);  // flush_l2_cache = true, stream = 0
+    cuda_event_timer                        raii(state, true);  // flush_l2_cache = true, stream = 0
     cudf_io::chunked_parquet_writer_options opts =
       cudf_io::chunked_parquet_writer_options::builder(cudf_io::sink_info());
     cudf_io::parquet_chunked_writer writer(opts);

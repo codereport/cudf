@@ -26,7 +26,7 @@
 
 template <class T>
 struct managed_allocator {
-  typedef T value_type;
+  typedef T                        value_type;
   rmm::mr::device_memory_resource* mr = new rmm::mr::managed_memory_resource;
 
   managed_allocator() = default;
@@ -41,8 +41,8 @@ struct managed_allocator {
     return static_cast<T*>(mr->allocate(n * sizeof(T), stream));
   }
 
-  void deallocate(T* p,
-                  std::size_t n,
+  void deallocate(T*                    p,
+                  std::size_t           n,
                   rmm::cuda_stream_view stream = rmm::cuda_stream_default) const
   {
     mr->deallocate(p, n * sizeof(T), stream);
@@ -62,7 +62,7 @@ bool operator!=(const managed_allocator<T>&, const managed_allocator<U>&)
 
 template <class T>
 struct default_allocator {
-  typedef T value_type;
+  typedef T                        value_type;
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource();
 
   default_allocator() = default;
@@ -77,8 +77,8 @@ struct default_allocator {
     return static_cast<T*>(mr->allocate(n * sizeof(T), stream));
   }
 
-  void deallocate(T* p,
-                  std::size_t n,
+  void deallocate(T*                    p,
+                  std::size_t           n,
                   rmm::cuda_stream_view stream = rmm::cuda_stream_default) const
   {
     mr->deallocate(p, n * sizeof(T), stream);

@@ -40,8 +40,8 @@ using IntColWrap = cudf::test::fixed_width_column_wrapper<int32_t>;
 
 void BM_merge(benchmark::State& state)
 {
-  cudf::size_type const avg_rows = 1 << 19;  // 512K rows
-  int const num_tables           = state.range(0);
+  cudf::size_type const avg_rows   = 1 << 19;  // 512K rows
+  int const             num_tables = state.range(0);
 
   // Content is irrelevant for the benchmark
   auto data_sequence = thrust::make_constant_iterator(0);
@@ -54,15 +54,15 @@ void BM_merge(benchmark::State& state)
   std::uniform_int_distribution<> key_dist(0, 10);
 
   std::vector<std::pair<IntColWrap, IntColWrap>> columns;
-  size_t total_rows = 0;
-  std::vector<cudf::table_view> tables;
+  size_t                                         total_rows = 0;
+  std::vector<cudf::table_view>                  tables;
   for (int i = 0; i < num_tables; ++i) {
     cudf::size_type const rows = std::round(table_size_dist(rand_gen));
     // Ensure size in range [0, avg_rows*2]
     auto const clamped_rows = std::max(std::min(rows, avg_rows * 2), 0);
 
-    int32_t prev_key  = 0;
-    auto key_sequence = cudf::detail::make_counting_transform_iterator(0, [&](auto row) {
+    int32_t prev_key     = 0;
+    auto    key_sequence = cudf::detail::make_counting_transform_iterator(0, [&](auto row) {
       prev_key += key_dist(rand_gen);
       return prev_key;
     });
@@ -73,13 +73,13 @@ void BM_merge(benchmark::State& state)
     tables.push_back(cudf::table_view{{columns.back().first, columns.back().second}});
     total_rows += clamped_rows;
   }
-  std::vector<cudf::size_type> const key_cols{0};
-  std::vector<cudf::order> const column_order{cudf::order::ASCENDING};
+  std::vector<cudf::size_type> const  key_cols{0};
+  std::vector<cudf::order> const      column_order{cudf::order::ASCENDING};
   std::vector<cudf::null_order> const null_precedence{};
 
   for (auto _ : state) {
     cuda_event_timer raii(state, true);  // flush_l2_cache = true, stream = 0
-    auto result = cudf::merge(tables, key_cols, column_order, null_precedence);
+    auto             result = cudf::merge(tables, key_cols, column_order, null_precedence);
   }
 
   state.SetBytesProcessed(state.iterations() * 2 * sizeof(int32_t) * total_rows);

@@ -47,12 +47,12 @@ struct ipv4_to_integers_fn {
   __device__ int64_t operator()(size_type idx)
   {
     if (d_strings.is_null(idx)) return 0;
-    string_view d_str  = d_strings.element<string_view>(idx);
-    uint32_t ipvals[4] = {0};  // IPV4 format: xxx.xxx.xxx.xxx
-    int32_t ipv_idx    = 0;
-    int32_t factor     = 1;
-    const char* in_ptr = d_str.data();
-    const char* end    = in_ptr + d_str.size_bytes();
+    string_view d_str     = d_strings.element<string_view>(idx);
+    uint32_t    ipvals[4] = {0};  // IPV4 format: xxx.xxx.xxx.xxx
+    int32_t     ipv_idx   = 0;
+    int32_t     factor    = 1;
+    const char* in_ptr    = d_str.data();
+    const char* end       = in_ptr + d_str.size_bytes();
     while ((in_ptr < end) && (ipv_idx < 4)) {
       char ch = *in_ptr++;
       if (ch < '0' || ch > '9') {
@@ -72,8 +72,8 @@ struct ipv4_to_integers_fn {
 
 // Convert strings column of IPv4 addresses to integers column
 std::unique_ptr<column> ipv4_to_integers(
-  strings_column_view const& strings,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   size_type strings_count = strings.size();
@@ -102,7 +102,7 @@ std::unique_ptr<column> ipv4_to_integers(
 }  // namespace detail
 
 // external API
-std::unique_ptr<column> ipv4_to_integers(strings_column_view const& strings,
+std::unique_ptr<column> ipv4_to_integers(strings_column_view const&       strings,
                                          rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -120,8 +120,8 @@ namespace {
  */
 struct integers_to_ipv4_fn {
   column_device_view const d_column;
-  int32_t const* d_offsets;
-  char* d_chars;
+  int32_t const*           d_offsets;
+  char*                    d_chars;
 
   __device__ int convert(int value, char* digits)
   {
@@ -136,16 +136,16 @@ struct integers_to_ipv4_fn {
   __device__ void operator()(size_type idx)
   {
     if (d_column.is_null(idx)) return;
-    int64_t ip_number = d_column.element<int64_t>(idx);
-    char* out_ptr     = d_chars + d_offsets[idx];
-    int shift_bits    = 24;
+    int64_t ip_number  = d_column.element<int64_t>(idx);
+    char*   out_ptr    = d_chars + d_offsets[idx];
+    int     shift_bits = 24;
     for (int n = 0; n < 4; ++n) {
       int value = static_cast<int>((ip_number >> shift_bits) & 0x00FF);
       if (value == 0)
         *out_ptr++ = '0';
       else {
         char digits[3];
-        int num_digits = convert(value, digits);
+        int  num_digits = convert(value, digits);
         while (num_digits-- > 0) *out_ptr++ = digits[num_digits];
       }
       if ((n + 1) < 4) *out_ptr++ = '.';
@@ -158,8 +158,8 @@ struct integers_to_ipv4_fn {
 
 // Convert integers into IPv4 addresses
 std::unique_ptr<column> integers_to_ipv4(
-  column_view const& integers,
-  rmm::cuda_stream_view stream,
+  column_view const&               integers,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   size_type strings_count = integers.size();
@@ -176,8 +176,8 @@ std::unique_ptr<column> integers_to_ipv4(
   auto offsets_transformer_itr = thrust::make_transform_iterator(
     thrust::make_counting_iterator<int32_t>(0), [d_column] __device__(size_type idx) {
       if (d_column.is_null(idx)) return 0;
-      size_type bytes   = 3;  // at least 3 dots: xxx.xxx.xxx.xxx
-      int64_t ip_number = d_column.element<int64_t>(idx);
+      size_type bytes     = 3;  // at least 3 dots: xxx.xxx.xxx.xxx
+      int64_t   ip_number = d_column.element<int64_t>(idx);
       for (int n = 0; n < 4; ++n) {
         auto value = ip_number & 0x00FF;
         bytes += (value < 10 ? 1 : (value < 100 ? 2 : 3));
@@ -191,7 +191,7 @@ std::unique_ptr<column> integers_to_ipv4(
 
   // build chars column
   size_type bytes = thrust::device_pointer_cast(d_offsets)[strings_count];
-  auto chars_column =
+  auto      chars_column =
     create_chars_child_column(strings_count, integers.null_count(), bytes, stream, mr);
   auto d_chars = chars_column->mutable_view().data<char>();
   thrust::for_each_n(rmm::exec_policy(stream),
@@ -208,8 +208,8 @@ std::unique_ptr<column> integers_to_ipv4(
                              mr);
 }
 
-std::unique_ptr<column> is_ipv4(strings_column_view const& strings,
-                                rmm::cuda_stream_view stream,
+std::unique_ptr<column> is_ipv4(strings_column_view const&       strings,
+                                rmm::cuda_stream_view            stream,
                                 rmm::mr::device_memory_resource* mr)
 {
   auto strings_column = column_device_view::create(strings.parent(), stream);
@@ -230,13 +230,13 @@ std::unique_ptr<column> is_ipv4(strings_column_view const& strings,
                       if (d_column.is_null(idx)) return false;
                       auto const d_str = d_column.element<string_view>(idx);
                       if (d_str.empty()) return false;
-                      constexpr int max_ip = 255;  // values must be in [0,255]
-                      int ip_vals[4]       = {-1, -1, -1, -1};
-                      int ipv_idx          = 0;  // index into ip_vals
+                      constexpr int max_ip     = 255;  // values must be in [0,255]
+                      int           ip_vals[4] = {-1, -1, -1, -1};
+                      int           ipv_idx    = 0;  // index into ip_vals
                       for (auto const ch : d_str) {
                         if ((ch >= '0') && (ch <= '9')) {
-                          auto const ip_val    = ip_vals[ipv_idx];
-                          int const new_ip_val = static_cast<int>(ch - '0') +  // compute new value
+                          auto const ip_val     = ip_vals[ipv_idx];
+                          int const  new_ip_val = static_cast<int>(ch - '0') +  // compute new value
                                                  (ip_val < 0 ? 0 : (10 * ip_val));
                           if (new_ip_val > max_ip) return false;
                           ip_vals[ipv_idx] = new_ip_val;
@@ -257,14 +257,14 @@ std::unique_ptr<column> is_ipv4(strings_column_view const& strings,
 
 // external API
 
-std::unique_ptr<column> integers_to_ipv4(column_view const& integers,
+std::unique_ptr<column> integers_to_ipv4(column_view const&               integers,
                                          rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::integers_to_ipv4(integers, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> is_ipv4(strings_column_view const& strings,
+std::unique_ptr<column> is_ipv4(strings_column_view const&       strings,
                                 rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

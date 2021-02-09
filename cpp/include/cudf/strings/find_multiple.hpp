@@ -50,8 +50,8 @@ namespace strings {
  * @return New integer column with character position values.
  */
 std::unique_ptr<column> find_multiple(
-  strings_column_view const& strings,
-  strings_column_view const& targets,
+  strings_column_view const&       strings,
+  strings_column_view const&       targets,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group

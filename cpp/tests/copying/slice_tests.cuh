@@ -22,7 +22,7 @@
 template <typename T, typename InputIterator>
 cudf::test::fixed_width_column_wrapper<T> create_fixed_columns(cudf::size_type start,
                                                                cudf::size_type size,
-                                                               InputIterator valids)
+                                                               InputIterator   valids)
 {
   auto iter = cudf::detail::make_counting_transform_iterator(start, [](auto i) { return T(i); });
 
@@ -33,7 +33,7 @@ template <typename T, typename InputIterator>
 cudf::table create_fixed_table(cudf::size_type num_cols,
                                cudf::size_type start,
                                cudf::size_type col_size,
-                               InputIterator valids)
+                               InputIterator   valids)
 {
   std::vector<std::unique_ptr<cudf::column>> cols;
   for (int idx = 0; idx < num_cols; idx++) {
@@ -122,9 +122,9 @@ std::vector<cudf::test::fixed_width_column_wrapper<T>> create_expected_columns(
 }
 
 template <typename T>
-std::vector<cudf::table> create_expected_tables(cudf::size_type num_cols,
+std::vector<cudf::table> create_expected_tables(cudf::size_type                     num_cols,
                                                 std::vector<cudf::size_type> const& indices,
-                                                bool nullable)
+                                                bool                                nullable)
 {
   std::vector<cudf::table> result;
 
@@ -155,9 +155,9 @@ std::vector<cudf::table> create_expected_tables(cudf::size_type num_cols,
 }
 
 inline std::vector<cudf::test::strings_column_wrapper> create_expected_string_columns(
-  std::vector<std::string> const& strings,
+  std::vector<std::string> const&     strings,
   std::vector<cudf::size_type> const& indices,
-  bool nullable)
+  bool                                nullable)
 {
   std::vector<cudf::test::strings_column_wrapper> result = {};
 
@@ -177,9 +177,9 @@ inline std::vector<cudf::test::strings_column_wrapper> create_expected_string_co
 }
 
 inline std::vector<cudf::test::strings_column_wrapper> create_expected_string_columns(
-  std::vector<std::string> const& strings,
+  std::vector<std::string> const&     strings,
   std::vector<cudf::size_type> const& indices,
-  std::vector<bool> const& validity)
+  std::vector<bool> const&            validity)
 {
   std::vector<cudf::test::strings_column_wrapper> result = {};
 
@@ -193,9 +193,9 @@ inline std::vector<cudf::test::strings_column_wrapper> create_expected_string_co
 }
 
 inline std::vector<cudf::table> create_expected_string_tables(
-  std::vector<std::string> const strings[2],
+  std::vector<std::string> const      strings[2],
   std::vector<cudf::size_type> const& indices,
-  bool nullable)
+  bool                                nullable)
 {
   std::vector<cudf::table> result = {};
 

@@ -54,7 +54,7 @@ __forceinline__ __device__ pair_type load_pair_vectorized(const pair_type* __res
 {
   if (sizeof(uint4) == sizeof(pair_type)) {
     union pair_type2vec_type {
-      uint4 vec_val;
+      uint4     vec_val;
       pair_type pair_val;
     };
     pair_type2vec_type converter = {0, 0, 0, 0};
@@ -62,7 +62,7 @@ __forceinline__ __device__ pair_type load_pair_vectorized(const pair_type* __res
     return converter.pair_val;
   } else if (sizeof(uint2) == sizeof(pair_type)) {
     union pair_type2vec_type {
-      uint2 vec_val;
+      uint2     vec_val;
       pair_type pair_val;
     };
     pair_type2vec_type converter = {0, 0};
@@ -70,7 +70,7 @@ __forceinline__ __device__ pair_type load_pair_vectorized(const pair_type* __res
     return converter.pair_val;
   } else if (sizeof(int) == sizeof(pair_type)) {
     union pair_type2vec_type {
-      int vec_val;
+      int       vec_val;
       pair_type pair_val;
     };
     pair_type2vec_type converter = {0};
@@ -78,7 +78,7 @@ __forceinline__ __device__ pair_type load_pair_vectorized(const pair_type* __res
     return converter.pair_val;
   } else if (sizeof(short) == sizeof(pair_type)) {
     union pair_type2vec_type {
-      short vec_val;
+      short     vec_val;
       pair_type pair_val;
     };
     pair_type2vec_type converter = {0};
@@ -95,7 +95,7 @@ __forceinline__ __device__ void store_pair_vectorized(pair_type* __restrict__ co
 {
   if (sizeof(uint4) == sizeof(pair_type)) {
     union pair_type2vec_type {
-      uint4 vec_val;
+      uint4     vec_val;
       pair_type pair_val;
     };
     pair_type2vec_type converter   = {0, 0, 0, 0};
@@ -103,7 +103,7 @@ __forceinline__ __device__ void store_pair_vectorized(pair_type* __restrict__ co
     *reinterpret_cast<uint4*>(ptr) = converter.vec_val;
   } else if (sizeof(uint2) == sizeof(pair_type)) {
     union pair_type2vec_type {
-      uint2 vec_val;
+      uint2     vec_val;
       pair_type pair_val;
     };
     pair_type2vec_type converter   = {0, 0};
@@ -111,7 +111,7 @@ __forceinline__ __device__ void store_pair_vectorized(pair_type* __restrict__ co
     *reinterpret_cast<uint2*>(ptr) = converter.vec_val;
   } else if (sizeof(int) == sizeof(pair_type)) {
     union pair_type2vec_type {
-      int vec_val;
+      int       vec_val;
       pair_type pair_val;
     };
     pair_type2vec_type converter = {0};
@@ -119,7 +119,7 @@ __forceinline__ __device__ void store_pair_vectorized(pair_type* __restrict__ co
     *reinterpret_cast<int*>(ptr) = converter.vec_val;
   } else if (sizeof(short) == sizeof(pair_type)) {
     union pair_type2vec_type {
-      short vec_val;
+      short     vec_val;
       pair_type pair_val;
     };
     pair_type2vec_type converter   = {0};
@@ -133,7 +133,7 @@ __forceinline__ __device__ void store_pair_vectorized(pair_type* __restrict__ co
 template <typename value_type, typename size_type, typename key_type, typename elem_type>
 __global__ void init_hashtbl(value_type* __restrict__ const hashtbl_values,
                              const size_type n,
-                             const key_type key_val,
+                             const key_type  key_val,
                              const elem_type elem_val)
 {
   const size_type idx = blockIdx.x * blockDim.x + threadIdx.x;

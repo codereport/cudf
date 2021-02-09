@@ -47,7 +47,7 @@ namespace cudf {
  * @return The interleaved columns as a single column
  */
 std::unique_ptr<column> interleave_columns(
-  table_view const& input,
+  table_view const&                input,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -68,8 +68,8 @@ std::unique_ptr<column> interleave_columns(
  * @return The table containing the tiled "rows".
  */
 std::unique_ptr<table> tile(
-  table_view const& input,
-  size_type count,
+  table_view const&                input,
+  size_type                        count,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -93,8 +93,8 @@ enum class flip_endianness : bool { NO, YES };
  * @return The column containing the lists of bytes.
  */
 std::unique_ptr<column> byte_cast(
-  column_view const& input_column,
-  flip_endianness endian_configuration,
+  column_view const&               input_column,
+  flip_endianness                  endian_configuration,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -135,8 +135,8 @@ std::unique_ptr<column> byte_cast(
  * @return A new table with explode_col exploded.
  */
 std::unique_ptr<table> explode(
-  table_view const& input_table,
-  size_type explode_column_idx,
+  table_view const&                input_table,
+  size_type                        explode_column_idx,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

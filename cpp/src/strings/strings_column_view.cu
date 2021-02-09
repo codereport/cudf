@@ -59,10 +59,10 @@ size_type strings_column_view::chars_size() const noexcept
 namespace strings {
 // print strings to stdout
 void print(strings_column_view const& strings,
-           size_type first,
-           size_type last,
-           size_type max_width,
-           const char* delimiter)
+           size_type                  first,
+           size_type                  last,
+           size_type                  max_width,
+           const char*                delimiter)
 {
   size_type count = strings.size();
   if (last < 0 || last > count) last = count;
@@ -76,7 +76,7 @@ void print(strings_column_view const& strings,
 
   // create output strings offsets
   rmm::device_vector<size_type> output_offsets(count + 1);
-  size_type* d_output_offsets = output_offsets.data().get();
+  size_type*                    d_output_offsets = output_offsets.data().get();
   thrust::transform_inclusive_scan(
     thrust::device,
     thrust::make_counting_iterator<size_type>(first),
@@ -85,7 +85,7 @@ void print(strings_column_view const& strings,
     [d_column, max_width] __device__(size_type idx) {
       if (d_column.is_null(idx)) return static_cast<size_type>(0);
       string_view d_str = d_column.element<string_view>(idx);
-      size_type bytes   = d_str.size_bytes();
+      size_type   bytes = d_str.size_bytes();
       if ((max_width > 0) && (d_str.length() > max_width)) bytes = d_str.byte_offset(max_width);
       return static_cast<size_type>(bytes + 1);  // allow for null-terminator on non-null strings
     },
@@ -98,7 +98,7 @@ void print(strings_column_view const& strings,
     return;
   }
   rmm::device_vector<char> buffer(buffer_size, 0);  // allocate and pre-null-terminate
-  char* d_buffer = buffer.data().get();
+  char*                    d_buffer = buffer.data().get();
   // copy strings into output buffer
   thrust::for_each_n(
     thrust::device,
@@ -107,7 +107,7 @@ void print(strings_column_view const& strings,
     [d_column, max_width, first, d_output_offsets, d_buffer] __device__(size_type idx) {
       if (d_column.is_null(first + idx)) return;
       string_view d_str = d_column.element<string_view>(first + idx);
-      size_type bytes   = d_str.size_bytes();
+      size_type   bytes = d_str.size_bytes();
       if ((max_width > 0) && (d_str.length() > max_width)) bytes = d_str.byte_offset(max_width);
       memcpy(d_buffer + d_output_offsets[idx], d_str.data(), bytes);
     });
@@ -134,12 +134,12 @@ void print(strings_column_view const& strings,
 
 //
 std::pair<rmm::device_vector<char>, rmm::device_vector<size_type>> create_offsets(
-  strings_column_view const& strings,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
-  size_type count          = strings.size();
+  size_type      count     = strings.size();
   const int32_t* d_offsets = strings.offsets().data<int32_t>();
   d_offsets += strings.offset();  // nvbug-2808421 : do not combine with the previous line
   int32_t first = 0;
@@ -160,7 +160,7 @@ std::pair<rmm::device_vector<char>, rmm::device_vector<size_type>> create_offset
   stream.synchronize();
 
   bytes -= first;
-  const char* d_chars = strings.chars().data<char>() + first;
+  const char*              d_chars = strings.chars().data<char>() + first;
   rmm::device_vector<char> chars(bytes);
   CUDA_TRY(
     cudaMemcpyAsync(chars.data().get(), d_chars, bytes, cudaMemcpyDeviceToHost, stream.value()));

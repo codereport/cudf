@@ -62,7 +62,7 @@ void __global__ test_kernel(int* data) { data[threadIdx.x] = threadIdx.x; }
 TEST(StreamCheck, FailedKernel)
 {
   rmm::cuda_stream stream;
-  int a;
+  int              a;
   test_kernel<<<0, 0, 0, stream.value()>>>(&a);
 #ifdef NDEBUG
   stream.synchronize();
@@ -73,7 +73,7 @@ TEST(StreamCheck, FailedKernel)
 TEST(StreamCheck, CatchFailedKernel)
 {
   rmm::cuda_stream stream;
-  int a;
+  int              a;
   test_kernel<<<0, 0, 0, stream.value()>>>(&a);
 #ifndef NDEBUG
   stream.synchronize();

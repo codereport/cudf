@@ -41,9 +41,9 @@ namespace {
  */
 struct explode_functor {
   template <typename T>
-  std::unique_ptr<table> operator()(table_view const& input_table,
-                                    size_type explode_column_idx,
-                                    rmm::cuda_stream_view stream,
+  std::unique_ptr<table> operator()(table_view const&                input_table,
+                                    size_type                        explode_column_idx,
+                                    rmm::cuda_stream_view            stream,
                                     rmm::mr::device_memory_resource* mr) const
   {
     CUDF_FAIL("Unsupported non-list column");
@@ -54,9 +54,9 @@ struct explode_functor {
 
 template <>
 std::unique_ptr<table> explode_functor::operator()<list_view>(
-  table_view const& input_table,
-  size_type explode_column_idx,
-  rmm::cuda_stream_view stream,
+  table_view const&                input_table,
+  size_type                        explode_column_idx,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr) const
 {
   /* we explode by building a gather map that includes the number of entries in each list inside
@@ -67,8 +67,8 @@ std::unique_ptr<table> explode_functor::operator()<list_view>(
    Next we build the explode column, which turns out is simply lifting the child column out of the
    explode column. This unrolls the top level of lists. Then we need to insert the explode column
    back into the table and return it. */
-  lists_column_view lc{input_table.column(explode_column_idx)};
-  auto sliced_child = lc.get_sliced_child(stream);
+  lists_column_view              lc{input_table.column(explode_column_idx)};
+  auto                           sliced_child = lc.get_sliced_child(stream);
   rmm::device_uvector<size_type> gather_map_indices(sliced_child.size(), stream, mr);
 
   // sliced columns can make this a little tricky. We have to start iterating at the start of the
@@ -118,9 +118,9 @@ std::unique_ptr<table> explode_functor::operator()<list_view>(
  *
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
-std::unique_ptr<table> explode(table_view const& input_table,
-                               size_type explode_column_idx,
-                               rmm::cuda_stream_view stream,
+std::unique_ptr<table> explode(table_view const&                input_table,
+                               size_type                        explode_column_idx,
+                               rmm::cuda_stream_view            stream,
                                rmm::mr::device_memory_resource* mr)
 {
   return type_dispatcher(input_table.column(explode_column_idx).type(),
@@ -136,8 +136,8 @@ std::unique_ptr<table> explode(table_view const& input_table,
 /**
  * @copydoc cudf::explode(input_table,explode_column_idx,rmm::mr::device_memory_resource)
  */
-std::unique_ptr<table> explode(table_view const& input_table,
-                               size_type explode_column_idx,
+std::unique_ptr<table> explode(table_view const&                input_table,
+                               size_type                        explode_column_idx,
                                rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

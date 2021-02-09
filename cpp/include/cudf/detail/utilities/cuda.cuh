@@ -89,8 +89,8 @@ __device__ T single_lane_block_sum_reduce(T lane_value)
   static_assert(block_size <= 1024, "Invalid block size.");
   static_assert(std::is_arithmetic<T>::value, "Invalid non-arithmetic type.");
   constexpr auto warps_per_block{block_size / warp_size};
-  auto const lane_id{threadIdx.x % warp_size};
-  auto const warp_id{threadIdx.x / warp_size};
+  auto const     lane_id{threadIdx.x % warp_size};
+  auto const     warp_id{threadIdx.x / warp_size};
   __shared__ T lane_values[warp_size];
 
   // Load each lane's value into a shared memory array
@@ -118,7 +118,7 @@ __device__ T single_lane_block_sum_reduce(T lane_value)
  * @return cudf::size_type Elements per thread that can be processed for given specification.
  */
 template <typename Kernel>
-cudf::size_type elements_per_thread(Kernel kernel,
+cudf::size_type elements_per_thread(Kernel          kernel,
                                     cudf::size_type total_size,
                                     cudf::size_type block_size,
                                     cudf::size_type max_per_thread = 32)

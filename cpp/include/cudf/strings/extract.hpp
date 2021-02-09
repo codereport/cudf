@@ -51,8 +51,8 @@ namespace strings {
  * @return Columns of strings extracted from the input column.
  */
 std::unique_ptr<table> extract(
-  strings_column_view const& strings,
-  std::string const& pattern,
+  strings_column_view const&       strings,
+  std::string const&               pattern,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group

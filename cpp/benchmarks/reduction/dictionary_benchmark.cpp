@@ -48,7 +48,7 @@ void BM_reduction_dictionary(benchmark::State& state, std::unique_ptr<cudf::aggr
 
   for (auto _ : state) {
     cuda_event_timer timer(state, true);
-    auto result = cudf::reduce(values, agg, output_dtype);
+    auto             result = cudf::reduce(values, agg, output_dtype);
   }
 }
 

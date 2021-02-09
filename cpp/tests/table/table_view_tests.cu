@@ -33,15 +33,15 @@
 // in `ouput` would be `true`/1 else `false`/0.
 struct TableViewTest : public cudf::test::BaseFixture {
 };
-void row_comparison(cudf::table_view input1,
-                    cudf::table_view input2,
-                    cudf::mutable_column_view output,
+void row_comparison(cudf::table_view                input1,
+                    cudf::table_view                input2,
+                    cudf::mutable_column_view       output,
                     std::vector<cudf::order> const& column_order)
 {
   rmm::cuda_stream_view stream{};
 
-  auto device_table_1 = cudf::table_device_view::create(input1, stream);
-  auto device_table_2 = cudf::table_device_view::create(input2, stream);
+  auto                            device_table_1 = cudf::table_device_view::create(input1, stream);
+  auto                            device_table_2 = cudf::table_device_view::create(input2, stream);
   rmm::device_vector<cudf::order> d_column_order(column_order);
 
   auto comparator = cudf::row_lexicographic_comparator<false>(
@@ -60,7 +60,7 @@ TEST_F(TableViewTest, EmptyColumnedTable)
   std::vector<cudf::column_view> cols{};
 
   cudf::table_view input(cols);
-  cudf::size_type expected = 0;
+  cudf::size_type  expected = 0;
 
   EXPECT_EQ(input.num_columns(), expected);
 }
@@ -69,7 +69,7 @@ TEST_F(TableViewTest, TestLexicographicalComparatorTwoTableCase)
 {
   cudf::test::fixed_width_column_wrapper<int16_t> col1{{1, 2, 3, 4}};
   cudf::test::fixed_width_column_wrapper<int16_t> col2{{0, 1, 4, 3}};
-  std::vector<cudf::order> column_order{cudf::order::DESCENDING};
+  std::vector<cudf::order>                        column_order{cudf::order::DESCENDING};
 
   cudf::table_view input_table_1{{col1}};
   cudf::table_view input_table_2{{col2}};
@@ -85,7 +85,7 @@ TEST_F(TableViewTest, TestLexicographicalComparatorTwoTableCase)
 TEST_F(TableViewTest, TestLexicographicalComparatorSameTable)
 {
   cudf::test::fixed_width_column_wrapper<int16_t> col1{{1, 2, 3, 4}};
-  std::vector<cudf::order> column_order{cudf::order::DESCENDING};
+  std::vector<cudf::order>                        column_order{cudf::order::DESCENDING};
 
   cudf::table_view input_table_1{{col1}};
 
@@ -101,11 +101,11 @@ TEST_F(TableViewTest, Select)
 {
   using cudf::test::fixed_width_column_wrapper;
 
-  fixed_width_column_wrapper<int8_t> col1{{1, 2, 3, 4}};
+  fixed_width_column_wrapper<int8_t>  col1{{1, 2, 3, 4}};
   fixed_width_column_wrapper<int16_t> col2{{1, 2, 3, 4}};
   fixed_width_column_wrapper<int32_t> col3{{4, 5, 6, 7}};
   fixed_width_column_wrapper<int64_t> col4{{4, 5, 6, 7}};
-  cudf::table_view t{{col1, col2, col3, col4}};
+  cudf::table_view                    t{{col1, col2, col3, col4}};
 
   cudf::table_view selected = t.select({2, 3});
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(t.column(2), selected.column(0));
@@ -116,11 +116,11 @@ TEST_F(TableViewTest, SelectOutOfBounds)
 {
   using cudf::test::fixed_width_column_wrapper;
 
-  fixed_width_column_wrapper<int8_t> col1{{1, 2, 3, 4}};
+  fixed_width_column_wrapper<int8_t>  col1{{1, 2, 3, 4}};
   fixed_width_column_wrapper<int16_t> col2{{1, 2, 3, 4}};
   fixed_width_column_wrapper<int32_t> col3{{4, 5, 6, 7}};
   fixed_width_column_wrapper<int64_t> col4{{4, 5, 6, 7}};
-  cudf::table_view t{{col1, col2}};
+  cudf::table_view                    t{{col1, col2}};
 
   EXPECT_THROW(t.select({2, 3, 4}), std::out_of_range);
 }
@@ -129,11 +129,11 @@ TEST_F(TableViewTest, SelectNoColumns)
 {
   using cudf::test::fixed_width_column_wrapper;
 
-  fixed_width_column_wrapper<int8_t> col1{{1, 2, 3, 4}};
+  fixed_width_column_wrapper<int8_t>  col1{{1, 2, 3, 4}};
   fixed_width_column_wrapper<int16_t> col2{{1, 2, 3, 4}};
   fixed_width_column_wrapper<int32_t> col3{{4, 5, 6, 7}};
   fixed_width_column_wrapper<int64_t> col4{{4, 5, 6, 7}};
-  cudf::table_view t{{col1, col2, col3, col4}};
+  cudf::table_view                    t{{col1, col2, col3, col4}};
 
   cudf::table_view selected = t.select({});
   EXPECT_EQ(selected.num_columns(), 0);

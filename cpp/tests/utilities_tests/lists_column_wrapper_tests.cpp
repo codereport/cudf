@@ -254,7 +254,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, ListOfLists)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 2});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 2);
 
@@ -291,7 +291,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, ListOfLists)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 2, 5, 6});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 6);
 
@@ -338,7 +338,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, ListOfListsWithValidity)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 2});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 2);
 
@@ -379,7 +379,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, ListOfListsWithValidity)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 2, 5, 6});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 6);
     EXPECT_EQ(childv.null_count(), 2);
@@ -434,7 +434,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, ListOfListOfListsWithValidity)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 2, 4});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 4);
     EXPECT_EQ(childv.null_count(), 1);
@@ -444,7 +444,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, ListOfListOfListsWithValidity)
     test::fixed_width_column_wrapper<size_type> e_child_offsets({0, 2, 2, 4, 6});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_child_offsets, child_offsets);
 
-    auto child_child = childv.child();
+    auto              child_child = childv.child();
     lists_column_view child_childv(child_child);
     EXPECT_EQ(child_childv.size(), 6);
 
@@ -573,7 +573,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, EmptyLists)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 1, 4, 7});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 7);
 
@@ -695,7 +695,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, EmptyListsWithValidity)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 1, 1, 4});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 4);
 
@@ -744,7 +744,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 1, 2, 2});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 2);
 
@@ -753,7 +753,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_child_offsets({0, 1, 1});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_child_offsets, child_offsets);
 
-    auto child_child = childv.child();
+    auto              child_child = childv.child();
     lists_column_view child_childv(child_child);
     EXPECT_EQ(child_childv.size(), 1);
 
@@ -789,7 +789,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 0, 1, 2});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 2);
 
@@ -798,7 +798,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_child_offsets({0, 0, 1});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_child_offsets, child_offsets);
 
-    auto child_child = childv.child();
+    auto              child_child = childv.child();
     lists_column_view child_childv(child_child);
     EXPECT_EQ(child_childv.size(), 1);
 
@@ -836,7 +836,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 0, 1, 2});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 2);
 
@@ -845,7 +845,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_child_offsets({0, 1, 1});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_child_offsets, child_offsets);
 
-    auto child_child = childv.child();
+    auto              child_child = childv.child();
     lists_column_view child_childv(child_child);
     EXPECT_EQ(child_childv.size(), 1);
 
@@ -876,7 +876,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
   //   Children :
   {
     // { {{{}}}, {{}}, null }
-    std::vector<bool> valids{true, true, false};
+    std::vector<bool>                      valids{true, true, false};
     test::lists_column_wrapper<T, int32_t> list{{{{LCW{}}}, {LCW{}}, LCW{}}, valids.begin()};
 
     lists_column_view lcv(list);
@@ -888,7 +888,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 1, 2, 2});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 2);
 
@@ -897,7 +897,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_child_offsets({0, 1, 1});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_child_offsets, child_offsets);
 
-    auto child_child = childv.child();
+    auto              child_child = childv.child();
     lists_column_view child_childv(child_child);
     EXPECT_EQ(child_childv.size(), 1);
 
@@ -923,7 +923,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
   //   Children :
   {
     // { {{{}}}, null, {} }
-    std::vector<bool> valids{true, false, true};
+    std::vector<bool>                      valids{true, false, true};
     test::lists_column_wrapper<T, int32_t> list{{{{LCW{}}}, {LCW{}}, LCW{}}, valids.begin()};
 
     lists_column_view lcv(list);
@@ -935,7 +935,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 1, 1, 1});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 1);
 
@@ -944,7 +944,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_child_offsets({0, 1});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_child_offsets, child_offsets);
 
-    auto child_child = childv.child();
+    auto              child_child = childv.child();
     lists_column_view child_childv(child_child);
     EXPECT_EQ(child_childv.size(), 1);
 
@@ -966,7 +966,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
   //   Children :
   {
     // { null, {{}}, {} }
-    std::vector<bool> valids{false, true, true};
+    std::vector<bool>                      valids{false, true, true};
     test::lists_column_wrapper<T, int32_t> list{{{{LCW{}}}, {LCW{}}, LCW{}}, valids.begin()};
 
     lists_column_view lcv(list);
@@ -978,7 +978,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 0, 1, 1});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 1);
 
@@ -1000,7 +1000,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
   //   Children :
   {
     // { null, null, null }
-    std::vector<bool> valids{false, false, false};
+    std::vector<bool>                      valids{false, false, false};
     test::lists_column_wrapper<T, int32_t> list{{{{LCW{}}}, {LCW{}}, LCW{}}, valids.begin()};
 
     lists_column_view lcv(list);
@@ -1012,7 +1012,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 0, 0, 0});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 0);
   }
@@ -1029,7 +1029,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
   //   Children :
   {
     // { null, null, null }
-    std::vector<bool> valids{false, false, false};
+    std::vector<bool>                      valids{false, false, false};
     test::lists_column_wrapper<T, int32_t> list{{LCW{}, {{LCW{}}}, {LCW{}}}, valids.begin()};
 
     lists_column_view lcv(list);
@@ -1041,7 +1041,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 0, 0, 0});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 0);
   }
@@ -1062,7 +1062,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
   //      Children :
   {
     // { {null}, {{}}, {} }
-    std::vector<bool> valids{false};
+    std::vector<bool>                      valids{false};
     test::lists_column_wrapper<T, int32_t> list{{{{LCW{}}}, valids.begin()}, {LCW{}}, LCW{}};
 
     lists_column_view lcv(list);
@@ -1073,7 +1073,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 1, 2, 2});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 2);
     EXPECT_EQ(childv.null_count(), 1);
@@ -1083,7 +1083,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_child_offsets({0, 0, 0});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_child_offsets, child_offsets);
 
-    auto child_child = childv.child();
+    auto              child_child = childv.child();
     lists_column_view child_childv(child_child);
     EXPECT_EQ(child_childv.size(), 0);
   }
@@ -1115,7 +1115,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 1, 3, 3, 5});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 5);
 
@@ -1124,7 +1124,7 @@ TYPED_TEST(ListColumnWrapperTestTyped, IncompleteHierarchies)
     test::fixed_width_column_wrapper<size_type> e_child_offsets({0, 2, 2, 3, 3, 3});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_child_offsets, child_offsets);
 
-    auto child_child = childv.child();
+    auto              child_child = childv.child();
     lists_column_view child_childv(child_child);
     EXPECT_EQ(child_childv.size(), 3);
 
@@ -1196,7 +1196,7 @@ TEST_F(ListColumnWrapperTest, ListOfListOfStrings)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 2, 4});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 4);
 
@@ -1329,7 +1329,7 @@ TEST_F(ListColumnWrapperTest, ListOfListOfBools)
     test::fixed_width_column_wrapper<size_type> e_offsets({0, 2, 5, 6});
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(e_offsets, offsets);
 
-    auto child = lcv.child();
+    auto              child = lcv.child();
     lists_column_view childv(child);
     EXPECT_EQ(childv.size(), 6);
 

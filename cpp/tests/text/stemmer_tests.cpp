@@ -45,7 +45,7 @@ TEST_F(TextStemmerTest, PorterStemmer)
                                      "ivy",
                                      "private",
                                      "orrery"};
-  auto validity =
+  auto                     validity =
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; });
   cudf::test::strings_column_wrapper strings(h_strings.begin(), h_strings.end(), validity);
 
@@ -71,7 +71,7 @@ TEST_F(TextStemmerTest, IsLetterIndex)
                                      "ivy",
                                      "private",
                                      "orrery"};
-  auto validity =
+  auto                     validity =
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; });
   cudf::test::strings_column_wrapper strings(h_strings.begin(), h_strings.end(), validity);
 
@@ -130,7 +130,7 @@ TEST_F(TextStemmerTest, IsLetterIndices)
                                      "ivy",
                                      "private",
                                      "orrery"};
-  auto validity =
+  auto                     validity =
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; });
   cudf::test::strings_column_wrapper strings(h_strings.begin(), h_strings.end(), validity);
   cudf::test::fixed_width_column_wrapper<int32_t> indices(
@@ -155,7 +155,7 @@ TEST_F(TextStemmerTest, EmptyTest)
 {
   auto strings = cudf::make_empty_column(cudf::data_type{cudf::type_id::STRING});
   cudf::strings_column_view sv(strings->view());
-  auto results = nvtext::porter_stemmer_measure(sv);
+  auto                      results = nvtext::porter_stemmer_measure(sv);
   EXPECT_EQ(results->size(), 0);
   results = nvtext::is_letter(sv, nvtext::letter_type::CONSONANT, 0);
   EXPECT_EQ(results->size(), 0);

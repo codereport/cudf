@@ -57,8 +57,8 @@ namespace nvtext {
  */
 std::unique_ptr<cudf::column> tokenize(
   cudf::strings_column_view const& strings,
-  cudf::string_scalar const& delimiter = cudf::string_scalar{""},
-  rmm::mr::device_memory_resource* mr  = rmm::mr::get_current_device_resource());
+  cudf::string_scalar const&       delimiter = cudf::string_scalar{""},
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Returns a single column of strings by tokenizing the input strings
@@ -120,8 +120,8 @@ std::unique_ptr<cudf::column> tokenize(
  */
 std::unique_ptr<cudf::column> count_tokens(
   cudf::strings_column_view const& strings,
-  cudf::string_scalar const& delimiter = cudf::string_scalar{""},
-  rmm::mr::device_memory_resource* mr  = rmm::mr::get_current_device_resource());
+  cudf::string_scalar const&       delimiter = cudf::string_scalar{""},
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Returns the number of tokens in each string of a strings column
@@ -211,9 +211,9 @@ std::unique_ptr<cudf::column> character_tokenize(
  */
 std::unique_ptr<cudf::column> detokenize(
   cudf::strings_column_view const& strings,
-  cudf::column_view const& row_indices,
-  cudf::string_scalar const& separator = cudf::string_scalar(" "),
-  rmm::mr::device_memory_resource* mr  = rmm::mr::get_current_device_resource());
+  cudf::column_view const&         row_indices,
+  cudf::string_scalar const&       separator = cudf::string_scalar(" "),
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of tokenize group
 }  // namespace nvtext

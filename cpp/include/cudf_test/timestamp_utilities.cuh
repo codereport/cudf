@@ -44,7 +44,7 @@ using time_point_ms =
  * @param stop The last timestamp as a cuda::std::chrono::time_point
  */
 template <typename T, bool nullable = false>
-inline cudf::test::fixed_width_column_wrapper<T, int64_t> generate_timestamps(int32_t count,
+inline cudf::test::fixed_width_column_wrapper<T, int64_t> generate_timestamps(int32_t       count,
                                                                               time_point_ms start,
                                                                               time_point_ms stop)
 {

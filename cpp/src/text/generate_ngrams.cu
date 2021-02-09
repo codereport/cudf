@@ -48,10 +48,10 @@ namespace {
  */
 struct ngram_generator_fn {
   cudf::column_device_view const d_strings;
-  cudf::size_type ngrams;
-  cudf::string_view const d_separator;
-  int32_t const* d_offsets{};
-  char* d_chars{};
+  cudf::size_type                ngrams;
+  cudf::string_view const        d_separator;
+  int32_t const*                 d_offsets{};
+  char*                          d_chars{};
 
   /**
    * @brief Build ngram for each string.
@@ -64,8 +64,8 @@ struct ngram_generator_fn {
    */
   __device__ cudf::size_type operator()(cudf::size_type idx)
   {
-    char* out_ptr         = d_chars ? d_chars + d_offsets[idx] : nullptr;
-    cudf::size_type bytes = 0;
+    char*           out_ptr = d_chars ? d_chars + d_offsets[idx] : nullptr;
+    cudf::size_type bytes   = 0;
     for (cudf::size_type n = 0; n < ngrams; ++n) {
       auto const d_str = d_strings.element<cudf::string_view>(n + idx);
       bytes += d_str.size_bytes();
@@ -82,10 +82,10 @@ struct ngram_generator_fn {
 
 std::unique_ptr<cudf::column> generate_ngrams(
   cudf::strings_column_view const& strings,
-  cudf::size_type ngrams               = 2,
-  cudf::string_scalar const& separator = cudf::string_scalar{"_"},
-  rmm::cuda_stream_view stream         = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr  = rmm::mr::get_current_device_resource())
+  cudf::size_type                  ngrams    = 2,
+  cudf::string_scalar const&       separator = cudf::string_scalar{"_"},
+  rmm::cuda_stream_view            stream    = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr        = rmm::mr::get_current_device_resource())
 {
   CUDF_EXPECTS(separator.is_valid(), "Parameter separator must be valid");
   cudf::string_view const d_separator(separator.data(), separator.size());
@@ -141,7 +141,7 @@ std::unique_ptr<cudf::column> generate_ngrams(
   // build the chars column
   // generate the ngrams from the input strings and copy them into the chars data buffer
   cudf::size_type const total_bytes = thrust::device_pointer_cast(d_offsets)[ngrams_count];
-  auto chars_column =
+  auto                  chars_column =
     cudf::strings::detail::create_chars_child_column(ngrams_count, 0, total_bytes, stream, mr);
   char* const d_chars = chars_column->mutable_view().data<char>();
 
@@ -164,8 +164,8 @@ std::unique_ptr<cudf::column> generate_ngrams(
 }  // namespace detail
 
 std::unique_ptr<cudf::column> generate_ngrams(cudf::strings_column_view const& strings,
-                                              cudf::size_type ngrams,
-                                              cudf::string_scalar const& separator,
+                                              cudf::size_type                  ngrams,
+                                              cudf::string_scalar const&       separator,
                                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -177,21 +177,21 @@ namespace {
 
 struct character_ngram_generator_fn {
   cudf::column_device_view const d_strings;
-  cudf::size_type ngrams;
-  int32_t const* d_ngram_offsets{};
-  int32_t* d_offsets{};
-  char* d_chars{};
+  cudf::size_type                ngrams;
+  int32_t const*                 d_ngram_offsets{};
+  int32_t*                       d_offsets{};
+  char*                          d_chars{};
 
   __device__ void operator()(cudf::size_type idx)
   {
     if (d_strings.is_null(idx)) return;
     auto const d_str = d_strings.element<cudf::string_view>(idx);
     if (d_str.empty()) return;
-    auto itr                = d_str.begin();
+    auto       itr          = d_str.begin();
     auto const ngram_offset = d_ngram_offsets[idx];
     auto const ngram_count  = d_ngram_offsets[idx + 1] - ngram_offset;
-    auto d_sizes            = d_offsets + ngram_offset;
-    auto out_ptr            = d_chars ? d_chars + *d_sizes : nullptr;
+    auto       d_sizes      = d_offsets + ngram_offset;
+    auto       out_ptr      = d_chars ? d_chars + *d_sizes : nullptr;
     for (cudf::size_type n = 0; n < ngram_count; ++n, ++itr) {
       auto const begin = itr.byte_offset();
       auto const end   = (itr + ngrams).byte_offset();
@@ -207,8 +207,8 @@ struct character_ngram_generator_fn {
 }  // namespace
 
 std::unique_ptr<cudf::column> generate_character_ngrams(cudf::strings_column_view const& strings,
-                                                        cudf::size_type ngrams,
-                                                        rmm::cuda_stream_view stream,
+                                                        cudf::size_type                  ngrams,
+                                                        rmm::cuda_stream_view            stream,
                                                         rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(ngrams > 1, "Parameter ngrams should be an integer value of 2 or greater");
@@ -236,8 +236,8 @@ std::unique_ptr<cudf::column> generate_character_ngrams(cudf::strings_column_vie
     thrust::plus<cudf::size_type>());
 
   // total count is the last entry
-  auto const d_ngram_offsets   = ngram_offsets.data().get();
-  cudf::size_type total_ngrams = 0;
+  auto const      d_ngram_offsets = ngram_offsets.data().get();
+  cudf::size_type total_ngrams    = 0;
   CUDA_TRY(cudaMemcpyAsync(&total_ngrams,
                            d_ngram_offsets + strings_count,
                            sizeof(cudf::size_type),
@@ -287,7 +287,7 @@ std::unique_ptr<cudf::column> generate_character_ngrams(cudf::strings_column_vie
 }  // namespace detail
 
 std::unique_ptr<cudf::column> generate_character_ngrams(cudf::strings_column_view const& strings,
-                                                        cudf::size_type ngrams,
+                                                        cudf::size_type                  ngrams,
                                                         rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

@@ -33,9 +33,9 @@
 
 template <typename T, typename ScalarType = cudf::scalar_type_t<T>>
 std::unique_ptr<cudf::scalar> make_scalar(
-  T value                             = 0,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  T                                value  = 0,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   auto s = new ScalarType(value, true, stream, mr);
   return std::unique_ptr<cudf::scalar>(s);
@@ -43,7 +43,7 @@ std::unique_ptr<cudf::scalar> make_scalar(
 
 template <typename T>
 struct value_func {
-  T* data;
+  T*              data;
   cudf::size_type offset;
 
   __device__ T operator()(int idx) { return data[idx - offset]; }
@@ -63,10 +63,10 @@ struct validity_func {
 template <bool use_validity, int shift_factor>
 static void BM_shift(benchmark::State& state)
 {
-  cudf::size_type size   = state.range(0);
-  cudf::size_type offset = size * (static_cast<double>(shift_factor) / 100.0);
-  auto idx_begin         = thrust::make_counting_iterator<cudf::size_type>(0);
-  auto idx_end           = thrust::make_counting_iterator<cudf::size_type>(size);
+  cudf::size_type size      = state.range(0);
+  cudf::size_type offset    = size * (static_cast<double>(shift_factor) / 100.0);
+  auto            idx_begin = thrust::make_counting_iterator<cudf::size_type>(0);
+  auto            idx_end   = thrust::make_counting_iterator<cudf::size_type>(size);
 
   auto input = use_validity
                  ? cudf::test::fixed_width_column_wrapper<int>(
@@ -79,7 +79,7 @@ static void BM_shift(benchmark::State& state)
 
   for (auto _ : state) {
     cuda_event_timer raii(state, true);
-    auto output = cudf::shift(input, offset, *fill);
+    auto             output = cudf::shift(input, offset, *fill);
   }
 }
 

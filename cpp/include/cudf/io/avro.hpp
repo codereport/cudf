@@ -210,7 +210,7 @@ class avro_reader_options_builder {
  * @return The set of columns along with metadata.
  */
 table_with_metadata read_avro(
-  avro_reader_options const& options,
+  avro_reader_options const&       options,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

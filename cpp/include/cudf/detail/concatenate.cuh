@@ -35,10 +35,10 @@ namespace detail {
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 void concatenate_masks(rmm::device_vector<column_device_view> const& d_views,
-                       rmm::device_vector<size_t> const& d_offsets,
-                       bitmask_type* dest_mask,
-                       size_type output_size,
-                       rmm::cuda_stream_view stream);
+                       rmm::device_vector<size_t> const&             d_offsets,
+                       bitmask_type*                                 dest_mask,
+                       size_type                                     output_size,
+                       rmm::cuda_stream_view                         stream);
 
 /**
  * @copydoc cudf::concatenate_masks(std::vector<column_view> const&,bitmask_type*)
@@ -46,8 +46,8 @@ void concatenate_masks(rmm::device_vector<column_device_view> const& d_views,
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
 void concatenate_masks(std::vector<column_view> const& views,
-                       bitmask_type* dest_mask,
-                       rmm::cuda_stream_view stream);
+                       bitmask_type*                   dest_mask,
+                       rmm::cuda_stream_view           stream);
 
 }  // namespace detail
 }  // namespace cudf

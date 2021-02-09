@@ -78,7 +78,7 @@ struct unbound_list_view {
    */
   CUDA_DEVICE_CALLABLE unbound_list_view(label_type scatter_source_label,
                                          cudf::detail::lists_column_device_view const& lists_column,
-                                         size_type const& row_index)
+                                         size_type const&                              row_index)
     : _label{scatter_source_label}, _row_index{row_index}
   {
     _size = list_device_view{lists_column, row_index}.size();
@@ -92,7 +92,7 @@ struct unbound_list_view {
    * @param row_index Index of the row that this instance represents in the source/target column
    * @param size The number of elements in this list row
    */
-  CUDA_DEVICE_CALLABLE unbound_list_view(label_type scatter_source_label,
+  CUDA_DEVICE_CALLABLE unbound_list_view(label_type       scatter_source_label,
                                          size_type const& row_index,
                                          size_type const& size)
     : _label{scatter_source_label}, _row_index{row_index}, _size{size}
@@ -123,8 +123,8 @@ struct unbound_list_view {
    * @return A (bound) list_view for the row that this object represents
    */
   CUDA_DEVICE_CALLABLE list_device_view
-  bind_to_column(lists_column_device_view const& scatter_source,
-                 lists_column_device_view const& scatter_target) const
+                       bind_to_column(lists_column_device_view const& scatter_source,
+                                      lists_column_device_view const& scatter_target) const
   {
     return list_device_view(_label == label_type::SOURCE ? scatter_source : scatter_target,
                             _row_index);
@@ -141,10 +141,10 @@ struct unbound_list_view {
 };
 
 rmm::device_uvector<unbound_list_view> list_vector_from_column(
-  unbound_list_view::label_type label,
+  unbound_list_view::label_type                 label,
   cudf::detail::lists_column_device_view const& lists_column,
-  rmm::cuda_stream_view stream,
-  rmm::mr::device_memory_resource* mr)
+  rmm::cuda_stream_view                         stream,
+  rmm::mr::device_memory_resource*              mr)
 {
   auto n_rows = lists_column.size();
 
@@ -175,12 +175,12 @@ rmm::device_uvector<unbound_list_view> list_vector_from_column(
  */
 std::pair<rmm::device_buffer, size_type> construct_child_nullmask(
   rmm::device_uvector<unbound_list_view> const& parent_list_vector,
-  column_view const& parent_list_offsets,
+  column_view const&                            parent_list_offsets,
   cudf::detail::lists_column_device_view const& source_lists,
   cudf::detail::lists_column_device_view const& target_lists,
-  size_type num_child_rows,
-  rmm::cuda_stream_view stream,
-  rmm::mr::device_memory_resource* mr)
+  size_type                                     num_child_rows,
+  rmm::cuda_stream_view                         stream,
+  rmm::mr::device_memory_resource*              mr)
 {
   auto is_valid_predicate = [d_list_vector  = parent_list_vector.begin(),
                              d_offsets      = parent_list_offsets.template data<size_type>(),
@@ -220,9 +220,9 @@ void print(std::string const& msg, column_view const& col, rmm::cuda_stream_view
   std::cout << "]" << std::endl;
 }
 
-void print(std::string const& msg,
+void print(std::string const&                            msg,
            rmm::device_uvector<unbound_list_view> const& scatter,
-           rmm::cuda_stream_view stream)
+           rmm::cuda_stream_view                         stream)
 {
   std::cout << msg << " == [";
 
@@ -320,11 +320,11 @@ struct list_child_constructor {
   template <typename T>
   std::enable_if_t<cudf::is_fixed_width<T>(), std::unique_ptr<column>> operator()(
     rmm::device_uvector<unbound_list_view> const& list_vector,
-    cudf::column_view const& list_offsets,
-    cudf::lists_column_view const& source_lists_column_view,
-    cudf::lists_column_view const& target_lists_column_view,
-    rmm::cuda_stream_view stream,
-    rmm::mr::device_memory_resource* mr) const
+    cudf::column_view const&                      list_offsets,
+    cudf::lists_column_view const&                source_lists_column_view,
+    cudf::lists_column_view const&                target_lists_column_view,
+    rmm::cuda_stream_view                         stream,
+    rmm::mr::device_memory_resource*              mr) const
   {
     auto source_column_device_view =
       column_device_view::create(source_lists_column_view.parent(), stream);
@@ -365,8 +365,8 @@ struct list_child_constructor {
                                              d_offsets = list_offsets.template data<int32_t>(),
                                              source_lists,
                                              target_lists] __device__(auto const& row_index) {
-      auto const unbound_list_row = d_scattered_lists[row_index];
-      auto const actual_list_row  = unbound_list_row.bind_to_column(source_lists, target_lists);
+      auto const  unbound_list_row = d_scattered_lists[row_index];
+      auto const  actual_list_row  = unbound_list_row.bind_to_column(source_lists, target_lists);
       auto const& bound_column =
         (unbound_list_row.label() == unbound_list_view::label_type::SOURCE ? source_lists
                                                                            : target_lists);
@@ -415,11 +415,11 @@ struct list_child_constructor {
   template <typename T>
   std::enable_if_t<std::is_same<T, string_view>::value, std::unique_ptr<column>> operator()(
     rmm::device_uvector<unbound_list_view> const& list_vector,
-    cudf::column_view const& list_offsets,
-    cudf::lists_column_view const& source_lists_column_view,
-    cudf::lists_column_view const& target_lists_column_view,
-    rmm::cuda_stream_view stream,
-    rmm::mr::device_memory_resource* mr) const
+    cudf::column_view const&                      list_offsets,
+    cudf::lists_column_view const&                source_lists_column_view,
+    cudf::lists_column_view const&                target_lists_column_view,
+    rmm::cuda_stream_view                         stream,
+    rmm::mr::device_memory_resource*              mr) const
   {
     auto source_column_device_view =
       column_device_view::create(source_lists_column_view.parent(), stream);
@@ -505,11 +505,11 @@ struct list_child_constructor {
   template <typename T>
   std::enable_if_t<std::is_same<T, list_view>::value, std::unique_ptr<column>> operator()(
     rmm::device_uvector<unbound_list_view> const& list_vector,
-    cudf::column_view const& list_offsets,
-    cudf::lists_column_view const& source_lists_column_view,
-    cudf::lists_column_view const& target_lists_column_view,
-    rmm::cuda_stream_view stream,
-    rmm::mr::device_memory_resource* mr) const
+    cudf::column_view const&                      list_offsets,
+    cudf::lists_column_view const&                source_lists_column_view,
+    cudf::lists_column_view const&                target_lists_column_view,
+    rmm::cuda_stream_view                         stream,
+    rmm::mr::device_memory_resource*              mr) const
   {
     auto source_column_device_view =
       column_device_view::create(source_lists_column_view.parent(), stream);
@@ -608,11 +608,11 @@ struct list_child_constructor {
   template <typename T>
   std::enable_if_t<std::is_same<T, struct_view>::value, std::unique_ptr<column>> operator()(
     rmm::device_uvector<unbound_list_view> const& list_vector,
-    cudf::column_view const& list_offsets,
-    cudf::lists_column_view const& source_lists_column_view,
-    cudf::lists_column_view const& target_lists_column_view,
-    rmm::cuda_stream_view stream,
-    rmm::mr::device_memory_resource* mr) const
+    cudf::column_view const&                      list_offsets,
+    cudf::lists_column_view const&                source_lists_column_view,
+    cudf::lists_column_view const&                target_lists_column_view,
+    rmm::cuda_stream_view                         stream,
+    rmm::mr::device_memory_resource*              mr) const
   {
     auto const source_column_device_view =
       column_device_view::create(source_lists_column_view.parent(), stream);
@@ -632,11 +632,11 @@ struct list_child_constructor {
     std::vector<std::unique_ptr<column>> child_columns;
     child_columns.reserve(num_struct_members);
 
-    auto project_member_as_list = [stream, mr](column_view const& structs_member,
-                                               cudf::size_type const& structs_list_num_rows,
-                                               column_view const& structs_list_offsets,
+    auto project_member_as_list = [stream, mr](column_view const&        structs_member,
+                                               cudf::size_type const&    structs_list_num_rows,
+                                               column_view const&        structs_list_offsets,
                                                rmm::device_buffer const& structs_list_nullmask,
-                                               cudf::size_type const& structs_list_null_count) {
+                                               cudf::size_type const&    structs_list_null_count) {
       return cudf::make_lists_column(structs_list_num_rows,
                                      std::make_unique<column>(structs_list_offsets, stream, mr),
                                      std::make_unique<column>(structs_member, stream, mr),
@@ -733,12 +733,12 @@ void assert_same_data_type(column_view const& lhs, column_view const& rhs)
  */
 template <typename MapIterator>
 std::unique_ptr<column> scatter(
-  column_view const& source,
-  MapIterator scatter_map_begin,
-  MapIterator scatter_map_end,
-  column_view const& target,
-  rmm::cuda_stream_view stream        = 0,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  column_view const&               source,
+  MapIterator                      scatter_map_begin,
+  MapIterator                      scatter_map_end,
+  column_view const&               target,
+  rmm::cuda_stream_view            stream = 0,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource())
 {
   auto const num_rows = target.size();
 
@@ -758,7 +758,7 @@ std::unique_ptr<column> scatter(
                                                      mr);
 
   auto const target_device_view = column_device_view::create(target, stream);
-  auto target_vector            = list_vector_from_column(unbound_list_view::label_type::TARGET,
+  auto       target_vector      = list_vector_from_column(unbound_list_view::label_type::TARGET,
                                                lists_column_device_view(*target_device_view),
                                                stream,
                                                mr);

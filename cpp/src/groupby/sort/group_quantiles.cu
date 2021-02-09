@@ -37,13 +37,13 @@ namespace {
 
 template <typename ResultType, typename Iterator>
 struct calculate_quantile_fn {
-  Iterator values_iter;
-  column_device_view d_group_size;
+  Iterator                   values_iter;
+  column_device_view         d_group_size;
   mutable_column_device_view d_result;
-  size_type const* d_group_offset;
-  double const* d_quantiles;
-  size_type num_quantiles;
-  interpolation interpolation;
+  size_type const*           d_group_offset;
+  double const*              d_quantiles;
+  size_type                  num_quantiles;
+  interpolation              interpolation;
 
   __device__ void operator()(size_type i)
   {
@@ -75,14 +75,14 @@ struct calculate_quantile_fn {
 struct quantiles_functor {
   template <typename T>
   std::enable_if_t<std::is_arithmetic<T>::value, std::unique_ptr<column>> operator()(
-    column_view const& values,
-    column_view const& group_sizes,
+    column_view const&                   values,
+    column_view const&                   group_sizes,
     rmm::device_vector<size_type> const& group_offsets,
-    size_type const num_groups,
-    rmm::device_vector<double> const& quantile,
-    interpolation interpolation,
-    rmm::cuda_stream_view stream,
-    rmm::mr::device_memory_resource* mr)
+    size_type const                      num_groups,
+    rmm::device_vector<double> const&    quantile,
+    interpolation                        interpolation,
+    rmm::cuda_stream_view                stream,
+    rmm::mr::device_memory_resource*     mr)
   {
     using ResultType = cudf::detail::target_type_t<T, aggregation::QUANTILE>;
 
@@ -143,14 +143,14 @@ struct quantiles_functor {
 }  // namespace
 
 // TODO: add optional check for is_sorted. Use context.flag_sorted
-std::unique_ptr<column> group_quantiles(column_view const& values,
-                                        column_view const& group_sizes,
+std::unique_ptr<column> group_quantiles(column_view const&                   values,
+                                        column_view const&                   group_sizes,
                                         rmm::device_vector<size_type> const& group_offsets,
-                                        size_type const num_groups,
-                                        std::vector<double> const& quantiles,
-                                        interpolation interp,
-                                        rmm::cuda_stream_view stream,
-                                        rmm::mr::device_memory_resource* mr)
+                                        size_type const                      num_groups,
+                                        std::vector<double> const&           quantiles,
+                                        interpolation                        interp,
+                                        rmm::cuda_stream_view                stream,
+                                        rmm::mr::device_memory_resource*     mr)
 {
   rmm::device_vector<double> dv_quantiles(quantiles);
 

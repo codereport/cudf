@@ -46,7 +46,7 @@ constexpr int THREADS_PER_BLOCK = 64;
  */
 struct update_strings_lengths_fn {
   uint32_t const* d_chars_up_to_idx;
-  uint32_t* d_offsets;
+  uint32_t*       d_offsets;
   __device__ void operator()(uint32_t idx)
   {
     auto const offset = d_offsets[idx];

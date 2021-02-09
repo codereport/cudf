@@ -32,13 +32,13 @@ namespace cudf {
 namespace test {
 enum class force_use_sort_impl : bool { NO, YES };
 
-inline void test_groups(column_view const& keys,
-                        column_view const& expect_grouped_keys,
+inline void test_groups(column_view const&            keys,
+                        column_view const&            expect_grouped_keys,
                         std::vector<size_type> const& expect_group_offsets,
-                        column_view const& values                = {},
-                        column_view const& expect_grouped_values = {})
+                        column_view const&            values                = {},
+                        column_view const&            expect_grouped_values = {})
 {
-  groupby::groupby gb(table_view({keys}));
+  groupby::groupby         gb(table_view({keys}));
   groupby::groupby::groups gb_groups;
 
   if (values.size()) {
@@ -59,16 +59,16 @@ inline void test_groups(column_view const& keys,
   }
 }
 
-inline void test_single_agg(column_view const& keys,
-                            column_view const& values,
-                            column_view const& expect_keys,
-                            column_view const& expect_vals,
+inline void test_single_agg(column_view const&             keys,
+                            column_view const&             values,
+                            column_view const&             expect_keys,
+                            column_view const&             expect_vals,
                             std::unique_ptr<aggregation>&& agg,
-                            force_use_sort_impl use_sort           = force_use_sort_impl::NO,
-                            null_policy include_null_keys          = null_policy::EXCLUDE,
-                            sorted keys_are_sorted                 = sorted::NO,
-                            std::vector<order> const& column_order = {},
-                            std::vector<null_order> const& null_precedence = {})
+                            force_use_sort_impl            use_sort = force_use_sort_impl::NO,
+                            null_policy                    include_null_keys = null_policy::EXCLUDE,
+                            sorted                         keys_are_sorted   = sorted::NO,
+                            std::vector<order> const&      column_order      = {},
+                            std::vector<null_order> const& null_precedence   = {})
 {
   std::vector<groupby::aggregation_request> requests;
   requests.emplace_back(groupby::aggregation_request());

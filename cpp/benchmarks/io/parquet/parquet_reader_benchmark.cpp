@@ -25,8 +25,8 @@
 
 // to enable, run cmake with -DBUILD_BENCHMARKS=ON
 
-constexpr size_t data_size         = 512 << 20;
-constexpr cudf::size_type num_cols = 64;
+constexpr size_t          data_size = 512 << 20;
+constexpr cudf::size_type num_cols  = 64;
 
 namespace cudf_io = cudf::io;
 
@@ -35,9 +35,9 @@ class ParquetRead : public cudf::benchmark {
 
 void BM_parq_read_varying_input(benchmark::State& state)
 {
-  auto const data_types             = get_type_or_group(state.range(0));
-  cudf::size_type const cardinality = state.range(1);
-  cudf::size_type const run_length  = state.range(2);
+  auto const                      data_types  = get_type_or_group(state.range(0));
+  cudf::size_type const           cardinality = state.range(1);
+  cudf::size_type const           run_length  = state.range(2);
   cudf_io::compression_type const compression =
     state.range(3) ? cudf_io::compression_type::SNAPPY : cudf_io::compression_type::NONE;
   io_type const source_type = static_cast<io_type>(state.range(4));
@@ -49,7 +49,7 @@ void BM_parq_read_varying_input(benchmark::State& state)
     create_random_table(data_types, num_cols, table_size_bytes{data_size}, table_data_profile);
   auto const view = tbl->view();
 
-  cuio_source_sink_pair source_sink(source_type);
+  cuio_source_sink_pair           source_sink(source_type);
   cudf_io::parquet_writer_options write_opts =
     cudf_io::parquet_writer_options::builder(source_sink.make_sink_info(), view)
       .compression(compression);
@@ -77,7 +77,7 @@ std::vector<std::string> get_col_names(std::vector<char> const& parquet_data)
 
 void BM_parq_read_varying_options(benchmark::State& state)
 {
-  auto state_idx        = 0;
+  auto       state_idx  = 0;
   auto const col_sel    = static_cast<column_selection>(state.range(state_idx++));
   auto const row_sel    = static_cast<row_selection>(state.range(state_idx++));
   auto const num_chunks = state.range(state_idx++);
@@ -96,7 +96,7 @@ void BM_parq_read_varying_options(benchmark::State& state)
   auto const tbl  = create_random_table(data_types, data_types.size(), table_size_bytes{data_size});
   auto const view = tbl->view();
 
-  std::vector<char> parquet_data;
+  std::vector<char>               parquet_data;
   cudf_io::parquet_writer_options options =
     cudf_io::parquet_writer_options::builder(cudf_io::sink_info{&parquet_data}, view);
   cudf_io::write_parquet(options);
@@ -110,8 +110,8 @@ void BM_parq_read_varying_options(benchmark::State& state)
       .use_pandas_metadata(use_pandas_metadata)
       .timestamp_type(ts_type);
 
-  auto const num_row_groups           = data_size / (128 << 20);
-  cudf::size_type const chunk_row_cnt = view.num_rows() / num_chunks;
+  auto const            num_row_groups = data_size / (128 << 20);
+  cudf::size_type const chunk_row_cnt  = view.num_rows() / num_chunks;
   for (auto _ : state) {
     cuda_event_timer raii(state, true);  // flush_l2_cache = true, stream = 0
 

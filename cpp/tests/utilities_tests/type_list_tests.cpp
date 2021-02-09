@@ -64,7 +64,7 @@ struct argument_type<T(U)> {
 template <typename T>
 std::string type_name()
 {
-  int status;
+  int   status;
   char *realname;
   realname = abi::__cxa_demangle(typeid(T).name(), 0, 0, &status);
   std::string name{realname};

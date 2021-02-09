@@ -40,8 +40,8 @@ class reprog;
  */
 class reclass_device {
  public:
-  int32_t builtins{};
-  int32_t count{};
+  int32_t   builtins{};
+  int32_t   count{};
   char32_t* literals{};
 
   __device__ bool is_match(char32_t ch, const uint8_t* flags);
@@ -77,9 +77,9 @@ class reprog_device {
    * @return The program device object.
    */
   static std::unique_ptr<reprog_device, std::function<void(reprog_device*)>> create(
-    std::string const& pattern,
-    const uint8_t* cp_flags,
-    int32_t strings_count,
+    std::string const&    pattern,
+    const uint8_t*        cp_flags,
+    int32_t               strings_count,
     rmm::cuda_stream_view stream);
   /**
    * @brief Called automatically by the unique_ptr returned from create().
@@ -135,10 +135,10 @@ class reprog_device {
    * matching in the string.
    * @return Returns 0 if no match is found.
    */
-  __device__ inline int32_t find(int32_t idx,
+  __device__ inline int32_t find(int32_t            idx,
                                  string_view const& d_str,
-                                 int32_t& begin,
-                                 int32_t& end);
+                                 int32_t&           begin,
+                                 int32_t&           end);
 
   /**
    * @brief Does an extract evaluation using the compiled expression on the given string.
@@ -159,15 +159,15 @@ class reprog_device {
     int32_t idx, string_view const& d_str, int32_t& begin, int32_t& end, int32_t column);
 
  private:
-  int32_t _startinst_id, _num_capturing_groups;
-  int32_t _insts_count, _starts_count, _classes_count;
-  const uint8_t* _codepoint_flags{};  // table of character types
-  reinst* _insts{};                   // array of regex instructions
-  int32_t* _startinst_ids{};          // array of start instruction ids
-  reclass_device* _classes{};         // array of regex classes
-  void* _relists_mem{};               // runtime relist memory for regexec
-  u_char* _stack_mem1{};              // memory for relist object 1
-  u_char* _stack_mem2{};              // memory for relist object 2
+  int32_t         _startinst_id, _num_capturing_groups;
+  int32_t         _insts_count, _starts_count, _classes_count;
+  const uint8_t*  _codepoint_flags{};  // table of character types
+  reinst*         _insts{};            // array of regex instructions
+  int32_t*        _startinst_ids{};    // array of start instruction ids
+  reclass_device* _classes{};          // array of regex classes
+  void*           _relists_mem{};      // runtime relist memory for regexec
+  u_char*         _stack_mem1{};       // memory for relist object 1
+  u_char*         _stack_mem2{};       // memory for relist object 2
 
   /**
    * @brief Executes the regex pattern on the given string.

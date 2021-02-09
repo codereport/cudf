@@ -117,10 +117,10 @@ string removeQuotes(string str, char quotechar)
  * @brief Parse the first row to set the column names in the raw_csv parameter.
  * The first row can be either the header row, or the first data row
  */
-std::vector<std::string> setColumnNames(std::vector<char> const &header,
+std::vector<std::string> setColumnNames(std::vector<char> const & header,
                                         parse_options_view const &opts,
-                                        int header_row,
-                                        std::string prefix)
+                                        int                       header_row,
+                                        std::string               prefix)
 {
   std::vector<std::string> col_names;
 
@@ -128,7 +128,7 @@ std::vector<std::string> setColumnNames(std::vector<char> const &header,
   if (header.size() <= 1) { return col_names; }
 
   std::vector<char> first_row = header;
-  int num_cols                = 0;
+  int               num_cols  = 0;
 
   bool quotation = false;
   for (size_t pos = 0, prev = 0; pos < first_row.size(); ++pos) {
@@ -349,8 +349,8 @@ table_with_metadata reader::impl::read(rmm::cuda_stream_view stream)
         // quotechars in quoted fields results in reduction to a single quotechar
         // TODO: Would be much more efficient to perform this operation in-place
         // during the conversion stage
-        const std::string quotechar(1, opts.quotechar);
-        const std::string dblquotechar(2, opts.quotechar);
+        const std::string       quotechar(1, opts.quotechar);
+        const std::string       dblquotechar(2, opts.quotechar);
         std::unique_ptr<column> col = make_strings_column(out_buffers[i]._strings, stream);
         out_columns.emplace_back(
           cudf::strings::replace(col->view(), dblquotechar, quotechar, -1, mr_));
@@ -383,22 +383,22 @@ size_t reader::impl::find_first_row_start(host_span<char const> const data)
 }
 
 void reader::impl::gather_row_offsets(host_span<char const> const data,
-                                      size_t range_begin,
-                                      size_t range_end,
-                                      size_t skip_rows,
-                                      int64_t num_rows,
-                                      bool load_whole_file,
-                                      rmm::cuda_stream_view stream)
+                                      size_t                      range_begin,
+                                      size_t                      range_end,
+                                      size_t                      skip_rows,
+                                      int64_t                     num_rows,
+                                      bool                        load_whole_file,
+                                      rmm::cuda_stream_view       stream)
 {
   constexpr size_t max_chunk_bytes = 64 * 1024 * 1024;  // 64MB
-  size_t buffer_size               = std::min(max_chunk_bytes, data.size());
-  size_t max_blocks =
+  size_t           buffer_size     = std::min(max_chunk_bytes, data.size());
+  size_t           max_blocks =
     std::max<size_t>((buffer_size / cudf::io::csv::gpu::rowofs_block_bytes) + 1, 2);
   hostdevice_vector<uint64_t> row_ctx(max_blocks);
-  size_t buffer_pos  = std::min(range_begin - std::min(range_begin, sizeof(char)), data.size());
-  size_t pos         = std::min(range_begin, data.size());
-  size_t header_rows = (opts_.get_header() >= 0) ? opts_.get_header() + 1 : 0;
-  uint64_t ctx       = 0;
+  size_t   buffer_pos  = std::min(range_begin - std::min(range_begin, sizeof(char)), data.size());
+  size_t   pos         = std::min(range_begin, data.size());
+  size_t   header_rows = (opts_.get_header() >= 0) ? opts_.get_header() + 1 : 0;
+  uint64_t ctx         = 0;
 
   // For compatibility with the previous parser, a row is considered in-range if the
   // previous row terminator is within the given range
@@ -590,7 +590,7 @@ std::vector<data_type> reader::impl::gather_column_types(rmm::cuda_stream_view s
     if (!is_dict) {
       if (opts_.get_dtypes().size() == 1) {
         // If it's a single dtype, assign that dtype to all active columns
-        data_type dtype_;
+        data_type           dtype_;
         column_parse::flags col_flags_;
         std::tie(dtype_, col_flags_) = get_dtype_info(opts_.get_dtypes()[0]);
         dtypes.resize(num_active_cols_, dtype_);
@@ -653,7 +653,7 @@ std::vector<data_type> reader::impl::gather_column_types(rmm::cuda_stream_view s
 }
 
 std::vector<column_buffer> reader::impl::decode_data(std::vector<data_type> const &column_types,
-                                                     rmm::cuda_stream_view stream)
+                                                     rmm::cuda_stream_view         stream)
 {
   // Alloc output; columns' data memory is still expected for empty dataframe
   std::vector<column_buffer> out_buffers;
@@ -663,7 +663,7 @@ std::vector<column_buffer> reader::impl::decode_data(std::vector<data_type> cons
   for (int col = 0, active_col = 0; col < num_actual_cols_; ++col) {
     if (h_column_flags_[col] & column_parse::enabled) {
       const bool is_final_allocation = column_types[active_col].id() != type_id::STRING;
-      auto out_buffer =
+      auto       out_buffer =
         column_buffer(column_types[active_col],
                       num_records_,
                       true,
@@ -676,7 +676,7 @@ std::vector<column_buffer> reader::impl::decode_data(std::vector<data_type> cons
     }
   }
 
-  thrust::host_vector<void *> h_data(num_active_cols_);
+  thrust::host_vector<void *>         h_data(num_active_cols_);
   thrust::host_vector<bitmask_type *> h_valid(num_active_cols_);
 
   for (int i = 0; i < num_active_cols_; ++i) {
@@ -684,8 +684,8 @@ std::vector<column_buffer> reader::impl::decode_data(std::vector<data_type> cons
     h_valid[i] = out_buffers[i].null_mask();
   }
 
-  rmm::device_vector<data_type> d_dtypes(column_types);
-  rmm::device_vector<void *> d_data          = h_data;
+  rmm::device_vector<data_type>      d_dtypes(column_types);
+  rmm::device_vector<void *>         d_data  = h_data;
   rmm::device_vector<bitmask_type *> d_valid = h_valid;
   d_column_flags_                            = h_column_flags_;
 
@@ -702,7 +702,7 @@ std::vector<column_buffer> reader::impl::decode_data(std::vector<data_type> cons
 /**
  * @brief Create a serialized trie for N/A value matching, based on the options.
  */
-thrust::host_vector<SerialTrieNode> create_na_trie(char quotechar,
+thrust::host_vector<SerialTrieNode> create_na_trie(char                      quotechar,
                                                    csv_reader_options const &reader_opts)
 {
   // Default values to recognize as null values
@@ -793,9 +793,9 @@ parse_options make_parse_options(csv_reader_options const &reader_opts)
   return parse_opts;
 }
 
-reader::impl::impl(std::unique_ptr<datasource> source,
-                   std::string filepath,
-                   csv_reader_options const &options,
+reader::impl::impl(std::unique_ptr<datasource>      source,
+                   std::string                      filepath,
+                   csv_reader_options const &       options,
                    rmm::mr::device_memory_resource *mr)
   : mr_(mr), source_(std::move(source)), filepath_(filepath), opts_(options)
 {
@@ -811,8 +811,8 @@ reader::impl::impl(std::unique_ptr<datasource> source,
 }
 
 // Forward to implementation
-reader::reader(std::vector<std::string> const &filepaths,
-               csv_reader_options const &options,
+reader::reader(std::vector<std::string> const & filepaths,
+               csv_reader_options const &       options,
                rmm::mr::device_memory_resource *mr)
 {
   CUDF_EXPECTS(filepaths.size() == 1, "Only a single source is currently supported.");
@@ -823,8 +823,8 @@ reader::reader(std::vector<std::string> const &filepaths,
 
 // Forward to implementation
 reader::reader(std::vector<std::unique_ptr<cudf::io::datasource>> &&sources,
-               csv_reader_options const &options,
-               rmm::mr::device_memory_resource *mr)
+               csv_reader_options const &                           options,
+               rmm::mr::device_memory_resource *                    mr)
 {
   CUDF_EXPECTS(sources.size() == 1, "Only a single source is currently supported.");
   _impl = std::make_unique<impl>(std::move(sources[0]), "", options, mr);

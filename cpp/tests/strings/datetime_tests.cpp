@@ -33,7 +33,7 @@ struct StringsDatetimeTest : public cudf::test::BaseFixture {
 
 TEST_F(StringsDatetimeTest, ToTimestamp)
 {
-  std::vector<const char*> h_strings{"1974-02-28T01:23:45Z",
+  std::vector<const char*>           h_strings{"1974-02-28T01:23:45Z",
                                      "2019-07-17T21:34:37Z",
                                      nullptr,
                                      "",
@@ -71,8 +71,8 @@ TEST_F(StringsDatetimeTest, ToTimestampAmPm)
                                              "2019-03-20 12:34:56 PM",
                                              "2020-02-29 12:00:00 AM",
                                              "1925-02-07 02:55:08 PM"};
-  auto strings_view = cudf::strings_column_view(strings);
-  auto results      = cudf::strings::to_timestamps(
+  auto                               strings_view = cudf::strings_column_view(strings);
+  auto                               results      = cudf::strings::to_timestamps(
     strings_view, cudf::data_type{cudf::type_id::TIMESTAMP_SECONDS}, "%Y-%m-%d %I:%M:%S %p");
   cudf::test::fixed_width_column_wrapper<cudf::timestamp_s, cudf::timestamp_s::rep> expected{
     131289825, 1563330896, 1553085296, 1582934400, -1416819892};
@@ -91,8 +91,8 @@ TEST_F(StringsDatetimeTest, ToTimestampMicrosecond)
                                              "2020-02-29 00:00:00.555777",
                                              "1969-12-31 00:00:01.000055",
                                              "1944-07-21 11:15:09.333444"};
-  auto strings_view = cudf::strings_column_view(strings);
-  auto results      = cudf::strings::to_timestamps(
+  auto                               strings_view = cudf::strings_column_view(strings);
+  auto                               results      = cudf::strings::to_timestamps(
     strings_view, cudf::data_type{cudf::type_id::TIMESTAMP_MILLISECONDS}, "%Y-%m-%d %H:%M:%S.%6f");
   cudf::test::fixed_width_column_wrapper<cudf::timestamp_ms, cudf::timestamp_ms::rep> expected_ms{
     131246625987, 1563330896001, 1553085296100, 1582934400555, -86399000L, -803047490667L};
@@ -119,8 +119,8 @@ TEST_F(StringsDatetimeTest, ToTimestampMillisecond)
                                              "2020-04-06 13:09:00.555",
                                              "1969-12-31 00:00:00.000",
                                              "1956-01-23 17:18:19.000"};
-  auto strings_view = cudf::strings_column_view(strings);
-  auto results      = cudf::strings::to_timestamps(
+  auto                               strings_view = cudf::strings_column_view(strings);
+  auto                               results      = cudf::strings::to_timestamps(
     strings_view, cudf::data_type{cudf::type_id::TIMESTAMP_MICROSECONDS}, "%Y-%m-%d %H:%M:%S.%3f");
   cudf::test::fixed_width_column_wrapper<cudf::timestamp_us, cudf::timestamp_us::rep> expected_us{
     1530705600123000, 1586178540555000, -86400000000, -439886501000000};
@@ -143,8 +143,8 @@ TEST_F(StringsDatetimeTest, ToTimestampTimezone)
                                              "2019-03-20 12:34:56+1030",
                                              "2020-02-29 12:00:00-0500",
                                              "1938-11-23 10:28:49+0700"};
-  auto strings_view = cudf::strings_column_view(strings);
-  auto results      = cudf::strings::to_timestamps(
+  auto                               strings_view = cudf::strings_column_view(strings);
+  auto                               results      = cudf::strings::to_timestamps(
     strings_view, cudf::data_type{cudf::type_id::TIMESTAMP_SECONDS}, "%Y-%m-%d %H:%M:%S%z");
   cudf::test::fixed_width_column_wrapper<cudf::timestamp_s, cudf::timestamp_s::rep> expected{
     131243025, 1563341696, 1553047496, 1582995600, -981664271};
@@ -306,7 +306,7 @@ TEST_F(StringsDatetimeTest, ZeroSizeStringsColumn)
 TEST_F(StringsDatetimeTest, Errors)
 {
   cudf::test::strings_column_wrapper strings{"this column intentionally left blank"};
-  cudf::strings_column_view view(strings);
+  cudf::strings_column_view          view(strings);
   EXPECT_THROW(cudf::strings::to_timestamps(view, cudf::data_type{cudf::type_id::INT64}, "%Y"),
                cudf::logic_error);
   EXPECT_THROW(
@@ -329,8 +329,8 @@ TEST_F(StringsDatetimeTest, Errors)
 TEST_F(StringsDatetimeTest, ToTimestampSingleSpecifier)
 {
   cudf::test::strings_column_wrapper strings{"12", "10", "09", "05"};
-  auto strings_view = cudf::strings_column_view(strings);
-  auto results      = cudf::strings::to_timestamps(
+  auto                               strings_view = cudf::strings_column_view(strings);
+  auto                               results      = cudf::strings::to_timestamps(
     strings_view, cudf::data_type{cudf::type_id::TIMESTAMP_DAYS}, "%d");
   cudf::test::fixed_width_column_wrapper<cudf::timestamp_D, cudf::timestamp_D::rep> expected_days{
     11, 9, 8, 4};
@@ -355,8 +355,8 @@ TEST_F(StringsDatetimeTest, ToTimestampVariableFractions)
                                              "01:02:03.01",
                                              "01:02:03.0098700",
                                              "01:02:03.0023456"};
-  auto strings_view = cudf::strings_column_view(strings);
-  auto results      = cudf::strings::to_timestamps(
+  auto                               strings_view = cudf::strings_column_view(strings);
+  auto                               results      = cudf::strings::to_timestamps(
     strings_view, cudf::data_type{cudf::type_id::TIMESTAMP_NANOSECONDS}, "%H:%M:%S.%9f");
   auto durations =
     cudf::cast(results->view(), cudf::data_type{cudf::type_id::DURATION_NANOSECONDS});
@@ -389,8 +389,8 @@ TEST_F(StringsDatetimeTest, IsTimestamp)
                                              "2020-02-30 01:32:03",
                                              "2020-00-31 01:32:03",
                                              "2020-02-00 01:32:03"};
-  auto strings_view = cudf::strings_column_view(strings);
-  auto results      = cudf::strings::is_timestamp(strings_view, "%Y-%m-%d %H:%M:%S");
+  auto                               strings_view = cudf::strings_column_view(strings);
+  auto results = cudf::strings::is_timestamp(strings_view, "%Y-%m-%d %H:%M:%S");
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(
     *results, cudf::test::fixed_width_column_wrapper<bool>{1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0});
 }

@@ -67,11 +67,11 @@ class span_base {
 
   constexpr iterator begin() const noexcept { return _data; }
   constexpr iterator end() const noexcept { return _data + _size; }
-  constexpr pointer data() const noexcept { return _data; }
+  constexpr pointer  data() const noexcept { return _data; }
 
   constexpr size_type size() const noexcept { return _size; }
   constexpr size_type size_bytes() const noexcept { return sizeof(T) * _size; }
-  constexpr bool empty() const noexcept { return _size == 0; }
+  constexpr bool      empty() const noexcept { return _size == 0; }
 
   /**
    * @brief Obtains a subspan consisting of the first N elements of the sequence
@@ -96,7 +96,7 @@ class span_base {
   }
 
  private:
-  pointer _data;
+  pointer   _data;
   size_type _size;
 };
 

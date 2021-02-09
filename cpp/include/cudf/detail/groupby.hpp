@@ -40,11 +40,11 @@ bool can_use_hash_groupby(table_view const& keys, std::vector<aggregation_reques
 
 // Hash-based groupby
 std::pair<std::unique_ptr<table>, std::vector<aggregation_result>> groupby(
-  table_view const& keys,
+  table_view const&                       keys,
   std::vector<aggregation_request> const& requests,
-  null_policy include_null_keys,
-  rmm::cuda_stream_view stream,
-  rmm::mr::device_memory_resource* mr);
+  null_policy                             include_null_keys,
+  rmm::cuda_stream_view                   stream,
+  rmm::mr::device_memory_resource*        mr);
 }  // namespace hash
 
 }  // namespace detail

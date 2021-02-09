@@ -38,10 +38,10 @@ namespace reduction {
  * @return Sum as scalar of type `output_dtype`.
  */
 std::unique_ptr<scalar> sum(
-  column_view const& col,
-  data_type const output_dtype,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               col,
+  data_type const                  output_dtype,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Computes minimum of elements in input column
@@ -57,10 +57,10 @@ std::unique_ptr<scalar> sum(
  * @return Minimum element as scalar of type `output_dtype`.
  */
 std::unique_ptr<scalar> min(
-  column_view const& col,
-  data_type const output_dtype,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               col,
+  data_type const                  output_dtype,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Computes maximum of elements in input column
@@ -76,10 +76,10 @@ std::unique_ptr<scalar> min(
  * @return Maximum element as scalar of type `output_dtype`.
  */
 std::unique_ptr<scalar> max(
-  column_view const& col,
-  data_type const output_dtype,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               col,
+  data_type const                  output_dtype,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Computes any of elements in input column is true when typecasted to bool
@@ -96,10 +96,10 @@ std::unique_ptr<scalar> max(
  * @return bool scalar if any of elements is true when typecasted to bool
  */
 std::unique_ptr<scalar> any(
-  column_view const& col,
-  data_type const output_dtype,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               col,
+  data_type const                  output_dtype,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Computes all of elements in input column is true when typecasted to bool
@@ -116,10 +116,10 @@ std::unique_ptr<scalar> any(
  * @return bool scalar if all of elements is true when typecasted to bool
  */
 std::unique_ptr<scalar> all(
-  column_view const& col,
-  data_type const output_dtype,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               col,
+  data_type const                  output_dtype,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Computes product of elements in input column
@@ -136,10 +136,10 @@ std::unique_ptr<scalar> all(
  * @return Product as scalar of type `output_dtype`.
  */
 std::unique_ptr<scalar> product(
-  column_view const& col,
-  data_type const output_dtype,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               col,
+  data_type const                  output_dtype,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Computes sum of squares of elements in input column
@@ -156,10 +156,10 @@ std::unique_ptr<scalar> product(
  * @return Sum of squares as scalar of type `output_dtype`.
  */
 std::unique_ptr<scalar> sum_of_squares(
-  column_view const& col,
-  data_type const output_dtype,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               col,
+  data_type const                  output_dtype,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Computes mean of elements in input column
@@ -176,10 +176,10 @@ std::unique_ptr<scalar> sum_of_squares(
  * @return Mean as scalar of type `output_dtype`.
  */
 std::unique_ptr<scalar> mean(
-  column_view const& col,
-  data_type const output_dtype,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               col,
+  data_type const                  output_dtype,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Computes variance of elements in input column
@@ -196,11 +196,11 @@ std::unique_ptr<scalar> mean(
  * @return Variance as scalar of type `output_dtype`.
  */
 std::unique_ptr<scalar> variance(
-  column_view const& col,
-  data_type const output_dtype,
-  cudf::size_type ddof,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               col,
+  data_type const                  output_dtype,
+  cudf::size_type                  ddof,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Computes standard deviation of elements in input column
@@ -217,11 +217,11 @@ std::unique_ptr<scalar> variance(
  * @return Standard deviation as scalar of type `output_dtype`.
  */
 std::unique_ptr<scalar> standard_deviation(
-  column_view const& col,
-  data_type const output_dtype,
-  cudf::size_type ddof,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               col,
+  data_type const                  output_dtype,
+  cudf::size_type                  ddof,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Returns nth element in input column
@@ -248,11 +248,11 @@ std::unique_ptr<scalar> standard_deviation(
  * @return nth element as scalar
  */
 std::unique_ptr<scalar> nth_element(
-  column_view const& col,
-  size_type n,
-  null_policy null_handling,
-  rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               col,
+  size_type                        n,
+  null_policy                      null_handling,
+  rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 }  // namespace reduction
 }  // namespace cudf

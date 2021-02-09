@@ -42,14 +42,14 @@ std::vector<T> split(T const& input, size_type column_size, std::vector<size_typ
 }
 };  // anonymous namespace
 
-std::vector<cudf::column_view> split(cudf::column_view const& input,
+std::vector<cudf::column_view> split(cudf::column_view const&      input,
                                      std::vector<size_type> const& splits)
 {
   CUDF_FUNC_RANGE();
   return split(input, input.size(), splits);
 }
 
-std::vector<cudf::table_view> split(cudf::table_view const& input,
+std::vector<cudf::table_view> split(cudf::table_view const&       input,
                                     std::vector<size_type> const& splits)
 {
   CUDF_FUNC_RANGE();

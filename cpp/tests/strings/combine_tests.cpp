@@ -35,12 +35,12 @@ struct StringsCombineTest : public cudf::test::BaseFixture {
 
 TEST_F(StringsCombineTest, Concatenate)
 {
-  std::vector<const char*> h_strings1{"eee", "bb", nullptr, "", "aa", "bbb", "ééé"};
+  std::vector<const char*>           h_strings1{"eee", "bb", nullptr, "", "aa", "bbb", "ééé"};
   cudf::test::strings_column_wrapper strings1(
     h_strings1.begin(),
     h_strings1.end(),
     thrust::make_transform_iterator(h_strings1.begin(), [](auto str) { return str != nullptr; }));
-  std::vector<const char*> h_strings2{"xyz", "abc", "d", "éa", "", nullptr, "f"};
+  std::vector<const char*>           h_strings2{"xyz", "abc", "d", "éa", "", nullptr, "f"};
   cudf::test::strings_column_wrapper strings2(
     h_strings2.begin(),
     h_strings2.end(),
@@ -105,13 +105,13 @@ TEST_F(StringsCombineTest, ConcatZeroSizeStringsColumns)
   strings_columns.push_back(zero_size_strings_column);
   strings_columns.push_back(zero_size_strings_column);
   cudf::table_view table(strings_columns);
-  auto results = cudf::strings::concatenate(table);
+  auto             results = cudf::strings::concatenate(table);
   cudf::test::expect_strings_empty(results->view());
 }
 
 TEST_F(StringsCombineTest, Join)
 {
-  std::vector<const char*> h_strings{"eee", "bb", nullptr, "zzzz", "", "aaa", "ééé"};
+  std::vector<const char*>           h_strings{"eee", "bb", nullptr, "zzzz", "", "aaa", "ééé"};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),

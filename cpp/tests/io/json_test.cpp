@@ -56,8 +56,8 @@ cudf::test::TempDirTestEnvironment* const temp_env =
 
 template <typename T>
 std::vector<std::string> prepend_zeros(const std::vector<T>& input,
-                                       int zero_count         = 0,
-                                       bool add_positive_sign = false)
+                                       int                   zero_count        = 0,
+                                       bool                  add_positive_sign = false)
 {
   std::vector<std::string> output(input.size());
   std::transform(input.begin(), input.end(), output.begin(), [=](const T& num) {
@@ -78,7 +78,7 @@ std::vector<std::string> prepend_zeros(const std::vector<T>& input,
 
 template <>
 std::vector<std::string> prepend_zeros<std::string>(const std::vector<std::string>& input,
-                                                    int zero_count,
+                                                    int                             zero_count,
                                                     bool add_positive_sign)
 {
   std::vector<std::string> output(input.size());
@@ -112,8 +112,8 @@ inline auto random_values(size_t size)
                                                    std::uniform_real_distribution<T1>,
                                                    std::uniform_int_distribution<T1>>>;
 
-  static constexpr auto seed = 0xf00d;
-  static std::mt19937 engine{seed};
+  static constexpr auto       seed = 0xf00d;
+  static std::mt19937         engine{seed};
   static uniform_distribution dist{};
   std::generate_n(values.begin(), size, [&]() { return T{dist(engine)}; });
 
@@ -130,8 +130,8 @@ MATCHER_P(FloatNearPointwise, tolerance, "Out-of-range")
 // CUDF_TEST_EXPECT_COLUMNS_EQUAL supports floating point
 template <typename T, typename valid_t>
 void check_float_column(cudf::column_view const& col,
-                        std::vector<T> const& data,
-                        valid_t const& validity)
+                        std::vector<T> const&    data,
+                        valid_t const&           validity)
 {
   CUDF_TEST_EXPECT_COLUMN_PROPERTIES_EQUAL(col, (wrapper<T>{data.begin(), data.end(), validity}));
   CUDF_EXPECTS(col.null_count() == 0, "All elements should be valid");
@@ -232,13 +232,13 @@ TEST_F(JsonReaderTest, JsonLinesStrings)
 
 TEST_F(JsonReaderTest, MultiColumn)
 {
-  constexpr auto num_rows = 10;
-  auto int8_values        = random_values<int8_t>(num_rows);
-  auto int16_values       = random_values<int16_t>(num_rows);
-  auto int32_values       = random_values<int32_t>(num_rows);
-  auto int64_values       = random_values<int64_t>(num_rows);
-  auto float32_values     = random_values<float>(num_rows);
-  auto float64_values     = random_values<double>(num_rows);
+  constexpr auto num_rows       = 10;
+  auto           int8_values    = random_values<int8_t>(num_rows);
+  auto           int16_values   = random_values<int16_t>(num_rows);
+  auto           int32_values   = random_values<int32_t>(num_rows);
+  auto           int64_values   = random_values<int64_t>(num_rows);
+  auto           float32_values = random_values<float>(num_rows);
+  auto           float64_values = random_values<double>(num_rows);
 
   auto filepath = temp_env->get_temp_dir() + "MultiColumn.json";
   {
@@ -434,7 +434,7 @@ TEST_F(JsonReaderTest, JsonLinesDtypeInference)
 TEST_F(JsonReaderTest, JsonLinesFileInput)
 {
   const std::string fname = temp_env->get_temp_dir() + "JsonLinesFileTest.json";
-  std::ofstream outfile(fname, std::ofstream::out);
+  std::ofstream     outfile(fname, std::ofstream::out);
   outfile << "[11, 1.1]\n[22, 2.2]";
   outfile.close();
 
@@ -461,7 +461,7 @@ TEST_F(JsonReaderTest, JsonLinesFileInput)
 TEST_F(JsonReaderTest, JsonLinesByteRange)
 {
   const std::string fname = temp_env->get_temp_dir() + "JsonLinesByteRangeTest.json";
-  std::ofstream outfile(fname, std::ofstream::out);
+  std::ofstream     outfile(fname, std::ofstream::out);
   outfile << "[1000]\n[2000]\n[3000]\n[4000]\n[5000]\n[6000]\n[7000]\n[8000]\n[9000]\n";
   outfile.close();
 
@@ -488,7 +488,7 @@ TEST_F(JsonReaderTest, JsonLinesByteRange)
 TEST_F(JsonReaderTest, JsonLinesObjects)
 {
   const std::string fname = temp_env->get_temp_dir() + "JsonLinesObjectsTest.json";
-  std::ofstream outfile(fname, std::ofstream::out);
+  std::ofstream     outfile(fname, std::ofstream::out);
   outfile << " {\"co\\\"l1\" : 1, \"col2\" : 2.0} \n";
   outfile.close();
 
@@ -660,7 +660,7 @@ TEST_F(JsonReaderTest, ArrowFileSource)
   std::shared_ptr<arrow::io::ReadableFile> infile;
   ASSERT_TRUE(arrow::io::ReadableFile::Open(fname).Value(&infile).ok());
 
-  auto arrow_source = cudf_io::arrow_io_source{infile};
+  auto                         arrow_source = cudf_io::arrow_io_source{infile};
   cudf_io::json_reader_options in_options =
     cudf_io::json_reader_options::builder(cudf_io::source_info{&arrow_source})
       .dtypes({"int8"})
@@ -704,7 +704,7 @@ TEST_F(JsonReaderTest, InvalidFloatingPoint)
 
 TEST_F(JsonReaderTest, StringInference)
 {
-  std::string buffer = "[\"-1\"]";
+  std::string                  buffer = "[\"-1\"]";
   cudf_io::json_reader_options in_options =
     cudf_io::json_reader_options::builder(cudf_io::source_info{buffer.c_str(), buffer.size()})
       .lines(true);
@@ -716,21 +716,21 @@ TEST_F(JsonReaderTest, StringInference)
 
 TEST_F(JsonReaderTest, ParseInRangeIntegers)
 {
-  constexpr auto num_rows                      = 4;
-  std::vector<int64_t> small_int               = {0, -10, 20, -30};
-  std::vector<int64_t> less_equal_int64_max    = {std::numeric_limits<int64_t>::max() - 3,
+  constexpr auto        num_rows                = 4;
+  std::vector<int64_t>  small_int               = {0, -10, 20, -30};
+  std::vector<int64_t>  less_equal_int64_max    = {std::numeric_limits<int64_t>::max() - 3,
                                                std::numeric_limits<int64_t>::max() - 2,
                                                std::numeric_limits<int64_t>::max() - 1,
                                                std::numeric_limits<int64_t>::max()};
-  std::vector<int64_t> greater_equal_int64_min = {std::numeric_limits<int64_t>::min() + 3,
+  std::vector<int64_t>  greater_equal_int64_min = {std::numeric_limits<int64_t>::min() + 3,
                                                   std::numeric_limits<int64_t>::min() + 2,
                                                   std::numeric_limits<int64_t>::min() + 1,
                                                   std::numeric_limits<int64_t>::min()};
-  std::vector<uint64_t> greater_int64_max      = {uint64_t{std::numeric_limits<int64_t>::max()} - 1,
+  std::vector<uint64_t> greater_int64_max     = {uint64_t{std::numeric_limits<int64_t>::max()} - 1,
                                              uint64_t{std::numeric_limits<int64_t>::max()},
                                              uint64_t{std::numeric_limits<int64_t>::max()} + 1,
                                              uint64_t{std::numeric_limits<int64_t>::max()} + 2};
-  std::vector<uint64_t> less_equal_uint64_max  = {std::numeric_limits<uint64_t>::max() - 3,
+  std::vector<uint64_t> less_equal_uint64_max = {std::numeric_limits<uint64_t>::max() - 3,
                                                  std::numeric_limits<uint64_t>::max() - 2,
                                                  std::numeric_limits<uint64_t>::max() - 1,
                                                  std::numeric_limits<uint64_t>::max()};
@@ -786,7 +786,7 @@ TEST_F(JsonReaderTest, ParseInRangeIntegers)
 
 TEST_F(JsonReaderTest, ParseOutOfRangeIntegers)
 {
-  constexpr auto num_rows                        = 4;
+  constexpr auto           num_rows              = 4;
   std::vector<std::string> out_of_range_positive = {"111111111111111111111",
                                                     "2222222222222222222222",
                                                     "33333333333333333333333",

@@ -32,7 +32,7 @@ TYPED_TEST_CASE(EncodeNumericTests, NumericTypesNotBool);
 
 TYPED_TEST(EncodeNumericTests, SingleNullEncode)
 {
-  cudf::test::fixed_width_column_wrapper<TypeParam> input({1}, {0});
+  cudf::test::fixed_width_column_wrapper<TypeParam>       input({1}, {0});
   cudf::test::fixed_width_column_wrapper<cudf::size_type> expect({0});
   auto const result = cudf::encode(cudf::table_view({input}));
 
@@ -41,7 +41,7 @@ TYPED_TEST(EncodeNumericTests, SingleNullEncode)
 
 TYPED_TEST(EncodeNumericTests, EmptyEncode)
 {
-  cudf::test::fixed_width_column_wrapper<TypeParam> input({});
+  cudf::test::fixed_width_column_wrapper<TypeParam>       input({});
   cudf::test::fixed_width_column_wrapper<cudf::size_type> expect({});
   auto const result = cudf::encode(cudf::table_view({input}));
 
@@ -50,9 +50,9 @@ TYPED_TEST(EncodeNumericTests, EmptyEncode)
 
 TYPED_TEST(EncodeNumericTests, SimpleNoNulls)
 {
-  cudf::test::fixed_width_column_wrapper<TypeParam> input{{1, 2, 3, 2, 3, 2, 1}};
+  cudf::test::fixed_width_column_wrapper<TypeParam>       input{{1, 2, 3, 2, 3, 2, 1}};
   cudf::test::fixed_width_column_wrapper<cudf::size_type> expect{{0, 1, 2, 1, 2, 1, 0}};
-  cudf::test::fixed_width_column_wrapper<TypeParam> expect_keys{{1, 2, 3}};
+  cudf::test::fixed_width_column_wrapper<TypeParam>       expect_keys{{1, 2, 3}};
   auto const result = cudf::encode(cudf::table_view({input}));
 
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(result.first->view().column(0), expect_keys);
@@ -61,10 +61,10 @@ TYPED_TEST(EncodeNumericTests, SimpleNoNulls)
 
 TYPED_TEST(EncodeNumericTests, SimpleWithNulls)
 {
-  cudf::test::fixed_width_column_wrapper<TypeParam> input{{1, 2, 3, 2, 3, 2, 1},
+  cudf::test::fixed_width_column_wrapper<TypeParam>       input{{1, 2, 3, 2, 3, 2, 1},
                                                           {1, 1, 1, 0, 1, 1, 1}};
   cudf::test::fixed_width_column_wrapper<cudf::size_type> expect{{0, 1, 2, 3, 2, 1, 0}};
-  cudf::test::fixed_width_column_wrapper<TypeParam> expect_keys{{1, 2, 3, 0}, {1, 1, 1, 0}};
+  cudf::test::fixed_width_column_wrapper<TypeParam>       expect_keys{{1, 2, 3, 0}, {1, 1, 1, 0}};
   auto const result = cudf::encode(cudf::table_view({input}));
 
   cudf::test::print(result.first->view().column(0));
@@ -76,7 +76,7 @@ TYPED_TEST(EncodeNumericTests, SimpleWithNulls)
 
 TYPED_TEST(EncodeNumericTests, UnorderedWithNulls)
 {
-  cudf::test::fixed_width_column_wrapper<TypeParam> input{{2, 1, 5, 1, 1, 3, 2},
+  cudf::test::fixed_width_column_wrapper<TypeParam>       input{{2, 1, 5, 1, 1, 3, 2},
                                                           {0, 1, 1, 1, 0, 1, 1}};
   cudf::test::fixed_width_column_wrapper<cudf::size_type> expect{{4, 0, 3, 0, 4, 2, 1}};
   cudf::test::fixed_width_column_wrapper<TypeParam> expect_keys{{1, 2, 3, 5, 0}, {1, 1, 1, 1, 0}};
@@ -91,9 +91,9 @@ struct EncodeStringTest : public cudf::test::BaseFixture {
 
 TEST_F(EncodeStringTest, SimpleNoNulls)
 {
-  cudf::test::strings_column_wrapper input{"a", "b", "c", "d", "a"};
+  cudf::test::strings_column_wrapper                      input{"a", "b", "c", "d", "a"};
   cudf::test::fixed_width_column_wrapper<cudf::size_type> expect{0, 1, 2, 3, 0};
-  cudf::test::strings_column_wrapper expect_keys{"a", "b", "c", "d"};
+  cudf::test::strings_column_wrapper                      expect_keys{"a", "b", "c", "d"};
   auto const result = cudf::encode(cudf::table_view({input}));
 
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(result.first->view().column(0), expect_keys);
@@ -105,7 +105,7 @@ TEST_F(EncodeStringTest, SimpleWithNulls)
   cudf::test::strings_column_wrapper input{{"a", "b", "c", "d", "a"}, {1, 0, 1, 1, 0}};
   cudf::test::fixed_width_column_wrapper<cudf::size_type> expect{0, 3, 1, 2, 3};
   cudf::test::strings_column_wrapper expect_keys{{"a", "c", "d", "0"}, {1, 1, 1, 0}};
-  auto const result = cudf::encode(cudf::table_view({input}));
+  auto const                         result = cudf::encode(cudf::table_view({input}));
 
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(result.first->view().column(0), expect_keys);
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(result.second->view(), expect);
@@ -116,7 +116,7 @@ TEST_F(EncodeStringTest, UnorderedWithNulls)
   cudf::test::strings_column_wrapper input{{"ef", "a", "c", "d", "ef", "a"}, {1, 0, 1, 1, 0, 1}};
   cudf::test::fixed_width_column_wrapper<cudf::size_type> expect{3, 4, 1, 2, 4, 0};
   cudf::test::strings_column_wrapper expect_keys{{"a", "c", "d", "ef", "0"}, {1, 1, 1, 1, 0}};
-  auto const result = cudf::encode(cudf::table_view({input}));
+  auto const                         result = cudf::encode(cudf::table_view({input}));
 
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(result.first->view().column(0), expect_keys);
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(result.second->view(), expect);

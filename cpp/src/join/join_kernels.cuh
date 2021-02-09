@@ -38,10 +38,10 @@ namespace detail {
  */
 __inline__ __device__ void add_pair_to_cache(const size_type first,
                                              const size_type second,
-                                             size_type* current_idx_shared,
-                                             const int warp_id,
-                                             size_type* joined_shared_l,
-                                             size_type* joined_shared_r)
+                                             size_type*      current_idx_shared,
+                                             const int       warp_id,
+                                             size_type*      joined_shared_l,
+                                             size_type*      joined_shared_r)
 {
   size_type my_current_idx{atomicAdd(current_idx_shared + warp_id, size_type(1))};
 
@@ -77,11 +77,11 @@ constexpr auto remap_sentinel_hash(H hash, S sentinel)
  * @param[out] error Pointer used to set an error code if the insert fails
  */
 template <typename multimap_type>
-__global__ void build_hash_table(multimap_type multi_map,
-                                 row_hash hash_build,
+__global__ void build_hash_table(multimap_type         multi_map,
+                                 row_hash              hash_build,
                                  const cudf::size_type build_table_num_rows,
-                                 bitmask_type const* row_bitmask,
-                                 int* error)
+                                 bitmask_type const*   row_bitmask,
+                                 int*                  error)
 {
   cudf::size_type i = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -123,13 +123,13 @@ template <join_kind JoinKind,
           typename multimap_type,
           int block_size,
           typename estimate_size_type = int64_t>
-__global__ void compute_join_output_size(multimap_type multi_map,
-                                         table_device_view build_table,
-                                         table_device_view probe_table,
-                                         row_hash hash_probe,
-                                         row_equality check_row_equality,
+__global__ void compute_join_output_size(multimap_type         multi_map,
+                                         table_device_view     build_table,
+                                         table_device_view     probe_table,
+                                         row_hash              hash_probe,
+                                         row_equality          check_row_equality,
                                          const cudf::size_type probe_table_num_rows,
-                                         estimate_size_type* output_size)
+                                         estimate_size_type*   output_size)
 {
   // This kernel probes multiple elements in the probe_table and store the number of matches found
   // inside a register. A block reduction is used at the end to calculate the matches per thread
@@ -137,11 +137,11 @@ __global__ void compute_join_output_size(multimap_type multi_map,
   // thread, this implementation improves performance by reducing atomic adds to the shared memory
   // counter.
 
-  cudf::size_type thread_counter{0};
-  const cudf::size_type start_idx = threadIdx.x + blockIdx.x * blockDim.x;
-  const cudf::size_type stride    = blockDim.x * gridDim.x;
-  const auto unused_key           = multi_map.get_unused_key();
-  const auto end                  = multi_map.end();
+  cudf::size_type       thread_counter{0};
+  const cudf::size_type start_idx  = threadIdx.x + blockIdx.x * blockDim.x;
+  const cudf::size_type stride     = blockDim.x * gridDim.x;
+  const auto            unused_key = multi_map.get_unused_key();
+  const auto            end        = multi_map.end();
 
   for (cudf::size_type probe_row_index = start_idx; probe_row_index < probe_table_num_rows;
        probe_row_index += stride) {
@@ -218,11 +218,11 @@ __global__ void compute_join_output_size(multimap_type multi_map,
 template <int block_size>
 __global__ void compute_nested_loop_join_output_size(table_device_view left_table,
                                                      table_device_view right_table,
-                                                     join_kind JoinKind,
-                                                     row_equality check_row_equality,
-                                                     cudf::size_type* output_size)
+                                                     join_kind         JoinKind,
+                                                     row_equality      check_row_equality,
+                                                     cudf::size_type*  output_size)
 {
-  cudf::size_type thread_counter(0);
+  cudf::size_type       thread_counter(0);
   const cudf::size_type left_start_idx = threadIdx.x + blockIdx.x * blockDim.x;
   const cudf::size_type left_stride    = blockDim.x * gridDim.x;
   const cudf::size_type left_num_rows  = left_table.num_rows();
@@ -249,19 +249,19 @@ __global__ void compute_nested_loop_join_output_size(table_device_view left_tabl
 }
 
 template <int num_warps, cudf::size_type output_cache_size>
-__device__ void flush_output_cache(const unsigned int activemask,
+__device__ void flush_output_cache(const unsigned int    activemask,
                                    const cudf::size_type max_size,
-                                   const int warp_id,
-                                   const int lane_id,
-                                   cudf::size_type* current_idx,
-                                   cudf::size_type current_idx_shared[num_warps],
-                                   size_type join_shared_l[num_warps][output_cache_size],
-                                   size_type join_shared_r[num_warps][output_cache_size],
+                                   const int             warp_id,
+                                   const int             lane_id,
+                                   cudf::size_type*      current_idx,
+                                   cudf::size_type       current_idx_shared[num_warps],
+                                   size_type  join_shared_l[num_warps][output_cache_size],
+                                   size_type  join_shared_r[num_warps][output_cache_size],
                                    size_type* join_output_l,
                                    size_type* join_output_r)
 {
   // count how many active threads participating here which could be less than warp_size
-  int num_threads               = __popc(activemask);
+  int             num_threads   = __popc(activemask);
   cudf::size_type output_offset = 0;
 
   if (0 == lane_id) { output_offset = atomicAdd(current_idx, current_idx_shared[warp_id]); }
@@ -303,14 +303,14 @@ template <join_kind JoinKind,
           typename multimap_type,
           cudf::size_type block_size,
           cudf::size_type output_cache_size>
-__global__ void probe_hash_table(multimap_type multi_map,
-                                 table_device_view build_table,
-                                 table_device_view probe_table,
-                                 row_hash hash_probe,
-                                 row_equality check_row_equality,
-                                 size_type* join_output_l,
-                                 size_type* join_output_r,
-                                 cudf::size_type* current_idx,
+__global__ void probe_hash_table(multimap_type         multi_map,
+                                 table_device_view     build_table,
+                                 table_device_view     probe_table,
+                                 row_hash              hash_probe,
+                                 row_equality          check_row_equality,
+                                 size_type*            join_output_l,
+                                 size_type*            join_output_r,
+                                 cudf::size_type*      current_idx,
                                  const cudf::size_type max_size)
 {
   constexpr int num_warps = block_size / detail::warp_size;
@@ -318,8 +318,8 @@ __global__ void probe_hash_table(multimap_type multi_map,
   __shared__ size_type join_shared_l[num_warps][output_cache_size];
   __shared__ size_type join_shared_r[num_warps][output_cache_size];
 
-  const int warp_id                          = threadIdx.x / detail::warp_size;
-  const int lane_id                          = threadIdx.x % detail::warp_size;
+  const int             warp_id              = threadIdx.x / detail::warp_size;
+  const int             lane_id              = threadIdx.x % detail::warp_size;
   const cudf::size_type probe_table_num_rows = probe_table.num_rows();
 
   if (0 == lane_id) { current_idx_shared[warp_id] = 0; }
@@ -449,13 +449,13 @@ __global__ void probe_hash_table(multimap_type multi_map,
  * @param[in] max_size The maximum size of the output
  */
 template <cudf::size_type block_size, cudf::size_type output_cache_size>
-__global__ void nested_loop_join(table_device_view left_table,
-                                 table_device_view right_table,
-                                 join_kind JoinKind,
-                                 row_equality check_row_equality,
-                                 cudf::size_type* join_output_l,
-                                 cudf::size_type* join_output_r,
-                                 cudf::size_type* current_idx,
+__global__ void nested_loop_join(table_device_view     left_table,
+                                 table_device_view     right_table,
+                                 join_kind             JoinKind,
+                                 row_equality          check_row_equality,
+                                 cudf::size_type*      join_output_l,
+                                 cudf::size_type*      join_output_r,
+                                 cudf::size_type*      current_idx,
                                  const cudf::size_type max_size)
 {
   constexpr int num_warps = block_size / detail::warp_size;
@@ -463,8 +463,8 @@ __global__ void nested_loop_join(table_device_view left_table,
   __shared__ cudf::size_type join_shared_l[num_warps][output_cache_size];
   __shared__ cudf::size_type join_shared_r[num_warps][output_cache_size];
 
-  const int warp_id                    = threadIdx.x / detail::warp_size;
-  const int lane_id                    = threadIdx.x % detail::warp_size;
+  const int             warp_id        = threadIdx.x / detail::warp_size;
+  const int             lane_id        = threadIdx.x % detail::warp_size;
   const cudf::size_type left_num_rows  = left_table.num_rows();
   const cudf::size_type right_num_rows = right_table.num_rows();
 

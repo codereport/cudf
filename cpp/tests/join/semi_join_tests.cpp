@@ -42,8 +42,8 @@ TEST_F(JoinTest, LeftSemiJoin)
   std::vector<const char*> e_strings{"quick", "composéd", "result", ""};
 
   column_wrapper<int32_t> a_0{10, 20, 20, 20, 20, 20, 50};
-  column_wrapper<float> a_1{5.0, .5, .5, .7, .7, .7, .7};
-  column_wrapper<int8_t> a_2{90, 77, 78, 61, 62, 63, 41};
+  column_wrapper<float>   a_1{5.0, .5, .5, .7, .7, .7, .7};
+  column_wrapper<int8_t>  a_2{90, 77, 78, 61, 62, 63, 41};
 
   cudf::test::strings_column_wrapper a_3(
     a_strings.begin(),
@@ -51,8 +51,8 @@ TEST_F(JoinTest, LeftSemiJoin)
     thrust::make_transform_iterator(a_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> b_0{10, 20, 20};
-  column_wrapper<float> b_1{5.0, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62};
+  column_wrapper<float>   b_1{5.0, .7, .7};
+  column_wrapper<int8_t>  b_2{90, 75, 62};
 
   cudf::test::strings_column_wrapper b_3(
     b_strings.begin(),
@@ -60,8 +60,8 @@ TEST_F(JoinTest, LeftSemiJoin)
     thrust::make_transform_iterator(b_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> expect_0{10, 20, 20, 20};
-  column_wrapper<float> expect_1{5.0, .7, .7, .7};
-  column_wrapper<int8_t> expect_2{90, 61, 62, 63};
+  column_wrapper<float>   expect_1{5.0, .7, .7, .7};
+  column_wrapper<int8_t>  expect_2{90, 61, 62, 63};
 
   cudf::test::strings_column_wrapper expect_3(
     e_strings.begin(),
@@ -99,8 +99,8 @@ TEST_F(JoinTest, LeftSemiJoin_with_a_string_key)
   std::vector<const char*> e_strings{"quick", "result"};
 
   column_wrapper<int32_t> a_0{10, 20, 20, 20, 20, 20, 50};
-  column_wrapper<float> a_1{5.0, .5, .5, .7, .7, .7, .7};
-  column_wrapper<int8_t> a_2{90, 77, 78, 61, 62, 63, 41};
+  column_wrapper<float>   a_1{5.0, .5, .5, .7, .7, .7, .7};
+  column_wrapper<int8_t>  a_2{90, 77, 78, 61, 62, 63, 41};
 
   cudf::test::strings_column_wrapper a_3(
     a_strings.begin(),
@@ -108,8 +108,8 @@ TEST_F(JoinTest, LeftSemiJoin_with_a_string_key)
     thrust::make_transform_iterator(a_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> b_0{10, 20, 20};
-  column_wrapper<float> b_1{5.0, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62};
+  column_wrapper<float>   b_1{5.0, .7, .7};
+  column_wrapper<int8_t>  b_2{90, 75, 62};
 
   cudf::test::strings_column_wrapper b_3(
     b_strings.begin(),
@@ -117,8 +117,8 @@ TEST_F(JoinTest, LeftSemiJoin_with_a_string_key)
     thrust::make_transform_iterator(b_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> expect_0{10, 20};
-  column_wrapper<float> expect_1{5.0, .7};
-  column_wrapper<int8_t> expect_2{90, 62};
+  column_wrapper<float>   expect_1{5.0, .7};
+  column_wrapper<int8_t>  expect_2{90, 62};
 
   cudf::test::strings_column_wrapper expect_3(
     e_strings.begin(),
@@ -156,8 +156,8 @@ TEST_F(JoinTest, LeftSemiJoin_with_null)
   std::vector<const char*> e_strings{"quick", "result"};
 
   column_wrapper<int32_t> a_0{10, 20, 20, 20, 20, 20, 50};
-  column_wrapper<float> a_1{5.0, .5, .5, .7, .7, .7, .7};
-  column_wrapper<int8_t> a_2{90, 77, 78, 61, 62, 63, 41};
+  column_wrapper<float>   a_1{5.0, .5, .5, .7, .7, .7, .7};
+  column_wrapper<int8_t>  a_2{90, 77, 78, 61, 62, 63, 41};
 
   cudf::test::strings_column_wrapper a_3(
     a_strings.begin(),
@@ -165,8 +165,8 @@ TEST_F(JoinTest, LeftSemiJoin_with_null)
     thrust::make_transform_iterator(a_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> b_0{10, 20, 20, 50};
-  column_wrapper<float> b_1{5.0, .7, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62, 41};
+  column_wrapper<float>   b_1{5.0, .7, .7, .7};
+  column_wrapper<int8_t>  b_2{90, 75, 62, 41};
 
   cudf::test::strings_column_wrapper b_3(
     b_strings.begin(),
@@ -174,8 +174,8 @@ TEST_F(JoinTest, LeftSemiJoin_with_null)
     thrust::make_transform_iterator(b_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> expect_0{10, 20};
-  column_wrapper<float> expect_1{5.0, .7};
-  column_wrapper<int8_t> expect_2{90, 62};
+  column_wrapper<float>   expect_1{5.0, .7};
+  column_wrapper<int8_t>  expect_2{90, 62};
 
   cudf::test::strings_column_wrapper expect_3(
     e_strings.begin(),
@@ -213,8 +213,8 @@ TEST_F(JoinTest, LeftAntiJoin)
   std::vector<const char*> e_strings{"accénted", "turtlé", "words"};
 
   column_wrapper<int32_t> a_0{10, 20, 20, 20, 20, 20, 50};
-  column_wrapper<float> a_1{5.0, .5, .5, .7, .7, .7, .7};
-  column_wrapper<int8_t> a_2{90, 77, 78, 61, 62, 63, 41};
+  column_wrapper<float>   a_1{5.0, .5, .5, .7, .7, .7, .7};
+  column_wrapper<int8_t>  a_2{90, 77, 78, 61, 62, 63, 41};
 
   cudf::test::strings_column_wrapper a_3(
     a_strings.begin(),
@@ -222,8 +222,8 @@ TEST_F(JoinTest, LeftAntiJoin)
     thrust::make_transform_iterator(a_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> b_0{10, 20, 20};
-  column_wrapper<float> b_1{5.0, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62};
+  column_wrapper<float>   b_1{5.0, .7, .7};
+  column_wrapper<int8_t>  b_2{90, 75, 62};
 
   cudf::test::strings_column_wrapper b_3(
     b_strings.begin(),
@@ -231,8 +231,8 @@ TEST_F(JoinTest, LeftAntiJoin)
     thrust::make_transform_iterator(b_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> expect_0{20, 20, 50};
-  column_wrapper<float> expect_1{.5, .5, .7};
-  column_wrapper<int8_t> expect_2{77, 78, 41};
+  column_wrapper<float>   expect_1{.5, .5, .7};
+  column_wrapper<int8_t>  expect_2{77, 78, 41};
 
   cudf::test::strings_column_wrapper expect_3(
     e_strings.begin(),
@@ -270,8 +270,8 @@ TEST_F(JoinTest, LeftAntiJoin_with_a_string_key)
   std::vector<const char*> e_strings{"accénted", "turtlé", "composéd", "", "words"};
 
   column_wrapper<int32_t> a_0{10, 20, 20, 20, 20, 20, 50};
-  column_wrapper<float> a_1{5.0, .5, .5, .7, .7, .7, .7};
-  column_wrapper<int8_t> a_2{90, 77, 78, 61, 62, 63, 41};
+  column_wrapper<float>   a_1{5.0, .5, .5, .7, .7, .7, .7};
+  column_wrapper<int8_t>  a_2{90, 77, 78, 61, 62, 63, 41};
 
   cudf::test::strings_column_wrapper a_3(
     a_strings.begin(),
@@ -279,8 +279,8 @@ TEST_F(JoinTest, LeftAntiJoin_with_a_string_key)
     thrust::make_transform_iterator(a_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> b_0{10, 20, 20};
-  column_wrapper<float> b_1{5.0, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62};
+  column_wrapper<float>   b_1{5.0, .7, .7};
+  column_wrapper<int8_t>  b_2{90, 75, 62};
 
   cudf::test::strings_column_wrapper b_3(
     b_strings.begin(),
@@ -288,8 +288,8 @@ TEST_F(JoinTest, LeftAntiJoin_with_a_string_key)
     thrust::make_transform_iterator(b_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> expect_0{20, 20, 20, 20, 50};
-  column_wrapper<float> expect_1{.5, .5, .7, .7, .7};
-  column_wrapper<int8_t> expect_2{77, 78, 61, 63, 41};
+  column_wrapper<float>   expect_1{.5, .5, .7, .7, .7};
+  column_wrapper<int8_t>  expect_2{77, 78, 61, 63, 41};
 
   cudf::test::strings_column_wrapper expect_3(
     e_strings.begin(),
@@ -327,8 +327,8 @@ TEST_F(JoinTest, LeftAntiJoin_with_null)
   std::vector<const char*> e_strings{"accénted", "turtlé", "composéd", "", "words"};
 
   column_wrapper<int32_t> a_0{10, 20, 20, 20, 20, 20, 50};
-  column_wrapper<float> a_1{5.0, .5, .5, .7, .7, .7, .7};
-  column_wrapper<int8_t> a_2{90, 77, 78, 61, 62, 63, 41};
+  column_wrapper<float>   a_1{5.0, .5, .5, .7, .7, .7, .7};
+  column_wrapper<int8_t>  a_2{90, 77, 78, 61, 62, 63, 41};
 
   cudf::test::strings_column_wrapper a_3(
     a_strings.begin(),
@@ -336,8 +336,8 @@ TEST_F(JoinTest, LeftAntiJoin_with_null)
     thrust::make_transform_iterator(a_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> b_0{10, 20, 20, 50};
-  column_wrapper<float> b_1{5.0, .7, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62, 41};
+  column_wrapper<float>   b_1{5.0, .7, .7, .7};
+  column_wrapper<int8_t>  b_2{90, 75, 62, 41};
 
   cudf::test::strings_column_wrapper b_3(
     b_strings.begin(),
@@ -345,8 +345,8 @@ TEST_F(JoinTest, LeftAntiJoin_with_null)
     thrust::make_transform_iterator(b_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> expect_0{20, 20, 20, 20, 50};
-  column_wrapper<float> expect_1{.5, .5, .7, .7, .7};
-  column_wrapper<int8_t> expect_2{77, 78, 61, 63, 41};
+  column_wrapper<float>   expect_1{.5, .5, .7, .7, .7};
+  column_wrapper<int8_t>  expect_2{77, 78, 61, 63, 41};
 
   cudf::test::strings_column_wrapper expect_3(
     e_strings.begin(),
@@ -381,8 +381,8 @@ TEST_F(JoinTest, LeftSemiAntiJoin_exceptions)
   std::vector<const char*> b_strings{"quick", "words", "result", nullptr};
 
   column_wrapper<int32_t> b_0{10, 20, 20, 50};
-  column_wrapper<float> b_1{5.0, .7, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62, 41};
+  column_wrapper<float>   b_1{5.0, .7, .7, .7};
+  column_wrapper<int8_t>  b_2{90, 75, 62, 41};
 
   cudf::test::strings_column_wrapper b_3(
     b_strings.begin(),
@@ -435,8 +435,8 @@ TEST_F(JoinTest, LeftSemiJoin_empty_result)
   std::vector<const char*> e_strings{};
 
   column_wrapper<int32_t> a_0{10, 20, 20, 20, 20, 20, 50};
-  column_wrapper<float> a_1{5.0, .5, .5, .7, .7, .7, .7};
-  column_wrapper<int8_t> a_2{90, 77, 78, 61, 62, 63, 41};
+  column_wrapper<float>   a_1{5.0, .5, .5, .7, .7, .7, .7};
+  column_wrapper<int8_t>  a_2{90, 77, 78, 61, 62, 63, 41};
 
   cudf::test::strings_column_wrapper a_3(
     a_strings.begin(),
@@ -444,8 +444,8 @@ TEST_F(JoinTest, LeftSemiJoin_empty_result)
     thrust::make_transform_iterator(a_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> b_0{10, 20, 20, 50};
-  column_wrapper<float> b_1{5.0, .7, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62, 41};
+  column_wrapper<float>   b_1{5.0, .7, .7, .7};
+  column_wrapper<int8_t>  b_2{90, 75, 62, 41};
 
   cudf::test::strings_column_wrapper b_3(
     b_strings.begin(),
@@ -453,8 +453,8 @@ TEST_F(JoinTest, LeftSemiJoin_empty_result)
     thrust::make_transform_iterator(b_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> expect_0{};
-  column_wrapper<float> expect_1{};
-  column_wrapper<int8_t> expect_2{};
+  column_wrapper<float>   expect_1{};
+  column_wrapper<int8_t>  expect_2{};
 
   cudf::test::strings_column_wrapper expect_3(
     e_strings.begin(),
@@ -499,8 +499,8 @@ TEST_F(JoinTest, LeftAntiJoin_empty_result)
   std::vector<const char*> e_strings{};
 
   column_wrapper<int32_t> a_0{10, 20, 20, 20, 20, 20, 50};
-  column_wrapper<float> a_1{5.0, .5, .5, .7, .7, .7, .7};
-  column_wrapper<int8_t> a_2{90, 77, 78, 61, 62, 63, 41};
+  column_wrapper<float>   a_1{5.0, .5, .5, .7, .7, .7, .7};
+  column_wrapper<int8_t>  a_2{90, 77, 78, 61, 62, 63, 41};
 
   cudf::test::strings_column_wrapper a_3(
     a_strings.begin(),
@@ -508,8 +508,8 @@ TEST_F(JoinTest, LeftAntiJoin_empty_result)
     thrust::make_transform_iterator(a_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> b_0{10, 20, 20, 50};
-  column_wrapper<float> b_1{5.0, .7, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62, 41};
+  column_wrapper<float>   b_1{5.0, .7, .7, .7};
+  column_wrapper<int8_t>  b_2{90, 75, 62, 41};
 
   cudf::test::strings_column_wrapper b_3(
     b_strings.begin(),
@@ -517,8 +517,8 @@ TEST_F(JoinTest, LeftAntiJoin_empty_result)
     thrust::make_transform_iterator(b_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> expect_0{};
-  column_wrapper<float> expect_1{};
-  column_wrapper<int8_t> expect_2{};
+  column_wrapper<float>   expect_1{};
+  column_wrapper<int8_t>  expect_2{};
 
   cudf::test::strings_column_wrapper expect_3(
     e_strings.begin(),
@@ -562,8 +562,8 @@ TEST_F(JoinTest, LeftSemiAntiJoin_empty_table)
   std::vector<const char*> e_strings{};
 
   column_wrapper<int32_t> a_0{};
-  column_wrapper<float> a_1{};
-  column_wrapper<int8_t> a_2{};
+  column_wrapper<float>   a_1{};
+  column_wrapper<int8_t>  a_2{};
 
   cudf::test::strings_column_wrapper a_3(
     a_strings.begin(),
@@ -571,8 +571,8 @@ TEST_F(JoinTest, LeftSemiAntiJoin_empty_table)
     thrust::make_transform_iterator(a_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> b_0{10, 20, 20, 50};
-  column_wrapper<float> b_1{5.0, .7, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62, 41};
+  column_wrapper<float>   b_1{5.0, .7, .7, .7};
+  column_wrapper<int8_t>  b_2{90, 75, 62, 41};
 
   cudf::test::strings_column_wrapper b_3(
     b_strings.begin(),
@@ -580,8 +580,8 @@ TEST_F(JoinTest, LeftSemiAntiJoin_empty_table)
     thrust::make_transform_iterator(b_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> expect_0{};
-  column_wrapper<float> expect_1{};
-  column_wrapper<int8_t> expect_2{};
+  column_wrapper<float>   expect_1{};
+  column_wrapper<int8_t>  expect_2{};
 
   cudf::test::strings_column_wrapper expect_3(
     e_strings.begin(),
@@ -646,8 +646,8 @@ TEST_F(JoinTest, LeftAntiJoin_empty_right_table)
   std::vector<const char*> e_strings{"quick", "words", "result", nullptr};
 
   column_wrapper<int32_t> a_0{10, 20, 20, 50};
-  column_wrapper<float> a_1{5.0, .7, .7, .7};
-  column_wrapper<int8_t> a_2{90, 75, 62, 41};
+  column_wrapper<float>   a_1{5.0, .7, .7, .7};
+  column_wrapper<int8_t>  a_2{90, 75, 62, 41};
 
   cudf::test::strings_column_wrapper a_3(
     a_strings.begin(),
@@ -655,8 +655,8 @@ TEST_F(JoinTest, LeftAntiJoin_empty_right_table)
     thrust::make_transform_iterator(a_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> b_0{};
-  column_wrapper<float> b_1{};
-  column_wrapper<int8_t> b_2{};
+  column_wrapper<float>   b_1{};
+  column_wrapper<int8_t>  b_2{};
 
   cudf::test::strings_column_wrapper b_3(
     b_strings.begin(),
@@ -664,8 +664,8 @@ TEST_F(JoinTest, LeftAntiJoin_empty_right_table)
     thrust::make_transform_iterator(b_strings.begin(), [](auto str) { return str != nullptr; }));
 
   column_wrapper<int32_t> expect_0{10, 20, 20, 50};
-  column_wrapper<float> expect_1{5.0, .7, .7, .7};
-  column_wrapper<int8_t> expect_2{90, 75, 62, 41};
+  column_wrapper<float>   expect_1{5.0, .7, .7, .7};
+  column_wrapper<int8_t>  expect_2{90, 75, 62, 41};
 
   cudf::test::strings_column_wrapper expect_3(
     e_strings.begin(),
@@ -700,18 +700,18 @@ struct JoinDictionaryTest : public cudf::test::BaseFixture {
 
 TEST_F(JoinDictionaryTest, LeftSemiJoin)
 {
-  column_wrapper<int32_t> a_0{10, 20, 20, 20, 20, 20, 50};
-  column_wrapper<float> a_1{5.0, .5, .5, .7, .7, .7, .7};
-  column_wrapper<int8_t> a_2{90, 77, 78, 61, 62, 63, 41};
+  column_wrapper<int32_t>            a_0{10, 20, 20, 20, 20, 20, 50};
+  column_wrapper<float>              a_1{5.0, .5, .5, .7, .7, .7, .7};
+  column_wrapper<int8_t>             a_2{90, 77, 78, 61, 62, 63, 41};
   cudf::test::strings_column_wrapper a_3_w(
     {"quick", "accénted", "turtlé", "composéd", "result", "", "words"});
   auto a_3 = cudf::dictionary::encode(a_3_w);
 
-  column_wrapper<int32_t> b_0{10, 20, 20};
-  column_wrapper<float> b_1{5.0, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62};
+  column_wrapper<int32_t>            b_0{10, 20, 20};
+  column_wrapper<float>              b_1{5.0, .7, .7};
+  column_wrapper<int8_t>             b_2{90, 75, 62};
   cudf::test::strings_column_wrapper b_3_w({"quick", "words", "result"});
-  auto b_3 = cudf::dictionary::encode(b_3_w);
+  auto                               b_3 = cudf::dictionary::encode(b_3_w);
 
   auto table_a  = cudf::table_view({a_0, a_1, a_2, a_3->view()});
   auto table_b  = cudf::table_view({b_0, b_1, b_2, b_3->view()});
@@ -741,18 +741,18 @@ TEST_F(JoinDictionaryTest, LeftSemiJoin)
 
 TEST_F(JoinDictionaryTest, LeftSemiJoinWithNulls)
 {
-  column_wrapper<int32_t> a_0{10, 20, 20, 20, 20, 20, 50};
-  column_wrapper<float> a_1{5.0, .5, .5, .7, .7, .7, .7};
-  column_wrapper<int8_t> a_2{90, 77, 78, 61, 62, 63, 41};
+  column_wrapper<int32_t>            a_0{10, 20, 20, 20, 20, 20, 50};
+  column_wrapper<float>              a_1{5.0, .5, .5, .7, .7, .7, .7};
+  column_wrapper<int8_t>             a_2{90, 77, 78, 61, 62, 63, 41};
   cudf::test::strings_column_wrapper a_3_w(
     {"quick", "accénted", "turtlé", "composéd", "result", "", "words"});
   auto a_3 = cudf::dictionary::encode(a_3_w);
 
-  column_wrapper<int32_t> b_0{10, 20, 20, 50};
-  column_wrapper<float> b_1{5.0, .7, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62, 41};
+  column_wrapper<int32_t>            b_0{10, 20, 20, 50};
+  column_wrapper<float>              b_1{5.0, .7, .7, .7};
+  column_wrapper<int8_t>             b_2{90, 75, 62, 41};
   cudf::test::strings_column_wrapper b_3_w({"quick", "words", "result", ""}, {1, 1, 1, 0});
-  auto b_3 = cudf::dictionary::encode(b_3_w);
+  auto                               b_3 = cudf::dictionary::encode(b_3_w);
 
   auto table_a = cudf::table_view({a_0, a_1, a_2, a_3->view()});
   auto table_b = cudf::table_view({b_0, b_1, b_2, b_3->view()});
@@ -771,18 +771,18 @@ TEST_F(JoinDictionaryTest, LeftSemiJoinWithNulls)
 
 TEST_F(JoinDictionaryTest, LeftAntiJoin)
 {
-  column_wrapper<int32_t> a_0{10, 20, 20, 20, 20, 20, 50};
-  column_wrapper<float> a_1{5.0, .5, .5, .7, .7, .7, .7};
-  column_wrapper<int8_t> a_2{90, 77, 78, 61, 62, 63, 41};
+  column_wrapper<int32_t>            a_0{10, 20, 20, 20, 20, 20, 50};
+  column_wrapper<float>              a_1{5.0, .5, .5, .7, .7, .7, .7};
+  column_wrapper<int8_t>             a_2{90, 77, 78, 61, 62, 63, 41};
   cudf::test::strings_column_wrapper a_3_w(
     {"quick", "accénted", "turtlé", "composéd", "result", "", "words"});
   auto a_3 = cudf::dictionary::encode(a_3_w);
 
-  column_wrapper<int32_t> b_0{10, 20, 20};
-  column_wrapper<float> b_1{5.0, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62};
+  column_wrapper<int32_t>            b_0{10, 20, 20};
+  column_wrapper<float>              b_1{5.0, .7, .7};
+  column_wrapper<int8_t>             b_2{90, 75, 62};
   cudf::test::strings_column_wrapper b_3_w({"quick", "words", "result"});
-  auto b_3 = cudf::dictionary::encode(b_3_w);
+  auto                               b_3 = cudf::dictionary::encode(b_3_w);
 
   auto table_a  = cudf::table_view({a_0, a_1, a_2, a_3->view()});
   auto table_b  = cudf::table_view({b_0, b_1, b_2, b_3->view()});
@@ -812,18 +812,18 @@ TEST_F(JoinDictionaryTest, LeftAntiJoin)
 
 TEST_F(JoinDictionaryTest, LeftAntiJoinWithNulls)
 {
-  column_wrapper<int32_t> a_0{10, 20, 20, 20, 20, 20, 50};
-  column_wrapper<float> a_1{5.0, .5, .5, .7, .7, .7, .7};
-  column_wrapper<int8_t> a_2{90, 77, 78, 61, 62, 63, 41};
+  column_wrapper<int32_t>            a_0{10, 20, 20, 20, 20, 20, 50};
+  column_wrapper<float>              a_1{5.0, .5, .5, .7, .7, .7, .7};
+  column_wrapper<int8_t>             a_2{90, 77, 78, 61, 62, 63, 41};
   cudf::test::strings_column_wrapper a_3_w(
     {"quick", "accénted", "turtlé", "composéd", "result", "", "words"});
   auto a_3 = cudf::dictionary::encode(a_3_w);
 
-  column_wrapper<int32_t> b_0{10, 20, 20, 50};
-  column_wrapper<float> b_1{5.0, .7, .7, .7};
-  column_wrapper<int8_t> b_2{90, 75, 62, 41};
+  column_wrapper<int32_t>            b_0{10, 20, 20, 50};
+  column_wrapper<float>              b_1{5.0, .7, .7, .7};
+  column_wrapper<int8_t>             b_2{90, 75, 62, 41};
   cudf::test::strings_column_wrapper b_3_w({"quick", "words", "result", ""}, {1, 1, 1, 0});
-  auto b_3 = cudf::dictionary::encode(b_3_w);
+  auto                               b_3 = cudf::dictionary::encode(b_3_w);
 
   auto table_a = cudf::table_view({a_0, a_1, a_2, a_3->view()});
   auto table_b = cudf::table_view({b_0, b_1, b_2, b_3->view()});

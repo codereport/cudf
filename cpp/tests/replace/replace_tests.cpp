@@ -56,7 +56,7 @@ TEST_F(ReplaceErrorTest, SizeMismatch)
 TEST_F(ReplaceErrorTest, TypeMismatch)
 {
   cudf::test::fixed_width_column_wrapper<int32_t> input_column{{7, 5, 6, 3, 1, 2, 8, 4}};
-  cudf::test::fixed_width_column_wrapper<float> values_to_replace_column{{10, 11, 12}};
+  cudf::test::fixed_width_column_wrapper<float>   values_to_replace_column{{10, 11, 12}};
   cudf::test::fixed_width_column_wrapper<int32_t> replacement_values_column{{15, 16, 17}};
 
   EXPECT_THROW(cudf::find_and_replace_all(
@@ -95,8 +95,8 @@ TEST_F(ReplaceStringsTest, Strings)
   std::unique_ptr<cudf::column> result;
   ASSERT_NO_THROW(result = cudf::find_and_replace_all(
                     input_wrapper, values_to_replace_wrapper, replacement_wrapper, mr()));
-  std::vector<std::string> expected{"z", "b", "c", "d", "e", "f", "g", "h"};
-  std::vector<cudf::valid_type> ex_valid{1, 1, 1, 1, 1, 1, 1, 1};
+  std::vector<std::string>           expected{"z", "b", "c", "d", "e", "f", "g", "h"};
+  std::vector<cudf::valid_type>      ex_valid{1, 1, 1, 1, 1, 1, 1, 1};
   cudf::test::strings_column_wrapper expected_wrapper{
     expected.begin(), expected.end(), ex_valid.begin()};
 
@@ -106,10 +106,10 @@ TEST_F(ReplaceStringsTest, Strings)
 // Strings test
 TEST_F(ReplaceStringsTest, StringsReplacementNulls)
 {
-  std::vector<std::string> input{"a", "b", "c", "d", "e", "f", "g", "h"};
-  std::vector<std::string> values_to_replace{"a", "b"};
-  std::vector<std::string> replacement{"z", ""};
-  std::vector<cudf::valid_type> replacement_valid{1, 0};
+  std::vector<std::string>           input{"a", "b", "c", "d", "e", "f", "g", "h"};
+  std::vector<std::string>           values_to_replace{"a", "b"};
+  std::vector<std::string>           replacement{"z", ""};
+  std::vector<cudf::valid_type>      replacement_valid{1, 0};
   cudf::test::strings_column_wrapper input_wrapper{input.begin(), input.end()};
   cudf::test::strings_column_wrapper values_to_replace_wrapper{values_to_replace.begin(),
                                                                values_to_replace.end()};
@@ -119,8 +119,8 @@ TEST_F(ReplaceStringsTest, StringsReplacementNulls)
   std::unique_ptr<cudf::column> result;
   ASSERT_NO_THROW(result = cudf::find_and_replace_all(
                     input_wrapper, values_to_replace_wrapper, replacement_wrapper, mr()));
-  std::vector<std::string> expected{"z", "", "c", "d", "e", "f", "g", "h"};
-  std::vector<cudf::valid_type> ex_valid{1, 0, 1, 1, 1, 1, 1, 1};
+  std::vector<std::string>           expected{"z", "", "c", "d", "e", "f", "g", "h"};
+  std::vector<cudf::valid_type>      ex_valid{1, 0, 1, 1, 1, 1, 1, 1};
   cudf::test::strings_column_wrapper expected_wrapper{
     expected.begin(), expected.end(), ex_valid.begin()};
 
@@ -130,12 +130,12 @@ TEST_F(ReplaceStringsTest, StringsReplacementNulls)
 // Strings test
 TEST_F(ReplaceStringsTest, StringsResultAllNulls)
 {
-  std::vector<std::string> input{"b", "b", "b", "b", "b", "b", "b", "b"};
-  std::vector<std::string> values_to_replace{"a", "b"};
-  std::vector<std::string> replacement{"a", ""};
-  std::vector<cudf::valid_type> replacement_valid{1, 0};
-  std::vector<std::string> expected{"", "", "", "", "", "", "", ""};
-  std::vector<cudf::valid_type> ex_valid{0, 0, 0, 0, 0, 0, 0, 0};
+  std::vector<std::string>           input{"b", "b", "b", "b", "b", "b", "b", "b"};
+  std::vector<std::string>           values_to_replace{"a", "b"};
+  std::vector<std::string>           replacement{"a", ""};
+  std::vector<cudf::valid_type>      replacement_valid{1, 0};
+  std::vector<std::string>           expected{"", "", "", "", "", "", "", ""};
+  std::vector<cudf::valid_type>      ex_valid{0, 0, 0, 0, 0, 0, 0, 0};
   cudf::test::strings_column_wrapper input_wrapper{input.begin(), input.end()};
   cudf::test::strings_column_wrapper values_to_replace_wrapper{values_to_replace.begin(),
                                                                values_to_replace.end()};
@@ -154,12 +154,12 @@ TEST_F(ReplaceStringsTest, StringsResultAllNulls)
 // Strings test
 TEST_F(ReplaceStringsTest, StringsResultAllEmpty)
 {
-  std::vector<std::string> input{"b", "b", "b", "b", "b", "b", "b", "b"};
-  std::vector<std::string> values_to_replace{"a", "b"};
-  std::vector<std::string> replacement{"a", ""};
-  std::vector<cudf::valid_type> replacement_valid{1, 1};
-  std::vector<std::string> expected{"", "", "", "", "", "", "", ""};
-  std::vector<cudf::valid_type> ex_valid{1, 1, 1, 1, 1, 1, 1, 1};
+  std::vector<std::string>           input{"b", "b", "b", "b", "b", "b", "b", "b"};
+  std::vector<std::string>           values_to_replace{"a", "b"};
+  std::vector<std::string>           replacement{"a", ""};
+  std::vector<cudf::valid_type>      replacement_valid{1, 1};
+  std::vector<std::string>           expected{"", "", "", "", "", "", "", ""};
+  std::vector<cudf::valid_type>      ex_valid{1, 1, 1, 1, 1, 1, 1, 1};
   cudf::test::strings_column_wrapper input_wrapper{input.begin(), input.end()};
   cudf::test::strings_column_wrapper values_to_replace_wrapper{values_to_replace.begin(),
                                                                values_to_replace.end()};
@@ -178,10 +178,10 @@ TEST_F(ReplaceStringsTest, StringsResultAllEmpty)
 // Strings test
 TEST_F(ReplaceStringsTest, StringsInputNulls)
 {
-  std::vector<std::string> input{"a", "b", "", "", "e", "f", "g", "h"};
-  std::vector<std::string> values_to_replace{"a", "b"};
-  std::vector<std::string> replacement{"z", "y"};
-  std::vector<cudf::valid_type> input_valid{1, 1, 0, 0, 1, 1, 1, 1};
+  std::vector<std::string>           input{"a", "b", "", "", "e", "f", "g", "h"};
+  std::vector<std::string>           values_to_replace{"a", "b"};
+  std::vector<std::string>           replacement{"z", "y"};
+  std::vector<cudf::valid_type>      input_valid{1, 1, 0, 0, 1, 1, 1, 1};
   cudf::test::strings_column_wrapper input_wrapper{input.begin(), input.end(), input_valid.begin()};
   cudf::test::strings_column_wrapper values_to_replace_wrapper{values_to_replace.begin(),
                                                                values_to_replace.end()};
@@ -190,8 +190,8 @@ TEST_F(ReplaceStringsTest, StringsInputNulls)
   std::unique_ptr<cudf::column> result;
   ASSERT_NO_THROW(result = cudf::find_and_replace_all(
                     input_wrapper, values_to_replace_wrapper, replacement_wrapper, mr()));
-  std::vector<std::string> expected{"z", "y", "", "", "e", "f", "g", "h"};
-  std::vector<cudf::valid_type> ex_valid{1, 1, 0, 0, 1, 1, 1, 1};
+  std::vector<std::string>           expected{"z", "y", "", "", "e", "f", "g", "h"};
+  std::vector<cudf::valid_type>      ex_valid{1, 1, 0, 0, 1, 1, 1, 1};
   cudf::test::strings_column_wrapper expected_wrapper{
     expected.begin(), expected.end(), ex_valid.begin()};
 
@@ -201,11 +201,11 @@ TEST_F(ReplaceStringsTest, StringsInputNulls)
 // Strings test
 TEST_F(ReplaceStringsTest, StringsInputAndReplacementNulls)
 {
-  std::vector<std::string> input{"a", "b", "", "", "e", "f", "g", "h"};
-  std::vector<std::string> values_to_replace{"a", "b"};
-  std::vector<std::string> replacement{"z", ""};
-  std::vector<cudf::valid_type> replacement_valid{1, 0};
-  std::vector<cudf::valid_type> input_valid{1, 1, 0, 0, 1, 1, 1, 1};
+  std::vector<std::string>           input{"a", "b", "", "", "e", "f", "g", "h"};
+  std::vector<std::string>           values_to_replace{"a", "b"};
+  std::vector<std::string>           replacement{"z", ""};
+  std::vector<cudf::valid_type>      replacement_valid{1, 0};
+  std::vector<cudf::valid_type>      input_valid{1, 1, 0, 0, 1, 1, 1, 1};
   cudf::test::strings_column_wrapper input_wrapper{input.begin(), input.end(), input_valid.begin()};
   cudf::test::strings_column_wrapper values_to_replace_wrapper{values_to_replace.begin(),
                                                                values_to_replace.end()};
@@ -215,8 +215,8 @@ TEST_F(ReplaceStringsTest, StringsInputAndReplacementNulls)
   std::unique_ptr<cudf::column> result;
   ASSERT_NO_THROW(result = cudf::find_and_replace_all(
                     input_wrapper, values_to_replace_wrapper, replacement_wrapper, mr()));
-  std::vector<std::string> expected{"z", "", "", "", "e", "f", "g", "h"};
-  std::vector<cudf::valid_type> ex_valid{1, 0, 0, 0, 1, 1, 1, 1};
+  std::vector<std::string>           expected{"z", "", "", "", "e", "f", "g", "h"};
+  std::vector<cudf::valid_type>      ex_valid{1, 0, 0, 0, 1, 1, 1, 1};
   cudf::test::strings_column_wrapper expected_wrapper{
     expected.begin(), expected.end(), ex_valid.begin()};
 
@@ -226,10 +226,10 @@ TEST_F(ReplaceStringsTest, StringsInputAndReplacementNulls)
 // Strings test
 TEST_F(ReplaceStringsTest, StringsEmptyReplacement)
 {
-  std::vector<std::string> input{"a", "b", "", "", "e", "f", "g", "h"};
-  std::vector<std::string> values_to_replace{};
-  std::vector<std::string> replacement{};
-  std::vector<cudf::valid_type> input_valid{1, 1, 0, 0, 1, 1, 1, 1};
+  std::vector<std::string>           input{"a", "b", "", "", "e", "f", "g", "h"};
+  std::vector<std::string>           values_to_replace{};
+  std::vector<std::string>           replacement{};
+  std::vector<cudf::valid_type>      input_valid{1, 1, 0, 0, 1, 1, 1, 1};
   cudf::test::strings_column_wrapper input_wrapper{input.begin(), input.end(), input_valid.begin()};
   cudf::test::strings_column_wrapper values_to_replace_wrapper{values_to_replace.begin(),
                                                                values_to_replace.end()};
@@ -238,8 +238,8 @@ TEST_F(ReplaceStringsTest, StringsEmptyReplacement)
   std::unique_ptr<cudf::column> result;
   ASSERT_NO_THROW(result = cudf::find_and_replace_all(
                     input_wrapper, values_to_replace_wrapper, replacement_wrapper, mr()));
-  std::vector<std::string> expected{"a", "b", "", "", "e", "f", "g", "h"};
-  std::vector<cudf::valid_type> ex_valid{1, 1, 0, 0, 1, 1, 1, 1};
+  std::vector<std::string>           expected{"a", "b", "", "", "e", "f", "g", "h"};
+  std::vector<cudf::valid_type>      ex_valid{1, 1, 0, 0, 1, 1, 1, 1};
   cudf::test::strings_column_wrapper expected_wrapper{
     expected.begin(), expected.end(), ex_valid.begin()};
 
@@ -249,17 +249,17 @@ TEST_F(ReplaceStringsTest, StringsEmptyReplacement)
 // Strings test
 TEST_F(ReplaceStringsTest, StringsLargeScale)
 {
-  std::vector<std::string> input{"a", "b", "", "", "e", "f", "g", "h"};
-  std::vector<std::string> values_to_replace{"a", "b"};
-  std::vector<std::string> replacement{"z", ""};
+  std::vector<std::string>      input{"a", "b", "", "", "e", "f", "g", "h"};
+  std::vector<std::string>      values_to_replace{"a", "b"};
+  std::vector<std::string>      replacement{"z", ""};
   std::vector<cudf::valid_type> replacement_valid{1, 0};
   std::vector<cudf::valid_type> input_valid{1, 1, 0, 0, 1, 1, 1, 1};
-  std::vector<std::string> expected{"z", "", "", "", "e", "f", "g", "h"};
+  std::vector<std::string>      expected{"z", "", "", "", "e", "f", "g", "h"};
   std::vector<cudf::valid_type> ex_valid{1, 0, 0, 0, 1, 1, 1, 1};
 
-  std::vector<std::string> big_input{};
+  std::vector<std::string>      big_input{};
   std::vector<cudf::valid_type> big_input_valid{};
-  std::vector<std::string> big_expected{};
+  std::vector<std::string>      big_expected{};
   std::vector<cudf::valid_type> big_ex_valid{};
 
   for (int i = 0; i < 10000; i++) {
@@ -316,12 +316,12 @@ struct ReplaceTest : cudf::test::BaseFixture {
  */
 template <typename T>
 void test_replace(
-  std::vector<T> const& input_column,
-  std::vector<T> const& values_to_replace_column,
-  std::vector<T> const& replacement_values_column,
+  std::vector<T> const&                input_column,
+  std::vector<T> const&                values_to_replace_column,
+  std::vector<T> const&                replacement_values_column,
   std::vector<cudf::valid_type> const& input_column_valid       = std::vector<cudf::valid_type>{},
   std::vector<cudf::valid_type> const& replacement_values_valid = std::vector<cudf::valid_type>{},
-  bool print                                                    = false)
+  bool                                 print                    = false)
 {
   cudf::test::fixed_width_column_wrapper<T> _input_column(input_column.begin(), input_column.end());
   if (input_column_valid.size() > 0) {
@@ -346,8 +346,8 @@ void test_replace(
                     _input_column, _values_to_replace_column, _replacement_values_column));
 
   /* computing the expected result */
-  std::vector<T> reference_result(input_column);
-  std::vector<bool> isReplaced(reference_result.size(), false);
+  std::vector<T>                reference_result(input_column);
+  std::vector<bool>             isReplaced(reference_result.size(), false);
   std::vector<cudf::valid_type> expected_valid(input_column_valid);
   if (replacement_values_valid.size() > 0 && 0 == input_column_valid.size()) {
     expected_valid.assign(input_column.size(), true);
@@ -357,8 +357,8 @@ void test_replace(
   const bool replacement_has_nulls = (replacement_values_valid.size() > 0);
 
   for (size_t i = 0; i < values_to_replace_column.size(); i++) {
-    size_t k  = 0;
-    auto pred = [=, &k, &reference_result, &expected_valid, &isReplaced](T element) {
+    size_t k    = 0;
+    auto   pred = [=, &k, &reference_result, &expected_valid, &isReplaced](T element) {
       bool toBeReplaced = false;
       if (!isReplaced[k]) {
         if (!input_has_nulls || expected_valid[k]) {
@@ -507,7 +507,7 @@ TYPED_TEST(ReplaceTest, LargeScaleReplaceTest)
 
   std::vector<TypeParam> values_to_replace_column(REPLACE_SIZE);
   std::vector<TypeParam> replacement_values_column(REPLACE_SIZE);
-  size_t count = 0;
+  size_t                 count = 0;
   for (size_t i = 0; i < 7; i++) {
     for (size_t j = 0; j < REPLACE_SIZE; j += 7) {
       if (i + j < REPLACE_SIZE) {
@@ -551,10 +551,10 @@ TYPED_TEST(FixedPointTestBothReps, FixedPointReplace)
   auto const TWO = decimalXX{2, scale_type{0}};
   auto const sz  = std::size_t{1000};
 
-  auto mod2            = [&](auto e) { return e % 2 ? ONE : TWO; };
-  auto transform_begin = cudf::detail::make_counting_transform_iterator(0, mod2);
-  auto const vec1      = std::vector<decimalXX>(transform_begin, transform_begin + sz);
-  auto const vec2      = std::vector<decimalXX>(sz, TWO);
+  auto       mod2            = [&](auto e) { return e % 2 ? ONE : TWO; };
+  auto       transform_begin = cudf::detail::make_counting_transform_iterator(0, mod2);
+  auto const vec1            = std::vector<decimalXX>(transform_begin, transform_begin + sz);
+  auto const vec2            = std::vector<decimalXX>(sz, TWO);
 
   auto const to_replace  = std::vector<decimalXX>{ONE};
   auto const replacement = std::vector<decimalXX>{TWO};
@@ -575,15 +575,15 @@ struct ReplaceDictionaryTest : public cudf::test::BaseFixture {
 TEST_F(ReplaceDictionaryTest, StringsKeys)
 {
   cudf::test::strings_column_wrapper input_w({"a", "b", "a", "c", "b", "a", "c", "b"});
-  auto input = cudf::dictionary::encode(input_w);
+  auto                               input = cudf::dictionary::encode(input_w);
   cudf::test::strings_column_wrapper values_to_replace_w({"a"});
   auto values_to_replace = cudf::dictionary::encode(values_to_replace_w);
   cudf::test::strings_column_wrapper replacements_w({"z"});
-  auto replacements = cudf::dictionary::encode(replacements_w);
+  auto                               replacements = cudf::dictionary::encode(replacements_w);
 
   auto result =
     cudf::find_and_replace_all(input->view(), values_to_replace->view(), replacements->view());
-  auto decoded = cudf::dictionary::decode(result->view());
+  auto                               decoded = cudf::dictionary::decode(result->view());
   cudf::test::strings_column_wrapper expected({"z", "b", "z", "c", "b", "z", "c", "b"});
 
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*decoded, expected);
@@ -593,7 +593,7 @@ TEST_F(ReplaceDictionaryTest, InputAndReplacementNulls)
 {
   cudf::test::fixed_width_column_wrapper<int32_t> input_w({1, 2, 1, 2, 0, 3, 4, 4, 3},
                                                           {1, 1, 1, 1, 0, 1, 1, 1, 1});
-  auto input = cudf::dictionary::encode(input_w);
+  auto                                            input = cudf::dictionary::encode(input_w);
   cudf::test::fixed_width_column_wrapper<int32_t> values_to_replace_w({2, 3});
   auto values_to_replace = cudf::dictionary::encode(values_to_replace_w);
   cudf::test::fixed_width_column_wrapper<int32_t> replacements_w({5, 0}, {1, 0});
@@ -612,9 +612,9 @@ TEST_F(ReplaceDictionaryTest, EmptyReplacement)
 {
   cudf::test::fixed_width_column_wrapper<double> input_w(
     {1.0, 2.0, 1.0, 2.0, 0.0, 3.0, 4.0, 4.0, 3.0}, {1, 1, 1, 1, 0, 1, 1, 1, 1});
-  auto input = cudf::dictionary::encode(input_w);
+  auto                                           input = cudf::dictionary::encode(input_w);
   cudf::test::fixed_width_column_wrapper<double> empty_w({});
-  auto empty  = cudf::dictionary::encode(empty_w);
+  auto                                           empty = cudf::dictionary::encode(empty_w);
   auto result = cudf::find_and_replace_all(input->view(), empty->view(), empty->view());
 
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*result, *input);

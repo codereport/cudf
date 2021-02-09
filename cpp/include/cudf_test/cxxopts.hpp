@@ -82,7 +82,7 @@ class UnicodeStringIterator : public std::iterator<std::forward_iterator_tag, in
 
  private:
   const icu::UnicodeString* s;
-  int32_t i;
+  int32_t                   i;
 };
 
 inline String& stringAppend(String& s, String a) { return s.append(std::move(a)); }
@@ -404,8 +404,8 @@ void integer_parser(const std::string& text, T& value)
   using US = typename std::make_unsigned<T>::type;
 
   constexpr bool is_signed = std::numeric_limits<T>::is_signed;
-  const bool negative      = match.length(1) > 0;
-  const uint8_t base       = match.length(2) > 0 ? 16 : 10;
+  const bool     negative  = match.length(1) > 0;
+  const uint8_t  base      = match.length(2) > 0 ? 16 : 10;
 
   auto value_match = match[3];
 
@@ -497,7 +497,7 @@ template <typename T>
 void parse_value(const std::string& text, std::vector<T>& value)
 {
   std::stringstream in(text);
-  std::string token;
+  std::string       token;
   while (in.eof() == false && std::getline(in, token, CXXOPTS_VECTOR_DELIMITER)) {
     T v;
     parse_value(token, v);
@@ -595,7 +595,7 @@ class abstract_value : public Value {
 
  protected:
   std::shared_ptr<T> m_result;
-  T* m_store;
+  T*                 m_store;
 
   bool m_default  = false;
   bool m_implicit = false;
@@ -650,9 +650,9 @@ class OptionAdder;
 
 class OptionDetails {
  public:
-  OptionDetails(const std::string& short_,
-                const std::string& long_,
-                const String& desc,
+  OptionDetails(const std::string&           short_,
+                const std::string&           long_,
+                const String&                desc,
                 std::shared_ptr<const Value> val)
     : m_short(short_), m_long(long_), m_desc(desc), m_value(val), m_count(0)
   {
@@ -676,29 +676,29 @@ class OptionDetails {
   const std::string& long_name() const { return m_long; }
 
  private:
-  std::string m_short;
-  std::string m_long;
-  String m_desc;
+  std::string                  m_short;
+  std::string                  m_long;
+  String                       m_desc;
   std::shared_ptr<const Value> m_value;
-  int m_count;
+  int                          m_count;
 };
 
 struct HelpOptionDetails {
   std::string s;
   std::string l;
-  String desc;
-  bool has_default;
+  String      desc;
+  bool        has_default;
   std::string default_value;
-  bool has_implicit;
+  bool        has_implicit;
   std::string implicit_value;
   std::string arg_help;
-  bool is_container;
-  bool is_boolean;
+  bool        is_container;
+  bool        is_boolean;
 };
 
 struct HelpGroupDetails {
-  std::string name;
-  std::string description;
+  std::string                    name;
+  std::string                    description;
   std::vector<HelpOptionDetails> options;
 };
 
@@ -742,8 +742,8 @@ class OptionValue {
   }
 
   std::shared_ptr<Value> m_value;
-  size_t m_count = 0;
-  bool m_default = false;
+  size_t                 m_count   = 0;
+  bool                   m_default = false;
 };
 
 class KeyValue {
@@ -810,21 +810,21 @@ class ParseResult {
   bool consume_positional(std::string a);
 
   void parse_option(std::shared_ptr<OptionDetails> value,
-                    const std::string& name,
-                    const std::string& arg = "");
+                    const std::string&             name,
+                    const std::string&             arg = "");
 
   void parse_default(std::shared_ptr<OptionDetails> details);
 
-  void checked_parse_arg(int argc,
-                         char* argv[],
-                         int& current,
+  void checked_parse_arg(int                            argc,
+                         char*                          argv[],
+                         int&                           current,
                          std::shared_ptr<OptionDetails> value,
-                         const std::string& name);
+                         const std::string&             name);
 
   const std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<OptionDetails>>> m_options;
-  std::vector<std::string> m_positional;
-  std::vector<std::string>::iterator m_next_positional;
-  std::unordered_set<std::string> m_positional_set;
+  std::vector<std::string>                                        m_positional;
+  std::vector<std::string>::iterator                              m_next_positional;
+  std::unordered_set<std::string>                                 m_positional_set;
   std::unordered_map<std::shared_ptr<OptionDetails>, OptionValue> m_results;
 
   bool m_allow_unrecognised;
@@ -833,18 +833,18 @@ class ParseResult {
 };
 
 struct Option {
-  Option(const std::string& opts,
-         const std::string& desc,
-         const std::shared_ptr<const Value>& value = ::cxxopts::value<bool>(),
-         const std::string& arg_help               = "")
+  Option(const std::string&                  opts,
+         const std::string&                  desc,
+         const std::shared_ptr<const Value>& value    = ::cxxopts::value<bool>(),
+         const std::string&                  arg_help = "")
     : opts_(opts), desc_(desc), value_(value), arg_help_(arg_help)
   {
   }
 
-  std::string opts_;
-  std::string desc_;
+  std::string                  opts_;
+  std::string                  desc_;
   std::shared_ptr<const Value> value_;
-  std::string arg_help_;
+  std::string                  arg_help_;
 };
 
 class Options {
@@ -895,12 +895,12 @@ class Options {
 
   void add_option(const std::string& group, const Option& option);
 
-  void add_option(const std::string& group,
-                  const std::string& s,
-                  const std::string& l,
-                  std::string desc,
+  void add_option(const std::string&           group,
+                  const std::string&           s,
+                  const std::string&           l,
+                  std::string                  desc,
                   std::shared_ptr<const Value> value,
-                  std::string arg_help);
+                  std::string                  arg_help);
 
   // parse positional arguments into the given option
   void parse_positional(std::string option);
@@ -931,16 +931,16 @@ class Options {
   void generate_all_groups_help(String& result) const;
 
   std::string m_program;
-  String m_help_string;
+  String      m_help_string;
   std::string m_custom_help;
   std::string m_positional_help;
-  bool m_show_positional;
-  bool m_allow_unrecognised;
+  bool        m_show_positional;
+  bool        m_allow_unrecognised;
 
-  std::shared_ptr<OptionMap> m_options;
-  std::vector<std::string> m_positional;
+  std::shared_ptr<OptionMap>         m_options;
+  std::vector<std::string>           m_positional;
   std::vector<std::string>::iterator m_next_positional;
-  std::unordered_set<std::string> m_positional_set;
+  std::unordered_set<std::string>    m_positional_set;
 
   // mapping from groups to help options
   std::map<std::string, HelpGroupDetails> m_help;
@@ -952,13 +952,13 @@ class OptionAdder {
   {
   }
 
-  OptionAdder& operator()(const std::string& opts,
-                          const std::string& desc,
-                          std::shared_ptr<const Value> value = ::cxxopts::value<bool>(),
-                          std::string arg_help               = "");
+  OptionAdder& operator()(const std::string&           opts,
+                          const std::string&           desc,
+                          std::shared_ptr<const Value> value    = ::cxxopts::value<bool>(),
+                          std::string                  arg_help = "");
 
  private:
-  Options& m_options;
+  Options&    m_options;
   std::string m_group;
 };
 
@@ -1055,9 +1055,9 @@ String format_description(const HelpOptionDetails& o, size_t start, size_t width
 
 inline ParseResult::ParseResult(
   const std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<OptionDetails>>> options,
-  std::vector<std::string> positional,
-  bool allow_unrecognised,
-  int& argc,
+  std::vector<std::string>                                                               positional,
+  bool    allow_unrecognised,
+  int&    argc,
   char**& argv)
   : m_options(options),
     m_positional(std::move(positional)),
@@ -1080,10 +1080,10 @@ inline OptionAdder Options::add_options(std::string group)
   return OptionAdder(*this, std::move(group));
 }
 
-inline OptionAdder& OptionAdder::operator()(const std::string& opts,
-                                            const std::string& desc,
+inline OptionAdder& OptionAdder::operator()(const std::string&           opts,
+                                            const std::string&           desc,
                                             std::shared_ptr<const Value> value,
-                                            std::string arg_help)
+                                            std::string                  arg_help)
 {
   std::match_results<const char*> result;
   std::regex_match(opts.c_str(), result, option_specifier);
@@ -1133,11 +1133,11 @@ inline void ParseResult::parse_option(std::shared_ptr<OptionDetails> value,
   m_sequential.emplace_back(value->long_name(), arg);
 }
 
-inline void ParseResult::checked_parse_arg(int argc,
-                                           char* argv[],
-                                           int& current,
+inline void ParseResult::checked_parse_arg(int                            argc,
+                                           char*                          argv[],
+                                           int&                           current,
                                            std::shared_ptr<OptionDetails> value,
-                                           const std::string& name)
+                                           const std::string&             name)
 {
   if (current + 1 >= argc) {
     if (value->value().has_implicit()) {
@@ -1256,7 +1256,7 @@ inline void ParseResult::parse(int& argc, char**& argv)
 
         for (std::size_t i = 0; i != s.size(); ++i) {
           std::string name(1, s[i]);
-          auto iter = m_options->find(name);
+          auto        iter = m_options->find(name);
 
           if (iter == m_options->end()) {
             if (m_allow_unrecognised) {
@@ -1345,12 +1345,12 @@ inline void Options::add_option(const std::string& group, const Option& option)
   add_options(group, {option});
 }
 
-inline void Options::add_option(const std::string& group,
-                                const std::string& s,
-                                const std::string& l,
-                                std::string desc,
+inline void Options::add_option(const std::string&           group,
+                                const std::string&           s,
+                                const std::string&           l,
+                                std::string                  desc,
                                 std::shared_ptr<const Value> value,
-                                std::string arg_help)
+                                std::string                  arg_help)
 {
   auto stringDesc = toLocalString(std::move(desc));
   auto option     = std::make_shared<OptionDetails>(s, l, stringDesc, value);
@@ -1374,7 +1374,7 @@ inline void Options::add_option(const std::string& group,
                                                  value->is_boolean()});
 }
 
-inline void Options::add_one_option(const std::string& option,
+inline void Options::add_one_option(const std::string&             option,
                                     std::shared_ptr<OptionDetails> details)
 {
   auto in = m_options->emplace(option, details);
@@ -1433,7 +1433,7 @@ inline String Options::help_one_group(const std::string& g) const
   return result;
 }
 
-inline void Options::generate_group_help(String& result,
+inline void Options::generate_group_help(String&                         result,
                                          const std::vector<std::string>& print_groups) const
 {
   for (size_t i = 0; i != print_groups.size(); ++i) {

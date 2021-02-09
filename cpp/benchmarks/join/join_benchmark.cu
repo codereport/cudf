@@ -43,8 +43,8 @@ static void BM_join(benchmark::State &state)
   const cudf::size_type build_table_size{(cudf::size_type)state.range(0)};
   const cudf::size_type probe_table_size{(cudf::size_type)state.range(1)};
   const cudf::size_type rand_max_val{build_table_size * 2};
-  const double selectivity             = 0.3;
-  const bool is_build_table_key_unique = true;
+  const double          selectivity               = 0.3;
+  const bool            is_build_table_key_unique = true;
 
   // Generate build and probe tables
   cudf::test::UniformRandomGenerator<cudf::size_type> rand_gen(0, build_table_size);

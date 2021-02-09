@@ -77,7 +77,7 @@ template <FunctorType functor_type, class T>
 __global__ void host_dispatching_kernel(mutable_column_device_view source_column)
 {
   using F               = Functor<T, functor_type>;
-  T* A                  = source_column.data<T>();
+  T*              A     = source_column.data<T>();
   cudf::size_type index = blockIdx.x * blockDim.x + threadIdx.x;
   while (index < source_column.size()) {
     A[index] = F::f(A[index]);
@@ -91,7 +91,7 @@ struct ColumnHandle {
   void operator()(mutable_column_device_view source_column, int work_per_thread)
   {
     cudf::detail::grid_1d grid_config{source_column.size(), block_size};
-    int grid_size = grid_config.num_blocks;
+    int                   grid_size = grid_config.num_blocks;
     // Launch the kernel.
     host_dispatching_kernel<functor_type, ColumnType><<<grid_size, block_size>>>(source_column);
   }
@@ -117,7 +117,7 @@ template <FunctorType functor_type>
 __global__ void device_dispatching_kernel(mutable_table_device_view source)
 {
   const cudf::size_type n_rows = source.num_rows();
-  cudf::size_type index        = threadIdx.x + blockIdx.x * blockDim.x;
+  cudf::size_type       index  = threadIdx.x + blockIdx.x * blockDim.x;
 
   while (index < n_rows) {
     for (cudf::size_type i = 0; i < source.num_columns(); i++) {
@@ -135,7 +135,7 @@ void launch_kernel(mutable_table_view input, T** d_ptr, int work_per_thread)
   const cudf::size_type n_cols = input.num_columns();
 
   cudf::detail::grid_1d grid_config{n_rows, block_size};
-  int grid_size = grid_config.num_blocks;
+  int                   grid_size = grid_config.num_blocks;
 
   if (dispatching_type == HOST_DISPATCHING) {
     // std::vector<cudf::util::cuda::scoped_stream> v_stream(n_cols);
@@ -168,7 +168,7 @@ void type_dispatcher_benchmark(::benchmark::State& state)
   auto data = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i; });
 
   std::vector<cudf::test::fixed_width_column_wrapper<TypeParam>> source_column_wrappers;
-  std::vector<cudf::mutable_column_view> source_columns;
+  std::vector<cudf::mutable_column_view>                         source_columns;
 
   for (int i = 0; i < n_cols; ++i) {
     source_column_wrappers.push_back(
@@ -180,7 +180,7 @@ void type_dispatcher_benchmark(::benchmark::State& state)
   // For no dispatching
   std::vector<rmm::device_vector<TypeParam>> h_vec(n_cols,
                                                    rmm::device_vector<TypeParam>(source_size, 0));
-  std::vector<TypeParam*> h_vec_p(n_cols);
+  std::vector<TypeParam*>                    h_vec_p(n_cols);
   for (int c = 0; c < n_cols; c++) { h_vec_p[c] = h_vec[c].data().get(); }
   rmm::device_vector<TypeParam*> d_vec(n_cols);
 

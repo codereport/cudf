@@ -48,7 +48,7 @@ enum InstType {
  * @brief Class type for regex compiler instruction.
  */
 struct reclass {
-  int32_t builtins;         // bit mask identifying builtin classes
+  int32_t        builtins;  // bit mask identifying builtin classes
   std::u32string literals;  // ranges as pairs of utf-8 characters
   reclass() : builtins(0) {}
   reclass(int m) : builtins(m) {}
@@ -60,10 +60,10 @@ struct reclass {
 struct reinst {
   int32_t type; /* operator type or instruction type */
   union {
-    int32_t cls_id;   /* class pointer */
-    char32_t c;       /* character */
-    int32_t subid;    /* sub-expression id for RBRA and LBRA */
-    int32_t right_id; /* right child of OR */
+    int32_t  cls_id;   /* class pointer */
+    char32_t c;        /* character */
+    int32_t  subid;    /* sub-expression id for RBRA and LBRA */
+    int32_t  right_id; /* right child of OR */
   } u1;
   union {            /* regexec relies on these two being in the same union */
     int32_t left_id; /* left child of OR */
@@ -95,20 +95,20 @@ class reprog {
   int32_t add_inst(reinst inst);
   int32_t add_class(reclass cls);
 
-  void set_groups_count(int32_t groups);
+  void    set_groups_count(int32_t groups);
   int32_t groups_count() const;
 
   const reinst* insts_data() const;
-  int32_t insts_count() const;
-  reinst& inst_at(int32_t id);
+  int32_t       insts_count() const;
+  reinst&       inst_at(int32_t id);
 
   reclass& class_at(int32_t id);
-  int32_t classes_count() const;
+  int32_t  classes_count() const;
 
   const int32_t* starts_data() const;
-  int32_t starts_count() const;
+  int32_t        starts_count() const;
 
-  void set_start_inst(int32_t id);
+  void    set_start_inst(int32_t id);
   int32_t get_start_inst() const;
 
   void optimize1();
@@ -116,11 +116,11 @@ class reprog {
   void print();  // for debugging
 
  private:
-  std::vector<reinst> _insts;
+  std::vector<reinst>  _insts;
   std::vector<reclass> _classes;
-  int32_t _startinst_id;
+  int32_t              _startinst_id;
   std::vector<int32_t> _startinst_ids;  // short-cut to speed-up ORs
-  int32_t _num_capturing_groups;
+  int32_t              _num_capturing_groups;
 };
 
 }  // namespace detail

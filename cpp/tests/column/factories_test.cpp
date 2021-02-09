@@ -29,7 +29,7 @@ class ColumnFactoryTest : public cudf::test::BaseFixture {
   cudf::size_type _size{1000};
 
  public:
-  cudf::size_type size() { return _size; }
+  cudf::size_type       size() { return _size; }
   rmm::cuda_stream_view stream() { return rmm::cuda_stream_default; }
 };
 
@@ -377,7 +377,7 @@ INSTANTIATE_TEST_CASE_P(NonFixedWidth,
 TYPED_TEST(NumericFactoryTest, FromScalar)
 {
   cudf::numeric_scalar<TypeParam> value(12);
-  auto column = cudf::make_column_from_scalar(value, 10);
+  auto                            column = cudf::make_column_from_scalar(value, 10);
   EXPECT_EQ(column->type(), value.type());
   EXPECT_EQ(10, column->size());
   EXPECT_EQ(0, column->null_count());
@@ -389,7 +389,7 @@ TYPED_TEST(NumericFactoryTest, FromScalar)
 TYPED_TEST(NumericFactoryTest, FromNullScalar)
 {
   cudf::numeric_scalar<TypeParam> value(0, false);
-  auto column = cudf::make_column_from_scalar(value, 10);
+  auto                            column = cudf::make_column_from_scalar(value, 10);
   EXPECT_EQ(column->type(), value.type());
   EXPECT_EQ(10, column->size());
   EXPECT_EQ(10, column->null_count());
@@ -401,7 +401,7 @@ TYPED_TEST(NumericFactoryTest, FromNullScalar)
 TYPED_TEST(NumericFactoryTest, FromScalarWithZeroSize)
 {
   cudf::numeric_scalar<TypeParam> value(7);
-  auto column = cudf::make_column_from_scalar(value, 0);
+  auto                            column = cudf::make_column_from_scalar(value, 0);
   EXPECT_EQ(column->type(), value.type());
   EXPECT_EQ(0, column->size());
   EXPECT_EQ(0, column->null_count());
@@ -413,7 +413,7 @@ TYPED_TEST(NumericFactoryTest, FromScalarWithZeroSize)
 TEST_F(ColumnFactoryTest, FromStringScalar)
 {
   cudf::string_scalar value("hello");
-  auto column = cudf::make_column_from_scalar(value, 1);
+  auto                column = cudf::make_column_from_scalar(value, 1);
   EXPECT_EQ(1, column->size());
   EXPECT_EQ(column->type(), value.type());
   EXPECT_EQ(0, column->null_count());
@@ -424,7 +424,7 @@ TEST_F(ColumnFactoryTest, FromStringScalar)
 TEST_F(ColumnFactoryTest, FromNullStringScalar)
 {
   cudf::string_scalar value("", false);
-  auto column = cudf::make_column_from_scalar(value, 2);
+  auto                column = cudf::make_column_from_scalar(value, 2);
   EXPECT_EQ(2, column->size());
   EXPECT_EQ(column->type(), value.type());
   EXPECT_EQ(2, column->null_count());
@@ -435,7 +435,7 @@ TEST_F(ColumnFactoryTest, FromNullStringScalar)
 TEST_F(ColumnFactoryTest, FromStringScalarWithZeroSize)
 {
   cudf::string_scalar value("hello");
-  auto column = cudf::make_column_from_scalar(value, 0);
+  auto                column = cudf::make_column_from_scalar(value, 0);
   EXPECT_EQ(0, column->size());
   EXPECT_EQ(column->type(), value.type());
   EXPECT_EQ(0, column->null_count());
@@ -446,7 +446,7 @@ TEST_F(ColumnFactoryTest, FromStringScalarWithZeroSize)
 TEST_F(ColumnFactoryTest, DictionaryFromStringScalar)
 {
   cudf::string_scalar value("hello");
-  auto column = cudf::make_dictionary_from_scalar(value, 1);
+  auto                column = cudf::make_dictionary_from_scalar(value, 1);
   EXPECT_EQ(1, column->size());
   EXPECT_EQ(column->type(), cudf::data_type{cudf::type_id::DICTIONARY32});
   EXPECT_EQ(0, column->null_count());

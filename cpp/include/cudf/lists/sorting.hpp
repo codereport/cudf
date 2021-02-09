@@ -49,9 +49,9 @@ namespace lists {
  *
  */
 std::unique_ptr<column> sort_lists(
-  lists_column_view const& source_column,
-  order column_order,
-  null_order null_precedence,
+  lists_column_view const&         source_column,
+  order                            column_order,
+  null_order                       null_precedence,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

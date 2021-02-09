@@ -68,12 +68,12 @@ template <typename T,
           typename Op,
           typename InputIterator,
           typename OutputType = typename thrust::iterator_value<InputIterator>::type>
-rmm::device_scalar<OutputType> reduce_device(InputIterator d_in,
-                                             cudf::size_type num_items,
-                                             Op binary_op,
+rmm::device_scalar<OutputType> reduce_device(InputIterator         d_in,
+                                             cudf::size_type       num_items,
+                                             Op                    binary_op,
                                              rmm::cuda_stream_view stream)
 {
-  OutputType identity{};
+  OutputType                     identity{};
   rmm::device_scalar<OutputType> result{identity, stream};
 
   // Allocate temporary storage
@@ -175,8 +175,8 @@ struct minmax_functor {
     }
 
     ResultType *result;
-    T *min_data;
-    T *max_data;
+    T *         min_data;
+    T *         max_data;
   };
 
   template <typename T,

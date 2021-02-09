@@ -36,10 +36,10 @@ namespace strings {
 namespace detail {
 //
 std::unique_ptr<column> all_characters_of_type(
-  strings_column_view const& strings,
-  string_character_types types,
-  string_character_types verify_types,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  string_character_types           types,
+  string_character_types           verify_types,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   auto strings_count  = strings.size();
@@ -64,8 +64,8 @@ std::unique_ptr<column> all_characters_of_type(
                     d_results,
                     [d_column, d_flags, types, verify_types, d_results] __device__(size_type idx) {
                       if (d_column.is_null(idx)) return false;
-                      auto d_str            = d_column.element<string_view>(idx);
-                      bool check            = !d_str.empty();  // require at least one character
+                      auto      d_str       = d_column.element<string_view>(idx);
+                      bool      check       = !d_str.empty();  // require at least one character
                       size_type check_count = 0;
                       for (auto itr = d_str.begin(); check && (itr != d_str.end()); ++itr) {
                         auto code_point = detail::utf8_to_codepoint(*itr);
@@ -97,13 +97,13 @@ namespace {
  * The final pass copies the results to the output strings column memory.
  */
 struct filter_chars_fn {
-  column_device_view const d_column;
+  column_device_view const          d_column;
   character_flags_table_type const* d_flags;
-  string_character_types const types_to_remove;
-  string_character_types const types_to_keep;
-  string_view const d_replacement;  ///< optional replacement for removed characters
-  int32_t* d_offsets{};             ///< size of the output string stored here during first pass
-  char* d_chars{};                  ///< this is null only during the first pass
+  string_character_types const      types_to_remove;
+  string_character_types const      types_to_keep;
+  string_view const                 d_replacement;  ///< optional replacement for removed characters
+  int32_t* d_offsets{};  ///< size of the output string stored here during first pass
+  char*    d_chars{};    ///< this is null only during the first pass
 
   /**
    * @brief Returns true if the given character should be replaced.
@@ -125,13 +125,13 @@ struct filter_chars_fn {
       if (!d_chars) d_offsets[idx] = 0;
       return;
     }
-    auto const d_str  = d_column.element<string_view>(idx);
-    auto const in_ptr = d_str.data();
-    auto out_ptr      = d_chars ? d_chars + d_offsets[idx] : nullptr;
-    auto nbytes       = d_str.size_bytes();
+    auto const d_str   = d_column.element<string_view>(idx);
+    auto const in_ptr  = d_str.data();
+    auto       out_ptr = d_chars ? d_chars + d_offsets[idx] : nullptr;
+    auto       nbytes  = d_str.size_bytes();
 
     for (auto itr = d_str.begin(); itr != d_str.end(); ++itr) {
-      auto const char_size = bytes_in_char_utf8(*itr);
+      auto const        char_size = bytes_in_char_utf8(*itr);
       string_view const d_newchar =
         replace_char(*itr) ? d_replacement : string_view(in_ptr + itr.byte_offset(), char_size);
       nbytes += d_newchar.size_bytes() - char_size;
@@ -143,11 +143,11 @@ struct filter_chars_fn {
 
 }  // namespace
 
-std::unique_ptr<column> filter_characters_of_type(strings_column_view const& strings,
-                                                  string_character_types types_to_remove,
-                                                  string_scalar const& replacement,
-                                                  string_character_types types_to_keep,
-                                                  rmm::cuda_stream_view stream,
+std::unique_ptr<column> filter_characters_of_type(strings_column_view const&       strings,
+                                                  string_character_types           types_to_remove,
+                                                  string_scalar const&             replacement,
+                                                  string_character_types           types_to_keep,
+                                                  rmm::cuda_stream_view            stream,
                                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(replacement.is_valid(), "Parameter replacement must be valid");
@@ -161,9 +161,9 @@ std::unique_ptr<column> filter_characters_of_type(strings_column_view const& str
   auto const strings_count = strings.size();
   if (strings_count == 0) return make_empty_column(cudf::data_type{cudf::type_id::STRING});
 
-  auto strings_column = cudf::column_device_view::create(strings.parent(), stream);
+  auto              strings_column = cudf::column_device_view::create(strings.parent(), stream);
   cudf::string_view d_replacement(replacement.data(), replacement.size());
-  filter_chars_fn filterer{*strings_column,
+  filter_chars_fn   filterer{*strings_column,
                            detail::get_character_flags_table(),
                            types_to_remove,
                            types_to_keep,
@@ -187,8 +187,8 @@ std::unique_ptr<column> filter_characters_of_type(strings_column_view const& str
 }
 
 std::unique_ptr<column> is_integer(
-  strings_column_view const& strings,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   auto strings_column = column_device_view::create(strings.parent(), stream);
@@ -229,8 +229,8 @@ bool all_integer(strings_column_view const& strings, rmm::cuda_stream_view strea
 }
 
 std::unique_ptr<column> is_float(
-  strings_column_view const& strings,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   auto strings_column = column_device_view::create(strings.parent(), stream);
@@ -275,19 +275,19 @@ bool all_float(strings_column_view const& strings, rmm::cuda_stream_view stream)
 
 // external API
 
-std::unique_ptr<column> all_characters_of_type(strings_column_view const& strings,
-                                               string_character_types types,
-                                               string_character_types verify_types,
+std::unique_ptr<column> all_characters_of_type(strings_column_view const&       strings,
+                                               string_character_types           types,
+                                               string_character_types           verify_types,
                                                rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::all_characters_of_type(strings, types, verify_types, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> filter_characters_of_type(strings_column_view const& strings,
-                                                  string_character_types types_to_remove,
-                                                  string_scalar const& replacement,
-                                                  string_character_types types_to_keep,
+std::unique_ptr<column> filter_characters_of_type(strings_column_view const&       strings,
+                                                  string_character_types           types_to_remove,
+                                                  string_scalar const&             replacement,
+                                                  string_character_types           types_to_keep,
                                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -295,14 +295,14 @@ std::unique_ptr<column> filter_characters_of_type(strings_column_view const& str
     strings, types_to_remove, replacement, types_to_keep, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> is_integer(strings_column_view const& strings,
+std::unique_ptr<column> is_integer(strings_column_view const&       strings,
                                    rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::is_integer(strings, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> is_float(strings_column_view const& strings,
+std::unique_ptr<column> is_float(strings_column_view const&       strings,
                                  rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

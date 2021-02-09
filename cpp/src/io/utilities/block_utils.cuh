@@ -166,18 +166,18 @@ inline __device__ double Int128ToDouble_rn(uint64_t lo, int64_t hi)
 
 inline __device__ uint32_t unaligned_load32(const uint8_t *p)
 {
-  uint32_t ofs        = 3 & reinterpret_cast<uintptr_t>(p);
+  uint32_t        ofs = 3 & reinterpret_cast<uintptr_t>(p);
   const uint32_t *p32 = reinterpret_cast<const uint32_t *>(p - ofs);
-  uint32_t v          = p32[0];
+  uint32_t        v   = p32[0];
   return (ofs) ? __funnelshift_r(v, p32[1], ofs * 8) : v;
 }
 
 inline __device__ uint64_t unaligned_load64(const uint8_t *p)
 {
-  uint32_t ofs        = 3 & reinterpret_cast<uintptr_t>(p);
+  uint32_t        ofs = 3 & reinterpret_cast<uintptr_t>(p);
   const uint32_t *p32 = reinterpret_cast<const uint32_t *>(p - ofs);
-  uint32_t v0         = p32[0];
-  uint32_t v1         = p32[1];
+  uint32_t        v0  = p32[0];
+  uint32_t        v1  = p32[1];
   if (ofs) {
     v0 = __funnelshift_r(v0, v1, ofs * 8);
     v1 = __funnelshift_r(v1, p32[2], ofs * 8);
@@ -188,14 +188,14 @@ inline __device__ uint64_t unaligned_load64(const uint8_t *p)
 template <unsigned int nthreads, bool sync_before_store>
 inline __device__ void memcpy_block(void *dstv, const void *srcv, uint32_t len, uint32_t t)
 {
-  uint8_t *dst       = static_cast<uint8_t *>(dstv);
+  uint8_t *      dst = static_cast<uint8_t *>(dstv);
   const uint8_t *src = static_cast<const uint8_t *>(srcv);
-  uint32_t dst_align_bytes, src_align_bytes, src_align_bits;
+  uint32_t       dst_align_bytes, src_align_bytes, src_align_bits;
   // Align output to 32-bit
   dst_align_bytes = 3 & -reinterpret_cast<intptr_t>(dst);
   if (dst_align_bytes != 0) {
     uint32_t align_len = min(dst_align_bytes, len);
-    uint8_t b;
+    uint8_t  b;
     if (t < align_len) { b = src[t]; }
     if (sync_before_store) { __syncthreads(); }
     if (t < align_len) { dst[t] = b; }
@@ -206,9 +206,9 @@ inline __device__ void memcpy_block(void *dstv, const void *srcv, uint32_t len, 
   src_align_bytes = (uint32_t)(3 & reinterpret_cast<uintptr_t>(src));
   src_align_bits  = src_align_bytes * 8;
   while (len >= 4) {
-    const uint32_t *src32 = reinterpret_cast<const uint32_t *>(src - src_align_bytes);
-    uint32_t copy_cnt     = min(len >> 2, nthreads);
-    uint32_t v;
+    const uint32_t *src32    = reinterpret_cast<const uint32_t *>(src - src_align_bytes);
+    uint32_t        copy_cnt = min(len >> 2, nthreads);
+    uint32_t        v;
     if (t < copy_cnt) {
       v = src32[t];
       if (src_align_bits != 0) { v = __funnelshift_r(v, src32[t + 1], src_align_bits); }
@@ -236,12 +236,12 @@ inline __device__ T nvstr_compare(const char *as, uint32_t alen, const char *bs,
   uint32_t len = min(alen, blen);
   uint32_t i   = 0;
   if (len >= 4) {
-    uint32_t align_a     = 3 & reinterpret_cast<uintptr_t>(as);
-    uint32_t align_b     = 3 & reinterpret_cast<uintptr_t>(bs);
-    const uint32_t *as32 = reinterpret_cast<const uint32_t *>(as - align_a);
-    const uint32_t *bs32 = reinterpret_cast<const uint32_t *>(bs - align_b);
-    uint32_t ofsa        = align_a * 8;
-    uint32_t ofsb        = align_b * 8;
+    uint32_t        align_a = 3 & reinterpret_cast<uintptr_t>(as);
+    uint32_t        align_b = 3 & reinterpret_cast<uintptr_t>(bs);
+    const uint32_t *as32    = reinterpret_cast<const uint32_t *>(as - align_a);
+    const uint32_t *bs32    = reinterpret_cast<const uint32_t *>(bs - align_b);
+    uint32_t        ofsa    = align_a * 8;
+    uint32_t        ofsb    = align_b * 8;
     do {
       uint32_t a = *as32++;
       uint32_t b = *bs32++;
@@ -270,9 +270,9 @@ inline __device__ bool nvstr_is_lesser(const char *as, uint32_t alen, const char
 }
 
 inline __device__ bool nvstr_is_greater(const char *as,
-                                        uint32_t alen,
+                                        uint32_t    alen,
                                         const char *bs,
-                                        uint32_t blen)
+                                        uint32_t    blen)
 {
   return nvstr_compare<bool, false, true, false>(as, alen, bs, blen);
 }

@@ -76,10 +76,10 @@ enum class out_of_bounds_policy : bool {
  * @return std::unique_ptr<table> Result of the gather
  */
 std::unique_ptr<table> gather(
-  table_view const& source_table,
-  column_view const& gather_map,
-  out_of_bounds_policy bounds_policy  = out_of_bounds_policy::DONT_CHECK,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  table_view const&                source_table,
+  column_view const&               gather_map,
+  out_of_bounds_policy             bounds_policy = out_of_bounds_policy::DONT_CHECK,
+  rmm::mr::device_memory_resource* mr            = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Scatters the rows of the source table into a copy of the target table
@@ -119,11 +119,11 @@ std::unique_ptr<table> gather(
  * @return Result of scattering values from source to target
  */
 std::unique_ptr<table> scatter(
-  table_view const& source,
-  column_view const& scatter_map,
-  table_view const& target,
-  bool check_bounds                   = false,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  table_view const&                source,
+  column_view const&               scatter_map,
+  table_view const&                target,
+  bool                             check_bounds = false,
+  rmm::mr::device_memory_resource* mr           = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Scatters a row of scalar values into a copy of the target table
@@ -160,9 +160,9 @@ std::unique_ptr<table> scatter(
  */
 std::unique_ptr<table> scatter(
   std::vector<std::reference_wrapper<const scalar>> const& source,
-  column_view const& indices,
-  table_view const& target,
-  bool check_bounds                   = false,
+  column_view const&                                       indices,
+  table_view const&                                        target,
+  bool                                                     check_bounds = false,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -193,9 +193,9 @@ std::unique_ptr<column> empty_like(column_view const& input);
  * number of elements as `input` of the same type as `input.type()`
  */
 std::unique_ptr<column> allocate_like(
-  column_view const& input,
-  mask_allocation_policy mask_alloc   = mask_allocation_policy::RETAIN,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  mask_allocation_policy           mask_alloc = mask_allocation_policy::RETAIN,
+  rmm::mr::device_memory_resource* mr         = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Creates an uninitialized new column of the specified size and same type as the `input`.
@@ -209,10 +209,10 @@ std::unique_ptr<column> allocate_like(
  * as `input` of the same type as `input.type()`
  */
 std::unique_ptr<column> allocate_like(
-  column_view const& input,
-  size_type size,
-  mask_allocation_policy mask_alloc   = mask_allocation_policy::RETAIN,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               input,
+  size_type                        size,
+  mask_allocation_policy           mask_alloc = mask_allocation_policy::RETAIN,
+  rmm::mr::device_memory_resource* mr         = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Creates a table of empty columns with the same types as the `input_table`
@@ -257,11 +257,11 @@ std::unique_ptr<table> empty_like(table_view const& input_table);
  * (exclusive)
  * @param target_begin The starting index of the target range (inclusive)
  */
-void copy_range_in_place(column_view const& source,
+void copy_range_in_place(column_view const&   source,
                          mutable_column_view& target,
-                         size_type source_begin,
-                         size_type source_end,
-                         size_type target_begin);
+                         size_type            source_begin,
+                         size_type            source_end,
+                         size_type            target_begin);
 
 /**
  * @brief Copies a range of elements out-of-place from one column to another.
@@ -293,11 +293,11 @@ void copy_range_in_place(column_view const& source,
  * @return std::unique_ptr<column> The result target column
  */
 std::unique_ptr<column> copy_range(
-  column_view const& source,
-  column_view const& target,
-  size_type source_begin,
-  size_type source_end,
-  size_type target_begin,
+  column_view const&               source,
+  column_view const&               target,
+  size_type                        source_begin,
+  size_type                        source_end,
+  size_type                        target_begin,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -335,9 +335,9 @@ std::unique_ptr<column> copy_range(
  * @throw cudf::logic_error if @p fill_value dtype does not match @p input dtype.
  */
 std::unique_ptr<column> shift(
-  column_view const& input,
-  size_type offset,
-  scalar const& fill_value,
+  column_view const&               input,
+  size_type                        offset,
+  scalar const&                    fill_value,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -493,13 +493,13 @@ struct packed_columns {
   struct metadata {
     metadata(std::vector<uint8_t>&& v) : data_(std::move(v)) {}
     uint8_t const* data() const { return data_.data(); }
-    size_t size() const { return data_.size(); }
+    size_t         size() const { return data_.size(); }
 
    private:
     std::vector<uint8_t> data_;
   };
 
-  std::unique_ptr<metadata> metadata_;
+  std::unique_ptr<metadata>           metadata_;
   std::unique_ptr<rmm::device_buffer> gpu_data;
 };
 
@@ -519,7 +519,7 @@ struct packed_columns {
  */
 struct packed_table {
   cudf::table_view table;
-  packed_columns data;
+  packed_columns   data;
 };
 
 /**
@@ -564,8 +564,8 @@ struct packed_table {
  * buffer.
  */
 std::vector<packed_table> contiguous_split(
-  cudf::table_view const& input,
-  std::vector<size_type> const& splits,
+  cudf::table_view const&          input,
+  std::vector<size_type> const&    splits,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -580,7 +580,7 @@ std::vector<packed_table> contiguous_split(
  * @return packed_columns A struct containing the serialized metadata and data in contiguous host
  *         and device memory respectively
  */
-packed_columns pack(cudf::table_view const& input,
+packed_columns pack(cudf::table_view const&          input,
                     rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -597,8 +597,8 @@ packed_columns pack(cudf::table_view const& input,
  * @return Vector of bytes representing the metadata used to `unpack` a packed_columns struct.
  */
 packed_columns::metadata pack_metadata(table_view const& table,
-                                       uint8_t const* contiguous_buffer,
-                                       size_t buffer_size);
+                                       uint8_t const*    contiguous_buffer,
+                                       size_t            buffer_size);
 
 /**
  * @brief Deserialize the result of `cudf::pack`
@@ -655,9 +655,9 @@ table_view unpack(uint8_t const* metadata, uint8_t const* gpu_data);
  * @returns new column with the selected elements
  */
 std::unique_ptr<column> copy_if_else(
-  column_view const& lhs,
-  column_view const& rhs,
-  column_view const& boolean_mask,
+  column_view const&               lhs,
+  column_view const&               rhs,
+  column_view const&               boolean_mask,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -679,9 +679,9 @@ std::unique_ptr<column> copy_if_else(
  * @returns new column with the selected elements
  */
 std::unique_ptr<column> copy_if_else(
-  scalar const& lhs,
-  column_view const& rhs,
-  column_view const& boolean_mask,
+  scalar const&                    lhs,
+  column_view const&               rhs,
+  column_view const&               boolean_mask,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -703,9 +703,9 @@ std::unique_ptr<column> copy_if_else(
  * @returns new column with the selected elements
  */
 std::unique_ptr<column> copy_if_else(
-  column_view const& lhs,
-  scalar const& rhs,
-  column_view const& boolean_mask,
+  column_view const&               lhs,
+  scalar const&                    rhs,
+  column_view const&               boolean_mask,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -725,9 +725,9 @@ std::unique_ptr<column> copy_if_else(
  * @returns new column with the selected elements
  */
 std::unique_ptr<column> copy_if_else(
-  scalar const& lhs,
-  scalar const& rhs,
-  column_view const& boolean_mask,
+  scalar const&                    lhs,
+  scalar const&                    rhs,
+  column_view const&               boolean_mask,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -767,9 +767,9 @@ std::unique_ptr<column> copy_if_else(
  * @returns Returns a table by scattering `input` into `target` as per `boolean_mask`.
  */
 std::unique_ptr<table> boolean_mask_scatter(
-  table_view const& input,
-  table_view const& target,
-  column_view const& boolean_mask,
+  table_view const&                input,
+  table_view const&                target,
+  column_view const&               boolean_mask,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -805,8 +805,8 @@ std::unique_ptr<table> boolean_mask_scatter(
  */
 std::unique_ptr<table> boolean_mask_scatter(
   std::vector<std::reference_wrapper<const scalar>> const& input,
-  table_view const& target,
-  column_view const& boolean_mask,
+  table_view const&                                        target,
+  column_view const&                                       boolean_mask,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -823,8 +823,8 @@ std::unique_ptr<table> boolean_mask_scatter(
  * @return std::unique_ptr<scalar> Scalar containing the single value
  */
 std::unique_ptr<scalar> get_element(
-  column_view const& input,
-  size_type index,
+  column_view const&               input,
+  size_type                        index,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -863,11 +863,11 @@ enum class sample_with_replacement : bool {
  * @return std::unique_ptr<table> Table containing samples from `input`
  */
 std::unique_ptr<table> sample(
-  table_view const& input,
-  size_type const n,
-  sample_with_replacement replacement = sample_with_replacement::FALSE,
-  int64_t const seed                  = 0,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  table_view const&                input,
+  size_type const                  n,
+  sample_with_replacement          replacement = sample_with_replacement::FALSE,
+  int64_t const                    seed        = 0,
+  rmm::mr::device_memory_resource* mr          = rmm::mr::get_current_device_resource());
 
 /** @} */
 }  // namespace cudf

@@ -96,7 +96,7 @@ std::unique_ptr<aggregation> make_median_aggregation()
 }
 /// Factory to create a QUANTILE aggregation
 std::unique_ptr<aggregation> make_quantile_aggregation(std::vector<double> const& q,
-                                                       interpolation i)
+                                                       interpolation              i)
 {
   return std::make_unique<detail::quantile_aggregation>(q, i);
 }
@@ -141,9 +141,9 @@ std::unique_ptr<aggregation> make_lead_aggregation(size_type offset)
   return std::make_unique<cudf::detail::lead_lag_aggregation>(aggregation::LEAD, offset);
 }
 /// Factory to create a UDF aggregation
-std::unique_ptr<aggregation> make_udf_aggregation(udf_type type,
+std::unique_ptr<aggregation> make_udf_aggregation(udf_type           type,
                                                   std::string const& user_defined_aggregator,
-                                                  data_type output_type)
+                                                  data_type          output_type)
 {
   aggregation* a =
     new detail::udf_aggregation{type == udf_type::PTX ? aggregation::PTX : aggregation::CUDA,

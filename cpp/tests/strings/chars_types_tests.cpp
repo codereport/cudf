@@ -98,8 +98,8 @@ INSTANTIATE_TEST_CASE_P(StringsCharsTestAllTypes,
 TEST_F(StringsCharsTest, LowerUpper)
 {
   cudf::test::strings_column_wrapper strings({"a1", "A1", "a!", "A!", "!1", "aA"});
-  auto strings_view = cudf::strings_column_view(strings);
-  auto verify_types =
+  auto                               strings_view = cudf::strings_column_view(strings);
+  auto                               verify_types =
     cudf::strings::string_character_types::LOWER | cudf::strings::string_character_types::UPPER;
   {
     auto results = cudf::strings::all_characters_of_type(
@@ -278,10 +278,10 @@ TEST_F(StringsCharsTest, Floats)
 
 TEST_F(StringsCharsTest, EmptyStrings)
 {
-  cudf::test::strings_column_wrapper strings({"", "", ""});
-  auto strings_view = cudf::strings_column_view(strings);
+  cudf::test::strings_column_wrapper           strings({"", "", ""});
+  auto                                         strings_view = cudf::strings_column_view(strings);
   cudf::test::fixed_width_column_wrapper<bool> expected({0, 0, 0});
-  auto results = cudf::strings::all_characters_of_type(
+  auto                                         results = cudf::strings::all_characters_of_type(
     strings_view, cudf::strings::string_character_types::ALPHANUM);
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, expected);
   results = cudf::strings::is_integer(strings_view);
@@ -373,8 +373,8 @@ TEST_F(StringsCharsTest, FilterCharTypesErrors)
 TEST_F(StringsCharsTest, EmptyStringsColumn)
 {
   cudf::test::strings_column_wrapper strings;
-  auto strings_view = cudf::strings_column_view(strings);
-  auto results      = cudf::strings::all_characters_of_type(
+  auto                               strings_view = cudf::strings_column_view(strings);
+  auto                               results      = cudf::strings::all_characters_of_type(
     strings_view, cudf::strings::string_character_types::ALPHANUM);
   EXPECT_EQ(cudf::type_id::BOOL8, results->view().type().id());
   EXPECT_EQ(0, results->view().size());

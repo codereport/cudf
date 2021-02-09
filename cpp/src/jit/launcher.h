@@ -56,12 +56,12 @@ class launcher {
    * file names.
    * @param stream The non-owned stream to use for execution
    */
-  launcher(const std::string& hash,
-           const std::string& cuda_source,
-           const std::vector<std::string>& header_names,
-           const std::vector<std::string>& compiler_flags,
+  launcher(const std::string&                       hash,
+           const std::string&                       cuda_source,
+           const std::vector<std::string>&          header_names,
+           const std::vector<std::string>&          compiler_flags,
            jitify::experimental::file_callback_type file_callback,
-           rmm::cuda_stream_view stream = rmm::cuda_stream_default);
+           rmm::cuda_stream_view                    stream = rmm::cuda_stream_default);
   launcher(launcher&&);
   launcher(const launcher&) = delete;
   launcher& operator=(launcher&&) = delete;
@@ -78,7 +78,7 @@ class launcher {
    * @param arguments   The template arguments to be used to instantiate the kernel
    * @return launcher& ref to this launcher object
    */
-  launcher& set_kernel_inst(const std::string& kernel_name,
+  launcher& set_kernel_inst(const std::string&              kernel_name,
                             const std::vector<std::string>& arguments)
   {
     kernel_inst = cache_instance.getKernelInstantiation(kernel_name, program, arguments);
@@ -98,10 +98,10 @@ class launcher {
   }
 
  private:
-  cudf::jit::cudfJitCache& cache_instance;
-  cudf::jit::named_prog<jitify::experimental::Program> program;
+  cudf::jit::cudfJitCache&                                         cache_instance;
+  cudf::jit::named_prog<jitify::experimental::Program>             program;
   cudf::jit::named_prog<jitify::experimental::KernelInstantiation> kernel_inst;
-  rmm::cuda_stream_view stream;
+  rmm::cuda_stream_view                                            stream;
 
   jitify::experimental::KernelInstantiation& get_kernel() { return *std::get<1>(kernel_inst); }
 };

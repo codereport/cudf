@@ -42,11 +42,11 @@ bool md5_type_check(data_type dt)
 
 namespace detail {
 
-std::unique_ptr<column> hash(table_view const& input,
-                             hash_id hash_function,
-                             std::vector<uint32_t> const& initial_hash,
-                             uint32_t seed,
-                             rmm::cuda_stream_view stream,
+std::unique_ptr<column> hash(table_view const&                input,
+                             hash_id                          hash_function,
+                             std::vector<uint32_t> const&     initial_hash,
+                             uint32_t                         seed,
+                             rmm::cuda_stream_view            stream,
                              rmm::mr::device_memory_resource* mr)
 {
   switch (hash_function) {
@@ -60,8 +60,8 @@ std::unique_ptr<column> hash(table_view const& input,
   }
 }
 
-std::unique_ptr<column> md5_hash(table_view const& input,
-                                 rmm::cuda_stream_view stream,
+std::unique_ptr<column> md5_hash(table_view const&                input,
+                                 rmm::cuda_stream_view            stream,
                                  rmm::mr::device_memory_resource* mr)
 {
   if (input.num_columns() == 0 || input.num_rows() == 0) {
@@ -100,7 +100,7 @@ std::unique_ptr<column> md5_hash(table_view const& input,
                    thrust::make_counting_iterator(input.num_rows()),
                    [d_chars, device_input = *device_input] __device__(auto row_index) {
                      md5_intermediate_data hash_state;
-                     MD5Hash hasher = MD5Hash{};
+                     MD5Hash               hasher = MD5Hash{};
                      for (int col_index = 0; col_index < device_input.num_columns(); col_index++) {
                        if (device_input.column(col_index).is_valid(row_index)) {
                          cudf::type_dispatcher(device_input.column(col_index).type(),
@@ -123,9 +123,9 @@ std::unique_ptr<column> md5_hash(table_view const& input,
 }
 
 template <template <typename> class hash_function>
-std::unique_ptr<column> serial_murmur_hash3_32(table_view const& input,
-                                               uint32_t seed,
-                                               rmm::cuda_stream_view stream,
+std::unique_ptr<column> serial_murmur_hash3_32(table_view const&                input,
+                                               uint32_t                         seed,
+                                               rmm::cuda_stream_view            stream,
                                                rmm::mr::device_memory_resource* mr)
 {
   auto output = make_numeric_column(
@@ -134,7 +134,7 @@ std::unique_ptr<column> serial_murmur_hash3_32(table_view const& input,
   if (input.num_columns() == 0 || input.num_rows() == 0) { return output; }
 
   auto const device_input = table_device_view::create(input, stream);
-  auto output_view        = output->mutable_view();
+  auto       output_view  = output->mutable_view();
 
   if (has_nulls(input)) {
     thrust::tabulate(rmm::exec_policy(stream),
@@ -177,9 +177,9 @@ std::unique_ptr<column> serial_murmur_hash3_32(table_view const& input,
   return output;
 }
 
-std::unique_ptr<column> murmur_hash3_32(table_view const& input,
-                                        std::vector<uint32_t> const& initial_hash,
-                                        rmm::cuda_stream_view stream,
+std::unique_ptr<column> murmur_hash3_32(table_view const&                input,
+                                        std::vector<uint32_t> const&     initial_hash,
+                                        rmm::cuda_stream_view            stream,
                                         rmm::mr::device_memory_resource* mr)
 {
   // TODO this should be UINT32
@@ -191,7 +191,7 @@ std::unique_ptr<column> murmur_hash3_32(table_view const& input,
 
   bool const nullable     = has_nulls(input);
   auto const device_input = table_device_view::create(input, stream);
-  auto output_view        = output->mutable_view();
+  auto       output_view  = output->mutable_view();
 
   // Compute the hash value for each row depending on the specified hash function
   if (!initial_hash.empty()) {
@@ -231,18 +231,18 @@ std::unique_ptr<column> murmur_hash3_32(table_view const& input,
 
 }  // namespace detail
 
-std::unique_ptr<column> hash(table_view const& input,
-                             hash_id hash_function,
-                             std::vector<uint32_t> const& initial_hash,
-                             uint32_t seed,
+std::unique_ptr<column> hash(table_view const&                input,
+                             hash_id                          hash_function,
+                             std::vector<uint32_t> const&     initial_hash,
+                             uint32_t                         seed,
                              rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::hash(input, hash_function, initial_hash, seed, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> murmur_hash3_32(table_view const& input,
-                                        std::vector<uint32_t> const& initial_hash,
+std::unique_ptr<column> murmur_hash3_32(table_view const&                input,
+                                        std::vector<uint32_t> const&     initial_hash,
                                         rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

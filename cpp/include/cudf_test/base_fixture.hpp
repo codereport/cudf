@@ -132,8 +132,8 @@ class UniformRandomGenerator {
    * @param upper Upper bound of the desired range
    */
   template <typename TL = T, std::enable_if_t<!cudf::is_chrono<TL>()> * = nullptr>
-  UniformRandomGenerator(T lower,
-                         T upper,
+  UniformRandomGenerator(T        lower,
+                         T        upper,
                          uint64_t seed = detail::random_generator_incrementing_seed())
     : dist{lower, upper}, rng{std::mt19937_64{seed}()}
   {
@@ -149,7 +149,7 @@ class UniformRandomGenerator {
   template <typename TL = T, std::enable_if_t<cudf::is_chrono<TL>()> * = nullptr>
   UniformRandomGenerator(typename TL::rep lower,
                          typename TL::rep upper,
-                         uint64_t seed = detail::random_generator_incrementing_seed())
+                         uint64_t         seed = detail::random_generator_incrementing_seed())
     : dist{lower, upper}, rng{std::mt19937_64{seed}()}
   {
   }
@@ -171,7 +171,7 @@ class UniformRandomGenerator {
 
  private:
   uniform_distribution dist{};  ///< Distribution
-  Engine rng;                   ///< Random generator
+  Engine               rng;     ///< Random generator
 };
 
 /**
@@ -286,7 +286,7 @@ inline auto parse_cudf_test_opts(int argc, char **argv)
     ::testing::InitGoogleTest(&argc, argv);                             \
     auto const cmd_opts = parse_cudf_test_opts(argc, argv);             \
     auto const rmm_mode = cmd_opts["rmm_mode"].as<std::string>();       \
-    auto resource       = cudf::test::create_memory_resource(rmm_mode); \
+    auto       resource = cudf::test::create_memory_resource(rmm_mode); \
     rmm::mr::set_current_device_resource(resource.get());               \
     return RUN_ALL_TESTS();                                             \
   }

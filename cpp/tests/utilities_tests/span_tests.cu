@@ -61,7 +61,7 @@ class SpanTest : public cudf::test::BaseFixture {
 
 TEST(SpanTest, CanCreateFullSubspan)
 {
-  auto message            = create_hello_world_message();
+  auto       message      = create_hello_world_message();
   auto const message_span = host_span<char>(message.data(), message.size());
 
   expect_equivolent(message_span, message_span.subspan(0, message_span.size()));
@@ -69,7 +69,7 @@ TEST(SpanTest, CanCreateFullSubspan)
 
 TEST(SpanTest, CanTakeFirst)
 {
-  auto message            = create_hello_world_message();
+  auto       message      = create_hello_world_message();
   auto const message_span = host_span<char>(message.data(), message.size());
 
   expect_match("hello", message_span.first(5));
@@ -77,7 +77,7 @@ TEST(SpanTest, CanTakeFirst)
 
 TEST(SpanTest, CanTakeLast)
 {
-  auto message            = create_hello_world_message();
+  auto       message      = create_hello_world_message();
   auto const message_span = host_span<char>(message.data(), message.size());
 
   expect_match("world", message_span.last(5));
@@ -85,7 +85,7 @@ TEST(SpanTest, CanTakeLast)
 
 TEST(SpanTest, CanTakeSubspanFull)
 {
-  auto message            = create_hello_world_message();
+  auto       message      = create_hello_world_message();
   auto const message_span = host_span<char>(message.data(), message.size());
 
   expect_match("hello world", message_span.subspan(0, 11));
@@ -93,7 +93,7 @@ TEST(SpanTest, CanTakeSubspanFull)
 
 TEST(SpanTest, CanTakeSubspanPartial)
 {
-  auto message            = create_hello_world_message();
+  auto       message      = create_hello_world_message();
   auto const message_span = host_span<char>(message.data(), message.size());
 
   expect_match("lo w", message_span.subspan(3, 4));
@@ -101,7 +101,7 @@ TEST(SpanTest, CanTakeSubspanPartial)
 
 TEST(SpanTest, CanGetFront)
 {
-  auto message            = create_hello_world_message();
+  auto       message      = create_hello_world_message();
   auto const message_span = host_span<char>(message.data(), message.size());
 
   EXPECT_EQ('h', message_span.front());
@@ -109,7 +109,7 @@ TEST(SpanTest, CanGetFront)
 
 TEST(SpanTest, CanGetBack)
 {
-  auto message            = create_hello_world_message();
+  auto       message      = create_hello_world_message();
   auto const message_span = host_span<char>(message.data(), message.size());
 
   EXPECT_EQ('d', message_span.back());
@@ -117,7 +117,7 @@ TEST(SpanTest, CanGetBack)
 
 TEST(SpanTest, CanGetData)
 {
-  auto message            = create_hello_world_message();
+  auto       message      = create_hello_world_message();
   auto const message_span = host_span<char>(message.data(), message.size());
 
   EXPECT_EQ(message.data(), message_span.data());
@@ -125,7 +125,7 @@ TEST(SpanTest, CanGetData)
 
 TEST(SpanTest, CanDetermineEmptiness)
 {
-  auto message            = create_hello_world_message();
+  auto       message      = create_hello_world_message();
   auto const message_span = host_span<char>(message.data(), message.size());
   auto const empty_span   = host_span<char>();
 
@@ -135,7 +135,7 @@ TEST(SpanTest, CanDetermineEmptiness)
 
 TEST(SpanTest, CanGetSize)
 {
-  auto message            = create_hello_world_message();
+  auto       message      = create_hello_world_message();
   auto const message_span = host_span<char>(message.data(), message.size());
   auto const empty_span   = host_span<char>();
 
@@ -145,7 +145,7 @@ TEST(SpanTest, CanGetSize)
 
 TEST(SpanTest, CanGetSizeBytes)
 {
-  auto doubles            = std::vector<double>({6, 3, 2});
+  auto       doubles      = std::vector<double>({6, 3, 2});
   auto const doubles_span = host_span<double>(doubles.data(), doubles.size());
   auto const empty_span   = host_span<double>();
 
@@ -155,7 +155,7 @@ TEST(SpanTest, CanGetSizeBytes)
 
 TEST(SpanTest, CanCopySpan)
 {
-  auto message = create_hello_world_message();
+  auto            message = create_hello_world_message();
   host_span<char> message_span_copy;
 
   {
@@ -170,7 +170,7 @@ TEST(SpanTest, CanCopySpan)
 
 TEST(SpanTest, CanSubscriptRead)
 {
-  auto message            = create_hello_world_message();
+  auto       message      = create_hello_world_message();
   auto const message_span = host_span<char>(message.data(), message.size());
 
   EXPECT_EQ('o', message_span[4]);
@@ -178,7 +178,7 @@ TEST(SpanTest, CanSubscriptRead)
 
 TEST(SpanTest, CanSubscriptWrite)
 {
-  auto message            = create_hello_world_message();
+  auto       message      = create_hello_world_message();
   auto const message_span = host_span<char>(message.data(), message.size());
 
   message_span[4] = 'x';

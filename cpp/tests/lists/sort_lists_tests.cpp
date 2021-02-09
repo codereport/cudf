@@ -73,7 +73,7 @@ TYPED_TEST(SortLists, NoNull)
   // Ascending
   // LCW<int>  order{{2, 1, 0, 3}, {0}, {1, 2, 0},  {0, 1}};
   LCW<T> expected{{1, 2, 3, 4}, {5}, {8, 9, 10}, {6, 7}};
-  auto results = sort_lists(lists_column_view{list}, order::ASCENDING, null_order::AFTER);
+  auto   results = sort_lists(lists_column_view{list}, order::ASCENDING, null_order::AFTER);
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(results->view(), expected);
 
   results = sort_lists(lists_column_view{list}, order::ASCENDING, null_order::BEFORE);
@@ -102,7 +102,7 @@ TYPED_TEST(SortLists, Null)
   // LCW<int>  order{{2, 1, 3, 0}, {0}, {1, 2, 0},  {0, 1}};
   LCW<T> expected1{{{1, 2, 3, 4}, valids_a.begin()}, {5}, {8, 9, 10}, {6, 7}};
   LCW<T> expected2{{{4, 1, 2, 3}, valids_b.begin()}, {5}, {8, 9, 10}, {6, 7}};
-  auto results = sort_lists(lists_column_view{list}, order::ASCENDING, null_order::AFTER);
+  auto   results = sort_lists(lists_column_view{list}, order::ASCENDING, null_order::AFTER);
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(results->view(), expected1);
 
   results = sort_lists(lists_column_view{list}, order::ASCENDING, null_order::BEFORE);
@@ -150,7 +150,7 @@ TEST_F(SortListsInt, NullRows)
 {
   using T = int;
   std::vector<int> valids{0, 1, 0};
-  LCW<T> l1{{{1, 2, 3}, {4, 5, 6}, {7}}, valids.begin()};  // offset 0, 0, 3, 3
+  LCW<T>           l1{{{1, 2, 3}, {4, 5, 6}, {7}}, valids.begin()};  // offset 0, 0, 3, 3
 
   auto results = sort_lists(lists_column_view{l1}, {}, {});
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(results->view(), l1);
@@ -172,7 +172,7 @@ TEST_F(SortListsInt, Sliced)
 {
   using T = int;
   LCW<T> l1{{1, 2, 3, 4}, {5, 6, 7}, {8, 9}, {10}};
-  auto sliced_list = cudf::slice(l1, {1, 4})[0];
+  auto   sliced_list = cudf::slice(l1, {1, 4})[0];
 
   auto results = sort_lists(lists_column_view{sliced_list}, {}, {});
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(results->view(), sliced_list);

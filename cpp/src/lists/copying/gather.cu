@@ -56,7 +56,7 @@ struct list_gatherer {
   typedef size_type argument_type;
   typedef size_type result_type;
 
-  size_t offset_count;
+  size_t           offset_count;
   size_type const* base_offsets;
   size_type const* offsets;
 
@@ -85,9 +85,9 @@ struct list_gatherer {
 /**
  * @copydoc cudf::lists::detail::gather_list_leaf
  */
-std::unique_ptr<column> gather_list_leaf(column_view const& column,
-                                         gather_data const& gd,
-                                         rmm::cuda_stream_view stream,
+std::unique_ptr<column> gather_list_leaf(column_view const&               column,
+                                         gather_data const&               gd,
+                                         rmm::cuda_stream_view            stream,
                                          rmm::mr::device_memory_resource* mr)
 {
   // gather map iterator for this level (N)
@@ -133,9 +133,9 @@ std::unique_ptr<column> gather_list_leaf(column_view const& column,
 /**
  * @copydoc cudf::lists::detail::gather_list_nested
  */
-std::unique_ptr<column> gather_list_nested(cudf::lists_column_view const& list,
-                                           gather_data& gd,
-                                           rmm::cuda_stream_view stream,
+std::unique_ptr<column> gather_list_nested(cudf::lists_column_view const&   list,
+                                           gather_data&                     gd,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
 {
   // gather map iterator for this level (N)
@@ -148,7 +148,7 @@ std::unique_ptr<column> gather_list_nested(cudf::lists_column_view const& list,
 
   // gather the bitmask, if relevant
   rmm::device_buffer null_mask{0, stream, mr};
-  size_type null_count = list.null_count();
+  size_type          null_count = list.null_count();
   if (null_count > 0) {
     auto list_cdv = column_device_view::create(list.parent());
     auto validity = cudf::detail::valid_if(

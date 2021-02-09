@@ -58,7 +58,7 @@ void BM_gather(benchmark::State& state)
                                                                      host_map_data.end());
 
   std::vector<cudf::test::fixed_width_column_wrapper<TypeParam>> source_column_wrappers;
-  std::vector<cudf::column_view> source_columns(n_cols);
+  std::vector<cudf::column_view>                                 source_columns(n_cols);
 
   std::generate_n(std::back_inserter(source_column_wrappers), n_cols, [=]() {
     return cudf::test::fixed_width_column_wrapper<TypeParam>(data, data + source_size);

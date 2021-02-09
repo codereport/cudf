@@ -45,18 +45,18 @@ namespace {
  * in each string.
  */
 struct translate_fn {
-  column_device_view const d_strings;
+  column_device_view const                      d_strings;
   rmm::device_vector<translate_table>::iterator table_begin;
   rmm::device_vector<translate_table>::iterator table_end;
-  int32_t const* d_offsets{};
-  char* d_chars{};
+  int32_t const*                                d_offsets{};
+  char*                                         d_chars{};
 
   __device__ size_type operator()(size_type idx)
   {
     if (d_strings.is_null(idx)) return 0;
-    string_view d_str = d_strings.element<string_view>(idx);
-    size_type bytes   = d_str.size_bytes();
-    char* out_ptr     = d_offsets ? d_chars + d_offsets[idx] : nullptr;
+    string_view d_str   = d_strings.element<string_view>(idx);
+    size_type   bytes   = d_str.size_bytes();
+    char*       out_ptr = d_offsets ? d_chars + d_offsets[idx] : nullptr;
     for (auto chr : d_str) {
       auto entry =
         thrust::find_if(thrust::seq, table_begin, table_end, [chr] __device__(auto const& te) {
@@ -78,10 +78,10 @@ struct translate_fn {
 
 //
 std::unique_ptr<column> translate(
-  strings_column_view const& strings,
+  strings_column_view const&                          strings,
   std::vector<std::pair<char_utf8, char_utf8>> const& chars_table,
-  rmm::cuda_stream_view stream,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
+  rmm::cuda_stream_view                               stream,
+  rmm::mr::device_memory_resource*                    mr = rmm::mr::get_current_device_resource())
 {
   size_type strings_count = strings.size();
   if (strings_count == 0) return make_empty_strings_column(stream, mr);
@@ -107,8 +107,8 @@ std::unique_ptr<column> translate(
   auto d_offsets = offsets_column->view().data<int32_t>();
 
   // build chars column
-  size_type bytes   = thrust::device_pointer_cast(d_offsets)[strings_count];
-  auto chars_column = strings::detail::create_chars_child_column(
+  size_type bytes        = thrust::device_pointer_cast(d_offsets)[strings_count];
+  auto      chars_column = strings::detail::create_chars_child_column(
     strings_count, strings.null_count(), bytes, stream, mr);
   auto d_chars = chars_column->mutable_view().data<char>();
   thrust::for_each_n(rmm::exec_policy(stream),
@@ -129,9 +129,9 @@ std::unique_ptr<column> translate(
 
 // external APIs
 
-std::unique_ptr<column> translate(strings_column_view const& strings,
+std::unique_ptr<column> translate(strings_column_view const&                        strings,
                                   std::vector<std::pair<uint32_t, uint32_t>> const& chars_table,
-                                  rmm::mr::device_memory_resource* mr)
+                                  rmm::mr::device_memory_resource*                  mr)
 {
   CUDF_FUNC_RANGE();
   return detail::translate(strings, chars_table, rmm::cuda_stream_default, mr);

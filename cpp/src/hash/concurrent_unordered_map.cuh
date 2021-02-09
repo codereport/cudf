@@ -89,7 +89,7 @@ template <typename pair_type>
 union pair_packer<pair_type, std::enable_if_t<is_packable<pair_type>()>> {
   using packed_type = packed_t<pair_type>;
   packed_type const packed;
-  pair_type const pair;
+  pair_type const   pair;
 
   __device__ pair_packer(pair_type _pair) : pair{_pair} {}
 
@@ -155,13 +155,13 @@ class concurrent_unordered_map {
    * @param allocator The allocator to use for allocation the hash table's
    * storage
    */
-  static auto create(size_type capacity,
-                     rmm::cuda_stream_view stream     = rmm::cuda_stream_default,
-                     const mapped_type unused_element = std::numeric_limits<mapped_type>::max(),
-                     const key_type unused_key        = std::numeric_limits<key_type>::max(),
-                     const Hasher& hash_function      = hasher(),
-                     const Equality& equal            = key_equal(),
-                     const allocator_type& allocator  = allocator_type())
+  static auto create(size_type             capacity,
+                     rmm::cuda_stream_view stream         = rmm::cuda_stream_default,
+                     const mapped_type     unused_element = std::numeric_limits<mapped_type>::max(),
+                     const key_type        unused_key     = std::numeric_limits<key_type>::max(),
+                     const Hasher&         hash_function  = hasher(),
+                     const Equality&       equal          = key_equal(),
+                     const allocator_type& allocator      = allocator_type())
   {
     CUDF_FUNC_RANGE();
     using Self = concurrent_unordered_map<Key, Element, Hasher, Equality, Allocator>;
@@ -325,7 +325,7 @@ class concurrent_unordered_map {
   __device__ thrust::pair<iterator, bool> insert(value_type const& insert_pair)
   {
     const size_type key_hash{m_hf(insert_pair.first)};
-    size_type index{key_hash % m_capacity};
+    size_type       index{key_hash % m_capacity};
 
     insert_result status{insert_result::CONTINUE};
 
@@ -355,7 +355,7 @@ class concurrent_unordered_map {
   __device__ const_iterator find(key_type const& k) const
   {
     size_type const key_hash = m_hf(k);
-    size_type index          = key_hash % m_capacity;
+    size_type       index    = key_hash % m_capacity;
 
     value_type* current_bucket = &m_hashtbl_values[index];
 
@@ -396,11 +396,11 @@ class concurrent_unordered_map {
    */
   template <typename find_hasher, typename find_key_equal>
   __device__ const_iterator find(key_type const& k,
-                                 find_hasher f_hash,
-                                 find_key_equal f_equal) const
+                                 find_hasher     f_hash,
+                                 find_key_equal  f_equal) const
   {
     size_type const key_hash = f_hash(k);
-    size_type index          = key_hash % m_capacity;
+    size_type       index    = key_hash % m_capacity;
 
     value_type* current_bucket = &m_hashtbl_values[index];
 
@@ -419,7 +419,7 @@ class concurrent_unordered_map {
   }
 
   void assign_async(const concurrent_unordered_map& other,
-                    rmm::cuda_stream_view stream = rmm::cuda_stream_default)
+                    rmm::cuda_stream_view           stream = rmm::cuda_stream_default)
   {
     if (other.m_capacity <= m_capacity) {
       m_capacity = other.m_capacity;
@@ -486,13 +486,13 @@ class concurrent_unordered_map {
   ~concurrent_unordered_map()                                     = default;
 
  private:
-  hasher m_hf;
-  key_equal m_equal;
-  mapped_type m_unused_element;
-  key_type m_unused_key;
+  hasher         m_hf;
+  key_equal      m_equal;
+  mapped_type    m_unused_element;
+  key_type       m_unused_key;
   allocator_type m_allocator;
-  size_type m_capacity;
-  value_type* m_hashtbl_values;
+  size_type      m_capacity;
+  value_type*    m_hashtbl_values;
 
   /**
    * @brief Private constructor used by `create` factory function.
@@ -507,11 +507,11 @@ class concurrent_unordered_map {
    * storage
    * @param stream CUDA stream used for device memory operations and kernel launches.
    */
-  concurrent_unordered_map(size_type capacity,
-                           const mapped_type unused_element,
-                           const key_type unused_key,
-                           const Hasher& hash_function,
-                           const Equality& equal,
+  concurrent_unordered_map(size_type             capacity,
+                           const mapped_type     unused_element,
+                           const key_type        unused_key,
+                           const Hasher&         hash_function,
+                           const Equality&       equal,
                            const allocator_type& allocator,
                            rmm::cuda_stream_view stream = rmm::cuda_stream_default)
     : m_hf(hash_function),
@@ -525,7 +525,7 @@ class concurrent_unordered_map {
     constexpr int block_size = 128;
     {
       cudaPointerAttributes hashtbl_values_ptr_attributes;
-      cudaError_t status =
+      cudaError_t           status =
         cudaPointerGetAttributes(&hashtbl_values_ptr_attributes, m_hashtbl_values);
 
       if (cudaSuccess == status && isPtrManaged(hashtbl_values_ptr_attributes)) {

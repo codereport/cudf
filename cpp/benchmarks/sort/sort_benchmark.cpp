@@ -36,7 +36,7 @@ static void BM_sort(benchmark::State& state, bool nulls)
 {
   using Type           = int;
   using column_wrapper = cudf::test::fixed_width_column_wrapper<Type>;
-  std::default_random_engine generator;
+  std::default_random_engine         generator;
   std::uniform_int_distribution<int> distribution(0, 100);
 
   const cudf::size_type n_rows{(cudf::size_type)state.range(0)};

@@ -34,12 +34,12 @@ namespace cudf {
 namespace io {
 namespace orc {
 struct PostScript {
-  uint64_t footerLength         = 0;           // the length of the footer section in bytes
-  CompressionKind compression   = NONE;        // the kind of generic compression used
-  uint32_t compressionBlockSize = 256 * 1024;  // the maximum size of each compression chunk
-  std::vector<uint32_t> version;               // the version of the writer [major, minor]
-  uint64_t metadataLength = 0;                 // the length of the metadata section in bytes
-  std::string magic       = "";                // the fixed string "ORC"
+  uint64_t        footerLength         = 0;           // the length of the footer section in bytes
+  CompressionKind compression          = NONE;        // the kind of generic compression used
+  uint32_t        compressionBlockSize = 256 * 1024;  // the maximum size of each compression chunk
+  std::vector<uint32_t> version;                      // the version of the writer [major, minor]
+  uint64_t              metadataLength = 0;           // the length of the metadata section in bytes
+  std::string           magic          = "";          // the fixed string "ORC"
 };
 
 struct StripeInformation {
@@ -51,10 +51,10 @@ struct StripeInformation {
 };
 
 struct SchemaType {
-  TypeKind kind = INVALID_TYPE_KIND;  // the kind of this type
+  TypeKind              kind = INVALID_TYPE_KIND;  // the kind of this type
   std::vector<uint32_t> subtypes;  // the type ids of any subcolumns for list, map, struct, or union
   std::vector<std::string> fieldNames;  // the list of field names for struct
-  uint32_t maximumLength =
+  uint32_t                 maximumLength =
     0;  // optional: the maximum length of the type for varchar or char in UTF-8 characters
   uint32_t precision = 0;  // optional: the precision and scale for decimal
   uint32_t scale     = 0;
@@ -68,20 +68,20 @@ struct UserMetadataItem {
 using ColStatsBlob = std::vector<uint8_t>;  // Column statistics blob
 
 struct FileFooter {
-  uint64_t headerLength  = 0;              // the length of the file header in bytes (always 3)
-  uint64_t contentLength = 0;              // the length of the file header and body in bytes
-  std::vector<StripeInformation> stripes;  // the information about the stripes
-  std::vector<SchemaType> types;           // the schema information
-  std::vector<UserMetadataItem> metadata;  // the user metadata that was added
-  uint64_t numberOfRows = 0;               // the total number of rows in the file
-  std::vector<ColStatsBlob> statistics;    // Column statistics blobs
-  uint32_t rowIndexStride = 0;             // the maximum number of rows in each index entry
+  uint64_t headerLength  = 0;               // the length of the file header in bytes (always 3)
+  uint64_t contentLength = 0;               // the length of the file header and body in bytes
+  std::vector<StripeInformation> stripes;   // the information about the stripes
+  std::vector<SchemaType>        types;     // the schema information
+  std::vector<UserMetadataItem>  metadata;  // the user metadata that was added
+  uint64_t                       numberOfRows = 0;  // the total number of rows in the file
+  std::vector<ColStatsBlob>      statistics;        // Column statistics blobs
+  uint32_t rowIndexStride = 0;  // the maximum number of rows in each index entry
 };
 
 struct Stream {
-  StreamKind kind = INVALID_STREAM_KIND;
-  uint32_t column = ~0;  // the column id
-  uint64_t length = 0;   // the number of bytes in the file
+  StreamKind kind   = INVALID_STREAM_KIND;
+  uint32_t   column = ~0;  // the column id
+  uint64_t   length = 0;   // the number of bytes in the file
 };
 
 struct ColumnEncoding {
@@ -90,9 +90,9 @@ struct ColumnEncoding {
 };
 
 struct StripeFooter {
-  std::vector<Stream> streams;          // the location of each stream
-  std::vector<ColumnEncoding> columns;  // the encoding of each column
-  std::string writerTimezone = "";      // time zone of the writer
+  std::vector<Stream>         streams;              // the location of each stream
+  std::vector<ColumnEncoding> columns;              // the encoding of each column
+  std::string                 writerTimezone = "";  // time zone of the writer
 };
 
 /**
@@ -101,14 +101,14 @@ struct StripeFooter {
  * At most one of the `***_statistics` members has a non-null value.
  */
 struct column_statistics {
-  std::unique_ptr<uint64_t> number_of_values;
-  std::unique_ptr<integer_statistics> int_stats;
-  std::unique_ptr<double_statistics> double_stats;
-  std::unique_ptr<string_statistics> string_stats;
-  std::unique_ptr<bucket_statistics> bucket_stats;
-  std::unique_ptr<decimal_statistics> decimal_stats;
-  std::unique_ptr<date_statistics> date_stats;
-  std::unique_ptr<binary_statistics> binary_stats;
+  std::unique_ptr<uint64_t>             number_of_values;
+  std::unique_ptr<integer_statistics>   int_stats;
+  std::unique_ptr<double_statistics>    double_stats;
+  std::unique_ptr<string_statistics>    string_stats;
+  std::unique_ptr<bucket_statistics>    bucket_stats;
+  std::unique_ptr<decimal_statistics>   decimal_stats;
+  std::unique_ptr<date_statistics>      date_stats;
+  std::unique_ptr<binary_statistics>    binary_stats;
   std::unique_ptr<timestamp_statistics> timestamp_stats;
   // TODO: hasNull (issue #7087)
 };
@@ -312,7 +312,7 @@ class ProtobufReader {
   template <typename T>
   struct field_reader {
     int const encoded_field_number;
-    T &output_value;
+    T &       output_value;
 
     field_reader(int field_number, T &field_value)
       : encoded_field_number(encode_field_number<T>(field_number)), output_value(field_value)
@@ -328,7 +328,7 @@ class ProtobufReader {
   template <typename T>
   struct packed_field_reader {
     int const encoded_field_number;
-    T &output_value;
+    T &       output_value;
 
     packed_field_reader(int field_number, T &field_value)
       : encoded_field_number(encode_field_number<T>(field_number)), output_value(field_value)
@@ -344,7 +344,7 @@ class ProtobufReader {
   template <typename T>
   struct raw_field_reader {
     int const encoded_field_number;
-    T &output_value;
+    T &       output_value;
 
     raw_field_reader(int field_number, T &field_value)
       : encoded_field_number(encode_field_number<T>(field_number)), output_value(field_value)
@@ -358,7 +358,7 @@ class ProtobufReader {
   };
 
   const uint8_t *const m_base;
-  const uint8_t *m_cur;
+  const uint8_t *      m_cur;
   const uint8_t *const m_end;
 
  public:
@@ -461,7 +461,7 @@ class ProtobufWriter {
  public:
   ProtobufWriter() { m_buf = nullptr; }
   ProtobufWriter(std::vector<uint8_t> *output) { m_buf = output; }
-  void putb(uint8_t v) { m_buf->push_back(v); }
+  void     putb(uint8_t v) { m_buf->push_back(v); }
   uint32_t put_uint(uint64_t v)
   {
     int l = 1;
@@ -478,12 +478,12 @@ class ProtobufWriter {
     int64_t s = (v < 0);
     return put_uint(((v ^ -s) << 1) + s);
   }
-  void put_row_index_entry(int32_t present_blk,
-                           int32_t present_ofs,
-                           int32_t data_blk,
-                           int32_t data_ofs,
-                           int32_t data2_blk,
-                           int32_t data2_ofs,
+  void put_row_index_entry(int32_t  present_blk,
+                           int32_t  present_ofs,
+                           int32_t  data_blk,
+                           int32_t  data_ofs,
+                           int32_t  data2_blk,
+                           int32_t  data2_ofs,
                            TypeKind kind);
 
  public:
@@ -511,21 +511,21 @@ class OrcDecompressor {
  public:
   OrcDecompressor(CompressionKind kind, uint32_t blockSize);
   const uint8_t *Decompress(const uint8_t *srcBytes, size_t srcLen, size_t *dstLen);
-  uint32_t GetLog2MaxCompressionRatio() const { return m_log2MaxRatio; }
-  uint32_t GetMaxUncompressedBlockSize(uint32_t block_len) const
+  uint32_t       GetLog2MaxCompressionRatio() const { return m_log2MaxRatio; }
+  uint32_t       GetMaxUncompressedBlockSize(uint32_t block_len) const
   {
     return (block_len < (m_blockSize >> m_log2MaxRatio)) ? block_len << m_log2MaxRatio
                                                          : m_blockSize;
   }
   CompressionKind GetKind() const { return m_kind; }
-  uint32_t GetBlockSize() const { return m_blockSize; }
+  uint32_t        GetBlockSize() const { return m_blockSize; }
 
  protected:
-  CompressionKind const m_kind;
-  uint32_t m_log2MaxRatio = 24;  // log2 of maximum compression ratio
-  uint32_t const m_blockSize;
+  CompressionKind const             m_kind;
+  uint32_t                          m_log2MaxRatio = 24;  // log2 of maximum compression ratio
+  uint32_t const                    m_blockSize;
   std::unique_ptr<HostDecompressor> m_decompressor;
-  std::vector<uint8_t> m_buf;
+  std::vector<uint8_t>              m_buf;
 };
 
 /**
@@ -548,8 +548,8 @@ class metadata {
    * @return List of stripe info and total number of selected rows
    */
   std::vector<OrcStripeInfo> select_stripes(const std::vector<size_type> &stripes,
-                                            size_type &row_start,
-                                            size_type &row_count);
+                                            size_type &                   row_start,
+                                            size_type &                   row_count);
 
   /**
    * @brief Filters and reduces down to a selection of columns
@@ -561,9 +561,9 @@ class metadata {
    */
   std::vector<int> select_columns(std::vector<std::string> use_names, bool &has_timestamp_column);
 
-  size_t get_total_rows() const { return ff.numberOfRows; }
-  int get_num_stripes() const { return ff.stripes.size(); }
-  int get_num_columns() const { return ff.types.size(); }
+  size_t             get_total_rows() const { return ff.numberOfRows; }
+  int                get_num_stripes() const { return ff.stripes.size(); }
+  int                get_num_columns() const { return ff.types.size(); }
   std::string const &get_column_name(int32_t column_id)
   {
     if (column_names.empty() && get_num_columns() != 0) { init_column_names(); }
@@ -572,10 +572,10 @@ class metadata {
   int get_row_index_stride() const { return ff.rowIndexStride; }
 
  public:
-  PostScript ps;
-  FileFooter ff;
-  Metadata md;
-  std::vector<StripeFooter> stripefooters;
+  PostScript                       ps;
+  FileFooter                       ff;
+  Metadata                         md;
+  std::vector<StripeFooter>        stripefooters;
   std::unique_ptr<OrcDecompressor> decompressor;
 
  private:
@@ -584,10 +584,10 @@ class metadata {
     int32_t field  = -1;
   };
   std::vector<schema_indexes> get_schema_indexes() const;
-  void init_column_names();
+  void                        init_column_names();
 
   std::vector<std::string> column_names;
-  datasource *const source;
+  datasource *const        source;
 };
 
 }  // namespace orc

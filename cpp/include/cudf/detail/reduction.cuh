@@ -51,10 +51,10 @@ template <typename Op,
           typename OutputType = typename thrust::iterator_value<InputIterator>::type,
           typename std::enable_if_t<is_fixed_width<OutputType>() &&
                                     not cudf::is_fixed_point<OutputType>()>* = nullptr>
-std::unique_ptr<scalar> reduce(InputIterator d_in,
-                               cudf::size_type num_items,
-                               op::simple_op<Op> sop,
-                               rmm::cuda_stream_view stream,
+std::unique_ptr<scalar> reduce(InputIterator                    d_in,
+                               cudf::size_type                  num_items,
+                               op::simple_op<Op>                sop,
+                               rmm::cuda_stream_view            stream,
                                rmm::mr::device_memory_resource* mr)
 {
   auto binary_op  = sop.get_binary_op();
@@ -63,7 +63,7 @@ std::unique_ptr<scalar> reduce(InputIterator d_in,
 
   // Allocate temporary storage
   rmm::device_buffer d_temp_storage;
-  size_t temp_storage_bytes = 0;
+  size_t             temp_storage_bytes = 0;
   cub::DeviceReduce::Reduce(d_temp_storage.data(),
                             temp_storage_bytes,
                             d_in,
@@ -93,10 +93,10 @@ template <typename Op,
           typename InputIterator,
           typename OutputType = typename thrust::iterator_value<InputIterator>::type,
           typename std::enable_if_t<is_fixed_point<OutputType>()>* = nullptr>
-std::unique_ptr<scalar> reduce(InputIterator d_in,
-                               cudf::size_type num_items,
-                               op::simple_op<Op> sop,
-                               rmm::cuda_stream_view stream,
+std::unique_ptr<scalar> reduce(InputIterator                    d_in,
+                               cudf::size_type                  num_items,
+                               op::simple_op<Op>                sop,
+                               rmm::cuda_stream_view            stream,
                                rmm::mr::device_memory_resource* mr)
 {
   CUDF_FAIL(
@@ -110,10 +110,10 @@ template <typename Op,
           typename InputIterator,
           typename OutputType = typename thrust::iterator_value<InputIterator>::type,
           typename std::enable_if_t<std::is_same<OutputType, string_view>::value>* = nullptr>
-std::unique_ptr<scalar> reduce(InputIterator d_in,
-                               cudf::size_type num_items,
-                               op::simple_op<Op> sop,
-                               rmm::cuda_stream_view stream,
+std::unique_ptr<scalar> reduce(InputIterator                    d_in,
+                               cudf::size_type                  num_items,
+                               op::simple_op<Op>                sop,
+                               rmm::cuda_stream_view            stream,
                                rmm::mr::device_memory_resource* mr)
 {
   auto binary_op  = sop.get_binary_op();
@@ -122,7 +122,7 @@ std::unique_ptr<scalar> reduce(InputIterator d_in,
 
   // Allocate temporary storage
   rmm::device_buffer d_temp_storage;
-  size_t temp_storage_bytes = 0;
+  size_t             temp_storage_bytes = 0;
   cub::DeviceReduce::Reduce(d_temp_storage.data(),
                             temp_storage_bytes,
                             d_in,
@@ -171,21 +171,21 @@ template <typename Op,
           typename InputIterator,
           typename OutputType,
           typename IntermediateType = typename thrust::iterator_value<InputIterator>::type>
-std::unique_ptr<scalar> reduce(InputIterator d_in,
-                               cudf::size_type num_items,
-                               op::compound_op<Op> cop,
-                               cudf::size_type valid_count,
-                               cudf::size_type ddof,
-                               rmm::cuda_stream_view stream,
+std::unique_ptr<scalar> reduce(InputIterator                    d_in,
+                               cudf::size_type                  num_items,
+                               op::compound_op<Op>              cop,
+                               cudf::size_type                  valid_count,
+                               cudf::size_type                  ddof,
+                               rmm::cuda_stream_view            stream,
                                rmm::mr::device_memory_resource* mr)
 {
-  auto binary_op            = cop.get_binary_op();
-  IntermediateType identity = cop.template get_identity<IntermediateType>();
+  auto                                 binary_op = cop.get_binary_op();
+  IntermediateType                     identity  = cop.template get_identity<IntermediateType>();
   rmm::device_scalar<IntermediateType> intermediate_result{identity, stream};
 
   // Allocate temporary storage
   rmm::device_buffer d_temp_storage;
-  size_t temp_storage_bytes = 0;
+  size_t             temp_storage_bytes = 0;
   cub::DeviceReduce::Reduce(d_temp_storage.data(),
                             temp_storage_bytes,
                             d_in,

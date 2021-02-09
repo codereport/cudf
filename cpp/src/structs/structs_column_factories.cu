@@ -29,11 +29,11 @@ namespace cudf {
 namespace {
 // Helper function to superimpose validity of parent struct
 // over the specified member (child) column.
-void superimpose_parent_nullmask(bitmask_type const* parent_null_mask,
-                                 std::size_t parent_null_mask_size,
-                                 size_type parent_null_count,
-                                 column& child,
-                                 rmm::cuda_stream_view stream,
+void superimpose_parent_nullmask(bitmask_type const*              parent_null_mask,
+                                 std::size_t                      parent_null_mask_size,
+                                 size_type                        parent_null_count,
+                                 column&                          child,
+                                 rmm::cuda_stream_view            stream,
                                  rmm::mr::device_memory_resource* mr)
 {
   if (!child.nullable()) {
@@ -78,12 +78,12 @@ void superimpose_parent_nullmask(bitmask_type const* parent_null_mask,
 
 /// Column factory that adopts child columns.
 std::unique_ptr<cudf::column> make_structs_column(
-  size_type num_rows,
+  size_type                              num_rows,
   std::vector<std::unique_ptr<column>>&& child_columns,
-  size_type null_count,
-  rmm::device_buffer&& null_mask,
-  rmm::cuda_stream_view stream,
-  rmm::mr::device_memory_resource* mr)
+  size_type                              null_count,
+  rmm::device_buffer&&                   null_mask,
+  rmm::cuda_stream_view                  stream,
+  rmm::mr::device_memory_resource*       mr)
 {
   CUDF_EXPECTS(null_count <= 0 || !null_mask.is_empty(),
                "Struct column with nulls must be nullable.");

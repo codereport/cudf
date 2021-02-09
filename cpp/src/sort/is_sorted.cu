@@ -29,13 +29,13 @@ namespace cudf {
 namespace detail {
 
 template <bool has_nulls>
-auto is_sorted(cudf::table_view const& in,
-               std::vector<order> const& column_order,
+auto is_sorted(cudf::table_view const&        in,
+               std::vector<order> const&      column_order,
                std::vector<null_order> const& null_precedence,
-               rmm::cuda_stream_view stream)
+               rmm::cuda_stream_view          stream)
 {
-  auto in_d = table_device_view::create(in);
-  rmm::device_vector<order> d_column_order(column_order);
+  auto                                 in_d = table_device_view::create(in);
+  rmm::device_vector<order>            d_column_order(column_order);
   rmm::device_vector<null_order> const d_null_precedence =
     (has_nulls) ? rmm::device_vector<null_order>{null_precedence}
                 : rmm::device_vector<null_order>{};
@@ -52,8 +52,8 @@ auto is_sorted(cudf::table_view const& in,
 
 }  // namespace detail
 
-bool is_sorted(cudf::table_view const& in,
-               std::vector<order> const& column_order,
+bool is_sorted(cudf::table_view const&        in,
+               std::vector<order> const&      column_order,
                std::vector<null_order> const& null_precedence)
 {
   CUDF_FUNC_RANGE();

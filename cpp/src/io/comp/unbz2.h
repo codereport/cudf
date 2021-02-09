@@ -97,10 +97,10 @@ namespace io {
 #define BZ_OUTBUFF_FULL (-8)
 
 int32_t cpu_bz2_uncompress(const uint8_t *input,
-                           size_t inlen,
-                           uint8_t *dst,
-                           size_t *dstlen,
-                           uint64_t *block_start = nullptr);
+                           size_t         inlen,
+                           uint8_t *      dst,
+                           size_t *       dstlen,
+                           uint64_t *     block_start = nullptr);
 
 }  // namespace io
 }  // namespace cudf

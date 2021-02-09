@@ -135,7 +135,7 @@ TYPED_TEST_CASE(HashTestTyped, cudf::test::FixedWidthTypes);
 TYPED_TEST(HashTestTyped, Equality)
 {
   fixed_width_column_wrapper<TypeParam, int32_t> const col{0, 127, 1, 2, 8};
-  auto const input = cudf::table_view({col});
+  auto const                                           input = cudf::table_view({col});
 
   // Hash of same input should be equal
   auto const output1 = cudf::hash(input);
@@ -430,7 +430,7 @@ TYPED_TEST_CASE(MD5HashTestTyped, cudf::test::NumericTypes);
 TYPED_TEST(MD5HashTestTyped, Equality)
 {
   fixed_width_column_wrapper<TypeParam> const col({0, 127, 1, 2, 8});
-  auto const input = cudf::table_view({col});
+  auto const                                  input = cudf::table_view({col});
 
   // Hash of same input should be equal
   auto const output1 = cudf::hash(input, cudf::hash_id::HASH_MD5);

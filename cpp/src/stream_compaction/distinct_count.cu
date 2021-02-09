@@ -35,8 +35,8 @@
 namespace cudf {
 namespace detail {
 
-cudf::size_type distinct_count(table_view const& keys,
-                               null_equality nulls_equal,
+cudf::size_type distinct_count(table_view const&     keys,
+                               null_equality         nulls_equal,
                                rmm::cuda_stream_view stream)
 {
   // sort only indices
@@ -149,9 +149,9 @@ struct has_nans {
   }
 };
 
-cudf::size_type distinct_count(column_view const& input,
-                               null_policy null_handling,
-                               nan_policy nan_handling,
+cudf::size_type distinct_count(column_view const&    input,
+                               null_policy           null_handling,
+                               nan_policy            nan_handling,
                                rmm::cuda_stream_view stream)
 {
   if (0 == input.size() || input.null_count() == input.size()) { return 0; }
@@ -182,8 +182,8 @@ cudf::size_type distinct_count(column_view const& input,
 }  // namespace detail
 
 cudf::size_type distinct_count(column_view const& input,
-                               null_policy null_handling,
-                               nan_policy nan_handling)
+                               null_policy        null_handling,
+                               nan_policy         nan_handling)
 {
   CUDF_FUNC_RANGE();
   return detail::distinct_count(input, null_handling, nan_handling);

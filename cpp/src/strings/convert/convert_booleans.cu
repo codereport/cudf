@@ -39,9 +39,9 @@ namespace cudf {
 namespace strings {
 namespace detail {
 // Convert strings column to boolean column
-std::unique_ptr<column> to_booleans(strings_column_view const& strings,
-                                    string_scalar const& true_string,
-                                    rmm::cuda_stream_view stream,
+std::unique_ptr<column> to_booleans(strings_column_view const&       strings,
+                                    string_scalar const&             true_string,
+                                    rmm::cuda_stream_view            stream,
                                     rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = strings.size();
@@ -80,8 +80,8 @@ std::unique_ptr<column> to_booleans(strings_column_view const& strings,
 }  // namespace detail
 
 // external API
-std::unique_ptr<column> to_booleans(strings_column_view const& strings,
-                                    string_scalar const& true_string,
+std::unique_ptr<column> to_booleans(strings_column_view const&       strings,
+                                    string_scalar const&             true_string,
                                     rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
@@ -90,10 +90,10 @@ std::unique_ptr<column> to_booleans(strings_column_view const& strings,
 
 namespace detail {
 // Convert boolean column to strings column
-std::unique_ptr<column> from_booleans(column_view const& booleans,
-                                      string_scalar const& true_string,
-                                      string_scalar const& false_string,
-                                      rmm::cuda_stream_view stream,
+std::unique_ptr<column> from_booleans(column_view const&               booleans,
+                                      string_scalar const&             true_string,
+                                      string_scalar const&             false_string,
+                                      rmm::cuda_stream_view            stream,
                                       rmm::mr::device_memory_resource* mr)
 {
   size_type strings_count = booleans.size();
@@ -125,7 +125,7 @@ std::unique_ptr<column> from_booleans(column_view const& booleans,
 
   // build chars column
   size_type bytes = thrust::device_pointer_cast(d_offsets)[strings_count];
-  auto chars_column =
+  auto      chars_column =
     create_chars_child_column(strings_count, booleans.null_count(), bytes, stream, mr);
   auto chars_view = chars_column->mutable_view();
   auto d_chars    = chars_view.data<char>();
@@ -151,9 +151,9 @@ std::unique_ptr<column> from_booleans(column_view const& booleans,
 
 // external API
 
-std::unique_ptr<column> from_booleans(column_view const& booleans,
-                                      string_scalar const& true_string,
-                                      string_scalar const& false_string,
+std::unique_ptr<column> from_booleans(column_view const&               booleans,
+                                      string_scalar const&             true_string,
+                                      string_scalar const&             false_string,
                                       rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

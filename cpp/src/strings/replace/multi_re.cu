@@ -54,12 +54,12 @@ using found_range = thrust::pair<size_type, size_type>;
 template <size_t stack_size>
 struct replace_multi_regex_fn {
   column_device_view const d_strings;
-  reprog_device* progs;  // array of regex progs
-  size_type number_of_patterns;
-  found_range* d_found_ranges;       // working array matched (begin,end) values
-  column_device_view const d_repls;  // replacment strings
-  int32_t* d_offsets{};              // these are null when
-  char* d_chars{};                   // only computing size
+  reprog_device*           progs;  // array of regex progs
+  size_type                number_of_patterns;
+  found_range*             d_found_ranges;  // working array matched (begin,end) values
+  column_device_view const d_repls;         // replacment strings
+  int32_t*                 d_offsets{};     // these are null when
+  char*                    d_chars{};       // only computing size
 
   __device__ void operator()(size_type idx)
   {
@@ -67,16 +67,16 @@ struct replace_multi_regex_fn {
       if (!d_chars) d_offsets[idx] = 0;
       return;
     }
-    u_char data1[stack_size];
-    u_char data2[stack_size];
-    auto const d_str      = d_strings.element<string_view>(idx);
-    auto const nchars     = d_str.length();      // number of characters in input string
-    auto nbytes           = d_str.size_bytes();  // number of bytes in input string
-    auto in_ptr           = d_str.data();        // input pointer
-    auto out_ptr          = d_chars ? d_chars + d_offsets[idx] : nullptr;
+    u_char       data1[stack_size];
+    u_char       data2[stack_size];
+    auto const   d_str    = d_strings.element<string_view>(idx);
+    auto const   nchars   = d_str.length();      // number of characters in input string
+    auto         nbytes   = d_str.size_bytes();  // number of bytes in input string
+    auto         in_ptr   = d_str.data();        // input pointer
+    auto         out_ptr  = d_chars ? d_chars + d_offsets[idx] : nullptr;
     found_range* d_ranges = d_found_ranges + (idx * number_of_patterns);
-    size_type lpos        = 0;
-    size_type ch_pos      = 0;
+    size_type    lpos     = 0;
+    size_type    ch_pos   = 0;
     // initialize the working ranges memory to -1's
     thrust::fill(thrust::seq, d_ranges, d_ranges + number_of_patterns, found_range{-1, 1});
     // process string one character at a time
@@ -104,10 +104,10 @@ struct replace_multi_regex_fn {
       if (itr !=
           d_ranges +
             number_of_patterns) {  // match found, compute and replace the string in the output
-        size_type ptn_idx  = static_cast<size_type>(itr - d_ranges);
-        size_type begin    = d_ranges[ptn_idx].first;
-        size_type end      = d_ranges[ptn_idx].second;
-        string_view d_repl = d_repls.size() > 1 ? d_repls.element<string_view>(ptn_idx)
+        size_type   ptn_idx = static_cast<size_type>(itr - d_ranges);
+        size_type   begin   = d_ranges[ptn_idx].first;
+        size_type   end     = d_ranges[ptn_idx].second;
+        string_view d_repl  = d_repls.size() > 1 ? d_repls.element<string_view>(ptn_idx)
                                                 : d_repls.element<string_view>(0);
         auto spos = d_str.byte_offset(begin);
         auto epos = d_str.byte_offset(end);
@@ -131,10 +131,10 @@ struct replace_multi_regex_fn {
 }  // namespace
 
 std::unique_ptr<column> replace_re(
-  strings_column_view const& strings,
-  std::vector<std::string> const& patterns,
-  strings_column_view const& repls,
-  rmm::cuda_stream_view stream,
+  strings_column_view const&       strings,
+  std::vector<std::string> const&  patterns,
+  strings_column_view const&       repls,
+  rmm::cuda_stream_view            stream,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource())
 {
   auto strings_count = strings.size();
@@ -150,9 +150,9 @@ std::unique_ptr<column> replace_re(
   auto d_repls        = *repls_column;
   auto d_flags        = get_character_flags_table();
   // compile regexes into device objects
-  size_type regex_insts = 0;
+  size_type                                                                        regex_insts = 0;
   std::vector<std::unique_ptr<reprog_device, std::function<void(reprog_device*)>>> h_progs;
-  rmm::device_vector<reprog_device> progs;
+  rmm::device_vector<reprog_device>                                                progs;
   for (auto itr = patterns.begin(); itr != patterns.end(); ++itr) {
     auto prog  = reprog_device::create(*itr, d_flags, strings_count, stream);
     auto insts = prog->insts_counts();
@@ -167,7 +167,7 @@ std::unique_ptr<column> replace_re(
   auto null_count = strings.null_count();
   // create working buffer for ranges pairs
   rmm::device_vector<found_range> found_ranges(patterns.size() * strings_count);
-  auto d_found_ranges = found_ranges.data().get();
+  auto                            d_found_ranges = found_ranges.data().get();
 
   // create child columns
   std::pair<std::unique_ptr<column>, std::unique_ptr<column>> children(nullptr, nullptr);
@@ -211,9 +211,9 @@ std::unique_ptr<column> replace_re(
 
 // external API
 
-std::unique_ptr<column> replace_re(strings_column_view const& strings,
-                                   std::vector<std::string> const& patterns,
-                                   strings_column_view const& repls,
+std::unique_ptr<column> replace_re(strings_column_view const&       strings,
+                                   std::vector<std::string> const&  patterns,
+                                   strings_column_view const&       repls,
                                    rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

@@ -94,10 +94,10 @@ enum class binary_operator : int32_t {
  * @throw cudf::logic_error if @p output_type dtype isn't fixed-width
  */
 std::unique_ptr<column> binary_operation(
-  scalar const& lhs,
-  column_view const& rhs,
-  binary_operator op,
-  data_type output_type,
+  scalar const&                    lhs,
+  column_view const&               rhs,
+  binary_operator                  op,
+  data_type                        output_type,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -119,10 +119,10 @@ std::unique_ptr<column> binary_operation(
  * @throw cudf::logic_error if @p output_type dtype isn't fixed-width
  */
 std::unique_ptr<column> binary_operation(
-  column_view const& lhs,
-  scalar const& rhs,
-  binary_operator op,
-  data_type output_type,
+  column_view const&               lhs,
+  scalar const&                    rhs,
+  binary_operator                  op,
+  data_type                        output_type,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -143,10 +143,10 @@ std::unique_ptr<column> binary_operation(
  * @throw cudf::logic_error if @p output_type dtype isn't fixed-width
  */
 std::unique_ptr<column> binary_operation(
-  column_view const& lhs,
-  column_view const& rhs,
-  binary_operator op,
-  data_type output_type,
+  column_view const&               lhs,
+  column_view const&               rhs,
+  binary_operator                  op,
+  data_type                        output_type,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -172,10 +172,10 @@ std::unique_ptr<column> binary_operation(
  * @throw cudf::logic_error if @p output_type dtype isn't numeric
  */
 std::unique_ptr<column> binary_operation(
-  column_view const& lhs,
-  column_view const& rhs,
-  std::string const& ptx,
-  data_type output_type,
+  column_view const&               lhs,
+  column_view const&               rhs,
+  std::string const&               ptx,
+  data_type                        output_type,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group

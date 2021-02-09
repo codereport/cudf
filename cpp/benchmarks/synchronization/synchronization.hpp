@@ -80,8 +80,8 @@ class cuda_event_timer {
    *                            every iteration.
    * @param[in] stream_ The CUDA stream we are measuring time on.
    */
-  cuda_event_timer(benchmark::State& state,
-                   bool flush_l2_cache,
+  cuda_event_timer(benchmark::State&     state,
+                   bool                  flush_l2_cache,
                    rmm::cuda_stream_view stream = rmm::cuda_stream_default);
 
   // The user must provide a benchmark::State object to set
@@ -94,10 +94,10 @@ class cuda_event_timer {
   ~cuda_event_timer();
 
  private:
-  cudaEvent_t start;
-  cudaEvent_t stop;
+  cudaEvent_t           start;
+  cudaEvent_t           stop;
   rmm::cuda_stream_view stream;
-  benchmark::State* p_state;
+  benchmark::State*     p_state;
 };
 
 #endif

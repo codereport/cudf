@@ -38,8 +38,8 @@ namespace io {
  * contains one element per stripe, where each element contains column statistics for each column.
  */
 struct raw_orc_statistics {
-  std::vector<std::string> column_names;
-  std::vector<std::string> file_stats;
+  std::vector<std::string>              column_names;
+  std::vector<std::string>              file_stats;
   std::vector<std::vector<std::string>> stripes_stats;
 };
 
@@ -138,7 +138,7 @@ struct string_statistics : minmax_statistics<std::string>, sum_statistics<uint64
  */
 struct bucket_statistics {
   static constexpr statistics_type type = statistics_type::BUCKET;
-  std::vector<uint64_t> _count;
+  std::vector<uint64_t>            _count;
 
   auto count(size_t index) const { return &_count.at(index); }
 };
@@ -174,8 +174,8 @@ struct binary_statistics : sum_statistics<int64_t> {
  */
 struct timestamp_statistics : minmax_statistics<int64_t> {
   static constexpr statistics_type type = statistics_type::TIMESTAMP;
-  std::unique_ptr<int64_t> _minimum_utc;
-  std::unique_ptr<int64_t> _maximum_utc;
+  std::unique_ptr<int64_t>         _minimum_utc;
+  std::unique_ptr<int64_t>         _maximum_utc;
 
   auto has_minimum_utc() const { return _minimum_utc != nullptr; }
   auto has_maximum_utc() const { return _maximum_utc != nullptr; }
@@ -199,8 +199,8 @@ struct column_statistics;
 class column_statistics {
  private:
   std::unique_ptr<uint64_t> _number_of_values;
-  statistics_type _type      = statistics_type::NONE;
-  void* _type_specific_stats = nullptr;
+  statistics_type           _type                = statistics_type::NONE;
+  void*                     _type_specific_stats = nullptr;
 
  public:
   column_statistics() = default;
@@ -240,8 +240,8 @@ class column_statistics {
  * column.
  */
 struct parsed_orc_statistics {
-  std::vector<std::string> column_names;
-  std::vector<column_statistics> file_stats;
+  std::vector<std::string>                    column_names;
+  std::vector<column_statistics>              file_stats;
   std::vector<std::vector<column_statistics>> stripes_stats;
 };
 

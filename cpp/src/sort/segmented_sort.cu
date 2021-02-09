@@ -46,8 +46,8 @@ namespace detail {
 
 // returns segment indices for each element for all segments.
 // first segment begin index = 0, last segment end index = num_rows.
-rmm::device_uvector<size_type> get_segment_indices(size_type num_rows,
-                                                   column_view const& offsets,
+rmm::device_uvector<size_type> get_segment_indices(size_type             num_rows,
+                                                   column_view const&    offsets,
                                                    rmm::cuda_stream_view stream)
 {
   rmm::device_uvector<size_type> segment_ids(num_rows, stream);
@@ -65,11 +65,11 @@ rmm::device_uvector<size_type> get_segment_indices(size_type num_rows,
   return segment_ids;
 }
 
-std::unique_ptr<column> segmented_sorted_order(table_view const& keys,
-                                               column_view const& segment_offsets,
-                                               std::vector<order> const& column_order,
-                                               std::vector<null_order> const& null_precedence,
-                                               rmm::cuda_stream_view stream,
+std::unique_ptr<column> segmented_sorted_order(table_view const&                keys,
+                                               column_view const&               segment_offsets,
+                                               std::vector<order> const&        column_order,
+                                               std::vector<null_order> const&   null_precedence,
+                                               rmm::cuda_stream_view            stream,
                                                rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(segment_offsets.type() == data_type(type_to_id<size_type>()),
@@ -99,12 +99,12 @@ std::unique_ptr<column> segmented_sorted_order(table_view const& keys,
   return detail::sorted_order(segid_keys, child_column_order, child_null_precedence, stream, mr);
 }
 
-std::unique_ptr<table> segmented_sort_by_key(table_view const& values,
-                                             table_view const& keys,
-                                             column_view const& segment_offsets,
-                                             std::vector<order> const& column_order,
-                                             std::vector<null_order> const& null_precedence,
-                                             rmm::cuda_stream_view stream,
+std::unique_ptr<table> segmented_sort_by_key(table_view const&                values,
+                                             table_view const&                keys,
+                                             column_view const&               segment_offsets,
+                                             std::vector<order> const&        column_order,
+                                             std::vector<null_order> const&   null_precedence,
+                                             rmm::cuda_stream_view            stream,
                                              rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(values.num_rows() == keys.num_rows(),
@@ -126,11 +126,11 @@ std::unique_ptr<table> segmented_sort_by_key(table_view const& values,
 }
 }  // namespace detail
 
-std::unique_ptr<table> segmented_sort_by_key(table_view const& values,
-                                             table_view const& keys,
-                                             column_view const& segment_offsets,
-                                             std::vector<order> const& column_order,
-                                             std::vector<null_order> const& null_precedence,
+std::unique_ptr<table> segmented_sort_by_key(table_view const&                values,
+                                             table_view const&                keys,
+                                             column_view const&               segment_offsets,
+                                             std::vector<order> const&        column_order,
+                                             std::vector<null_order> const&   null_precedence,
                                              rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

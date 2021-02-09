@@ -67,9 +67,9 @@ namespace cudf {
  * keep_threshold non-null fields in @p keys.
  */
 std::unique_ptr<table> drop_nulls(
-  table_view const& input,
-  std::vector<size_type> const& keys,
-  cudf::size_type keep_threshold,
+  table_view const&                input,
+  std::vector<size_type> const&    keys,
+  cudf::size_type                  keep_threshold,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -99,8 +99,8 @@ std::unique_ptr<table> drop_nulls(
  * of @p keys.
  */
 std::unique_ptr<table> drop_nulls(
-  table_view const& input,
-  std::vector<size_type> const& keys,
+  table_view const&                input,
+  std::vector<size_type> const&    keys,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -141,9 +141,9 @@ std::unique_ptr<table> drop_nulls(
  * keep_threshold non-NAN elements in @p keys.
  */
 std::unique_ptr<table> drop_nans(
-  table_view const& input,
-  std::vector<size_type> const& keys,
-  cudf::size_type keep_threshold,
+  table_view const&                input,
+  std::vector<size_type> const&    keys,
+  cudf::size_type                  keep_threshold,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -174,8 +174,8 @@ std::unique_ptr<table> drop_nans(
  * of @p keys.
  */
 std::unique_ptr<table> drop_nans(
-  table_view const& input,
-  std::vector<size_type> const& keys,
+  table_view const&                input,
+  std::vector<size_type> const&    keys,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -200,8 +200,8 @@ std::unique_ptr<table> drop_nans(
  * the filter defined by @p boolean_mask.
  */
 std::unique_ptr<table> apply_boolean_mask(
-  table_view const& input,
-  column_view const& boolean_mask,
+  table_view const&                input,
+  column_view const&               boolean_mask,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -235,11 +235,11 @@ enum class duplicate_keep_option {
  * @return Table with unique rows as per specified `keep`.
  */
 std::unique_ptr<table> drop_duplicates(
-  table_view const& input,
-  std::vector<size_type> const& keys,
-  duplicate_keep_option keep,
-  null_equality nulls_equal           = null_equality::EQUAL,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  table_view const&                input,
+  std::vector<size_type> const&    keys,
+  duplicate_keep_option            keep,
+  null_equality                    nulls_equal = null_equality::EQUAL,
+  rmm::mr::device_memory_resource* mr          = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Count the unique elements in the column_view
@@ -258,8 +258,8 @@ std::unique_ptr<table> drop_duplicates(
  * @return number of unique elements
  */
 cudf::size_type distinct_count(column_view const& input,
-                               null_policy null_handling,
-                               nan_policy nan_handling);
+                               null_policy        null_handling,
+                               nan_policy         nan_handling);
 
 /**
  * @brief Count the unique rows in a table.
@@ -272,7 +272,7 @@ cudf::size_type distinct_count(column_view const& input,
  * @return number of unique rows in the table
  */
 cudf::size_type distinct_count(table_view const& input,
-                               null_equality nulls_equal = null_equality::EQUAL);
+                               null_equality     nulls_equal = null_equality::EQUAL);
 
 /** @} */
 }  // namespace cudf

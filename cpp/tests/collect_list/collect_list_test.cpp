@@ -122,7 +122,7 @@ TYPED_TEST(TypedCollectListTest, RollingWindowWithEmptyOutputListsAtEnds)
   auto const input_column = fixed_width_column_wrapper<T, int32_t>{0, 1, 2, 3, 4, 5};
 
   auto const prev_column = fixed_width_column_wrapper<size_type>{0, 2, 2, 2, 2, 0};
-  auto foll_column       = fixed_width_column_wrapper<size_type>{0, 1, 1, 1, 1, 0};
+  auto       foll_column = fixed_width_column_wrapper<size_type>{0, 1, 1, 1, 1, 0};
 
   auto const result =
     rolling_window(input_column, prev_column, foll_column, 0, make_collect_aggregation());
@@ -146,9 +146,9 @@ TYPED_TEST(TypedCollectListTest, RollingWindowHonoursMinPeriods)
   auto const input_column = fixed_width_column_wrapper<T, int32_t>{0, 1, 2, 3, 4, 5};
   auto const num_elements = static_cast<column_view>(input_column).size();
 
-  auto preceding   = 2;
-  auto following   = 1;
-  auto min_periods = 3;
+  auto       preceding   = 2;
+  auto       following   = 1;
+  auto       min_periods = 3;
   auto const result =
     rolling_window(input_column, preceding, following, min_periods, make_collect_aggregation());
 
@@ -192,9 +192,9 @@ TYPED_TEST(TypedCollectListTest, RollingWindowWithNullInputsHonoursMinPeriods)
 
   {
     // One result row at each end should be null.
-    auto preceding   = 2;
-    auto following   = 1;
-    auto min_periods = 3;
+    auto       preceding   = 2;
+    auto       following   = 1;
+    auto       min_periods = 3;
     auto const result =
       rolling_window(input_column, preceding, following, min_periods, make_collect_aggregation());
 
@@ -221,9 +221,9 @@ TYPED_TEST(TypedCollectListTest, RollingWindowWithNullInputsHonoursMinPeriods)
 
   {
     // First result row, and the last two result rows should be null.
-    auto preceding   = 2;
-    auto following   = 2;
-    auto min_periods = 4;
+    auto       preceding   = 2;
+    auto       following   = 2;
+    auto       min_periods = 4;
     auto const result =
       rolling_window(input_column, preceding, following, min_periods, make_collect_aggregation());
 
@@ -261,9 +261,9 @@ TEST_F(CollectListTest, RollingWindowHonoursMinPeriodsOnStrings)
   auto const input_column = strings_column_wrapper{"0", "1", "2", "3", "4", "5"};
   auto const num_elements = static_cast<column_view>(input_column).size();
 
-  auto preceding   = 2;
-  auto following   = 1;
-  auto min_periods = 3;
+  auto       preceding   = 2;
+  auto       following   = 1;
+  auto       min_periods = 3;
   auto const result =
     rolling_window(input_column, preceding, following, min_periods, make_collect_aggregation());
 
@@ -305,9 +305,9 @@ TEST_F(CollectListTest, RollingWindowHonoursMinPeriodsWithDecimal)
 
   {
     // One result row at each end should be null.
-    auto preceding   = 2;
-    auto following   = 1;
-    auto min_periods = 3;
+    auto       preceding   = 2;
+    auto       following   = 1;
+    auto       min_periods = 3;
     auto const result =
       rolling_window(input_column, preceding, following, min_periods, make_collect_aggregation());
 
@@ -333,9 +333,9 @@ TEST_F(CollectListTest, RollingWindowHonoursMinPeriodsWithDecimal)
 
   {
     // First result row, and the last two result rows should be null.
-    auto preceding   = 2;
-    auto following   = 2;
-    auto min_periods = 4;
+    auto       preceding   = 2;
+    auto       following   = 2;
+    auto       min_periods = 4;
     auto const result =
       rolling_window(input_column, preceding, following, min_periods, make_collect_aggregation());
 
@@ -517,7 +517,7 @@ TYPED_TEST(TypedCollectListTest, BasicGroupedTimeRangeRollingWindowOnStructs)
   auto const time_column = fixed_width_column_wrapper<cudf::timestamp_D, cudf::timestamp_D::rep>{
     1, 1, 2, 2, 3, 1, 4, 5, 6};
   auto const group_column = fixed_width_column_wrapper<int32_t>{1, 1, 1, 1, 1, 2, 2, 2, 2};
-  auto numeric_member_column =
+  auto       numeric_member_column =
     fixed_width_column_wrapper<T, int32_t>{10, 11, 12, 13, 14, 20, 21, 22, 23};
   auto string_member_column =
     strings_column_wrapper{"10", "11", "12", "13", "14", "20", "21", "22", "23"};
@@ -657,7 +657,7 @@ TYPED_TEST(TypedCollectListTest, GroupedTimeRangeRollingWindowOnStructsWithMinPe
   auto const time_column = fixed_width_column_wrapper<cudf::timestamp_D, cudf::timestamp_D::rep>{
     1, 1, 2, 2, 3, 1, 4, 5, 6};
   auto const group_column = fixed_width_column_wrapper<int32_t>{1, 1, 1, 1, 1, 2, 2, 2, 2};
-  auto numeric_member_column =
+  auto       numeric_member_column =
     fixed_width_column_wrapper<T, int32_t>{10, 11, 12, 13, 14, 20, 21, 22, 23};
   auto string_member_column =
     strings_column_wrapper{"10", "11", "12", "13", "14", "20", "21", "22", "23"};

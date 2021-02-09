@@ -133,9 +133,9 @@ TEST_F(StringsContainsTests, ContainsTest)
   thrust::host_vector<bool> h_expecteds(h_expecteds_std);
 
   for (int idx = 0; idx < static_cast<int>(patterns.size()); ++idx) {
-    std::string ptn  = patterns[idx];
-    auto results     = cudf::strings::contains_re(strings_view, ptn);
-    bool* h_expected = h_expecteds.data() + (idx * h_strings.size());
+    std::string ptn        = patterns[idx];
+    auto        results    = cudf::strings::contains_re(strings_view, ptn);
+    bool*       h_expected = h_expecteds.data() + (idx * h_strings.size());
     cudf::test::fixed_width_column_wrapper<bool> expected(
       h_expected,
       h_expected + h_strings.size(),
@@ -204,7 +204,7 @@ TEST_F(StringsContainsTests, MatchesIPV4Test)
                                               "239.255.255.255",
                                               "5.79.97.178",
                                               "127.0.0.1"});
-  auto strings_view = cudf::strings_column_view(strings);
+  auto                               strings_view = cudf::strings_column_view(strings);
   {  // is_ip
     std::string pattern =
       "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
@@ -247,7 +247,7 @@ TEST_F(StringsContainsTests, CountTest)
 
   auto strings_view = cudf::strings_column_view(strings);
   {
-    auto results         = cudf::strings::count_re(strings_view, "[tT]he");
+    auto    results      = cudf::strings::count_re(strings_view, "[tT]he");
     int32_t h_expected[] = {2, 0, 0, 0, 0, 0};
     cudf::test::fixed_width_column_wrapper<int32_t> expected(
       h_expected,
@@ -256,7 +256,7 @@ TEST_F(StringsContainsTests, CountTest)
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, expected);
   }
   {
-    auto results         = cudf::strings::count_re(strings_view, "@\\w+");
+    auto    results      = cudf::strings::count_re(strings_view, "@\\w+");
     int32_t h_expected[] = {1, 1, 0, 0, 0, 0};
     cudf::test::fixed_width_column_wrapper<int32_t> expected(
       h_expected,
@@ -265,7 +265,7 @@ TEST_F(StringsContainsTests, CountTest)
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, expected);
   }
   {
-    auto results         = cudf::strings::count_re(strings_view, "\\d+:\\d+");
+    auto    results      = cudf::strings::count_re(strings_view, "\\d+:\\d+");
     int32_t h_expected[] = {0, 0, 2, 1, 0, 0};
     cudf::test::fixed_width_column_wrapper<int32_t> expected(
       h_expected,
@@ -314,7 +314,7 @@ TEST_F(StringsContainsTests, MediumRegex)
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, expected);
   }
   {
-    auto results         = cudf::strings::count_re(strings_view, medium_regex);
+    auto    results      = cudf::strings::count_re(strings_view, medium_regex);
     int32_t h_expected[] = {1, 0, 0};
     cudf::test::fixed_width_column_wrapper<int32_t> expected(
       h_expected,
@@ -363,7 +363,7 @@ TEST_F(StringsContainsTests, LargeRegex)
     CUDF_TEST_EXPECT_COLUMNS_EQUAL(*results, expected);
   }
   {
-    auto results         = cudf::strings::count_re(strings_view, large_regex);
+    auto    results      = cudf::strings::count_re(strings_view, large_regex);
     int32_t h_expected[] = {1, 0, 0};
     cudf::test::fixed_width_column_wrapper<int32_t> expected(
       h_expected,

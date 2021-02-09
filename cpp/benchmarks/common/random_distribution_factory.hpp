@@ -53,7 +53,7 @@ template <typename T>
 double geometric_dist_p(T range_size)
 {
   constexpr double percentage_in_range = 0.99;
-  double const p                       = 1 - exp(log(1 - percentage_in_range) / range_size);
+  double const     p                   = 1 - exp(log(1 - percentage_in_range) / range_size);
   return p ? p : std::numeric_limits<double>::epsilon();
 }
 

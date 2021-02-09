@@ -59,8 +59,8 @@ struct sort_groupby_helper {
    *                        optimizations to help skip re-sorting keys.
    */
   sort_groupby_helper(table_view const& keys,
-                      null_policy include_null_keys = null_policy::EXCLUDE,
-                      sorted keys_pre_sorted        = sorted::NO)
+                      null_policy       include_null_keys = null_policy::EXCLUDE,
+                      sorted            keys_pre_sorted   = sorted::NO)
     : _keys(keys),
       _num_keys(-1),
       _include_null_keys(include_null_keys),
@@ -92,9 +92,9 @@ struct sort_groupby_helper {
    * @return the sorted and grouped column
    */
   std::unique_ptr<column> sorted_values(
-    column_view const& values,
-    rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-    rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+    column_view const&               values,
+    rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+    rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
   /**
    * @brief Groups a column of values according to `keys`
@@ -107,9 +107,9 @@ struct sort_groupby_helper {
    * @return the grouped column
    */
   std::unique_ptr<column> grouped_values(
-    column_view const& values,
-    rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-    rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+    column_view const&               values,
+    rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+    rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
   /**
    * @brief Get a table of sorted unique keys
@@ -117,8 +117,8 @@ struct sort_groupby_helper {
    * @return a new table in which each row is a unique row in the sorted key table.
    */
   std::unique_ptr<table> unique_keys(
-    rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-    rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+    rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+    rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
   /**
    * @brief Get a table of sorted keys
@@ -126,8 +126,8 @@ struct sort_groupby_helper {
    * @return a new table containing the sorted keys.
    */
   std::unique_ptr<table> sorted_keys(
-    rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-    rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+    rmm::cuda_stream_view            stream = rmm::cuda_stream_default,
+    rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
   /**
    * @brief Get the number of groups in `keys`
@@ -224,11 +224,11 @@ struct sort_groupby_helper {
   table_view _keys;                  ///< Input keys to sort by
 
   index_vector_ptr
-    _group_offsets;  ///< Indices into sorted _keys indicating starting index of each groups
+                   _group_offsets;  ///< Indices into sorted _keys indicating starting index of each groups
   index_vector_ptr _group_labels;  ///< Group labels for sorted _keys
 
-  size_type _num_keys;      ///< Number of effective rows in _keys (adjusted for _include_null_keys)
-  sorted _keys_pre_sorted;  ///< Whether _keys are pre-sorted
+  size_type   _num_keys;  ///< Number of effective rows in _keys (adjusted for _include_null_keys)
+  sorted      _keys_pre_sorted;    ///< Whether _keys are pre-sorted
   null_policy _include_null_keys;  ///< Whether to use rows with nulls in _keys for grouping
 };
 

@@ -67,10 +67,10 @@ TYPED_TEST(CopyTest, CopyIfElseTestManyNulls)
 
 struct copy_if_else_tiny_grid_functor {
   template <typename T, typename Filter, std::enable_if_t<cudf::is_fixed_width<T>()>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& lhs,
-                                           cudf::column_view const& rhs,
-                                           Filter filter,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         lhs,
+                                           cudf::column_view const&         rhs,
+                                           Filter                           filter,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     // output
@@ -92,10 +92,10 @@ struct copy_if_else_tiny_grid_functor {
   }
 
   template <typename T, typename Filter, std::enable_if_t<not cudf::is_fixed_width<T>()>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& lhs,
-                                           cudf::column_view const& rhs,
-                                           Filter filter,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         lhs,
+                                           cudf::column_view const&         rhs,
+                                           Filter                           filter,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("Unexpected test execution");
@@ -106,9 +106,9 @@ std::unique_ptr<cudf::column> tiny_grid_launch(cudf::column_view const& lhs,
                                                cudf::column_view const& rhs,
                                                cudf::column_view const& boolean_mask)
 {
-  auto bool_mask_device_p                   = cudf::column_device_view::create(boolean_mask);
-  cudf::column_device_view bool_mask_device = *bool_mask_device_p;
-  auto filter                               = [bool_mask_device] __device__(cudf::size_type i) {
+  auto                     bool_mask_device_p = cudf::column_device_view::create(boolean_mask);
+  cudf::column_device_view bool_mask_device   = *bool_mask_device_p;
+  auto                     filter             = [bool_mask_device] __device__(cudf::size_type i) {
     return bool_mask_device.element<bool>(i);
   };
   return cudf::type_dispatcher(lhs.type(),
@@ -161,7 +161,7 @@ TYPED_TEST(CopyTest, CopyIfElseTestLong)
                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
   cudf::test::fixed_width_column_wrapper<bool> mask_w(mask, mask + num_els);
 
-  bool lhs_v[] = {1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  bool                lhs_v[] = {1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
   wrapper<T, int32_t> lhs_w({5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -169,7 +169,7 @@ TYPED_TEST(CopyTest, CopyIfElseTestLong)
                              5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
                             lhs_v);
 
-  bool rhs_v[] = {1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  bool                rhs_v[] = {1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
   wrapper<T, int32_t> rhs_w({6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
@@ -177,7 +177,7 @@ TYPED_TEST(CopyTest, CopyIfElseTestLong)
                              6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6},
                             rhs_v);
 
-  bool exp_v[] = {1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  bool                exp_v[] = {1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
   wrapper<T, int32_t> expected_w({5, 6, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6,
@@ -295,13 +295,13 @@ TYPED_TEST(CopyTestNumeric, CopyIfElseTestScalarColumn)
 
   int num_els = 4;
 
-  bool mask[] = {1, 0, 0, 1};
+  bool                                         mask[] = {1, 0, 0, 1};
   cudf::test::fixed_width_column_wrapper<bool> mask_w(mask, mask + num_els);
 
   cudf::numeric_scalar<T> lhs_w(5);
 
-  const auto rhs = cudf::test::make_type_param_vector<T>({6, 6, 6, 6});
-  bool rhs_v[]   = {1, 0, 1, 1};
+  const auto rhs     = cudf::test::make_type_param_vector<T>({6, 6, 6, 6});
+  bool       rhs_v[] = {1, 0, 1, 1};
   wrapper<T> rhs_w(rhs.begin(), rhs.end(), rhs_v);
 
   const auto expected = cudf::test::make_type_param_vector<T>({5, 6, 6, 5});
@@ -317,12 +317,12 @@ TYPED_TEST(CopyTestNumeric, CopyIfElseTestColumnScalar)
 
   int num_els = 4;
 
-  bool mask[]   = {1, 0, 0, 1};
-  bool mask_v[] = {1, 1, 1, 0};
+  bool                                         mask[]   = {1, 0, 0, 1};
+  bool                                         mask_v[] = {1, 1, 1, 0};
   cudf::test::fixed_width_column_wrapper<bool> mask_w(mask, mask + num_els, mask_v);
 
-  const auto lhs = cudf::test::make_type_param_vector<T>({5, 5, 5, 5});
-  bool lhs_v[]   = {0, 1, 1, 1};
+  const auto lhs     = cudf::test::make_type_param_vector<T>({5, 5, 5, 5});
+  bool       lhs_v[] = {0, 1, 1, 1};
   wrapper<T> lhs_w(lhs.begin(), lhs.end(), lhs_v);
 
   cudf::numeric_scalar<T> rhs_w(6);
@@ -340,7 +340,7 @@ TYPED_TEST(CopyTestNumeric, CopyIfElseTestScalarScalar)
 
   int num_els = 4;
 
-  bool mask[] = {1, 0, 0, 1};
+  bool                                         mask[] = {1, 0, 0, 1};
   cudf::test::fixed_width_column_wrapper<bool> mask_w(mask, mask + num_els);
 
   cudf::numeric_scalar<T> lhs_w(5);
@@ -385,12 +385,12 @@ TYPED_TEST(CopyTestChrono, CopyIfElseTestScalarColumn)
 
   int num_els = 4;
 
-  bool mask[] = {1, 0, 0, 1};
+  bool                                         mask[] = {1, 0, 0, 1};
   cudf::test::fixed_width_column_wrapper<bool> mask_w(mask, mask + num_els);
 
   auto lhs_w = create_chrono_scalar<T>{}(cudf::test::make_type_param_scalar<T>(5), true);
 
-  bool rhs_v[] = {1, 0, 1, 1};
+  bool                rhs_v[] = {1, 0, 1, 1};
   wrapper<T, int32_t> rhs_w({6, 6, 6, 6}, rhs_v);
 
   wrapper<T, int32_t> expected_w({5, 6, 6, 5}, rhs_v);
@@ -405,10 +405,10 @@ TYPED_TEST(CopyTestChrono, CopyIfElseTestColumnScalar)
 
   int num_els = 4;
 
-  bool mask[] = {1, 0, 0, 1};
+  bool                                         mask[] = {1, 0, 0, 1};
   cudf::test::fixed_width_column_wrapper<bool> mask_w(mask, mask + num_els);
 
-  bool lhs_v[] = {0, 1, 1, 1};
+  bool                lhs_v[] = {0, 1, 1, 1};
   wrapper<T, int32_t> lhs_w({5, 5, 5, 5}, lhs_v);
 
   auto rhs_w = create_chrono_scalar<T>{}(cudf::test::make_type_param_scalar<T>(6), true);
@@ -425,7 +425,7 @@ TYPED_TEST(CopyTestChrono, CopyIfElseTestScalarScalar)
 
   int num_els = 4;
 
-  bool mask[] = {1, 0, 0, 1};
+  bool                                         mask[] = {1, 0, 0, 1};
   cudf::test::fixed_width_column_wrapper<bool> mask_w(mask, mask + num_els);
 
   auto lhs_w = create_chrono_scalar<T>{}(cudf::test::make_type_param_scalar<T>(5), true);
@@ -444,7 +444,7 @@ TEST_F(CopyTestUntyped, CopyIfElseTypeMismatch)
 {
   cudf::test::fixed_width_column_wrapper<bool> mask_w{1, 1, 1, 1};
 
-  wrapper<float> lhs_w{5, 5, 5, 5};
+  wrapper<float>   lhs_w{5, 5, 5, 5};
   wrapper<int32_t> rhs_w{6, 6, 6, 6};
 
   EXPECT_THROW(cudf::copy_if_else(lhs_w, rhs_w, mask_w), cudf::logic_error);
@@ -458,13 +458,13 @@ TEST_F(StringsCopyIfElseTest, CopyIfElse)
   auto valids = cudf::detail::make_counting_transform_iterator(
     0, [](auto i) { return i % 2 == 0 ? true : false; });
 
-  std::vector<const char*> h_strings1{"eee", "bb", "", "aa", "bbb", "ééé"};
+  std::vector<const char*>           h_strings1{"eee", "bb", "", "aa", "bbb", "ééé"};
   cudf::test::strings_column_wrapper strings1(h_strings1.begin(), h_strings1.end(), valids);
-  std::vector<const char*> h_strings2{"zz", "", "yyy", "w", "ééé", "ooo"};
+  std::vector<const char*>           h_strings2{"zz", "", "yyy", "w", "ééé", "ooo"};
   cudf::test::strings_column_wrapper strings2(h_strings2.begin(), h_strings2.end(), valids);
 
-  bool mask[]   = {1, 1, 0, 1, 0, 1};
-  bool mask_v[] = {1, 1, 1, 1, 1, 0};
+  bool                                         mask[]   = {1, 1, 0, 1, 0, 1};
+  bool                                         mask_v[] = {1, 1, 1, 1, 1, 0};
   cudf::test::fixed_width_column_wrapper<bool> mask_w(mask, mask + 6, mask_v);
 
   auto results = cudf::copy_if_else(strings1, strings2, mask_w);
@@ -485,13 +485,13 @@ TEST_F(StringsCopyIfElseTest, CopyIfElseScalarColumn)
   auto valids = cudf::detail::make_counting_transform_iterator(
     0, [](auto i) { return i % 2 == 0 ? true : false; });
 
-  std::vector<const char*> h_string1{"eee"};
-  cudf::string_scalar strings1{h_string1[0]};
-  std::vector<const char*> h_strings2{"zz", "", "yyy", "w", "ééé", "ooo"};
+  std::vector<const char*>           h_string1{"eee"};
+  cudf::string_scalar                strings1{h_string1[0]};
+  std::vector<const char*>           h_strings2{"zz", "", "yyy", "w", "ééé", "ooo"};
   cudf::test::strings_column_wrapper strings2(h_strings2.begin(), h_strings2.end(), valids);
 
-  bool mask[]   = {1, 0, 1, 0, 1, 0};
-  bool mask_v[] = {1, 1, 1, 1, 1, 0};
+  bool                                         mask[]   = {1, 0, 1, 0, 1, 0};
+  bool                                         mask_v[] = {1, 1, 1, 1, 1, 0};
   cudf::test::fixed_width_column_wrapper<bool> mask_w(mask, mask + 6, mask_v);
 
   auto results = cudf::copy_if_else(strings1, strings2, mask_w);
@@ -513,12 +513,12 @@ TEST_F(StringsCopyIfElseTest, CopyIfElseColumnScalar)
   auto valids = cudf::detail::make_counting_transform_iterator(
     0, [](auto i) { return i % 2 == 0 ? true : false; });
 
-  std::vector<const char*> h_string1{"eee"};
-  cudf::string_scalar strings1{h_string1[0]};
-  std::vector<const char*> h_strings2{"zz", "", "yyy", "w", "ééé", "ooo"};
+  std::vector<const char*>           h_string1{"eee"};
+  cudf::string_scalar                strings1{h_string1[0]};
+  std::vector<const char*>           h_strings2{"zz", "", "yyy", "w", "ééé", "ooo"};
   cudf::test::strings_column_wrapper strings2(h_strings2.begin(), h_strings2.end(), valids);
 
-  bool mask[] = {0, 1, 1, 1, 0, 1};
+  bool                                         mask[] = {0, 1, 1, 1, 0, 1};
   cudf::test::fixed_width_column_wrapper<bool> mask_w(mask, mask + 6);
 
   auto results = cudf::copy_if_else(strings2, strings1, mask_w);
@@ -541,12 +541,12 @@ TEST_F(StringsCopyIfElseTest, CopyIfElseScalarScalar)
     0, [](auto i) { return i % 2 == 0 ? true : false; });
 
   std::vector<const char*> h_string1{"eee"};
-  cudf::string_scalar string1{h_string1[0]};
+  cudf::string_scalar      string1{h_string1[0]};
   std::vector<const char*> h_string2{"aaa"};
-  cudf::string_scalar string2{h_string2[0], false};
+  cudf::string_scalar      string2{h_string2[0], false};
 
-  constexpr cudf::size_type mask_size = 6;
-  bool mask[]                         = {1, 0, 1, 0, 1, 0};
+  constexpr cudf::size_type                    mask_size = 6;
+  bool                                         mask[]    = {1, 0, 1, 0, 1, 0};
   cudf::test::fixed_width_column_wrapper<bool> mask_w(mask, mask + mask_size);
 
   auto results = cudf::copy_if_else(string1, string2, mask_w);

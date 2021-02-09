@@ -32,10 +32,10 @@ namespace detail {
  *
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
-std::unique_ptr<column> concatenate(table_view const& strings_columns,
-                                    string_scalar const& separator,
-                                    string_scalar const& narep,
-                                    rmm::cuda_stream_view stream,
+std::unique_ptr<column> concatenate(table_view const&                strings_columns,
+                                    string_scalar const&             separator,
+                                    string_scalar const&             narep,
+                                    rmm::cuda_stream_view            stream,
                                     rmm::mr::device_memory_resource* mr);
 
 /**
@@ -44,10 +44,10 @@ std::unique_ptr<column> concatenate(table_view const& strings_columns,
  *
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
-std::unique_ptr<column> join_strings(strings_column_view const& strings,
-                                     string_scalar const& separator,
-                                     string_scalar const& narep,
-                                     rmm::cuda_stream_view stream,
+std::unique_ptr<column> join_strings(strings_column_view const&       strings,
+                                     string_scalar const&             separator,
+                                     string_scalar const&             narep,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr);
 
 }  // namespace detail

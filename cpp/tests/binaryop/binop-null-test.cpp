@@ -31,7 +31,7 @@ struct BinaryOperationNullTest : public BinaryOperationTest {
   auto make_random_wrapped_column(size_type size, mask_state state)
   {
     cudf::test::UniformRandomGenerator<T> rand_gen(1, 10);
-    auto data_iter = make_data_iter(rand_gen);
+    auto                                  data_iter = make_data_iter(rand_gen);
 
     switch (state) {
       case mask_state::ALL_NULL: {

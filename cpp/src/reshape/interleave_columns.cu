@@ -39,9 +39,9 @@ struct interleave_columns_functor {
 
   template <typename T>
   std::enable_if_t<std::is_same<T, cudf::string_view>::value, std::unique_ptr<cudf::column>>
-  operator()(table_view const& strings_columns,
-             bool create_mask,
-             rmm::cuda_stream_view stream,
+  operator()(table_view const&                strings_columns,
+             bool                             create_mask,
+             rmm::cuda_stream_view            stream,
              rmm::mr::device_memory_resource* mr)
   {
     auto num_columns = strings_columns.num_columns();
@@ -91,7 +91,7 @@ struct interleave_columns_functor {
 
     // Create the chars column
     size_type bytes = thrust::device_pointer_cast(d_results_offsets)[num_strings];
-    auto chars_column =
+    auto      chars_column =
       strings::detail::create_chars_child_column(num_strings, null_count, bytes, stream, mr);
     // Fill the chars column
     auto d_results_chars = chars_column->mutable_view().data<char>();
@@ -106,8 +106,8 @@ struct interleave_columns_functor {
         // Do not write to buffer if the column value for this row is null
         if (d_table.column(source_row_idx).is_null(source_col_idx)) return;
 
-        size_type offset = d_results_offsets[idx];
-        char* d_buffer   = d_results_chars + offset;
+        size_type offset   = d_results_offsets[idx];
+        char*     d_buffer = d_results_chars + offset;
         strings::detail::copy_string(
           d_buffer, d_table.column(source_row_idx).element<string_view>(source_col_idx));
       });
@@ -123,9 +123,9 @@ struct interleave_columns_functor {
 
   template <typename T>
   std::enable_if_t<cudf::is_fixed_width<T>(), std::unique_ptr<cudf::column>> operator()(
-    table_view const& input,
-    bool create_mask,
-    rmm::cuda_stream_view stream,
+    table_view const&                input,
+    bool                             create_mask,
+    rmm::cuda_stream_view            stream,
     rmm::mr::device_memory_resource* mr)
   {
     auto arch_column = input.column(0);
@@ -164,7 +164,7 @@ struct interleave_columns_functor {
                          func_validity);
 
     rmm::device_buffer mask;
-    size_type null_count;
+    size_type          null_count;
 
     std::tie(mask, null_count) = valid_if(index_begin, index_end, func_validity, stream, mr);
 
@@ -177,7 +177,7 @@ struct interleave_columns_functor {
 }  // anonymous namespace
 }  // namespace detail
 
-std::unique_ptr<column> interleave_columns(table_view const& input,
+std::unique_ptr<column> interleave_columns(table_view const&                input,
                                            rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

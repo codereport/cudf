@@ -26,7 +26,7 @@
 
 struct valid_bit_functor {
   cudf::bitmask_type const* _null_mask;
-  __device__ bool operator()(cudf::size_type element_index) const noexcept
+  __device__ bool           operator()(cudf::size_type element_index) const noexcept
   {
     return cudf::bit_is_set(_null_mask, element_index);
   }
@@ -39,21 +39,21 @@ std::ostream& operator<<(std::ostream& stream, thrust::host_vector<bool> const& 
 }
 
 struct SetBitmaskTest : public cudf::test::BaseFixture {
-  void expect_bitmask_equal(cudf::bitmask_type const* bitmask,  // Device Ptr
-                            cudf::size_type start_bit,
+  void expect_bitmask_equal(cudf::bitmask_type const*        bitmask,  // Device Ptr
+                            cudf::size_type                  start_bit,
                             thrust::host_vector<bool> const& expect)
   {
     auto itb_dev = thrust::make_transform_iterator(thrust::counting_iterator<cudf::size_type>{0},
                                                    valid_bit_functor{bitmask});
     thrust::device_vector<bool> result(itb_dev + start_bit, itb_dev + start_bit + expect.size());
-    thrust::host_vector<bool> host_result(result);
+    thrust::host_vector<bool>   host_result(result);
     EXPECT_THAT(host_result, testing::ElementsAreArray(expect));
   }
 
   void test_set_null_range(cudf::size_type size,
                            cudf::size_type begin,
                            cudf::size_type end,
-                           bool valid)
+                           bool            valid)
   {
     thrust::host_vector<bool> expected(end - begin, valid);
     // TEST

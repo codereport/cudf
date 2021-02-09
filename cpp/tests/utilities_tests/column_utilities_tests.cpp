@@ -63,7 +63,7 @@ TYPED_TEST(ColumnUtilitiesTest, NonNullableToHost)
 
   auto size = this->size();
 
-  std::vector<TypeParam> data(sequence, sequence + size);
+  std::vector<TypeParam>                            data(sequence, sequence + size);
   cudf::test::fixed_width_column_wrapper<TypeParam> col(data.begin(), data.end());
 
   auto host_data = cudf::test::to_host<TypeParam>(col);
@@ -84,7 +84,7 @@ TYPED_TEST(ColumnUtilitiesTest, NonNullableToHostWithOffset)
   auto col           = cudf::test::fixed_width_column_wrapper<TypeParam>(data.begin(), data.end());
 
   auto const splits = std::vector<cudf::size_type>{split};
-  auto result       = cudf::split(col, splits);
+  auto       result = cudf::split(col, splits);
 
   auto host_data = cudf::test::to_host<TypeParam>(result.back());
 
@@ -104,7 +104,7 @@ TYPED_TEST(ColumnUtilitiesTest, NullableToHostWithOffset)
   std::vector<TypeParam> expected_data(sequence + split, sequence + size);
   cudf::test::fixed_width_column_wrapper<TypeParam> col(data.begin(), data.end(), valid);
 
-  std::vector<cudf::size_type> splits{split};
+  std::vector<cudf::size_type>   splits{split};
   std::vector<cudf::column_view> result = cudf::split(col, splits);
 
   auto host_data = cudf::test::to_host<TypeParam>(result.back());
@@ -125,7 +125,7 @@ TYPED_TEST(ColumnUtilitiesTest, NullableToHostAllValid)
 
   auto size = this->size();
 
-  std::vector<TypeParam> data(sequence, sequence + size);
+  std::vector<TypeParam>                            data(sequence, sequence + size);
   cudf::test::fixed_width_column_wrapper<TypeParam> col(data.begin(), data.end(), all_valid);
 
   auto host_data = cudf::test::to_host<TypeParam>(col);
@@ -162,7 +162,7 @@ struct ColumnUtilitiesStringsTest : public cudf::test::BaseFixture {
 
 TEST_F(ColumnUtilitiesStringsTest, StringsToHost)
 {
-  std::vector<const char*> h_strings{"eee", "bb", nullptr, "", "aa", "bbb", "ééé"};
+  std::vector<const char*>           h_strings{"eee", "bb", nullptr, "", "aa", "bbb", "ééé"};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),
@@ -176,7 +176,7 @@ TEST_F(ColumnUtilitiesStringsTest, StringsToHost)
 
 TEST_F(ColumnUtilitiesStringsTest, StringsToHostAllNulls)
 {
-  std::vector<const char*> h_strings{nullptr, nullptr, nullptr};
+  std::vector<const char*>           h_strings{nullptr, nullptr, nullptr};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),
@@ -206,7 +206,7 @@ TYPED_TEST(ColumnUtilitiesTestIntegral, PrintColumnNumeric)
   auto std_col = cudf::test::make_type_param_vector<TypeParam>({1, 2, 3, 4, 5});
 
   std::stringstream tmp;
-  auto string_iter =
+  auto              string_iter =
     thrust::make_transform_iterator(std::begin(std_col), [](auto e) { return std::to_string(e); });
 
   std::copy(string_iter,
@@ -265,7 +265,7 @@ TEST_F(ColumnUtilitiesStringsTest, StringsToString)
 {
   const char* delimiter = ",";
 
-  std::vector<const char*> h_strings{"eee", "bb", nullptr, "", "aa", "bbb", "ééé"};
+  std::vector<const char*>           h_strings{"eee", "bb", nullptr, "", "aa", "bbb", "ééé"};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),
@@ -285,11 +285,11 @@ TYPED_TEST(ColumnUtilitiesTestFixedPoint, NonNullableToHost)
   using decimalXX = TypeParam;
   using rep       = cudf::device_storage_type_t<decimalXX>;
 
-  auto const scale = scale_type{-2};
-  auto to_fp       = [&](auto i) { return decimalXX{i, scale}; };
-  auto to_rep      = [](auto i) { return i * 100; };
-  auto fps         = cudf::detail::make_counting_transform_iterator(0, to_fp);
-  auto reps        = cudf::detail::make_counting_transform_iterator(0, to_rep);
+  auto const scale  = scale_type{-2};
+  auto       to_fp  = [&](auto i) { return decimalXX{i, scale}; };
+  auto       to_rep = [](auto i) { return i * 100; };
+  auto       fps    = cudf::detail::make_counting_transform_iterator(0, to_fp);
+  auto       reps   = cudf::detail::make_counting_transform_iterator(0, to_rep);
 
   auto const size      = 1000;
   auto const expected  = std::vector<decimalXX>(fps, fps + size);
@@ -305,11 +305,11 @@ TYPED_TEST(ColumnUtilitiesTestFixedPoint, NonNullableToHostWithOffset)
   using decimalXX = TypeParam;
   using rep       = cudf::device_storage_type_t<decimalXX>;
 
-  auto const scale = scale_type{-2};
-  auto to_fp       = [&](auto i) { return decimalXX{i, scale}; };
-  auto to_rep      = [](auto i) { return i * 100; };
-  auto fps         = cudf::detail::make_counting_transform_iterator(0, to_fp);
-  auto reps        = cudf::detail::make_counting_transform_iterator(0, to_rep);
+  auto const scale  = scale_type{-2};
+  auto       to_fp  = [&](auto i) { return decimalXX{i, scale}; };
+  auto       to_rep = [](auto i) { return i * 100; };
+  auto       fps    = cudf::detail::make_counting_transform_iterator(0, to_fp);
+  auto       reps   = cudf::detail::make_counting_transform_iterator(0, to_rep);
 
   auto const size  = 1000;
   auto const split = cudf::size_type{2};
@@ -317,7 +317,7 @@ TYPED_TEST(ColumnUtilitiesTestFixedPoint, NonNullableToHostWithOffset)
   auto const expected = std::vector<decimalXX>(fps + split, fps + size);
   auto const col      = cudf::test::fixed_point_column_wrapper<rep>(reps, reps + size, scale);
   auto const splits   = std::vector<cudf::size_type>{split};
-  auto result         = cudf::split(col, splits);
+  auto       result   = cudf::split(col, splits);
 
   auto host_data = cudf::test::to_host<decimalXX>(result.back());
 

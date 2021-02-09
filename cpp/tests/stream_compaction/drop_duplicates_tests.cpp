@@ -70,7 +70,7 @@ TYPED_TEST(DistinctCountCommon, TableNoNull)
   cudf::test::fixed_width_column_wrapper<T> input_col2(input2.begin(), input2.end());
 
   std::vector<cudf::column_view> cols{input_col1, input_col2};
-  cudf::table_view input_table(cols);
+  cudf::table_view               input_table(cols);
 
   cudf::size_type expected = std::set<std::pair<T, T>>(pair_input.begin(), pair_input.end()).size();
   EXPECT_EQ(expected, cudf::distinct_count(input_table, null_equality::EQUAL));
@@ -116,7 +116,7 @@ TEST_F(DistinctCount, WithNansAndNull)
 {
   using T = float;
 
-  std::vector<T> input               = {1,  3,  NAN, 70, 31,  1, 8,   2, 0, 70, 1,
+  std::vector<T>               input = {1,  3,  NAN, 70, 31,  1, 8,   2, 0, 70, 1,
                           70, 10, 40,  31, NAN, 0, NAN, 8, 5, 70};
   std::vector<cudf::size_type> valid = {1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1,
                                         0, 1, 1, 1, 1, 1, 1, 1, 1, 0};
@@ -132,7 +132,7 @@ TEST_F(DistinctCount, WithNansOnly)
 {
   using T = float;
 
-  std::vector<T> input               = {1, 3, NAN, 70, 31};
+  std::vector<T>               input = {1, 3, NAN, 70, 31};
   std::vector<cudf::size_type> valid = {1, 1, 1, 1, 1};
 
   cudf::test::fixed_width_column_wrapper<T> input_col{input.begin(), input.end(), valid.begin()};
@@ -146,7 +146,7 @@ TEST_F(DistinctCount, NansAsNullWithNoNull)
 {
   using T = float;
 
-  std::vector<T> input               = {1, 3, NAN, 70, 31};
+  std::vector<T>               input = {1, 3, NAN, 70, 31};
   std::vector<cudf::size_type> valid = {1, 1, 1, 1, 1};
 
   cudf::test::fixed_width_column_wrapper<T> input_col{input.begin(), input.end(), valid.begin()};
@@ -160,7 +160,7 @@ TEST_F(DistinctCount, NansAsNullWithNull)
 {
   using T = float;
 
-  std::vector<T> input               = {1, 3, NAN, 70, 31};
+  std::vector<T>               input = {1, 3, NAN, 70, 31};
   std::vector<cudf::size_type> valid = {1, 1, 1, 0, 1};
 
   cudf::test::fixed_width_column_wrapper<T> input_col{input.begin(), input.end(), valid.begin()};
@@ -174,7 +174,7 @@ TEST_F(DistinctCount, NansAsNullWithIgnoreNull)
 {
   using T = float;
 
-  std::vector<T> input               = {1, 3, NAN, 70, 31};
+  std::vector<T>               input = {1, 3, NAN, 70, 31};
   std::vector<cudf::size_type> valid = {1, 1, 1, 0, 1};
 
   cudf::test::fixed_width_column_wrapper<T> input_col{input.begin(), input.end(), valid.begin()};
@@ -213,7 +213,7 @@ TEST_F(DistinctCount, TableWithNull)
                                                        {1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0}};
   cudf::test::fixed_width_column_wrapper<int32_t> col2{{2, 2, 2, -1, 2, 1, 2, 0, 0, 9, -1},
                                                        {1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0}};
-  cudf::table_view input{{col1, col2}};
+  cudf::table_view                                input{{col1, col2}};
 
   EXPECT_EQ(8, cudf::distinct_count(input, null_equality::EQUAL));
   EXPECT_EQ(10, cudf::distinct_count(input, null_equality::UNEQUAL));
@@ -233,13 +233,13 @@ TEST_F(DistinctCount, EmptyColumnedTable)
 
 TEST_F(DistinctCount, TableMixedTypes)
 {
-  cudf::test::fixed_width_column_wrapper<int32_t> col1{{5, 4, 3, 5, 8, 1, 4, 5, 0, 9, -1},
+  cudf::test::fixed_width_column_wrapper<int32_t>  col1{{5, 4, 3, 5, 8, 1, 4, 5, 0, 9, -1},
                                                        {1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0}};
-  cudf::test::fixed_width_column_wrapper<double> col2{{2, 2, 2, -1, 2, 1, 2, 0, 0, 9, -1},
+  cudf::test::fixed_width_column_wrapper<double>   col2{{2, 2, 2, -1, 2, 1, 2, 0, 0, 9, -1},
                                                       {1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0}};
   cudf::test::fixed_width_column_wrapper<uint32_t> col3{{2, 2, 2, -1, 2, 1, 2, 0, 0, 9, -1},
                                                         {1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0}};
-  cudf::table_view input{{col1, col2, col3}};
+  cudf::table_view                                 input{{col1, col2, col3}};
 
   EXPECT_EQ(9, cudf::distinct_count(input, null_equality::EQUAL));
   EXPECT_EQ(10, cudf::distinct_count(input, null_equality::UNEQUAL));
@@ -249,7 +249,7 @@ TEST_F(DistinctCount, TableWithStringColumnWithNull)
 {
   cudf::test::fixed_width_column_wrapper<int32_t> col1{{0, 9, 8, 9, 6, 5, 4, 3, 2, 1, 0},
                                                        {1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0}};
-  cudf::test::strings_column_wrapper col2{
+  cudf::test::strings_column_wrapper              col2{
     {"", "this", "is", "this", "this", "a", "column", "of", "the", "strings", ""},
     {1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0}};
 
@@ -264,20 +264,20 @@ struct DropDuplicate : public cudf::test::BaseFixture {
 TEST_F(DropDuplicate, NonNullTable)
 {
   cudf::test::fixed_width_column_wrapper<int32_t> col1{{5, 4, 3, 5, 8, 5}};
-  cudf::test::fixed_width_column_wrapper<float> col2{{4, 5, 3, 4, 9, 4}};
+  cudf::test::fixed_width_column_wrapper<float>   col2{{4, 5, 3, 4, 9, 4}};
   cudf::test::fixed_width_column_wrapper<int32_t> col1_key{{20, 20, 20, 19, 21, 9}};
   cudf::test::fixed_width_column_wrapper<int32_t> col2_key{{19, 19, 20, 20, 9, 21}};
 
-  cudf::table_view input{{col1, col2, col1_key, col2_key}};
+  cudf::table_view             input{{col1, col2, col1_key, col2_key}};
   std::vector<cudf::size_type> keys{2, 3};
 
   // Keep first of duplicate
   // The expected table would be sorted in ascending order with respect to keys
   cudf::test::fixed_width_column_wrapper<int32_t> exp_col1_first{{5, 5, 5, 3, 8}};
-  cudf::test::fixed_width_column_wrapper<float> exp_col2_first{{4, 4, 4, 3, 9}};
+  cudf::test::fixed_width_column_wrapper<float>   exp_col2_first{{4, 4, 4, 3, 9}};
   cudf::test::fixed_width_column_wrapper<int32_t> exp_col1_key_first{{9, 19, 20, 20, 21}};
   cudf::test::fixed_width_column_wrapper<int32_t> exp_col2_key_first{{21, 20, 19, 20, 9}};
-  cudf::table_view expected_first{
+  cudf::table_view                                expected_first{
     {exp_col1_first, exp_col2_first, exp_col1_key_first, exp_col2_key_first}};
 
   auto got_first = drop_duplicates(input, keys, cudf::duplicate_keep_option::KEEP_FIRST);
@@ -286,10 +286,10 @@ TEST_F(DropDuplicate, NonNullTable)
 
   // keep last of duplicate
   cudf::test::fixed_width_column_wrapper<int32_t> exp_col1_last{{5, 5, 4, 3, 8}};
-  cudf::test::fixed_width_column_wrapper<float> exp_col2_last{{4, 4, 5, 3, 9}};
+  cudf::test::fixed_width_column_wrapper<float>   exp_col2_last{{4, 4, 5, 3, 9}};
   cudf::test::fixed_width_column_wrapper<int32_t> exp_col1_key_last{{9, 19, 20, 20, 21}};
   cudf::test::fixed_width_column_wrapper<int32_t> exp_col2_key_last{{21, 20, 19, 20, 9}};
-  cudf::table_view expected_last{
+  cudf::table_view                                expected_last{
     {exp_col1_last, exp_col2_last, exp_col1_key_last, exp_col2_key_last}};
 
   auto got_last = drop_duplicates(input, keys, cudf::duplicate_keep_option::KEEP_LAST);
@@ -298,10 +298,10 @@ TEST_F(DropDuplicate, NonNullTable)
 
   // Keep unique
   cudf::test::fixed_width_column_wrapper<int32_t> exp_col1_unique{{5, 5, 3, 8}};
-  cudf::test::fixed_width_column_wrapper<float> exp_col2_unique{{4, 4, 3, 9}};
+  cudf::test::fixed_width_column_wrapper<float>   exp_col2_unique{{4, 4, 3, 9}};
   cudf::test::fixed_width_column_wrapper<int32_t> exp_col1_key_unique{{9, 19, 20, 21}};
   cudf::test::fixed_width_column_wrapper<int32_t> exp_col2_key_unique{{21, 20, 20, 9}};
-  cudf::table_view expected_unique{
+  cudf::table_view                                expected_unique{
     {exp_col1_unique, exp_col2_unique, exp_col1_key_unique, exp_col2_key_unique}};
 
   auto got_unique = drop_duplicates(input, keys, cudf::duplicate_keep_option::KEEP_NONE);
@@ -313,14 +313,14 @@ TEST_F(DropDuplicate, WithNull)
 {
   cudf::test::fixed_width_column_wrapper<int32_t> col{{5, 4, 3, 5, 8, 1}, {1, 0, 1, 1, 1, 1}};
   cudf::test::fixed_width_column_wrapper<int32_t> key{{20, 20, 20, 19, 21, 19}, {1, 0, 0, 1, 1, 1}};
-  cudf::table_view input{{col, key}};
-  std::vector<cudf::size_type> keys{1};
+  cudf::table_view                                input{{col, key}};
+  std::vector<cudf::size_type>                    keys{1};
 
   // Keep first of duplicate
   cudf::test::fixed_width_column_wrapper<int32_t> exp_col_first{{4, 5, 5, 8}, {0, 1, 1, 1}};
   cudf::test::fixed_width_column_wrapper<int32_t> exp_key_col_first{{20, 19, 20, 21}, {0, 1, 1, 1}};
   cudf::table_view expected_first{{exp_col_first, exp_key_col_first}};
-  auto got_first =
+  auto             got_first =
     drop_duplicates(input, keys, cudf::duplicate_keep_option::KEEP_FIRST, null_equality::EQUAL);
 
   CUDF_TEST_EXPECT_TABLES_EQUAL(expected_first, got_first->view());
@@ -328,7 +328,7 @@ TEST_F(DropDuplicate, WithNull)
   // Keep last of duplicate
   cudf::test::fixed_width_column_wrapper<int32_t> exp_col_last{{3, 1, 5, 8}, {1, 1, 1, 1}};
   cudf::test::fixed_width_column_wrapper<int32_t> exp_key_col_last{{20, 19, 20, 21}, {0, 1, 1, 1}};
-  cudf::table_view expected_last{{exp_col_last, exp_key_col_last}};
+  cudf::table_view                                expected_last{{exp_col_last, exp_key_col_last}};
   auto got_last = drop_duplicates(input, keys, cudf::duplicate_keep_option::KEEP_LAST);
 
   CUDF_TEST_EXPECT_TABLES_EQUAL(expected_last, got_last->view());
@@ -347,12 +347,12 @@ TEST_F(DropDuplicate, StringKeyColumn)
   cudf::test::fixed_width_column_wrapper<int32_t> col{{5, 4, 3, 5, 8, 1}, {1, 0, 1, 1, 1, 1}};
   cudf::test::strings_column_wrapper key_col{{"all", "new", "all", "new", "the", "strings"},
                                              {1, 1, 1, 0, 1, 1}};
-  cudf::table_view input{{col, key_col}};
-  std::vector<cudf::size_type> keys{1};
+  cudf::table_view                   input{{col, key_col}};
+  std::vector<cudf::size_type>       keys{1};
   cudf::test::fixed_width_column_wrapper<int32_t> exp_col_last{{5, 3, 4, 1, 8}, {1, 1, 0, 1, 1}};
   cudf::test::strings_column_wrapper exp_key_col_last{{"new", "all", "new", "strings", "the"},
                                                       {0, 1, 1, 1, 1}};
-  cudf::table_view expected_last{{exp_col_last, exp_key_col_last}};
+  cudf::table_view                   expected_last{{exp_col_last, exp_key_col_last}};
 
   auto got_last = drop_duplicates(input, keys, cudf::duplicate_keep_option::KEEP_LAST);
 
@@ -362,8 +362,8 @@ TEST_F(DropDuplicate, StringKeyColumn)
 TEST_F(DropDuplicate, EmptyInputTable)
 {
   cudf::test::fixed_width_column_wrapper<int32_t> col(std::initializer_list<int32_t>{});
-  cudf::table_view input{{col}};
-  std::vector<cudf::size_type> keys{1, 2};
+  cudf::table_view                                input{{col}};
+  std::vector<cudf::size_type>                    keys{1, 2};
 
   auto got =
     drop_duplicates(input, keys, cudf::duplicate_keep_option::KEEP_FIRST, null_equality::EQUAL);
@@ -373,7 +373,7 @@ TEST_F(DropDuplicate, EmptyInputTable)
 
 TEST_F(DropDuplicate, NoColumnInputTable)
 {
-  cudf::table_view input{std::vector<cudf::column_view>()};
+  cudf::table_view             input{std::vector<cudf::column_view>()};
   std::vector<cudf::size_type> keys{1, 2};
 
   auto got =
@@ -386,8 +386,8 @@ TEST_F(DropDuplicate, EmptyKeys)
 {
   cudf::test::fixed_width_column_wrapper<int32_t> col{{5, 4, 3, 5, 8, 1}, {1, 0, 1, 1, 1, 1}};
   cudf::test::fixed_width_column_wrapper<int32_t> empty_col{};
-  cudf::table_view input{{col}};
-  std::vector<cudf::size_type> keys{};
+  cudf::table_view                                input{{col}};
+  std::vector<cudf::size_type>                    keys{};
 
   auto got =
     drop_duplicates(input, keys, cudf::duplicate_keep_option::KEEP_FIRST, null_equality::EQUAL);

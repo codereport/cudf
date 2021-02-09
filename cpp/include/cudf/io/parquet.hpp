@@ -367,7 +367,7 @@ class parquet_reader_options_builder {
  * @return The set of columns along with metadata
  */
 table_with_metadata read_parquet(
-  parquet_reader_options const& options,
+  parquet_reader_options const&    options,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of group
@@ -643,7 +643,7 @@ class parquet_writer_options_builder {
  */
 
 std::unique_ptr<std::vector<uint8_t>> write_parquet(
-  parquet_writer_options const& options,
+  parquet_writer_options const&    options,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -923,7 +923,7 @@ class parquet_chunked_writer {
    */
   parquet_chunked_writer(
     chunked_parquet_writer_options const& op,
-    rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+    rmm::mr::device_memory_resource*      mr = rmm::mr::get_current_device_resource());
 
   /**
    * @brief Writes table to output.

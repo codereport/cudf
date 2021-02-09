@@ -66,8 +66,8 @@ std::string container::get_encoded()
 bool container::parse(file_metadata *md, size_t max_num_rows, size_t first_row)
 {
   constexpr uint32_t avro_magic = (('O' << 0) | ('b' << 8) | ('j' << 16) | (0x01 << 24));
-  uint32_t sig4, max_block_size;
-  size_t total_object_count;
+  uint32_t           sig4, max_block_size;
+  size_t             total_object_count;
 
   sig4 = get_raw<uint8_t>();
   sig4 |= get_raw<uint8_t>() << 8;
@@ -127,11 +127,11 @@ bool container::parse(file_metadata *md, size_t max_num_rows, size_t first_row)
     if (kind > type_null && kind < type_record) {
       // Primitive type column
       column_desc col;
-      int parent_idx       = md->schema[i].parent_idx;
-      col.schema_data_idx  = (int32_t)i;
-      col.schema_null_idx  = -1;
-      col.parent_union_idx = -1;
-      col.name             = md->schema[i].name;
+      int         parent_idx = md->schema[i].parent_idx;
+      col.schema_data_idx    = (int32_t)i;
+      col.schema_null_idx    = -1;
+      col.parent_union_idx   = -1;
+      col.name               = md->schema[i].name;
       if (parent_idx >= 0) {
         while (parent_idx >= 0) {
           if (md->schema[parent_idx].kind == type_union) {
@@ -200,10 +200,10 @@ bool schema_parser::parse(std::vector<schema_entry> &schema, const std::string &
   // Empty schema
   if (json_str == "[]") return true;
 
-  char depthbuf[MAX_SCHEMA_DEPTH];
-  int depth = 0, parent_idx = -1, entry_idx = -1;
-  json_state_e state = state_attrname;
-  std::string str;
+  char                                               depthbuf[MAX_SCHEMA_DEPTH];
+  int                                                depth = 0, parent_idx = -1, entry_idx = -1;
+  json_state_e                                       state = state_attrname;
+  std::string                                        str;
   const std::unordered_map<std::string, type_kind_e> typenames = {{"null", type_null},
                                                                   {"boolean", type_boolean},
                                                                   {"int", type_int},
@@ -215,12 +215,12 @@ bool schema_parser::parse(std::vector<schema_entry> &schema, const std::string &
                                                                   {"record", type_record},
                                                                   {"enum", type_enum},
                                                                   {"array", type_array}};
-  const std::unordered_map<std::string, int> attrnames         = {{"type", attrtype_type},
+  const std::unordered_map<std::string, int>         attrnames = {{"type", attrtype_type},
                                                           {"name", attrtype_name},
                                                           {"fields", attrtype_fields},
                                                           {"symbols", attrtype_symbols},
                                                           {"items", attrtype_items}};
-  int cur_attr                                                 = attrtype_none;
+  int                                                cur_attr  = attrtype_none;
   m_base                                                       = json_str.c_str();
   m_cur                                                        = m_base;
   m_end                                                        = m_base + json_str.length();

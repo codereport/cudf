@@ -45,7 +45,7 @@ static void BM_transpose(benchmark::State& state)
 
   for (auto _ : state) {
     cuda_event_timer raii(state, true);
-    auto output = cudf::transpose(input);
+    auto             output = cudf::transpose(input);
   }
 }
 

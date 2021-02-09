@@ -88,13 +88,13 @@ namespace cudf {
  * `left(including common columns)+right(excluding common columns)`.
  */
 std::unique_ptr<cudf::table> inner_join(
-  cudf::table_view const& left,
-  cudf::table_view const& right,
-  std::vector<cudf::size_type> const& left_on,
-  std::vector<cudf::size_type> const& right_on,
+  cudf::table_view const&                                         left,
+  cudf::table_view const&                                         right,
+  std::vector<cudf::size_type> const&                             left_on,
+  std::vector<cudf::size_type> const&                             right_on,
   std::vector<std::pair<cudf::size_type, cudf::size_type>> const& columns_in_common,
-  null_equality compare_nulls         = null_equality::EQUAL,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  null_equality                    compare_nulls = null_equality::EQUAL,
+  rmm::mr::device_memory_resource* mr            = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Performs a left join (also known as left outer join) on the
@@ -156,13 +156,13 @@ std::unique_ptr<cudf::table> inner_join(
  * `left(including common columns)+right(excluding common columns)`.
  */
 std::unique_ptr<cudf::table> left_join(
-  cudf::table_view const& left,
-  cudf::table_view const& right,
-  std::vector<cudf::size_type> const& left_on,
-  std::vector<cudf::size_type> const& right_on,
+  cudf::table_view const&                                         left,
+  cudf::table_view const&                                         right,
+  std::vector<cudf::size_type> const&                             left_on,
+  std::vector<cudf::size_type> const&                             right_on,
   std::vector<std::pair<cudf::size_type, cudf::size_type>> const& columns_in_common,
-  null_equality compare_nulls         = null_equality::EQUAL,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  null_equality                    compare_nulls = null_equality::EQUAL,
+  rmm::mr::device_memory_resource* mr            = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Performs a full join (also known as full outer join) on the
@@ -224,13 +224,13 @@ std::unique_ptr<cudf::table> left_join(
  * `left(including common columns)+right(excluding common columns)`.
  */
 std::unique_ptr<cudf::table> full_join(
-  cudf::table_view const& left,
-  cudf::table_view const& right,
-  std::vector<cudf::size_type> const& left_on,
-  std::vector<cudf::size_type> const& right_on,
+  cudf::table_view const&                                         left,
+  cudf::table_view const&                                         right,
+  std::vector<cudf::size_type> const&                             left_on,
+  std::vector<cudf::size_type> const&                             right_on,
   std::vector<std::pair<cudf::size_type, cudf::size_type>> const& columns_in_common,
-  null_equality compare_nulls         = null_equality::EQUAL,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  null_equality                    compare_nulls = null_equality::EQUAL,
+  rmm::mr::device_memory_resource* mr            = rmm::mr::get_current_device_resource());
 /**
  * @brief Performs a left semi join on the specified columns of two
  * tables (`left`, `right`)
@@ -279,13 +279,13 @@ std::unique_ptr<cudf::table> full_join(
  *                             will contain `return_columns` from `left` that match in right.
  */
 std::unique_ptr<cudf::table> left_semi_join(
-  cudf::table_view const& left,
-  cudf::table_view const& right,
+  cudf::table_view const&             left,
+  cudf::table_view const&             right,
   std::vector<cudf::size_type> const& left_on,
   std::vector<cudf::size_type> const& right_on,
   std::vector<cudf::size_type> const& return_columns,
-  null_equality compare_nulls         = null_equality::EQUAL,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  null_equality                       compare_nulls = null_equality::EQUAL,
+  rmm::mr::device_memory_resource*    mr            = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Performs a left anti join on the specified columns of two
@@ -335,13 +335,13 @@ std::unique_ptr<cudf::table> left_semi_join(
  *                             will contain `return_columns` from `left` that match in right.
  */
 std::unique_ptr<cudf::table> left_anti_join(
-  cudf::table_view const& left,
-  cudf::table_view const& right,
+  cudf::table_view const&             left,
+  cudf::table_view const&             right,
   std::vector<cudf::size_type> const& left_on,
   std::vector<cudf::size_type> const& right_on,
   std::vector<cudf::size_type> const& return_columns,
-  null_equality compare_nulls         = null_equality::EQUAL,
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  null_equality                       compare_nulls = null_equality::EQUAL,
+  rmm::mr::device_memory_resource*    mr            = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Performs a cross join on two tables (`left`, `right`)
@@ -366,8 +366,8 @@ std::unique_ptr<cudf::table> left_anti_join(
  * @return     Result of cross joining `left` and `right` tables
  */
 std::unique_ptr<cudf::table> cross_join(
-  cudf::table_view const& left,
-  cudf::table_view const& right,
+  cudf::table_view const&          left,
+  cudf::table_view const&          right,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -397,10 +397,10 @@ class hash_join {
    * @param compare_nulls Controls whether null join-key values should match or not.
    * @param stream CUDA stream used for device memory operations and kernel launches
    */
-  hash_join(cudf::table_view const& build,
+  hash_join(cudf::table_view const&       build,
             std::vector<size_type> const& build_on,
-            null_equality compare_nulls,
-            rmm::cuda_stream_view stream = rmm::cuda_stream_default);
+            null_equality                 compare_nulls,
+            rmm::cuda_stream_view         stream = rmm::cuda_stream_default);
 
   /**
    * @brief Controls where common columns will be output for a inner join.
@@ -448,12 +448,12 @@ class hash_join {
    * `build(including common columns)`) if `common_columns_output_side` is `BUILD`.
    */
   std::pair<std::unique_ptr<cudf::table>, std::unique_ptr<cudf::table>> inner_join(
-    cudf::table_view const& probe,
-    std::vector<size_type> const& probe_on,
+    cudf::table_view const&                                         probe,
+    std::vector<size_type> const&                                   probe_on,
     std::vector<std::pair<cudf::size_type, cudf::size_type>> const& columns_in_common,
-    common_columns_output_side common_columns_output_side = common_columns_output_side::PROBE,
-    null_equality compare_nulls                           = null_equality::EQUAL,
-    rmm::cuda_stream_view stream                          = rmm::cuda_stream_default,
+    common_columns_output_side       common_columns_output_side = common_columns_output_side::PROBE,
+    null_equality                    compare_nulls              = null_equality::EQUAL,
+    rmm::cuda_stream_view            stream                     = rmm::cuda_stream_default,
     rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource()) const;
 
   /**
@@ -479,12 +479,12 @@ class hash_join {
    * `probe(including common columns)+build(excluding common columns)`.
    */
   std::unique_ptr<cudf::table> left_join(
-    cudf::table_view const& probe,
-    std::vector<size_type> const& probe_on,
+    cudf::table_view const&                                         probe,
+    std::vector<size_type> const&                                   probe_on,
     std::vector<std::pair<cudf::size_type, cudf::size_type>> const& columns_in_common,
-    null_equality compare_nulls         = null_equality::EQUAL,
-    rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-    rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource()) const;
+    null_equality                    compare_nulls = null_equality::EQUAL,
+    rmm::cuda_stream_view            stream        = rmm::cuda_stream_default,
+    rmm::mr::device_memory_resource* mr            = rmm::mr::get_current_device_resource()) const;
 
   /**
    * @brief Performs a full join by probing in the internal hash table.
@@ -509,12 +509,12 @@ class hash_join {
    * `probe(including common columns)+build(excluding common columns)`.
    */
   std::unique_ptr<cudf::table> full_join(
-    cudf::table_view const& probe,
-    std::vector<size_type> const& probe_on,
+    cudf::table_view const&                                         probe,
+    std::vector<size_type> const&                                   probe_on,
     std::vector<std::pair<cudf::size_type, cudf::size_type>> const& columns_in_common,
-    null_equality compare_nulls         = null_equality::EQUAL,
-    rmm::cuda_stream_view stream        = rmm::cuda_stream_default,
-    rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource()) const;
+    null_equality                    compare_nulls = null_equality::EQUAL,
+    rmm::cuda_stream_view            stream        = rmm::cuda_stream_default,
+    rmm::mr::device_memory_resource* mr            = rmm::mr::get_current_device_resource()) const;
 
  private:
   struct hash_join_impl;

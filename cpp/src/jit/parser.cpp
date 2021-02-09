@@ -102,20 +102,20 @@ std::string ptx_parser::parse_instruction(const std::string& src)
   // I am assuming for an instruction statement the starting phrase is an
   // instruction.
   const size_t length = src.size();
-  std::string output;
-  std::string suffix;
+  std::string  output;
+  std::string  suffix;
 
   std::string original_code = "\n   /**   " + src + "  */\n";
 
   int piece_count = 0;
 
-  size_t start                      = 0;
-  size_t stop                       = 0;
-  bool is_instruction               = true;
-  bool is_param_loading_instruction = false;
+  size_t      start                        = 0;
+  size_t      stop                         = 0;
+  bool        is_instruction               = true;
+  bool        is_param_loading_instruction = false;
   std::string constraint;
   std::string register_type;
-  bool blank = true;
+  bool        blank = true;
   std::string cpp_typename;
   while (stop < length) {
     while (start < length && (is_white(src[start]) || src[start] == ',' || src[start] == '{' ||
@@ -215,7 +215,7 @@ std::string ptx_parser::parse_statement(const std::string& src)
 
 std::vector<std::string> ptx_parser::parse_function_body(const std::string& src)
 {
-  auto f = src.cbegin();
+  auto                     f = src.cbegin();
   std::vector<std::string> statements;
 
   while (f < src.cend()) {
@@ -244,7 +244,7 @@ std::string ptx_parser::parse_param_list(const std::string& src)
 {
   auto f = src.begin();
 
-  auto item_count = 0;
+  auto        item_count = 0;
   std::string output{};
 
   while (f < src.end()) {
@@ -301,7 +301,7 @@ std::string ptx_parser::parse_function_header(const std::string& src)
 std::string remove_comments(const std::string& src)
 {
   std::string output;
-  auto f = src.cbegin();
+  auto        f = src.cbegin();
   while (f < src.cend()) {
     auto l = std::find(f, src.cend(), '/');
     output.append(f, l);  // push chunk instead of 1 char at a time
@@ -359,9 +359,9 @@ std::string ptx_parser::parse()
   return final_output + " asm volatile (\"RETTGT:}\");}";
 }
 
-ptx_parser::ptx_parser(const std::string& ptx_,
-                       const std::string& function_name_,
-                       const std::string& output_arg_type_,
+ptx_parser::ptx_parser(const std::string&   ptx_,
+                       const std::string&   function_name_,
+                       const std::string&   output_arg_type_,
                        const std::set<int>& pointer_arg_list_)
   : ptx(ptx_),
     function_name(function_name_),
@@ -378,8 +378,8 @@ std::string parse_single_function_cuda(const std::string& src, const std::string
   // For CUDA device function we just need to find the function
   // name and replace it with the specified one.
   const size_t length = no_comments.size();
-  size_t start        = 0;
-  size_t stop         = start;
+  size_t       start  = 0;
+  size_t       stop   = start;
 
   while (stop < length && no_comments[stop] != '(') { stop++; }
   CUDF_EXPECTS(stop != length && stop != 0,

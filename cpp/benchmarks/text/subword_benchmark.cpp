@@ -35,7 +35,7 @@ static std::string create_hash_vocab_file()
   // create a fake hashed vocab text file for this test
   // this only works with words in the strings in the benchmark code below
   std::vector<std::pair<int, int>> coefficients(23, {65559, 0});
-  std::ofstream outfile(hash_file, std::ofstream::out);
+  std::ofstream                    outfile(hash_file, std::ofstream::out);
   outfile << "1\n0\n" << coefficients.size() << "\n";
   for (auto c : coefficients) outfile << c.first << " " << c.second << "\n";
   std::vector<uint64_t> hash_table(23, 0);
@@ -52,15 +52,15 @@ static std::string create_hash_vocab_file()
 
 static void BM_cuda_tokenizer_cudf(benchmark::State& state)
 {
-  uint32_t nrows = 1000;
-  std::vector<const char*> h_strings(nrows, "This is a test ");
+  uint32_t                           nrows = 1000;
+  std::vector<const char*>           h_strings(nrows, "This is a test ");
   cudf::test::strings_column_wrapper strings(h_strings.begin(), h_strings.end());
-  std::string hash_file = create_hash_vocab_file();
-  std::vector<uint32_t> offsets{14};
-  uint32_t max_sequence_length = 64;
-  uint32_t stride              = 48;
-  uint32_t do_truncate         = 0;
-  uint32_t do_lower            = 1;
+  std::string                        hash_file = create_hash_vocab_file();
+  std::vector<uint32_t>              offsets{14};
+  uint32_t                           max_sequence_length = 64;
+  uint32_t                           stride              = 48;
+  uint32_t                           do_truncate         = 0;
+  uint32_t                           do_lower            = 1;
   //
   auto vocab = nvtext::load_vocabulary_file(hash_file);
   for (auto _ : state) {

@@ -323,7 +323,7 @@ TYPED_TEST(FixedPointTestBothReps, DecimalXXThrust)
   using decimalXX = fixed_point<TypeParam, Radix::BASE_10>;
 
   std::vector<decimalXX> vec1(1000);
-  std::vector<int32_t> vec2(1000);
+  std::vector<int32_t>   vec2(1000);
 
   std::iota(std::begin(vec1), std::end(vec1), decimalXX{0, scale_type{-2}});
   std::iota(std::begin(vec2), std::end(vec2), 0);
@@ -430,9 +430,9 @@ TEST_F(FixedPointTest, OverflowDecimal64)
 
 template <typename ValueType, typename Binop>
 void integer_vector_test(ValueType const initial_value,
-                         int32_t const size,
-                         int32_t const scale,
-                         Binop binop)
+                         int32_t const   size,
+                         int32_t const   scale,
+                         Binop           binop)
 {
   using decimal32 = fixed_point<int32_t, Radix::BASE_10>;
 
@@ -469,9 +469,9 @@ TEST_F(FixedPointTest, Decimal32IntVector)
 
 template <typename ValueType, typename Binop>
 void float_vector_test(ValueType const initial_value,
-                       int32_t const size,
-                       int32_t const scale,
-                       Binop binop)
+                       int32_t const   size,
+                       int32_t const   scale,
+                       Binop           binop)
 {
   using decimal32 = fixed_point<int32_t, Radix::BASE_10>;
 

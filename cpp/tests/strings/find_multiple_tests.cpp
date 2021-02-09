@@ -37,11 +37,11 @@ TEST_F(StringsFindMultipleTest, FindMultiple)
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; }));
   auto strings_view = cudf::strings_column_view(strings);
 
-  std::vector<const char*> h_targets{"é", "a", "e", "i", "o", "u", "es"};
+  std::vector<const char*>           h_targets{"é", "a", "e", "i", "o", "u", "es"};
   cudf::test::strings_column_wrapper targets(h_targets.begin(), h_targets.end());
-  auto targets_view = cudf::strings_column_view(targets);
+  auto                               targets_view = cudf::strings_column_view(targets);
 
-  auto results                = cudf::strings::find_multiple(strings_view, targets_view);
+  auto            results     = cudf::strings::find_multiple(strings_view, targets_view);
   cudf::size_type total_count = static_cast<cudf::size_type>(h_strings.size() * h_targets.size());
   EXPECT_EQ(total_count, results->size());
 
@@ -55,10 +55,10 @@ TEST_F(StringsFindMultipleTest, ZeroSizeStringsColumn)
 {
   cudf::column_view zero_size_strings_column(
     cudf::data_type{cudf::type_id::STRING}, 0, nullptr, nullptr, 0);
-  auto strings_view = cudf::strings_column_view(zero_size_strings_column);
+  auto                     strings_view = cudf::strings_column_view(zero_size_strings_column);
   std::vector<const char*> h_targets{""};
   cudf::test::strings_column_wrapper targets(h_targets.begin(), h_targets.end());
-  auto targets_view = cudf::strings_column_view(targets);
+  auto                               targets_view = cudf::strings_column_view(targets);
 
   auto results = cudf::strings::find_multiple(strings_view, targets_view);
   EXPECT_EQ(results->size(), 0);
@@ -67,7 +67,7 @@ TEST_F(StringsFindMultipleTest, ZeroSizeStringsColumn)
 TEST_F(StringsFindMultipleTest, ErrorTest)
 {
   cudf::test::strings_column_wrapper strings({"this string intentionally left blank"}, {0});
-  auto strings_view = cudf::strings_column_view(strings);
+  auto                               strings_view = cudf::strings_column_view(strings);
 
   cudf::column_view zero_size_strings_column(
     cudf::data_type{cudf::type_id::STRING}, 0, nullptr, nullptr, 0);

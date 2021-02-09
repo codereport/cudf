@@ -44,7 +44,7 @@ namespace strings {
  * @return New INT32 column with lengths for each string.
  */
 std::unique_ptr<column> count_characters(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -62,7 +62,7 @@ std::unique_ptr<column> count_characters(
  * @return New INT32 column with the number of bytes for each string.
  */
 std::unique_ptr<column> count_bytes(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -82,7 +82,7 @@ std::unique_ptr<column> count_bytes(
  * @return New INT32 column with code point integer values for each character.
  */
 std::unique_ptr<column> code_points(
-  strings_column_view const& strings,
+  strings_column_view const&       strings,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of strings_apis group

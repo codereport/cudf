@@ -161,7 +161,7 @@ void validate_cast_result(cudf::column_view expected, cudf::column_view actual)
 {
   using namespace cudf::test;
   // round-trip through the host because sizeof(T) may not equal sizeof(R)
-  thrust::host_vector<T> h_data;
+  thrust::host_vector<T>          h_data;
   std::vector<cudf::bitmask_type> null_mask;
   std::tie(h_data, null_mask) = to_host<T>(expected);
   if (null_mask.empty()) {
@@ -270,7 +270,7 @@ TYPED_TEST_CASE(CastChronosTyped, cudf::test::ChronoTypes);
 // to the input type id
 std::vector<cudf::type_id> get_higher_precision_chrono_type_ids(cudf::type_id search)
 {
-  size_t idx = 0;
+  size_t                     idx = 0;
   std::vector<cudf::type_id> gte_ids{};
   // Arranged such that for every pair of types, the types that precede them have a lower precision
   std::vector<cudf::type_id> timestamp_ids{cudf::type_id::TIMESTAMP_DAYS,

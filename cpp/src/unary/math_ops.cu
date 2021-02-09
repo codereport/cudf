@@ -242,7 +242,7 @@ struct DeviceNot {
  */
 template <typename T>
 struct fixed_point_ceil {
-  T n;  // 10^-scale (value required to determine integer part of fixed_point number)
+  T          n;  // 10^-scale (value required to determine integer part of fixed_point number)
   __device__ T operator()(T data)
   {
     T const a = (data / n) * n;                  // result of integer division
@@ -260,7 +260,7 @@ struct fixed_point_ceil {
  */
 template <typename T>
 struct fixed_point_floor {
-  T n;  // 10^-scale (value required to determine integer part of fixed_point number)
+  T          n;  // 10^-scale (value required to determine integer part of fixed_point number)
   __device__ T operator()(T data)
   {
     T const a = (data / n) * n;                  // result of integer division
@@ -270,13 +270,13 @@ struct fixed_point_floor {
 
 template <typename T>
 struct fixed_point_abs {
-  T n;
+  T          n;
   __device__ T operator()(T data) { return std::abs(data); }
 };
 
 template <typename T, template <typename> typename FixedPointFunctor>
-std::unique_ptr<column> unary_op_with(column_view const& input,
-                                      rmm::cuda_stream_view stream,
+std::unique_ptr<column> unary_op_with(column_view const&               input,
+                                      rmm::cuda_stream_view            stream,
                                       rmm::mr::device_memory_resource* mr)
 {
   using Type                     = device_storage_type_t<T>;
@@ -291,8 +291,8 @@ std::unique_ptr<column> unary_op_with(column_view const& input,
   auto result = cudf::make_fixed_width_column(
     input.type(), input.size(), copy_bitmask(input, stream, mr), input.null_count(), stream, mr);
 
-  auto out_view = result->mutable_view();
-  Type const n  = std::pow(10, -input.type().scale());
+  auto       out_view = result->mutable_view();
+  Type const n        = std::pow(10, -input.type().scale());
 
   thrust::transform(rmm::exec_policy(stream),
                     input.begin<Type>(),
@@ -304,11 +304,11 @@ std::unique_ptr<column> unary_op_with(column_view const& input,
 }
 
 template <typename OutputType, typename UFN, typename InputIterator>
-std::unique_ptr<cudf::column> transform_fn(InputIterator begin,
-                                           InputIterator end,
-                                           rmm::device_buffer&& null_mask,
-                                           size_type null_count,
-                                           rmm::cuda_stream_view stream,
+std::unique_ptr<cudf::column> transform_fn(InputIterator                    begin,
+                                           InputIterator                    end,
+                                           rmm::device_buffer&&             null_mask,
+                                           size_type                        null_count,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
 {
   auto const size = cudf::distance(begin, end);
@@ -329,8 +329,8 @@ std::unique_ptr<cudf::column> transform_fn(InputIterator begin,
 
 template <typename T, typename UFN>
 std::unique_ptr<cudf::column> transform_fn(cudf::dictionary_column_view const& input,
-                                           rmm::cuda_stream_view stream,
-                                           rmm::mr::device_memory_resource* mr)
+                                           rmm::cuda_stream_view               stream,
+                                           rmm::mr::device_memory_resource*    mr)
 {
   auto dictionary_view = cudf::column_device_view::create(input.parent(), stream);
   auto dictionary_itr  = dictionary::detail::make_dictionary_iterator<T>(*dictionary_view);
@@ -349,8 +349,8 @@ std::unique_ptr<cudf::column> transform_fn(cudf::dictionary_column_view const& i
 template <typename UFN>
 struct MathOpDispatcher {
   template <typename T, typename std::enable_if_t<std::is_arithmetic<T>::value>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& input,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         input,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     return transform_fn<T, UFN>(input.begin<T>(),
@@ -364,16 +364,16 @@ struct MathOpDispatcher {
   struct dictionary_dispatch {
     template <typename T, typename std::enable_if_t<std::is_arithmetic<T>::value>* = nullptr>
     std::unique_ptr<cudf::column> operator()(cudf::dictionary_column_view const& input,
-                                             rmm::cuda_stream_view stream,
-                                             rmm::mr::device_memory_resource* mr)
+                                             rmm::cuda_stream_view               stream,
+                                             rmm::mr::device_memory_resource*    mr)
     {
       return transform_fn<T, UFN>(input, stream, mr);
     }
 
     template <typename T, typename std::enable_if_t<!std::is_arithmetic<T>::value>* = nullptr>
     std::unique_ptr<cudf::column> operator()(cudf::dictionary_column_view const& input,
-                                             rmm::cuda_stream_view stream,
-                                             rmm::mr::device_memory_resource* mr)
+                                             rmm::cuda_stream_view               stream,
+                                             rmm::mr::device_memory_resource*    mr)
     {
       CUDF_FAIL("dictionary keys must be numeric for this operation");
     }
@@ -382,8 +382,8 @@ struct MathOpDispatcher {
   template <typename T,
             typename std::enable_if_t<!std::is_arithmetic<T>::value and
                                       std::is_same<T, dictionary32>::value>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& input,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         input,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     if (input.is_empty()) return empty_like(input);
@@ -395,8 +395,8 @@ struct MathOpDispatcher {
   template <typename T,
             typename std::enable_if_t<!std::is_arithmetic<T>::value and
                                       !std::is_same<T, dictionary32>::value>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& input,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         input,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("Unsupported data type for operation");
@@ -406,8 +406,8 @@ struct MathOpDispatcher {
 template <typename UFN>
 struct BitwiseOpDispatcher {
   template <typename T, typename std::enable_if_t<std::is_integral<T>::value>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& input,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         input,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     return transform_fn<T, UFN>(input.begin<T>(),
@@ -421,16 +421,16 @@ struct BitwiseOpDispatcher {
   struct dictionary_dispatch {
     template <typename T, typename std::enable_if_t<std::is_integral<T>::value>* = nullptr>
     std::unique_ptr<cudf::column> operator()(cudf::dictionary_column_view const& input,
-                                             rmm::cuda_stream_view stream,
-                                             rmm::mr::device_memory_resource* mr)
+                                             rmm::cuda_stream_view               stream,
+                                             rmm::mr::device_memory_resource*    mr)
     {
       return transform_fn<T, UFN>(input, stream, mr);
     }
 
     template <typename T, typename std::enable_if_t<!std::is_integral<T>::value>* = nullptr>
     std::unique_ptr<cudf::column> operator()(cudf::dictionary_column_view const& input,
-                                             rmm::cuda_stream_view stream,
-                                             rmm::mr::device_memory_resource* mr)
+                                             rmm::cuda_stream_view               stream,
+                                             rmm::mr::device_memory_resource*    mr)
     {
       CUDF_FAIL("dictionary keys type not supported for this operation");
     }
@@ -439,8 +439,8 @@ struct BitwiseOpDispatcher {
   template <typename T,
             typename std::enable_if_t<!std::is_integral<T>::value and
                                       std::is_same<T, dictionary32>::value>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& input,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         input,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     if (input.is_empty()) return empty_like(input);
@@ -452,8 +452,8 @@ struct BitwiseOpDispatcher {
   template <typename T,
             typename std::enable_if_t<!std::is_integral<T>::value and
                                       !std::is_same<T, dictionary32>::value>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& input,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         input,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("Unsupported datatype for operation");
@@ -471,8 +471,8 @@ struct LogicalOpDispatcher {
 
  public:
   template <typename T, typename std::enable_if_t<is_supported<T>()>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& input,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         input,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     return transform_fn<bool, UFN>(input.begin<T>(),
@@ -487,8 +487,8 @@ struct LogicalOpDispatcher {
   struct dictionary_dispatch {
     template <typename T, typename std::enable_if_t<is_supported<T>()>* = nullptr>
     std::unique_ptr<cudf::column> operator()(cudf::dictionary_column_view const& input,
-                                             rmm::cuda_stream_view stream,
-                                             rmm::mr::device_memory_resource* mr)
+                                             rmm::cuda_stream_view               stream,
+                                             rmm::mr::device_memory_resource*    mr)
     {
       auto dictionary_view = cudf::column_device_view::create(input.parent(), stream);
       auto dictionary_itr  = dictionary::detail::make_dictionary_iterator<T>(*dictionary_view);
@@ -502,8 +502,8 @@ struct LogicalOpDispatcher {
 
     template <typename T, typename std::enable_if_t<!is_supported<T>()>* = nullptr>
     std::unique_ptr<cudf::column> operator()(cudf::dictionary_column_view const& input,
-                                             rmm::cuda_stream_view stream,
-                                             rmm::mr::device_memory_resource* mr)
+                                             rmm::cuda_stream_view               stream,
+                                             rmm::mr::device_memory_resource*    mr)
     {
       CUDF_FAIL("dictionary keys type not supported for this operation");
     }
@@ -512,8 +512,8 @@ struct LogicalOpDispatcher {
   template <typename T,
             typename std::enable_if_t<!is_supported<T>() and
                                       std::is_same<T, dictionary32>::value>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& input,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         input,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     if (input.is_empty()) return make_empty_column(cudf::data_type{cudf::type_id::BOOL8});
@@ -526,8 +526,8 @@ struct LogicalOpDispatcher {
   template <typename T,
             typename std::enable_if_t<!is_supported<T>() and
                                       !std::is_same<T, dictionary32>::value>* = nullptr>
-  std::unique_ptr<cudf::column> operator()(cudf::column_view const& input,
-                                           rmm::cuda_stream_view stream,
+  std::unique_ptr<cudf::column> operator()(cudf::column_view const&         input,
+                                           rmm::cuda_stream_view            stream,
                                            rmm::mr::device_memory_resource* mr)
   {
     CUDF_FAIL("Unsupported datatype for operation");
@@ -544,9 +544,9 @@ struct FixedPointOpDispatcher {
 
   template <typename T>
   std::enable_if_t<cudf::is_fixed_point<T>(), std::unique_ptr<column>> operator()(
-    column_view const& input,
-    cudf::unary_operator op,
-    rmm::cuda_stream_view stream,
+    column_view const&               input,
+    cudf::unary_operator             op,
+    rmm::cuda_stream_view            stream,
     rmm::mr::device_memory_resource* mr)
   {
     // clang-format off
@@ -562,9 +562,9 @@ struct FixedPointOpDispatcher {
 
 }  // namespace
 
-std::unique_ptr<cudf::column> unary_operation(cudf::column_view const& input,
-                                              cudf::unary_operator op,
-                                              rmm::cuda_stream_view stream,
+std::unique_ptr<cudf::column> unary_operation(cudf::column_view const&         input,
+                                              cudf::unary_operator             op,
+                                              rmm::cuda_stream_view            stream,
                                               rmm::mr::device_memory_resource* mr)
 {
   if (cudf::is_fixed_point(input.type()))
@@ -646,8 +646,8 @@ std::unique_ptr<cudf::column> unary_operation(cudf::column_view const& input,
 
 }  // namespace detail
 
-std::unique_ptr<cudf::column> unary_operation(cudf::column_view const& input,
-                                              cudf::unary_operator op,
+std::unique_ptr<cudf::column> unary_operation(cudf::column_view const&         input,
+                                              cudf::unary_operator             op,
                                               rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

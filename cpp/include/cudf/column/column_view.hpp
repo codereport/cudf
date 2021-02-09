@@ -197,15 +197,15 @@ class column_view_base {
   size_type offset() const noexcept { return _offset; }
 
  protected:
-  data_type _type{type_id::EMPTY};   ///< Element type
-  size_type _size{};                 ///< Number of elements
-  void const* _data{};               ///< Pointer to device memory containing elements
-  bitmask_type const* _null_mask{};  ///< Pointer to device memory containing
-                                     ///< bitmask representing null elements.
-                                     ///< Optional if `null_count() == 0`
-  mutable size_type _null_count{};   ///< The number of null elements
-  size_type _offset{};               ///< Index position of the first element.
-                                     ///< Enables zero-copy slicing
+  data_type           _type{type_id::EMPTY};  ///< Element type
+  size_type           _size{};                ///< Number of elements
+  void const*         _data{};                ///< Pointer to device memory containing elements
+  bitmask_type const* _null_mask{};           ///< Pointer to device memory containing
+                                              ///< bitmask representing null elements.
+                                              ///< Optional if `null_count() == 0`
+  mutable size_type _null_count{};            ///< The number of null elements
+  size_type         _offset{};                ///< Index position of the first element.
+                                              ///< Enables zero-copy slicing
 
   column_view_base()                        = default;
   ~column_view_base()                       = default;
@@ -244,12 +244,12 @@ class column_view_base {
    * @param children optional, depending on the element type, child columns may
    * contain additional data
    */
-  column_view_base(data_type type,
-                   size_type size,
-                   void const* data,
-                   bitmask_type const* null_mask = nullptr,
-                   size_type null_count          = UNKNOWN_NULL_COUNT,
-                   size_type offset              = 0);
+  column_view_base(data_type           type,
+                   size_type           size,
+                   void const*         data,
+                   bitmask_type const* null_mask  = nullptr,
+                   size_type           null_count = UNKNOWN_NULL_COUNT,
+                   size_type           offset     = 0);
 };
 
 class mutable_column_view_base : public column_view_base {
@@ -327,13 +327,13 @@ class column_view : public detail::column_view_base {
    * @param children optional, depending on the element type, child columns may
    * contain additional data
    */
-  column_view(data_type type,
-              size_type size,
-              void const* data,
-              bitmask_type const* null_mask            = nullptr,
-              size_type null_count                     = UNKNOWN_NULL_COUNT,
-              size_type offset                         = 0,
-              std::vector<column_view> const& children = {});
+  column_view(data_type                       type,
+              size_type                       size,
+              void const*                     data,
+              bitmask_type const*             null_mask  = nullptr,
+              size_type                       null_count = UNKNOWN_NULL_COUNT,
+              size_type                       offset     = 0,
+              std::vector<column_view> const& children   = {});
 
   /**
    * @brief Returns the specified child
@@ -426,13 +426,13 @@ class mutable_column_view : public detail::column_view_base {
    * @param children optional, depending on the element type, child columns may
    * contain additional data
    */
-  mutable_column_view(data_type type,
-                      size_type size,
-                      void* data,
-                      bitmask_type* null_mask                          = nullptr,
-                      size_type null_count                             = cudf::UNKNOWN_NULL_COUNT,
-                      size_type offset                                 = 0,
-                      std::vector<mutable_column_view> const& children = {});
+  mutable_column_view(data_type                               type,
+                      size_type                               size,
+                      void*                                   data,
+                      bitmask_type*                           null_mask  = nullptr,
+                      size_type                               null_count = cudf::UNKNOWN_NULL_COUNT,
+                      size_type                               offset     = 0,
+                      std::vector<mutable_column_view> const& children   = {});
 
   /**
    * @brief Returns pointer to the base device memory allocation casted to

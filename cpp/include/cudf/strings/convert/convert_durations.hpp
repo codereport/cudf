@@ -70,9 +70,9 @@ namespace strings {
  * @return New duration column.
  */
 std::unique_ptr<column> to_durations(
-  strings_column_view const& strings,
-  data_type duration_type,
-  std::string const& format,
+  strings_column_view const&       strings,
+  data_type                        duration_type,
+  std::string const&               format,
   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
 /**
@@ -120,9 +120,9 @@ std::unique_ptr<column> to_durations(
  * @return New strings column with formatted durations.
  */
 std::unique_ptr<column> from_durations(
-  column_view const& durations,
-  std::string const& format           = "%D days %H:%M:%S",
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               durations,
+  std::string const&               format = "%D days %H:%M:%S",
+  rmm::mr::device_memory_resource* mr     = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group
 }  // namespace strings

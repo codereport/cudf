@@ -399,7 +399,7 @@ template <template <cudf::type_id> typename IdTypeMap = id_to_type_impl,
           typename Functor,
           typename... Ts>
 CUDA_HOST_DEVICE_CALLABLE constexpr decltype(auto) type_dispatcher(cudf::data_type dtype,
-                                                                   Functor f,
+                                                                   Functor         f,
                                                                    Ts&&... args)
 {
   switch (dtype.id()) {
@@ -519,7 +519,7 @@ struct double_type_dispatcher_first_type {
 #pragma nv_exec_check_disable
   template <typename T1, typename F, typename... Ts>
   CUDA_HOST_DEVICE_CALLABLE decltype(auto) operator()(cudf::data_type type2,
-                                                      F&& f,
+                                                      F&&             f,
                                                       Ts&&... args) const
   {
     return type_dispatcher<IdTypeMap>(type2,
@@ -546,7 +546,7 @@ struct double_type_dispatcher_first_type {
 template <template <cudf::type_id> typename IdTypeMap = id_to_type_impl, typename F, typename... Ts>
 CUDA_HOST_DEVICE_CALLABLE constexpr decltype(auto) double_type_dispatcher(cudf::data_type type1,
                                                                           cudf::data_type type2,
-                                                                          F&& f,
+                                                                          F&&             f,
                                                                           Ts&&... args)
 {
   return type_dispatcher<IdTypeMap>(type1,

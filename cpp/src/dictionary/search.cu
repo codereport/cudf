@@ -35,9 +35,9 @@ namespace {
 
 struct dispatch_scalar_index {
   template <typename IndexType, std::enable_if_t<is_index_type<IndexType>()>* = nullptr>
-  std::unique_ptr<scalar> operator()(size_type index,
-                                     bool is_valid,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<scalar> operator()(size_type                        index,
+                                     bool                             is_valid,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     return std::make_unique<numeric_scalar<IndexType>>(index, is_valid, stream, mr);
@@ -64,9 +64,9 @@ struct find_index_fn {
             std::enable_if_t<not std::is_same<Element, dictionary32>::value and
                              not std::is_same<Element, list_view>::value and
                              not std::is_same<Element, struct_view>::value>* = nullptr>
-  std::unique_ptr<scalar> operator()(dictionary_column_view const& input,
-                                     scalar const& key,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<scalar> operator()(dictionary_column_view const&    input,
+                                     scalar const&                    key,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr) const
   {
     if (!key.is_valid())
@@ -92,18 +92,18 @@ struct find_index_fn {
   }
   template <typename Element,
             std::enable_if_t<std::is_same<Element, dictionary32>::value>* = nullptr>
-  std::unique_ptr<scalar> operator()(dictionary_column_view const& input,
-                                     scalar const& key,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<scalar> operator()(dictionary_column_view const&    input,
+                                     scalar const&                    key,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr) const
   {
     CUDF_FAIL("dictionary column cannot be the keys column of another dictionary");
   }
 
   template <typename Element, std::enable_if_t<std::is_same<Element, list_view>::value>* = nullptr>
-  std::unique_ptr<scalar> operator()(dictionary_column_view const& input,
-                                     scalar const& key,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<scalar> operator()(dictionary_column_view const&    input,
+                                     scalar const&                    key,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr) const
   {
     CUDF_FAIL("list_view column cannot be the keys column of a dictionary");
@@ -111,9 +111,9 @@ struct find_index_fn {
 
   template <typename Element,
             std::enable_if_t<std::is_same<Element, struct_view>::value>* = nullptr>
-  std::unique_ptr<scalar> operator()(dictionary_column_view const& input,
-                                     scalar const& key,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<scalar> operator()(dictionary_column_view const&    input,
+                                     scalar const&                    key,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr) const
   {
     CUDF_FAIL("struct_view column cannot be the keys column of a dictionary");
@@ -125,9 +125,9 @@ struct find_insert_index_fn {
             std::enable_if_t<not std::is_same<Element, dictionary32>::value and
                              not std::is_same<Element, list_view>::value and
                              not std::is_same<Element, struct_view>::value>* = nullptr>
-  std::unique_ptr<scalar> operator()(dictionary_column_view const& input,
-                                     scalar const& key,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<scalar> operator()(dictionary_column_view const&    input,
+                                     scalar const&                    key,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr) const
   {
     if (!key.is_valid())
@@ -153,9 +153,9 @@ struct find_insert_index_fn {
             std::enable_if_t<std::is_same<Element, dictionary32>::value or
                              std::is_same<Element, list_view>::value or
                              std::is_same<Element, struct_view>::value>* = nullptr>
-  std::unique_ptr<scalar> operator()(dictionary_column_view const& input,
-                                     scalar const& key,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<scalar> operator()(dictionary_column_view const&    input,
+                                     scalar const&                    key,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr) const
   {
     CUDF_FAIL("column cannot be the keys for dictionary");
@@ -164,9 +164,9 @@ struct find_insert_index_fn {
 
 }  // namespace
 
-std::unique_ptr<scalar> get_index(dictionary_column_view const& dictionary,
-                                  scalar const& key,
-                                  rmm::cuda_stream_view stream,
+std::unique_ptr<scalar> get_index(dictionary_column_view const&    dictionary,
+                                  scalar const&                    key,
+                                  rmm::cuda_stream_view            stream,
                                   rmm::mr::device_memory_resource* mr)
 {
   if (dictionary.is_empty())
@@ -174,9 +174,9 @@ std::unique_ptr<scalar> get_index(dictionary_column_view const& dictionary,
   return type_dispatcher(dictionary.keys().type(), find_index_fn(), dictionary, key, stream, mr);
 }
 
-std::unique_ptr<scalar> get_insert_index(dictionary_column_view const& dictionary,
-                                         scalar const& key,
-                                         rmm::cuda_stream_view stream,
+std::unique_ptr<scalar> get_insert_index(dictionary_column_view const&    dictionary,
+                                         scalar const&                    key,
+                                         rmm::cuda_stream_view            stream,
                                          rmm::mr::device_memory_resource* mr)
 {
   if (dictionary.is_empty())
@@ -189,8 +189,8 @@ std::unique_ptr<scalar> get_insert_index(dictionary_column_view const& dictionar
 
 // external API
 
-std::unique_ptr<scalar> get_index(dictionary_column_view const& dictionary,
-                                  scalar const& key,
+std::unique_ptr<scalar> get_index(dictionary_column_view const&    dictionary,
+                                  scalar const&                    key,
                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

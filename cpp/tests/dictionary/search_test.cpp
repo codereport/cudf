@@ -59,7 +59,7 @@ TEST_F(DictionarySearchTest, WithNulls)
 TEST_F(DictionarySearchTest, EmptyColumn)
 {
   cudf::test::dictionary_column_wrapper<int64_t> dictionary{};
-  cudf::numeric_scalar<int64_t> key(7);
+  cudf::numeric_scalar<int64_t>                  key(7);
   auto result = cudf::dictionary::get_index(dictionary, key);
   EXPECT_FALSE(result->is_valid());
   result = cudf::dictionary::detail::get_insert_index(dictionary, key);
@@ -69,7 +69,7 @@ TEST_F(DictionarySearchTest, EmptyColumn)
 TEST_F(DictionarySearchTest, Errors)
 {
   cudf::test::dictionary_column_wrapper<int64_t> dictionary({1, 2, 3});
-  cudf::numeric_scalar<double> key(7);
+  cudf::numeric_scalar<double>                   key(7);
   EXPECT_THROW(cudf::dictionary::get_index(dictionary, key), cudf::logic_error);
   EXPECT_THROW(cudf::dictionary::detail::get_insert_index(dictionary, key), cudf::logic_error);
 }

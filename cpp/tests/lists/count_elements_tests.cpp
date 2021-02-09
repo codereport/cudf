@@ -94,7 +94,7 @@ TEST_F(ListsElementsTest, CountElementsEmpty)
 {
   using LCW = cudf::test::lists_column_wrapper<cudf::string_view>;
 
-  LCW empty{};
+  LCW  empty{};
   auto result = cudf::lists::count_elements(cudf::lists_column_view(empty));
   EXPECT_EQ(0, result->size());
 }

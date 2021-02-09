@@ -51,8 +51,8 @@ __device__ inline size_type string_view::length() const
   if (_length == UNKNOWN_STRING_LENGTH)
     _length = strings::detail::characters_in_string(_data, _bytes);
   if (_length && (_char_width == UNKNOWN_CHAR_WIDTH)) {
-    uint8_t const* ptr = reinterpret_cast<uint8_t const*>(data());
-    auto const first   = strings::detail::bytes_in_utf8_byte(*ptr);
+    uint8_t const* ptr   = reinterpret_cast<uint8_t const*>(data());
+    auto const     first = strings::detail::bytes_in_utf8_byte(*ptr);
     // see if they are all the same width
     _char_width = (thrust::find_if(thrust::seq,
                                    ptr,
@@ -84,7 +84,7 @@ __device__ inline string_view::const_iterator& string_view::const_iterator::oper
 __device__ inline string_view::const_iterator string_view::const_iterator::operator++(int)
 {
   string_view::const_iterator tmp(*this);
-  operator++();
+                              operator++();
   return tmp;
 }
 
@@ -92,7 +92,7 @@ __device__ inline string_view::const_iterator string_view::const_iterator::opera
   string_view::const_iterator::difference_type offset)
 {
   const_iterator tmp(*this);
-  size_type adjust = abs(offset);
+  size_type      adjust = abs(offset);
   while (adjust-- > 0) offset > 0 ? ++tmp : --tmp;
   return tmp;
 }
@@ -117,7 +117,7 @@ __device__ inline string_view::const_iterator& string_view::const_iterator::oper
 __device__ inline string_view::const_iterator string_view::const_iterator::operator--(int)
 {
   string_view::const_iterator tmp(*this);
-  operator--();
+                              operator--();
   return tmp;
 }
 
@@ -133,7 +133,7 @@ __device__ inline string_view::const_iterator string_view::const_iterator::opera
   string_view::const_iterator::difference_type offset)
 {
   const_iterator tmp(*this);
-  size_type adjust = abs(offset);
+  size_type      adjust = abs(offset);
   while (adjust-- > 0) offset > 0 ? --tmp : ++tmp;
   return tmp;
 }
@@ -206,9 +206,9 @@ __device__ inline char_utf8 string_view::operator[](size_type pos) const
 
 __device__ inline size_type string_view::byte_offset(size_type pos) const
 {
-  size_type offset = 0;
-  const char* sptr = _data;
-  const char* eptr = sptr + _bytes;
+  size_type   offset = 0;
+  const char* sptr   = _data;
+  const char* eptr   = sptr + _bytes;
   if (_char_width > 0) return pos * _char_width;
   while ((pos > 0) && (sptr < eptr)) {
     size_type charbytes = strings::detail::bytes_in_utf8_byte(static_cast<uint8_t>(*sptr++));
@@ -225,10 +225,10 @@ __device__ inline int string_view::compare(const string_view& in) const
 
 __device__ inline int string_view::compare(const char* data, size_type bytes) const
 {
-  size_type const len1      = size_bytes();
+  size_type const      len1 = size_bytes();
   const unsigned char* ptr1 = reinterpret_cast<const unsigned char*>(this->data());
   const unsigned char* ptr2 = reinterpret_cast<const unsigned char*>(data);
-  size_type idx             = 0;
+  size_type            idx  = 0;
   for (; (idx < len1) && (idx < bytes); ++idx) {
     if (*ptr1 != *ptr2) return static_cast<int32_t>(*ptr1) - static_cast<int32_t>(*ptr2);
     ++ptr1;
@@ -272,16 +272,16 @@ __device__ inline bool string_view::operator>=(const string_view& rhs) const
 }
 
 __device__ inline size_type string_view::find(const string_view& str,
-                                              size_type pos,
-                                              size_type count) const
+                                              size_type          pos,
+                                              size_type          count) const
 {
   return find(str.data(), str.size_bytes(), pos, count);
 }
 
 __device__ inline size_type string_view::find(const char* str,
-                                              size_type bytes,
-                                              size_type pos,
-                                              size_type count) const
+                                              size_type   bytes,
+                                              size_type   pos,
+                                              size_type   count) const
 {
   const char* sptr = data();
   if (!str || !bytes) return -1;
@@ -308,22 +308,22 @@ __device__ inline size_type string_view::find(const char* str,
 
 __device__ inline size_type string_view::find(char_utf8 chr, size_type pos, size_type count) const
 {
-  char str[sizeof(char_utf8)];
+  char      str[sizeof(char_utf8)];
   size_type chwidth = strings::detail::from_char_utf8(chr, str);
   return find(str, chwidth, pos, count);
 }
 
 __device__ inline size_type string_view::rfind(const string_view& str,
-                                               size_type pos,
-                                               size_type count) const
+                                               size_type          pos,
+                                               size_type          count) const
 {
   return rfind(str.data(), str.size_bytes(), pos, count);
 }
 
 __device__ inline size_type string_view::rfind(const char* str,
-                                               size_type bytes,
-                                               size_type pos,
-                                               size_type count) const
+                                               size_type   bytes,
+                                               size_type   pos,
+                                               size_type   count) const
 {
   const char* sptr = data();
   if (!str || !bytes) return -1;
@@ -349,7 +349,7 @@ __device__ inline size_type string_view::rfind(const char* str,
 
 __device__ inline size_type string_view::rfind(char_utf8 chr, size_type pos, size_type count) const
 {
-  char str[sizeof(char_utf8)];
+  char      str[sizeof(char_utf8)];
   size_type chwidth = strings::detail::from_char_utf8(chr, str);
   return rfind(str, chwidth, pos, count);
 }

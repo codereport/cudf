@@ -40,12 +40,12 @@ struct any_fn {
       if (!*d_result && (iter[idx] != *d_result)) atomicOr(d_result, true);
     }
     Iterator iter;
-    bool* d_result;
+    bool*    d_result;
   };
 
   template <typename T, std::enable_if_t<std::is_arithmetic<T>::value>* = nullptr>
-  std::unique_ptr<scalar> operator()(column_view const& input,
-                                     rmm::cuda_stream_view stream,
+  std::unique_ptr<scalar> operator()(column_view const&               input,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
   {
     auto const d_dict = cudf::column_device_view::create(input, stream);
@@ -75,9 +75,9 @@ struct any_fn {
 }  // namespace
 }  // namespace detail
 
-std::unique_ptr<cudf::scalar> any(column_view const& col,
-                                  cudf::data_type const output_dtype,
-                                  rmm::cuda_stream_view stream,
+std::unique_ptr<cudf::scalar> any(column_view const&               col,
+                                  cudf::data_type const            output_dtype,
+                                  rmm::cuda_stream_view            stream,
                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(output_dtype == cudf::data_type(cudf::type_id::BOOL8),

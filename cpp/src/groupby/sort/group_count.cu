@@ -28,11 +28,11 @@
 namespace cudf {
 namespace groupby {
 namespace detail {
-std::unique_ptr<column> group_count_valid(column_view const& values,
+std::unique_ptr<column> group_count_valid(column_view const&                   values,
                                           rmm::device_vector<size_type> const& group_labels,
-                                          size_type num_groups,
-                                          rmm::cuda_stream_view stream,
-                                          rmm::mr::device_memory_resource* mr)
+                                          size_type                            num_groups,
+                                          rmm::cuda_stream_view                stream,
+                                          rmm::mr::device_memory_resource*     mr)
 {
   CUDF_EXPECTS(num_groups >= 0, "number of groups cannot be negative");
   CUDF_EXPECTS(static_cast<size_t>(values.size()) == group_labels.size(),
@@ -71,9 +71,9 @@ std::unique_ptr<column> group_count_valid(column_view const& values,
 }
 
 std::unique_ptr<column> group_count_all(rmm::device_vector<size_type> const& group_offsets,
-                                        size_type num_groups,
-                                        rmm::cuda_stream_view stream,
-                                        rmm::mr::device_memory_resource* mr)
+                                        size_type                            num_groups,
+                                        rmm::cuda_stream_view                stream,
+                                        rmm::mr::device_memory_resource*     mr)
 {
   CUDF_EXPECTS(num_groups >= 0, "number of groups cannot be negative");
 

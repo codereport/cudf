@@ -47,10 +47,10 @@ namespace detail {
  *
  * @return An estimate of the size of the output of the join operation
  */
-size_type estimate_nested_loop_join_output_size(table_device_view left,
-                                                table_device_view right,
-                                                join_kind JoinKind,
-                                                null_equality compare_nulls,
+size_type estimate_nested_loop_join_output_size(table_device_view     left,
+                                                table_device_view     right,
+                                                join_kind             JoinKind,
+                                                null_equality         compare_nulls,
                                                 rmm::cuda_stream_view stream)
 {
   const size_type left_num_rows{left.num_rows()};
@@ -72,13 +72,13 @@ size_type estimate_nested_loop_join_output_size(table_device_view left,
   }
 
   // Allocate storage for the counter used to get the size of the join output
-  size_type h_size_estimate{0};
+  size_type                     h_size_estimate{0};
   rmm::device_scalar<size_type> size_estimate(0, stream);
 
   CHECK_CUDA(stream.value());
 
   constexpr int block_size{DEFAULT_JOIN_BLOCK_SIZE};
-  int numBlocks{-1};
+  int           numBlocks{-1};
 
   CUDA_TRY(cudaOccupancyMaxActiveBlocksPerMultiprocessor(
     &numBlocks, compute_nested_loop_join_output_size<block_size>, block_size, 0));
@@ -119,11 +119,11 @@ size_type estimate_nested_loop_join_output_size(table_device_view left,
  * @return Join output indices vector pair
  */
 std::pair<rmm::device_vector<size_type>, rmm::device_vector<size_type>>
-get_base_nested_loop_join_indices(table_view const& left,
-                                  table_view const& right,
-                                  bool flip_join_indices,
-                                  join_kind JoinKind,
-                                  null_equality compare_nulls,
+get_base_nested_loop_join_indices(table_view const&     left,
+                                  table_view const&     right,
+                                  bool                  flip_join_indices,
+                                  join_kind             JoinKind,
+                                  null_equality         compare_nulls,
                                   rmm::cuda_stream_view stream)
 {
   // The `right` table is always used for the inner loop. We want to use the smaller table
@@ -152,21 +152,21 @@ get_base_nested_loop_join_indices(table_view const& left,
   // As such we will need to de-allocate memory and re-allocate memory to ensure
   // that the final output is correct.
   rmm::device_scalar<size_type> write_index(0, stream);
-  size_type join_size{0};
+  size_type                     join_size{0};
 
   rmm::device_vector<size_type> left_indices;
   rmm::device_vector<size_type> right_indices;
-  auto current_estimated_size = estimated_size;
+  auto                          current_estimated_size = estimated_size;
   do {
     left_indices.resize(estimated_size);
     right_indices.resize(estimated_size);
 
-    constexpr int block_size{DEFAULT_JOIN_BLOCK_SIZE};
+    constexpr int   block_size{DEFAULT_JOIN_BLOCK_SIZE};
     detail::grid_1d config(left_table->num_rows(), block_size);
     write_index.set_value(0);
 
     row_equality equality{*left_table, *right_table, compare_nulls == null_equality::EQUAL};
-    const auto& join_output_l =
+    const auto&  join_output_l =
       flip_join_indices ? right_indices.data().get() : left_indices.data().get();
     const auto& join_output_r =
       flip_join_indices ? left_indices.data().get() : right_indices.data().get();

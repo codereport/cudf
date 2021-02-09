@@ -47,7 +47,7 @@ TYPED_TEST(SequenceTypedTestFixture, Incrementing)
 
   size_type num_els = 10;
 
-  T expected[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  T                             expected[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
   fixed_width_column_wrapper<T> expected_w(expected, expected + num_els);
 
   auto result = cudf::sequence(num_els, init, step);
@@ -64,7 +64,7 @@ TYPED_TEST(SequenceTypedTestFixture, Decrementing)
 
   size_type num_els = 10;
 
-  T expected[] = {0, -5, -10, -15, -20, -25, -30, -35, -40, -45};
+  T                             expected[] = {0, -5, -10, -15, -20, -25, -30, -35, -40, -45};
   fixed_width_column_wrapper<T> expected_w(expected, expected + num_els);
 
   auto result = cudf::sequence(num_els, init, step);
@@ -81,7 +81,7 @@ TYPED_TEST(SequenceTypedTestFixture, EmptyOutput)
 
   size_type num_els = 0;
 
-  T expected[] = {};
+  T                             expected[] = {};
   fixed_width_column_wrapper<T> expected_w(expected, expected + num_els);
 
   auto result = cudf::sequence(num_els, init, step);
@@ -106,15 +106,15 @@ TEST_F(SequenceTestFixture, BadTypes)
 
 TEST_F(SequenceTestFixture, MismatchedInputs)
 {
-  numeric_scalar<int> init(0);
+  numeric_scalar<int>   init(0);
   numeric_scalar<float> step(-5);
   EXPECT_THROW(cudf::sequence(10, init, step), cudf::logic_error);
 
-  numeric_scalar<int> init2(0);
+  numeric_scalar<int>    init2(0);
   numeric_scalar<int8_t> step2(-5);
   EXPECT_THROW(cudf::sequence(10, init2, step2), cudf::logic_error);
 
-  numeric_scalar<float> init3(0);
+  numeric_scalar<float>  init3(0);
   numeric_scalar<double> step3(-5);
   EXPECT_THROW(cudf::sequence(10, init3, step3), cudf::logic_error);
 }
@@ -127,7 +127,7 @@ TYPED_TEST(SequenceTypedTestFixture, DefaultStep)
 
   size_type num_els = 10;
 
-  T expected[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  T                             expected[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
   fixed_width_column_wrapper<T> expected_w(expected, expected + num_els);
 
   auto result = cudf::sequence(num_els, init);

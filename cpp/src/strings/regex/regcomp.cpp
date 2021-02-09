@@ -50,7 +50,7 @@ static reclass ccls_d(4);   // digits [0-9]
 static reclass ccls_D(32);  // not ccls_d plus '\n'
 
 // Tables for analyzing quantifiers
-const std::array<int, 6> valid_preceding_inst_types{{CHAR, CCLASS, NCCLASS, ANY, ANYNL, RBRA}};
+const std::array<int, 6>  valid_preceding_inst_types{{CHAR, CCLASS, NCCLASS, ANY, ANYNL, RBRA}};
 const std::array<char, 5> quantifiers{{'*', '?', '+', '{', '|'}};
 // Valid regex characters that can be escaping to be used as literals
 const std::array<char, 33> escapable_chars{
@@ -106,10 +106,10 @@ int32_t reprog::starts_count() const { return static_cast<int>(_startinst_ids.si
  * @brief Converts pattern into regex classes
  */
 class regex_parser {
-  reprog& m_prog;
+  reprog&         m_prog;
   const char32_t* pattern;
   const char32_t* exprp;
-  bool lexdone;
+  bool            lexdone;
 
   int id_ccls_w = -1;  // alphanumeric
   int id_ccls_W = -1;  // not alphanumeric
@@ -117,10 +117,10 @@ class regex_parser {
   int id_ccls_d = -1;  // digit
   int id_ccls_D = -1;  // not digit
 
-  char32_t yy;    /* last lex'd Char */
-  int yyclass_id; /* last lex'd class */
-  short yy_min_count;
-  short yy_max_count;
+  char32_t yy;         /* last lex'd Char */
+  int      yyclass_id; /* last lex'd class */
+  short    yy_min_count;
+  short    yy_max_count;
 
   bool nextc(char32_t& c)  // return "quoted" == backslash-escape prefix
   {
@@ -139,14 +139,14 @@ class regex_parser {
 
   int bldcclass()
   {
-    int type = CCLASS;
+    int                   type = CCLASS;
     std::vector<char32_t> cls;
-    int builtins = 0;
+    int                   builtins = 0;
 
     /* look ahead for negation */
     /* SPECIAL CASE!!! negated classes don't match \n */
-    char32_t c = 0;
-    int quoted = nextc(c);
+    char32_t c      = 0;
+    int      quoted = nextc(c);
     if (!quoted && c == '^') {
       type   = NCCLASS;
       quoted = nextc(c);
@@ -230,8 +230,8 @@ class regex_parser {
     /* merge spans */
     reclass yycls{builtins};
     if (cls.size() >= 2) {
-      int np        = 0;
-      std::size_t p = 0;
+      int         np = 0;
+      std::size_t p  = 0;
       yycls.literals += cls[p++];
       yycls.literals += cls[p++];
       for (; p < cls.size(); p += 2) {
@@ -421,7 +421,7 @@ class regex_parser {
       {
         if (*exprp < '0' || *exprp > '9') break;
         const char32_t* exprp_backup = exprp;  // in case '}' is not found
-        char buff[8]                 = {0};
+        char            buff[8]      = {0};
         for (int i = 0; i < 7 && *exprp != '}' && *exprp != ',' && *exprp != 0; i++, exprp++) {
           buff[i]     = *exprp;
           buff[i + 1] = 0;
@@ -467,7 +467,7 @@ class regex_parser {
     int t;
     union {
       char32_t yy;
-      int yyclass_id;
+      int      yyclass_id;
       struct {
         short n;
         short m;
@@ -509,8 +509,8 @@ class regex_compiler {
     int id_last;
   };
 
-  int cursubid;
-  int pushsubid;
+  int               cursubid;
+  int               pushsubid;
   std::vector<Node> andstack;
 
   struct Ator {
@@ -521,7 +521,7 @@ class regex_compiler {
   std::vector<Ator> atorstack;
 
   bool lastwasand;
-  int nbra;
+  int  nbra;
 
   inline void pushand(int f, int l) { andstack.push_back({f, l}); }
 
@@ -556,8 +556,8 @@ class regex_compiler {
   {
     Node op1;
     Node op2;
-    int id_inst1 = -1;
-    int id_inst2 = -1;
+    int  id_inst1 = -1;
+    int  id_inst2 = -1;
     while (pri == RBRA || atorstack[atorstack.size() - 1].t >= pri) {
       Ator ator = popator();
       switch (ator.t) {
@@ -673,13 +673,13 @@ class regex_compiler {
   }
 
   char32_t yy;
-  int yyclass_id;
+  int      yyclass_id;
 
   void expand_counted(const std::vector<regex_parser::Item>& in,
-                      std::vector<regex_parser::Item>& out)
+                      std::vector<regex_parser::Item>&       out)
   {
     std::vector<int> lbra_stack;
-    int rep_start = -1;
+    int              rep_start = -1;
 
     out.clear();
     for (std::size_t i = 0; i < in.size(); i++) {
@@ -781,8 +781,8 @@ class regex_compiler {
     pushator(START - 1);
 
     for (int i = 0; i < static_cast<int>(items.size()); i++) {
-      regex_parser::Item item = items[i];
-      int token               = item.t;
+      regex_parser::Item item  = items[i];
+      int                token = item.t;
       if (token == CCLASS || token == NCCLASS)
         yyclass_id = item.d.yyclass_id;
       else
@@ -820,7 +820,7 @@ class regex_compiler {
 // Convert pattern into program
 reprog reprog::create_from(const char32_t* pattern)
 {
-  reprog rtn;
+  reprog         rtn;
   regex_compiler compiler(pattern, ANY, rtn);  // future feature: ANYNL
   // rtn->print();
   return rtn;
@@ -859,7 +859,7 @@ void reprog::optimize1()
   }
   // actually remove the no-ops
   std::vector<int> id_map(insts_count());
-  int j = 0;  // compact the ops (non no-ops)
+  int              j = 0;  // compact the ops (non no-ops)
   for (int i = 0; i < insts_count(); i++) {
     id_map[i] = j;
     if (_insts[i].type != NOP) {
@@ -958,7 +958,7 @@ void reprog::print()
   printf("\nClasses %d\n", count);
   for (int i = 0; i < count; i++) {
     const reclass& cls = _classes[i];
-    int len            = static_cast<int>(cls.literals.size());
+    int            len = static_cast<int>(cls.literals.size());
     printf("%2d: ", i);
     for (int j = 0; j < len; j += 2) {
       char32_t c1 = cls.literals[j];

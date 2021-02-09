@@ -37,7 +37,7 @@ TEST_F(SampleTest, FailCaseRowMultipleSampling)
   // and sampling same row multiple times is disallowed,
   // this combination can't work.
   cudf::size_type const n_samples = 10;
-  cudf::table_view input({col1});
+  cudf::table_view      input({col1});
 
   EXPECT_THROW(cudf::sample(input, n_samples, cudf::sample_with_replacement::FALSE, 0),
                cudf::logic_error);
@@ -89,16 +89,16 @@ struct SampleBasicTest : public SampleTest,
 
 TEST_P(SampleBasicTest, CombinationOfParameters)
 {
-  cudf::size_type const table_size         = 1024;
-  cudf::size_type const n_samples          = std::get<0>(GetParam());
+  cudf::size_type const         table_size = 1024;
+  cudf::size_type const         n_samples  = std::get<0>(GetParam());
   cudf::sample_with_replacement multi_smpl = std::get<1>(GetParam());
 
   auto data = cudf::detail::make_counting_transform_iterator(0, [](auto i) { return i; });
   cudf::test::fixed_width_column_wrapper<int16_t> col1(data, data + table_size);
-  cudf::test::fixed_width_column_wrapper<float> col2(data, data + table_size);
+  cudf::test::fixed_width_column_wrapper<float>   col2(data, data + table_size);
 
   cudf::table_view input({col1, col2});
-  auto out_table = cudf::sample(input, n_samples, multi_smpl, 0);
+  auto             out_table = cudf::sample(input, n_samples, multi_smpl, 0);
 
   EXPECT_EQ(out_table->num_rows(), n_samples);
 }

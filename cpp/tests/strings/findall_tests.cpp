@@ -56,7 +56,7 @@ TEST_F(StringsFindallTests, FindallTest)
                                        nullptr};
 
   std::string pattern = "(\\w+)";
-  auto results        = cudf::strings::findall_re(strings_view, pattern);
+  auto        results = cudf::strings::findall_re(strings_view, pattern);
   EXPECT_TRUE(results->num_columns() == 2);
 
   cudf::test::strings_column_wrapper expected1(
@@ -80,7 +80,7 @@ TEST_F(StringsFindallTests, MediumRegex)
   // This results in 15 regex instructions and falls in the 'medium' range.
   std::string medium_regex = "(\\w+) (\\w+) (\\d+)";
 
-  std::vector<const char*> h_strings{"first words 1234 and just numbers 9876", "neither"};
+  std::vector<const char*>           h_strings{"first words 1234 and just numbers 9876", "neither"};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),
@@ -90,14 +90,14 @@ TEST_F(StringsFindallTests, MediumRegex)
   auto results      = cudf::strings::findall_re(strings_view, medium_regex);
   EXPECT_TRUE(results->num_columns() == 2);
 
-  std::vector<const char*> h_expected1{"first words 1234", nullptr};
+  std::vector<const char*>           h_expected1{"first words 1234", nullptr};
   cudf::test::strings_column_wrapper expected1(
     h_expected1.begin(),
     h_expected1.end(),
     thrust::make_transform_iterator(h_expected1.begin(), [](auto str) { return str != nullptr; }));
   CUDF_TEST_EXPECT_COLUMNS_EQUAL(results->get_column(0), expected1);
 
-  std::vector<const char*> h_expected2{"just numbers 9876", nullptr};
+  std::vector<const char*>           h_expected2{"just numbers 9876", nullptr};
   cudf::test::strings_column_wrapper expected2(
     h_expected2.begin(),
     h_expected2.end(),
@@ -128,7 +128,7 @@ TEST_F(StringsFindallTests, LargeRegex)
   auto results      = cudf::strings::findall_re(strings_view, large_regex);
   EXPECT_TRUE(results->num_columns() == 1);
 
-  std::vector<const char*> h_expected{large_regex.c_str(), nullptr, nullptr};
+  std::vector<const char*>           h_expected{large_regex.c_str(), nullptr, nullptr};
   cudf::test::strings_column_wrapper expected(
     h_expected.begin(),
     h_expected.end(),

@@ -54,14 +54,14 @@ std::unique_ptr<string_view, std::function<void(string_view*)>> string_from_host
 
 // build a vector of string_view objects from a strings column
 rmm::device_vector<string_view> create_string_vector_from_column(cudf::strings_column_view strings,
-                                                                 rmm::cuda_stream_view stream)
+                                                                 rmm::cuda_stream_view     stream)
 {
   auto strings_column = column_device_view::create(strings.parent(), stream);
   auto d_column       = *strings_column;
 
-  auto count = strings.size();
+  auto                            count = strings.size();
   rmm::device_vector<string_view> strings_vector(count);
-  string_view* d_strings = strings_vector.data().get();
+  string_view*                    d_strings = strings_vector.data().get();
   thrust::for_each_n(rmm::exec_policy(stream),
                      thrust::make_counting_iterator<size_type>(0),
                      count,
@@ -77,8 +77,8 @@ rmm::device_vector<string_view> create_string_vector_from_column(cudf::strings_c
 // build a strings offsets column from a vector of string_views
 std::unique_ptr<cudf::column> child_offsets_from_string_vector(
   const rmm::device_vector<string_view>& strings,
-  rmm::cuda_stream_view stream,
-  rmm::mr::device_memory_resource* mr)
+  rmm::cuda_stream_view                  stream,
+  rmm::mr::device_memory_resource*       mr)
 {
   return child_offsets_from_string_iterator(strings.begin(), strings.size(), stream, mr);
 }
@@ -86,14 +86,14 @@ std::unique_ptr<cudf::column> child_offsets_from_string_vector(
 // build a strings chars column from an vector of string_views
 std::unique_ptr<cudf::column> child_chars_from_string_vector(
   const rmm::device_vector<string_view>& strings,
-  const int32_t* d_offsets,
-  cudf::size_type null_count,
-  rmm::cuda_stream_view stream,
-  rmm::mr::device_memory_resource* mr)
+  const int32_t*                         d_offsets,
+  cudf::size_type                        null_count,
+  rmm::cuda_stream_view                  stream,
+  rmm::mr::device_memory_resource*       mr)
 {
-  size_type count = strings.size();
-  auto d_strings  = strings.data().get();
-  size_type bytes = thrust::device_pointer_cast(d_offsets)[count];
+  size_type count     = strings.size();
+  auto      d_strings = strings.data().get();
+  size_type bytes     = thrust::device_pointer_cast(d_offsets)[count];
 
   // create column
   auto chars_column =
@@ -112,10 +112,10 @@ std::unique_ptr<cudf::column> child_chars_from_string_vector(
 }
 
 //
-std::unique_ptr<column> create_chars_child_column(cudf::size_type strings_count,
-                                                  cudf::size_type null_count,
-                                                  cudf::size_type total_bytes,
-                                                  rmm::cuda_stream_view stream,
+std::unique_ptr<column> create_chars_child_column(cudf::size_type                  strings_count,
+                                                  cudf::size_type                  null_count,
+                                                  cudf::size_type                  total_bytes,
+                                                  rmm::cuda_stream_view            stream,
                                                   rmm::mr::device_memory_resource* mr)
 {
   CUDF_EXPECTS(null_count <= strings_count, "Invalid null count");
@@ -124,7 +124,7 @@ std::unique_ptr<column> create_chars_child_column(cudf::size_type strings_count,
 }
 
 //
-std::unique_ptr<column> make_empty_strings_column(rmm::cuda_stream_view stream,
+std::unique_ptr<column> make_empty_strings_column(rmm::cuda_stream_view            stream,
                                                   rmm::mr::device_memory_resource* mr)
 {
   return std::make_unique<column>(data_type{type_id::STRING},
@@ -138,13 +138,13 @@ namespace {
 // The device variables are created here to avoid using a singleton that may cause issues
 // with RMM initialize/finalize. See PR #3159 for details on this approach.
 __device__ character_flags_table_type
-  character_codepoint_flags[sizeof(g_character_codepoint_flags)];
+           character_codepoint_flags[sizeof(g_character_codepoint_flags)];
 __device__ character_cases_table_type character_cases_table[sizeof(g_character_cases_table)];
 __device__ special_case_mapping character_special_case_mappings[sizeof(g_special_case_mappings)];
 
 thread_safe_per_context_cache<character_flags_table_type> d_character_codepoint_flags;
 thread_safe_per_context_cache<character_cases_table_type> d_character_cases_table;
-thread_safe_per_context_cache<special_case_mapping> d_special_case_mappings;
+thread_safe_per_context_cache<special_case_mapping>       d_special_case_mappings;
 
 }  // namespace
 

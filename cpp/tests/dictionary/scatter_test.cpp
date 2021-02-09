@@ -30,13 +30,13 @@ struct DictionaryScatterTest : public cudf::test::BaseFixture {
 TEST_F(DictionaryScatterTest, Scatter)
 {
   cudf::test::strings_column_wrapper strings_source{"xxx", "bbb", "aaa", "ccc"};
-  auto source = cudf::dictionary::encode(strings_source);
+  auto                               source = cudf::dictionary::encode(strings_source);
   cudf::test::strings_column_wrapper strings_target{
     "eee", "aaa", "ddd", "bbb", "ccc", "ccc", "ccc", "eee", "aaa"};
   auto target = cudf::dictionary::encode(strings_target);
 
   cudf::test::fixed_width_column_wrapper<int32_t> scatter_map{0, 2, 3, 7};
-  auto table_result =
+  auto                                            table_result =
     cudf::scatter(
       cudf::table_view{{source->view()}}, scatter_map, cudf::table_view{{target->view()}})
       ->release();
@@ -56,8 +56,8 @@ TEST_F(DictionaryScatterTest, Scatter)
 
   // empty target test
   cudf::test::strings_column_wrapper empty_target;
-  auto empty_dictionary = cudf::dictionary::encode(empty_target);
-  table_result          = cudf::scatter(cudf::table_view{{empty_dictionary->view()}},
+  auto                               empty_dictionary = cudf::dictionary::encode(empty_target);
+  table_result = cudf::scatter(cudf::table_view{{empty_dictionary->view()}},
                                empty_map,
                                cudf::table_view{{empty_dictionary->view()}})
                    ->release();
@@ -72,8 +72,8 @@ TEST_F(DictionaryScatterTest, ScatterScalar)
   auto target = cudf::dictionary::encode(strings_target);
   std::vector<std::reference_wrapper<const cudf::scalar>> source;
 
-  const cudf::string_scalar source_scalar                       = cudf::string_scalar("bbb");
-  std::reference_wrapper<const cudf::string_scalar> slr_wrapper = std::ref(source_scalar);
+  const cudf::string_scalar                         source_scalar = cudf::string_scalar("bbb");
+  std::reference_wrapper<const cudf::string_scalar> slr_wrapper   = std::ref(source_scalar);
   source.emplace_back(slr_wrapper);
   cudf::test::fixed_width_column_wrapper<int32_t> scatter_map{0, 2, 3, 7};
 
@@ -91,13 +91,13 @@ TEST_F(DictionaryScatterTest, ScatterScalar)
 TEST_F(DictionaryScatterTest, WithNulls)
 {
   cudf::test::fixed_width_column_wrapper<int64_t> data_source{{1, 5, 7, 9}, {0, 1, 1, 1}};
-  auto source = cudf::dictionary::encode(data_source);
+  auto                                            source = cudf::dictionary::encode(data_source);
   cudf::test::fixed_width_column_wrapper<int64_t> data_target{{1, 5, 5, 3, 7, 1, 4, 2},
                                                               {0, 1, 0, 1, 1, 1, 1, 1}};
-  auto target = cudf::dictionary::encode(data_target);
+  auto                                            target = cudf::dictionary::encode(data_target);
 
   cudf::test::fixed_width_column_wrapper<int32_t> scatter_map{7, 2, 3, 1};
-  auto table_result =
+  auto                                            table_result =
     cudf::scatter(
       cudf::table_view{{source->view()}}, scatter_map, cudf::table_view{{target->view()}})
       ->release();
@@ -113,14 +113,14 @@ TEST_F(DictionaryScatterTest, ScalarWithNulls)
 {
   cudf::test::fixed_width_column_wrapper<int64_t> data_target{{1, 5, 5, 3, 7, 1, 4, 2},
                                                               {0, 1, 0, 1, 1, 1, 1, 1}};
-  auto target = cudf::dictionary::encode(data_target);
+  auto                                            target = cudf::dictionary::encode(data_target);
   std::vector<std::reference_wrapper<const cudf::scalar>> source;
   const cudf::numeric_scalar<int64_t> source_slr = cudf::test::make_type_param_scalar<int64_t>(100);
   std::reference_wrapper<const cudf::numeric_scalar<int64_t>> slr_wrapper = std::ref(source_slr);
   source.emplace_back(slr_wrapper);
 
   cudf::test::fixed_width_column_wrapper<int32_t> scatter_map{7, 2, 3, 1, -3};
-  auto table_result =
+  auto                                            table_result =
     cudf::scatter(source, scatter_map, cudf::table_view{{target->view()}})->release();
 
   auto decoded =
@@ -134,7 +134,7 @@ TEST_F(DictionaryScatterTest, ScalarWithNulls)
 TEST_F(DictionaryScatterTest, Error)
 {
   cudf::test::strings_column_wrapper strings_source{"this string intentionally left blank"};
-  auto source = cudf::dictionary::encode(strings_source);
+  auto                               source = cudf::dictionary::encode(strings_source);
   cudf::test::fixed_width_column_wrapper<int64_t> integers_target({1, 2, 3});
   auto target = cudf::dictionary::encode(integers_target);
   cudf::test::fixed_width_column_wrapper<int32_t> scatter_map({0});

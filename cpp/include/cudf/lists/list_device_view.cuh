@@ -32,7 +32,7 @@ class list_device_view {
   list_device_view() = default;
 
   CUDA_DEVICE_CALLABLE list_device_view(lists_column_device_view const& lists_column,
-                                        size_type const& row_index)
+                                        size_type const&                row_index)
     : lists_column(lists_column), _row_index(row_index)
   {
     column_device_view const& offsets = lists_column.offsets();
@@ -151,8 +151,8 @@ class list_device_view {
 
  private:
   lists_column_device_view const& lists_column;
-  size_type _row_index{};  // Row index in the Lists column vector.
-  size_type _size{};       // Number of elements in *this* list row.
+  size_type                       _row_index{};  // Row index in the Lists column vector.
+  size_type                       _size{};       // Number of elements in *this* list row.
 
   size_type begin_offset;  // Offset in list_column_device_view where this list begins.
 
@@ -195,7 +195,7 @@ class list_device_view {
  *
  */
 struct list_size_functor {
-  column_device_view const d_column;
+  column_device_view const  d_column;
   CUDA_HOST_DEVICE_CALLABLE list_size_functor(column_device_view const& d_col) : d_column(d_col)
   {
 #if defined(__CUDA_ARCH__)

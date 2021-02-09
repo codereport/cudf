@@ -35,9 +35,9 @@ namespace {
  */
 template <bool PositiveIndex = true>
 struct map_index_fn {
-  column_device_view const d_offsets;  // offsets to each sublist (including validity mask)
-  size_type const index;               // index of element within each sublist
-  size_type const out_of_bounds;       // value to use to indicate out-of-bounds
+  column_device_view const d_offsets;      // offsets to each sublist (including validity mask)
+  size_type const          index;          // index of element within each sublist
+  size_type const          out_of_bounds;  // value to use to indicate out-of-bounds
 
   __device__ int32_t operator()(size_type idx)
   {
@@ -58,9 +58,9 @@ struct map_index_fn {
  *
  * @param stream CUDA stream used for device memory operations and kernel launches.
  */
-std::unique_ptr<column> extract_list_element(lists_column_view lists_column,
-                                             size_type index,
-                                             rmm::cuda_stream_view stream,
+std::unique_ptr<column> extract_list_element(lists_column_view                lists_column,
+                                             size_type                        index,
+                                             rmm::cuda_stream_view            stream,
                                              rmm::mr::device_memory_resource* mr)
 {
   if (lists_column.is_empty()) return empty_like(lists_column.parent());
@@ -77,7 +77,7 @@ std::unique_ptr<column> extract_list_element(lists_column_view lists_column,
   // create a gather map for extracting elements from the child column
   auto gather_map = make_fixed_width_column(
     data_type{type_id::INT32}, annotated_offsets.size() - 1, mask_state::UNALLOCATED, stream);
-  auto d_gather_map       = gather_map->mutable_view().data<int32_t>();
+  auto       d_gather_map = gather_map->mutable_view().data<int32_t>();
   auto const child_column = lists_column.child();
 
   // build the gather map using the offsets and the provided index
@@ -113,8 +113,8 @@ std::unique_ptr<column> extract_list_element(lists_column_view lists_column,
 /**
  * @copydoc cudf::lists::extract_list_element
  */
-std::unique_ptr<column> extract_list_element(lists_column_view const& lists_column,
-                                             size_type index,
+std::unique_ptr<column> extract_list_element(lists_column_view const&         lists_column,
+                                             size_type                        index,
                                              rmm::mr::device_memory_resource* mr)
 {
   return detail::extract_list_element(lists_column, index, rmm::cuda_stream_default, mr);

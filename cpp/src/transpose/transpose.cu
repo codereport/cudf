@@ -28,8 +28,8 @@
 
 namespace cudf {
 namespace detail {
-std::pair<std::unique_ptr<column>, table_view> transpose(table_view const& input,
-                                                         rmm::cuda_stream_view stream,
+std::pair<std::unique_ptr<column>, table_view> transpose(table_view const&                input,
+                                                         rmm::cuda_stream_view            stream,
                                                          rmm::mr::device_memory_resource* mr)
 {
   // If there are no rows in the input, return successfully
@@ -55,7 +55,7 @@ std::pair<std::unique_ptr<column>, table_view> transpose(table_view const& input
 }
 }  // namespace detail
 
-std::pair<std::unique_ptr<column>, table_view> transpose(table_view const& input,
+std::pair<std::unique_ptr<column>, table_view> transpose(table_view const&                input,
                                                          rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

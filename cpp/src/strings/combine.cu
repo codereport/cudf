@@ -44,10 +44,10 @@ namespace cudf {
 namespace strings {
 namespace detail {
 
-std::unique_ptr<column> concatenate(table_view const& strings_columns,
-                                    string_scalar const& separator,
-                                    string_scalar const& narep,
-                                    rmm::cuda_stream_view stream,
+std::unique_ptr<column> concatenate(table_view const&                strings_columns,
+                                    string_scalar const&             separator,
+                                    string_scalar const&             narep,
+                                    rmm::cuda_stream_view            stream,
                                     rmm::mr::device_memory_resource* mr)
 {
   auto num_columns = strings_columns.num_columns();
@@ -65,7 +65,7 @@ std::unique_ptr<column> concatenate(table_view const& strings_columns,
 
   CUDF_EXPECTS(separator.is_valid(), "Parameter separator must be a valid string_scalar");
   string_view d_separator(separator.data(), separator.size());
-  auto d_narep = get_scalar_device_view(const_cast<string_scalar&>(narep));
+  auto        d_narep = get_scalar_device_view(const_cast<string_scalar&>(narep));
 
   // Create device views from the strings columns.
   auto table   = table_device_view::create(strings_columns, stream);
@@ -82,7 +82,7 @@ std::unique_ptr<column> concatenate(table_view const& strings_columns,
     },
     stream,
     mr);
-  auto& null_mask       = valid_mask.first;
+  auto&      null_mask  = valid_mask.first;
   auto const null_count = valid_mask.second;
 
   // build offsets column by computing sizes of each string in the output
@@ -117,7 +117,7 @@ std::unique_ptr<column> concatenate(table_view const& strings_columns,
 
   // create the chars column
   size_type bytes = thrust::device_pointer_cast(d_results_offsets)[strings_count];
-  auto chars_column =
+  auto      chars_column =
     strings::detail::create_chars_child_column(strings_count, null_count, bytes, stream, mr);
   // fill the chars column
   auto d_results_chars = chars_column->mutable_view().data<char>();
@@ -133,11 +133,11 @@ std::unique_ptr<column> concatenate(table_view const& strings_columns,
         });
       if (null_element && !d_narep.is_valid())
         return;  // do not write to buffer at all if any column element for this row is null
-      size_type offset = d_results_offsets[idx];
-      char* d_buffer   = d_results_chars + offset;
+      size_type offset   = d_results_offsets[idx];
+      char*     d_buffer = d_results_chars + offset;
       // write out each column's entry for this row
       for (size_type col_idx = 0; col_idx < num_columns; ++col_idx) {
-        auto d_column = d_table.column(col_idx);
+        auto        d_column = d_table.column(col_idx);
         string_view d_str =
           d_column.is_null(idx) ? d_narep.value() : d_column.element<string_view>(idx);
         d_buffer = detail::copy_string(d_buffer, d_str);
@@ -155,10 +155,10 @@ std::unique_ptr<column> concatenate(table_view const& strings_columns,
                              mr);
 }
 
-std::unique_ptr<column> join_strings(strings_column_view const& strings,
-                                     string_scalar const& separator,
-                                     string_scalar const& narep,
-                                     rmm::cuda_stream_view stream,
+std::unique_ptr<column> join_strings(strings_column_view const&       strings,
+                                     string_scalar const&             separator,
+                                     string_scalar const&             narep,
+                                     rmm::cuda_stream_view            stream,
                                      rmm::mr::device_memory_resource* mr)
 {
   auto strings_count = strings.size();
@@ -167,14 +167,14 @@ std::unique_ptr<column> join_strings(strings_column_view const& strings,
   CUDF_EXPECTS(separator.is_valid(), "Parameter separator must be a valid string_scalar");
 
   string_view d_separator(separator.data(), separator.size());
-  auto d_narep = get_scalar_device_view(const_cast<string_scalar&>(narep));
+  auto        d_narep = get_scalar_device_view(const_cast<string_scalar&>(narep));
 
   auto strings_column = column_device_view::create(strings.parent(), stream);
   auto d_strings      = *strings_column;
 
   // create an offsets array for building the output memory layout
   rmm::device_vector<size_type> output_offsets(strings_count + 1);
-  auto d_output_offsets = output_offsets.data().get();
+  auto                          d_output_offsets = output_offsets.data().get();
   // using inclusive-scan to compute last entry which is the total size
   thrust::transform_inclusive_scan(
     rmm::exec_policy(stream),
@@ -210,7 +210,7 @@ std::unique_ptr<column> join_strings(strings_column_view const& strings,
 
   // build null mask
   // only one entry so it is either all valid or all null
-  size_type null_count = 0;
+  size_type          null_count = 0;
   rmm::device_buffer null_mask{0, stream, mr};  // init to null null-mask
   if (strings.null_count() == strings_count && !narep.is_valid()) {
     null_mask  = cudf::detail::create_null_mask(1, cudf::mask_state::ALL_NULL, stream, mr);
@@ -225,8 +225,8 @@ std::unique_ptr<column> join_strings(strings_column_view const& strings,
     thrust::make_counting_iterator<size_type>(0),
     strings_count,
     [d_strings, d_separator, d_narep, d_output_offsets, d_chars] __device__(size_type idx) {
-      size_type offset = d_output_offsets[idx];
-      char* d_buffer   = d_chars + offset;
+      size_type offset   = d_output_offsets[idx];
+      char*     d_buffer = d_chars + offset;
       if (d_strings.is_null(idx)) {
         if (!d_narep.is_valid())
           return;  // do not write to buffer if element is null (including separator)
@@ -247,11 +247,11 @@ std::unique_ptr<column> join_strings(strings_column_view const& strings,
                              mr);
 }
 
-std::unique_ptr<column> concatenate(table_view const& strings_columns,
-                                    strings_column_view const& separators,
-                                    string_scalar const& separator_narep,
-                                    string_scalar const& col_narep,
-                                    rmm::cuda_stream_view stream,
+std::unique_ptr<column> concatenate(table_view const&                strings_columns,
+                                    strings_column_view const&       separators,
+                                    string_scalar const&             separator_narep,
+                                    string_scalar const&             col_narep,
+                                    rmm::cuda_stream_view            stream,
                                     rmm::mr::device_memory_resource* mr)
 {
   auto num_columns = strings_columns.num_columns();
@@ -376,7 +376,7 @@ std::unique_ptr<column> concatenate(table_view const& strings_columns,
 
   // Create the chars column
   size_type bytes = thrust::device_pointer_cast(d_results_offsets)[strings_count];
-  auto chars_column =
+  auto      chars_column =
     strings::detail::create_chars_child_column(strings_count, null_count, bytes, stream, mr);
 
   // Fill the chars column
@@ -404,9 +404,9 @@ std::unique_ptr<column> concatenate(table_view const& strings_columns,
                        // skip this row
                        if (all_nulls && !col_rep.is_valid()) return;
 
-                       size_type offset    = d_results_offsets[ridx];
-                       char* d_buffer      = d_results_chars + offset;
-                       bool colval_written = false;
+                       size_type offset         = d_results_offsets[ridx];
+                       char*     d_buffer       = d_results_chars + offset;
+                       bool      colval_written = false;
 
                        // There is at least one non-null column value (it can still be empty though)
                        auto separator_str = separator_col_view.is_valid(ridx)
@@ -445,28 +445,28 @@ std::unique_ptr<column> concatenate(table_view const& strings_columns,
 
 // APIs
 
-std::unique_ptr<column> concatenate(table_view const& strings_columns,
-                                    string_scalar const& separator,
-                                    string_scalar const& narep,
+std::unique_ptr<column> concatenate(table_view const&                strings_columns,
+                                    string_scalar const&             separator,
+                                    string_scalar const&             narep,
                                     rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::concatenate(strings_columns, separator, narep, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> join_strings(strings_column_view const& strings,
-                                     string_scalar const& separator,
-                                     string_scalar const& narep,
+std::unique_ptr<column> join_strings(strings_column_view const&       strings,
+                                     string_scalar const&             separator,
+                                     string_scalar const&             narep,
                                      rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();
   return detail::join_strings(strings, separator, narep, rmm::cuda_stream_default, mr);
 }
 
-std::unique_ptr<column> concatenate(table_view const& strings_columns,
-                                    strings_column_view const& separators,
-                                    string_scalar const& separator_narep,
-                                    string_scalar const& col_narep,
+std::unique_ptr<column> concatenate(table_view const&                strings_columns,
+                                    strings_column_view const&       separators,
+                                    string_scalar const&             separator_narep,
+                                    string_scalar const&             col_narep,
                                     rmm::mr::device_memory_resource* mr)
 {
   CUDF_FUNC_RANGE();

@@ -41,7 +41,7 @@ std::pair<cudf::char_utf8, cudf::char_utf8> make_entry(const char* from, const c
 
 TEST_F(StringsTranslateTest, Translate)
 {
-  std::vector<const char*> h_strings{"eee ddd", "bb cc", nullptr, "", "aa", "débd"};
+  std::vector<const char*>           h_strings{"eee ddd", "bb cc", nullptr, "", "aa", "débd"};
   cudf::test::strings_column_wrapper strings(
     h_strings.begin(),
     h_strings.end(),
@@ -52,7 +52,7 @@ TEST_F(StringsTranslateTest, Translate)
     make_entry("b", 0), make_entry("a", "A"), make_entry("é", "E"), make_entry("e", "_")};
   auto results = cudf::strings::translate(strings_view, translate_table);
 
-  std::vector<const char*> h_expected{"___ ddd", " cc", nullptr, "", "AA", "dEd"};
+  std::vector<const char*>           h_expected{"___ ddd", " cc", nullptr, "", "AA", "dEd"};
   cudf::test::strings_column_wrapper expected(
     h_expected.begin(),
     h_expected.end(),
@@ -75,10 +75,10 @@ TEST_F(StringsTranslateTest, ZeroSizeStringsColumn)
 TEST_F(StringsTranslateTest, FilterCharacters)
 {
   std::vector<const char*> h_strings{"eee ddd", "bb cc", nullptr, "", "12309", "débd"};
-  auto validity =
+  auto                     validity =
     thrust::make_transform_iterator(h_strings.begin(), [](auto str) { return str != nullptr; });
   cudf::test::strings_column_wrapper strings(h_strings.begin(), h_strings.end(), validity);
-  auto strings_view = cudf::strings_column_view(strings);
+  auto                               strings_view = cudf::strings_column_view(strings);
 
   std::vector<std::pair<cudf::char_utf8, cudf::char_utf8>> filter_table{
     make_entry("a", "c"), make_entry("é", "ú"), make_entry("0", "9")};
@@ -112,7 +112,7 @@ TEST_F(StringsTranslateTest, FilterCharacters)
 TEST_F(StringsTranslateTest, ErrorTest)
 {
   cudf::test::strings_column_wrapper h_strings({"string left intentionally blank"});
-  auto strings_view = cudf::strings_column_view(h_strings);
+  auto                               strings_view = cudf::strings_column_view(h_strings);
   std::vector<std::pair<cudf::char_utf8, cudf::char_utf8>> filter_table;
   EXPECT_THROW(
     cudf::strings::filter_characters(

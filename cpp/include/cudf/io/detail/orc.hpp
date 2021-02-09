@@ -54,8 +54,8 @@ class reader {
    * @param options Settings for controlling reading behavior
    * @param mr Device memory resource to use for device memory allocation
    */
-  explicit reader(std::vector<std::string> const& filepaths,
-                  orc_reader_options const& options,
+  explicit reader(std::vector<std::string> const&  filepaths,
+                  orc_reader_options const&        options,
                   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
   /**
@@ -66,7 +66,7 @@ class reader {
    * @param mr Device memory resource to use for device memory allocation
    */
   explicit reader(std::vector<std::unique_ptr<cudf::io::datasource>>&& sources,
-                  orc_reader_options const& options,
+                  orc_reader_options const&                            options,
                   rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
 
   /**
@@ -83,7 +83,7 @@ class reader {
    * @return The set of columns along with table metadata
    */
   table_with_metadata read(orc_reader_options const& options,
-                           rmm::cuda_stream_view stream = rmm::cuda_stream_default);
+                           rmm::cuda_stream_view     stream = rmm::cuda_stream_default);
 };
 
 /**
@@ -105,10 +105,10 @@ class writer {
    * @param stream CUDA stream used for device memory operations and kernel launches
    */
   explicit writer(std::unique_ptr<cudf::io::data_sink> sink,
-                  orc_writer_options const& options,
-                  SingleWriteMode mode                = SingleWriteMode::NO,
-                  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource(),
-                  rmm::cuda_stream_view stream        = rmm::cuda_stream_default);
+                  orc_writer_options const&            options,
+                  SingleWriteMode                      mode = SingleWriteMode::NO,
+                  rmm::mr::device_memory_resource*     mr = rmm::mr::get_current_device_resource(),
+                  rmm::cuda_stream_view                stream = rmm::cuda_stream_default);
 
   /**
    * @brief Constructor with chunked writer options.
@@ -120,10 +120,10 @@ class writer {
    * @param stream CUDA stream used for device memory operations and kernel launches
    */
   explicit writer(std::unique_ptr<cudf::io::data_sink> sink,
-                  chunked_orc_writer_options const& options,
-                  SingleWriteMode mode                = SingleWriteMode::YES,
-                  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource(),
-                  rmm::cuda_stream_view stream        = rmm::cuda_stream_default);
+                  chunked_orc_writer_options const&    options,
+                  SingleWriteMode                      mode = SingleWriteMode::YES,
+                  rmm::mr::device_memory_resource*     mr = rmm::mr::get_current_device_resource(),
+                  rmm::cuda_stream_view                stream = rmm::cuda_stream_default);
 
   /**
    * @brief Destructor explicitly declared to avoid inlining in header

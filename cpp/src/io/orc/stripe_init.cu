@@ -27,7 +27,7 @@ namespace orc {
 namespace gpu {
 struct compressed_stream_s {
   CompressedStreamInfo info;
-  gpu_inflate_input_s ctl;
+  gpu_inflate_input_s  ctl;
 };
 
 // blockDim {128,1,1}
@@ -36,21 +36,21 @@ extern "C" __global__ void __launch_bounds__(128, 8) gpuParseCompressedStripeDat
 {
   __shared__ compressed_stream_s strm_g[4];
 
-  compressed_stream_s *const s = &strm_g[threadIdx.x / 32];
-  int strm_id                  = blockIdx.x * 4 + (threadIdx.x / 32);
-  int lane_id                  = threadIdx.x % 32;
+  compressed_stream_s *const s       = &strm_g[threadIdx.x / 32];
+  int                        strm_id = blockIdx.x * 4 + (threadIdx.x / 32);
+  int                        lane_id = threadIdx.x % 32;
 
   if (lane_id == 0) { s->info = strm_info[strm_id]; }
 
   __syncthreads();
   if (strm_id < num_streams) {
     // Walk through the compressed blocks
-    const uint8_t *cur               = s->info.compressed_data;
-    const uint8_t *end               = cur + s->info.compressed_data_size;
-    uint8_t *uncompressed            = s->info.uncompressed_data;
-    size_t max_uncompressed_size     = 0;
-    uint32_t num_compressed_blocks   = 0;
-    uint32_t num_uncompressed_blocks = 0;
+    const uint8_t *cur                     = s->info.compressed_data;
+    const uint8_t *end                     = cur + s->info.compressed_data_size;
+    uint8_t *      uncompressed            = s->info.uncompressed_data;
+    size_t         max_uncompressed_size   = 0;
+    uint32_t       num_compressed_blocks   = 0;
+    uint32_t       num_uncompressed_blocks = 0;
     while (cur + 3 < end) {
       uint32_t block_len = shuffle((lane_id == 0) ? cur[0] | (cur[1] << 8) | (cur[2] << 16) : 0);
       uint32_t is_uncompressed = block_len & 1;
@@ -122,9 +122,9 @@ extern "C" __global__ void __launch_bounds__(128, 8)
 {
   __shared__ compressed_stream_s strm_g[4];
 
-  compressed_stream_s *const s = &strm_g[threadIdx.x / 32];
-  int strm_id                  = blockIdx.x * 4 + (threadIdx.x / 32);
-  int lane_id                  = threadIdx.x % 32;
+  compressed_stream_s *const s       = &strm_g[threadIdx.x / 32];
+  int                        strm_id = blockIdx.x * 4 + (threadIdx.x / 32);
+  int                        lane_id = threadIdx.x % 32;
 
   if (strm_id < num_streams && lane_id == 0) s->info = strm_info[strm_id];
 
@@ -133,14 +133,14 @@ extern "C" __global__ void __launch_bounds__(128, 8)
       s->info.num_compressed_blocks + s->info.num_uncompressed_blocks > 0 &&
       s->info.max_uncompressed_size > 0) {
     // Walk through the compressed blocks
-    const uint8_t *cur                  = s->info.compressed_data;
-    const uint8_t *end                  = cur + s->info.compressed_data_size;
-    const gpu_inflate_input_s *dec_in   = s->info.decctl;
-    const gpu_inflate_status_s *dec_out = s->info.decstatus;
-    uint8_t *uncompressed_actual        = s->info.uncompressed_data;
-    uint8_t *uncompressed_estimated     = uncompressed_actual;
-    uint32_t num_compressed_blocks      = 0;
-    uint32_t max_compressed_blocks      = s->info.num_compressed_blocks;
+    const uint8_t *             cur                    = s->info.compressed_data;
+    const uint8_t *             end                    = cur + s->info.compressed_data_size;
+    const gpu_inflate_input_s * dec_in                 = s->info.decctl;
+    const gpu_inflate_status_s *dec_out                = s->info.decstatus;
+    uint8_t *                   uncompressed_actual    = s->info.uncompressed_data;
+    uint8_t *                   uncompressed_estimated = uncompressed_actual;
+    uint32_t                    num_compressed_blocks  = 0;
+    uint32_t                    max_compressed_blocks  = s->info.num_compressed_blocks;
 
     while (cur + 3 < end) {
       uint32_t block_len = shuffle((lane_id == 0) ? cur[0] | (cur[1] << 8) | (cur[2] << 16) : 0);
@@ -192,13 +192,13 @@ extern "C" __global__ void __launch_bounds__(128, 8)
  */
 struct rowindex_state_s {
   ColumnDesc chunk;
-  uint32_t rowgroup_start;
-  uint32_t rowgroup_end;
-  int is_compressed;
+  uint32_t   rowgroup_start;
+  uint32_t   rowgroup_end;
+  int        is_compressed;
   uint32_t row_index_entry[3][CI_PRESENT];  // NOTE: Assumes CI_PRESENT follows CI_DATA and CI_DATA2
   CompressedStreamInfo strm_info[2];
-  RowGroup rowgroups[128];
-  uint32_t compressed_offset[128][2];
+  RowGroup             rowgroups[128];
+  uint32_t             compressed_offset[128][2];
 };
 
 enum row_entry_state_e {
@@ -220,12 +220,12 @@ enum row_entry_state_e {
  * @return bytes consumed
  */
 static uint32_t __device__ ProtobufParseRowIndexEntry(rowindex_state_s *s,
-                                                      const uint8_t *start,
-                                                      const uint8_t *end)
+                                                      const uint8_t *   start,
+                                                      const uint8_t *   end)
 {
   constexpr uint32_t pb_rowindexentry_id = static_cast<uint32_t>(PB_TYPE_FIXEDLEN) + 8;
 
-  const uint8_t *cur      = start;
+  const uint8_t *   cur   = start;
   row_entry_state_e state = NOT_FOUND;
   uint32_t length = 0, strm_idx_id = s->chunk.skip_count >> 8, idx_id = 1, ci_id = CI_PRESENT,
            pos_end = 0;
@@ -315,8 +315,8 @@ static uint32_t __device__ ProtobufParseRowIndexEntry(rowindex_state_s *s,
  */
 static __device__ void gpuReadRowGroupIndexEntries(rowindex_state_s *s, int num_rowgroups)
 {
-  const uint8_t *index_data = s->chunk.streams[CI_INDEX];
-  int index_data_len        = s->chunk.strm_len[CI_INDEX];
+  const uint8_t *index_data     = s->chunk.streams[CI_INDEX];
+  int            index_data_len = s->chunk.strm_len[CI_INDEX];
   for (int i = 0; i < num_rowgroups; i++) {
     s->row_index_entry[0][0] = 0;
     s->row_index_entry[0][1] = 0;
@@ -348,19 +348,19 @@ static __device__ void gpuReadRowGroupIndexEntries(rowindex_state_s *s, int num_
  * @param[in] t thread id
  */
 static __device__ void gpuMapRowIndexToUncompressed(rowindex_state_s *s,
-                                                    int ci_id,
-                                                    int num_rowgroups,
-                                                    int t)
+                                                    int               ci_id,
+                                                    int               num_rowgroups,
+                                                    int               t)
 {
   int32_t strm_len = s->chunk.strm_len[ci_id];
   if (strm_len > 0) {
     int32_t compressed_offset = (t < num_rowgroups) ? s->compressed_offset[t][ci_id] : 0;
     if (compressed_offset > 0) {
-      const uint8_t *start            = s->strm_info[ci_id].compressed_data;
-      const uint8_t *cur              = start;
-      const uint8_t *end              = cur + s->strm_info[ci_id].compressed_data_size;
-      gpu_inflate_status_s *decstatus = s->strm_info[ci_id].decstatus;
-      uint32_t uncomp_offset          = 0;
+      const uint8_t *       start         = s->strm_info[ci_id].compressed_data;
+      const uint8_t *       cur           = start;
+      const uint8_t *       end           = cur + s->strm_info[ci_id].compressed_data_size;
+      gpu_inflate_status_s *decstatus     = s->strm_info[ci_id].decstatus;
+      uint32_t              uncomp_offset = 0;
       for (;;) {
         uint32_t block_len, is_uncompressed;
 
@@ -395,18 +395,18 @@ static __device__ void gpuMapRowIndexToUncompressed(rowindex_state_s *s,
  */
 // blockDim {128,1,1}
 extern "C" __global__ void __launch_bounds__(128, 8)
-  gpuParseRowGroupIndex(RowGroup *row_groups,
+  gpuParseRowGroupIndex(RowGroup *            row_groups,
                         CompressedStreamInfo *strm_info,
-                        ColumnDesc *chunks,
-                        uint32_t num_columns,
-                        uint32_t num_stripes,
-                        uint32_t num_rowgroups,
-                        uint32_t rowidx_stride)
+                        ColumnDesc *          chunks,
+                        uint32_t              num_columns,
+                        uint32_t              num_stripes,
+                        uint32_t              num_rowgroups,
+                        uint32_t              rowidx_stride)
 {
   __shared__ __align__(16) rowindex_state_s state_g;
-  rowindex_state_s *const s = &state_g;
-  uint32_t chunk_id         = blockIdx.y * num_columns + blockIdx.x;
-  int t                     = threadIdx.x;
+  rowindex_state_s *const                   s        = &state_g;
+  uint32_t                                  chunk_id = blockIdx.y * num_columns + blockIdx.x;
+  int                                       t        = threadIdx.x;
 
   if (t == 0) {
     s->chunk = chunks[chunk_id];
@@ -455,9 +455,9 @@ extern "C" __global__ void __launch_bounds__(128, 8)
 }
 
 void __host__ ParseCompressedStripeData(CompressedStreamInfo *strm_info,
-                                        int32_t num_streams,
-                                        uint32_t compression_block_size,
-                                        uint32_t log2maxcr,
+                                        int32_t               num_streams,
+                                        uint32_t              compression_block_size,
+                                        uint32_t              log2maxcr,
                                         rmm::cuda_stream_view stream)
 {
   dim3 dim_block(128, 1);
@@ -467,7 +467,7 @@ void __host__ ParseCompressedStripeData(CompressedStreamInfo *strm_info,
 }
 
 void __host__ PostDecompressionReassemble(CompressedStreamInfo *strm_info,
-                                          int32_t num_streams,
+                                          int32_t               num_streams,
                                           rmm::cuda_stream_view stream)
 {
   dim3 dim_block(128, 1);
@@ -487,13 +487,13 @@ void __host__ PostDecompressionReassemble(CompressedStreamInfo *strm_info,
  * @param[in] num_rowgroups Number of row groups
  * @param[in] stream CUDA stream to use, default 0
  */
-void __host__ ParseRowGroupIndex(RowGroup *row_groups,
+void __host__ ParseRowGroupIndex(RowGroup *            row_groups,
                                  CompressedStreamInfo *strm_info,
-                                 ColumnDesc *chunks,
-                                 uint32_t num_columns,
-                                 uint32_t num_stripes,
-                                 uint32_t num_rowgroups,
-                                 uint32_t rowidx_stride,
+                                 ColumnDesc *          chunks,
+                                 uint32_t              num_columns,
+                                 uint32_t              num_stripes,
+                                 uint32_t              num_rowgroups,
+                                 uint32_t              rowidx_stride,
                                  rmm::cuda_stream_view stream)
 {
   dim3 dim_block(128, 1);

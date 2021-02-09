@@ -39,17 +39,17 @@ constexpr unsigned int init_groups_per_block  = 4;
 constexpr unsigned int init_threads_per_block = init_threads_per_group * init_groups_per_block;
 
 __global__ void __launch_bounds__(init_threads_per_block)
-  gpu_init_statistics_groups(statistics_group *groups,
+  gpu_init_statistics_groups(statistics_group *       groups,
                              const stats_column_desc *cols,
-                             uint32_t num_columns,
-                             uint32_t num_rowgroups,
-                             uint32_t row_index_stride)
+                             uint32_t                 num_columns,
+                             uint32_t                 num_rowgroups,
+                             uint32_t                 row_index_stride)
 {
   __shared__ __align__(4) statistics_group group_g[init_groups_per_block];
-  uint32_t col_id         = blockIdx.y;
-  uint32_t chunk_id       = (blockIdx.x * init_groups_per_block) + threadIdx.y;
-  uint32_t t              = threadIdx.x;
-  statistics_group *group = &group_g[threadIdx.y];
+  uint32_t                                 col_id = blockIdx.y;
+  uint32_t          chunk_id = (blockIdx.x * init_groups_per_block) + threadIdx.y;
+  uint32_t          t        = threadIdx.x;
+  statistics_group *group    = &group_g[threadIdx.y];
   if (chunk_id < num_rowgroups and t == 0) {
     uint32_t num_rows = cols[col_id].num_rows;
     group->col        = &cols[col_id];
@@ -80,21 +80,21 @@ constexpr unsigned int pb_fldlen_common  = 2 * pb_fld_hdrlen + pb_fldlen_int64;
 __global__ void __launch_bounds__(buffersize_threads_per_block, 1)
   gpu_init_statistics_buffersize(statistics_merge_group *groups,
                                  const statistics_chunk *chunks,
-                                 uint32_t statistics_count)
+                                 uint32_t                statistics_count)
 {
   __shared__ volatile uint32_t scratch_red[buffersize_reduction_dim];
   __shared__ volatile uint32_t stats_size;
-  uint32_t tx = threadIdx.x;
-  uint32_t ty = threadIdx.y;
-  uint32_t t  = ty * buffersize_reduction_dim + tx;
+  uint32_t                     tx = threadIdx.x;
+  uint32_t                     ty = threadIdx.y;
+  uint32_t                     t  = ty * buffersize_reduction_dim + tx;
   if (!t) { stats_size = 0; }
   __syncthreads();
   for (uint32_t start = 0; start < statistics_count; start += buffersize_threads_per_block) {
     uint32_t stats_len = 0, stats_pos;
     uint32_t idx       = start + t;
     if (idx < statistics_count) {
-      const stats_column_desc *col = groups[idx].col;
-      statistics_dtype dtype       = col->stats_dtype;
+      const stats_column_desc *col   = groups[idx].col;
+      statistics_dtype         dtype = col->stats_dtype;
       switch (dtype) {
         case dtype_bool: stats_len = pb_fldlen_common + pb_fld_hdrlen + pb_fldlen_bucket1; break;
         case dtype_int8:
@@ -137,14 +137,14 @@ __global__ void __launch_bounds__(buffersize_threads_per_block, 1)
 }
 
 struct stats_state_s {
-  uint8_t *base;  ///< Output buffer start
-  uint8_t *end;   ///< Output buffer end
-  statistics_chunk chunk;
+  uint8_t *              base;  ///< Output buffer start
+  uint8_t *              end;   ///< Output buffer end
+  statistics_chunk       chunk;
   statistics_merge_group group;
-  stats_column_desc col;
+  stats_column_desc      col;
   // ORC stats
   uint64_t numberOfValues;
-  uint8_t hasNull;
+  uint8_t  hasNull;
 };
 
 /*
@@ -232,15 +232,15 @@ constexpr unsigned int encode_threads_per_block =
   encode_threads_per_chunk * encode_chunks_per_block;
 
 __global__ void __launch_bounds__(encode_threads_per_block)
-  gpu_encode_statistics(uint8_t *blob_bfr,
+  gpu_encode_statistics(uint8_t *               blob_bfr,
                         statistics_merge_group *groups,
                         const statistics_chunk *chunks,
-                        uint32_t statistics_count)
+                        uint32_t                statistics_count)
 {
   __shared__ __align__(8) stats_state_s state_g[encode_chunks_per_block];
-  uint32_t t             = threadIdx.x;
-  uint32_t idx           = blockIdx.x * encode_chunks_per_block + threadIdx.y;
-  stats_state_s *const s = &state_g[threadIdx.y];
+  uint32_t                              t   = threadIdx.x;
+  uint32_t                              idx = blockIdx.x * encode_chunks_per_block + threadIdx.y;
+  stats_state_s *const                  s   = &state_g[threadIdx.y];
 
   // Encode and update actual bfr size
   if (idx < statistics_count && t == 0) {
@@ -379,12 +379,12 @@ __global__ void __launch_bounds__(encode_threads_per_block)
  * @param[in] row_index_stride Rowgroup size in rows
  * @param[in] stream CUDA stream to use, default 0
  */
-void orc_init_statistics_groups(statistics_group *groups,
+void orc_init_statistics_groups(statistics_group *       groups,
                                 const stats_column_desc *cols,
-                                uint32_t num_columns,
-                                uint32_t num_rowgroups,
-                                uint32_t row_index_stride,
-                                rmm::cuda_stream_view stream)
+                                uint32_t                 num_columns,
+                                uint32_t                 num_rowgroups,
+                                uint32_t                 row_index_stride,
+                                rmm::cuda_stream_view    stream)
 {
   dim3 dim_grid((num_rowgroups + init_groups_per_block - 1) / init_groups_per_block, num_columns);
   dim3 dim_block(init_threads_per_group, init_groups_per_block);
@@ -402,8 +402,8 @@ void orc_init_statistics_groups(statistics_group *groups,
  */
 void orc_init_statistics_buffersize(statistics_merge_group *groups,
                                     const statistics_chunk *chunks,
-                                    uint32_t statistics_count,
-                                    rmm::cuda_stream_view stream)
+                                    uint32_t                statistics_count,
+                                    rmm::cuda_stream_view   stream)
 {
   dim3 dim_block(buffersize_reduction_dim, buffersize_reduction_dim);
   gpu_init_statistics_buffersize<<<1, dim_block, 0, stream.value()>>>(
@@ -418,11 +418,11 @@ void orc_init_statistics_buffersize(statistics_merge_group *groups,
  * @param[in,out] chunks Statistics data
  * @param[in] statistics_count Number of statistics buffers
  */
-void orc_encode_statistics(uint8_t *blob_bfr,
+void orc_encode_statistics(uint8_t *               blob_bfr,
                            statistics_merge_group *groups,
                            const statistics_chunk *chunks,
-                           uint32_t statistics_count,
-                           rmm::cuda_stream_view stream)
+                           uint32_t                statistics_count,
+                           rmm::cuda_stream_view   stream)
 {
   unsigned int num_blocks =
     (statistics_count + encode_chunks_per_block - 1) / encode_chunks_per_block;

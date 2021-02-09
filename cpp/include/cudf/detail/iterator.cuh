@@ -84,8 +84,8 @@ inline auto make_counting_transform_iterator(cudf::size_type start, UnaryFunctio
  */
 template <typename Element>
 struct null_replaced_value_accessor {
-  column_device_view const col;      ///< column view of column in device
-  Element const null_replacement{};  ///< value returned when element is null
+  column_device_view const col;                 ///< column view of column in device
+  Element const            null_replacement{};  ///< value returned when element is null
 
   /**
    * @brief constructor
@@ -151,7 +151,7 @@ struct validity_accessor {
  */
 template <typename Element>
 auto make_null_replacement_iterator(column_device_view const& column,
-                                    Element const null_replacement = Element{0})
+                                    Element const             null_replacement = Element{0})
 {
   return make_counting_transform_iterator(
     0, null_replaced_value_accessor<Element>{column, null_replacement});

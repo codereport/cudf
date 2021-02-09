@@ -39,9 +39,9 @@ namespace strings {
  * @return New BOOL8 column converted from strings.
  */
 std::unique_ptr<column> to_booleans(
-  strings_column_view const& strings,
-  string_scalar const& true_string    = string_scalar("true"),
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  strings_column_view const&       strings,
+  string_scalar const&             true_string = string_scalar("true"),
+  rmm::mr::device_memory_resource* mr          = rmm::mr::get_current_device_resource());
 
 /**
  * @brief Returns a new strings column converting the boolean values from the
@@ -58,10 +58,10 @@ std::unique_ptr<column> to_booleans(
  * @return New strings column.
  */
 std::unique_ptr<column> from_booleans(
-  column_view const& booleans,
-  string_scalar const& true_string    = string_scalar("true"),
-  string_scalar const& false_string   = string_scalar("false"),
-  rmm::mr::device_memory_resource* mr = rmm::mr::get_current_device_resource());
+  column_view const&               booleans,
+  string_scalar const&             true_string  = string_scalar("true"),
+  string_scalar const&             false_string = string_scalar("false"),
+  rmm::mr::device_memory_resource* mr           = rmm::mr::get_current_device_resource());
 
 /** @} */  // end of doxygen group
 }  // namespace strings
